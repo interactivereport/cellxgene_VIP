@@ -1,0 +1,1085 @@
+<html>
+  <head>
+    <script type="text/javascript" src="static/jquery.min.js"></script>
+    <!-- <script type="text/javascript" src='static/loading/js/jquery.min.js'></script> -->
+    <!-- <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.4.1.min.js"></script> -->
+    <!-- <script type="text/javascript" src="//jgerigmeyer.github.io/jquery-loading-overlay/libs/jquery/jquery.js"></script> -->
+    <!-- for datatables -->
+    <script type="text/javascript" src="static/DataTables/datatables.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/DataTables/datatables.min.css">
+    <!-- for wait dialog -->
+    <!-- <script type="text/javascript" src='static/loading/js/loading-overlay.min.js'></script> -->
+    <!--  <link rel="stylesheet" href="static/loading/css/loading-overlay.css"> -->
+    <!--  <script type="text/javascript" src="static/waitDialog.js"></script> -->
+    
+    <style>
+      .block {
+        display: block;
+        width: 100%;
+        border: none;
+        background-color: #984ea3;
+        color: white;
+        padding: 4px 28px;
+        font-size: 18px;
+        cursor: pointer;
+        text-align: center;
+      }
+      .block:hover {
+        background-color: #ffff33;
+        color: black;
+      }
+
+      .tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+      }
+      .tab button {
+        background-color: inherit;
+        float: left;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        transition: 0.3s;
+      }
+      .tab button:hover {
+        background-color: #ddd;
+      }
+      .tab button.active {
+        background-color: #ccc;
+      }
+      .tabcontent {
+        display: none;
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-top: none;
+      }
+      h3 {
+        display: block;
+        font-size: 1.17em;
+        margin-top: 1em;
+        margin-bottom: 1em;
+        margin-left: 0;
+        margin-right: 0;
+        font-weight: bold;
+      }
+      .loading {
+          width: 50%;
+          height: 100%;
+          position: relative;
+      }
+      .loading-wheel {
+          width: 70px;
+          height: 70px;
+          margin-top: -60px;
+          margin-left: -60px;
+          
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          
+          border-width: 30px;
+          border-radius: 50%;
+          -webkit-animation: spin 2s linear infinite;
+      }
+      .style-2 .loading-wheel {
+          border-style: double;
+          border-color: #99f transparent;
+      }
+      @-webkit-keyframes spin {
+          0% {
+              -webkit-transform: rotate(0);
+          }
+          100% {
+              -webkit-transform: rotate(-360deg);
+          }
+      }
+      
+      tr:nth-child(even) {background-color: #f2f2f2;}
+
+    </style>
+  </head>
+<body>
+<!-- <button class="block" onclick="refresh()">Refresh</button> -->
+<div class="tab">
+  <button class="tablinks" onclick="selFun(event, 'ABBR')">Combine & Abbr.</button>
+  <!-- <button class="tablinks" onclick="selFun(event, 'JOIN')">Join Annotation</button> -->
+  <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detection</button>
+  <button class="tablinks" onclick="selFun(event, 'SGV')">Single Gene Violin</button>
+  <button class="tablinks" onclick="selFun(event, 'PGV')">Panel Violin</button>
+  <button class="tablinks" onclick="selFun(event, 'HEAT')">Heatmap</button>
+  <button class="tablinks" onclick="selFun(event, 'DOT')">Dot Plot</button>
+  <button class="tablinks" onclick="selFun(event, 'DEG')">DEG</button>
+  <button class="tablinks" onclick="refresh()" style="float: right;">Refresh</button>
+</div>
+
+<div id="ABBR" class="tabcontent"> <!-- Abbreviation -->
+  <h3>Combining interested cell annotations</h3>
+  <label> Customize an annotation category by combining sevreal existing categories of interest.</label> 
+  <ol type="1">
+    <li>Use the following button to uncheck all groups on the main page, and then a new cell annotation category will be created by combining all checked annotations across categories.</li>
+    <button onclick="ABBRclear()">Uncheck</button>
+    <li>After check the annotations of interest accross categories, use the 'Refresh' button to list the newly created category which combining checked annotations across existing categories.</li>
+  </ol>
+  <label>The custom category named "Custom_combine" includes the folloing annotations:</label>
+  <p id="ABBRcombine"></p>
+
+  <h3>Abbreviation for cell annotations</h3><button onclick="ABBRsave()">Save to local</button><input id="ABBRfile" type="file" value="Load from local" onchange="ABBRload()"/>
+  <p>Choose annotation groups:</p>
+  <p id="ABBRgrp"></p>
+  <p id="ABBRtable"></p>
+  
+</div> <!--ABBR-->
+
+<div id="GD" class=tabcontent>
+  <h3>Genes detected in selected cells </h3>
+  <p>In group 1 (<span id="GDcellN1" style="color:red;">0</span>) cells and group 2 (<span id="GDcellN2" style="color:red;">0</span>) cells</p>
+  <p>Expression threshold:
+  <select id="GDcutoff"></select><p>
+  <p><button class="GDbt" onclick="GDplot()"><b>Plot</b></button></p>
+  <p id="GDnote" style="color:red;"></p>
+  <div id="GDspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+  <div style="text-align: center; width: 50%">
+    <button onclick="ZoomIn('GDresize')">Zoom In</button>
+    <button onclick="ZoomOut('GDresize')">Zoom Out</button>
+    <button class="GDpngBT" onclick="savePNG('GDpng')" disabled>Save</button>
+  </div>
+  <div id="GDresize" style="width: 50%; height: 'auto'; padding: 0.5em; border: 1px solid #984ea3">
+    <p id="GDfig"></p></div>
+</div><!--GD-->
+
+<div id="SGV" class="tabcontent">
+  <h3>Plot Single Gene Violin on selected cells and a single gene</h3>
+  <p>Choose cell set(s):
+    <label><input class="SGVcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="SGVcellN1" style="color:red">0</span>)</label>
+    <label><input class="SGVcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="SGVcellN2" style="color:red">0</span>)</label>
+  </p>
+  <p>Choose a gene:
+  <select id="SGVgene"></select></p>
+  <p>Group by:
+  <select id="SGVgrp"></select></p>
+  <button class="SGVbt" onclick="SGVplot()"><b>Plot</b></button>
+  <p id="SGVnote" style="color:red;"></p>
+  <div id="SGVspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+  <div style="text-align: center; width: 50%">
+    <button onclick="ZoomIn('SGVresize')">Zoom In</button>
+    <button onclick="ZoomOut('SGVresize')">Zoom Out</button>
+    <button class="SGVpngBT" onclick="savePNG('SGVpng')" disabled>Save</button>
+  </div>
+  <div id="SGVresize" style="width: 50%; height: 'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="SGVfig"></p></div>
+</div><!--SGV-->
+
+<div id="PGV" class="tabcontent">
+  <h3>Plot a Panel of Violins on selected cells and genes</h3>
+  <p>Choose cell set(s):
+    <label><input class="PGVcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="PGVcellN1" style="color:red">0</span>)</label>
+    <label><input class="PGVcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="PGVcellN2" style="color:red">0</span>)</label>
+  </p>
+  <p>Choose genes:</p>
+  <p id="PGVgene"></p>
+  <p>Group by:
+  <select id="PGVgrp"></select> as
+  <select id="PGVgrpXY">
+    <option value="Rows">Rows</option>
+    <option value="Columns">Columns</option>
+  </select>
+  </p>
+  <p><button class="PGVbt"  onclick="PGVplot()"><b>Plot</b></button></p>
+  <p id="PGVnote" style="color:red;"></p>
+  <div id="PGVspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+  <div style="text-align: center; width: 50%">
+    <button onclick="ZoomIn('PGVresize')">Zoom In</button>
+    <button onclick="ZoomOut('PGVresize')">Zoom Out</button>
+    <button class="PGVpngBT" onclick="savePNG('PGVpng')" disabled>Save</button>
+  </div>
+  <div id="PGVresize" style="width: 50%; height: 'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="PGVfig"></p></div>
+</div><!--PGV-->
+
+<div id="HEAT" class="tabcontent">
+  <h3>Plot Heatmap on selected cells and genes</h3>
+  <p>Choose cell set(s):
+    <label><input class="HEATcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="HEATcellN1" style="color:red">0</span>)</label>
+    <label><input class="HEATcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="HEATcellN2" style="color:red">0</span>)</label>
+  </p>
+  <p>Choose genes:</p>
+  <p id="HEATgene"></p>
+  <p>Clustering by:
+  <select id="HEATorder"></select></p>
+  <p>Choose annotation groups:</p>
+  <p id="HEATgrp"></p>
+  <p>Select normalization:
+  <select id="HEATnorm">
+    <option value="X">X</option>
+    <option value="zscore">Gene Zscore</option>
+  </select></p>
+  <p><button class="HEATbt"  onclick="HEATplot()"><b>Plot</b></button></p>
+  <p id="HEATnote" style="color:red;"></p>
+  <div id="HEATspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+  <div style="text-align: center; width: 50%">
+    <button onclick="ZoomIn('HEATresize')">Zoom In</button>
+    <button onclick="ZoomOut('HEATresize')">Zoom Out</button>
+    <button class="HEATpngBT" onclick="savePNG('HEATpng')" disabled>Save</button>
+  </div>
+  <div id="HEATresize" style="width: 50%; height: 'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="HEATfig"></p></div>
+
+</div><!--HEAT-->
+
+<div id="DOT" class="tabcontent">
+  <h3>Plot Dot as selected cell propotion which express selected genes</h3>
+  <p>Choose cell set(s):
+    <label><input class="DOTcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DOTcellN1" style="color:red">0</span>)</label>
+    <label><input class="DOTcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DOTcellN2" style="color:red">0</span>)</label>
+  </p>
+  <p>Gene group name: <input id="DOTgrpName" type="text" size=10/>
+    Gene names (, separated):<input id="DOTgeneName" type="text" size=35/>
+    <button onclick="DOTadd()"><b>Add</b></button>
+  </p>
+  <span id="DOTerror" style="color:red"></span><br>
+  The user-defined gene groups:
+  <p id="DOTgrpGene"></p>
+  <p>Group by: <select id="DOTgrp"></select> and the expression cuttoff: <input id="DOTcutoff" type="number" step="0.1" value="0.5"/></p>
+  <p><button onclick="DOTplot()"><b>Plot</b></button></p>
+  <div id="DOTspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+  <div style="text-align: center; width: 50%">
+    <button onclick="ZoomIn('DOTresize')">Zoom In</button>
+    <button onclick="ZoomOut('DOTresize')">Zoom Out</button>
+    <button onclick="savePNG('DOTpng')" disabled>Save</button>
+  </div>
+  <div id="DOTresize" style="width: 50%; height: 'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="DOTfig"></p></div>
+
+</div> <!--DOT-->
+
+<div id="DEG" class="tabcontent">
+  <h3>Find differentially expressed genes</h3>
+  <p>Between group 1 (<span id="DEGcellN1" style="color:red;">0</span>) cells and group 2 (<span id="DEGcellN2" style="color:red;">0</span>) cells</p>
+  <p>Select the number of top DEG:
+  <select id="DEGtop">
+    <option value=10>10</option>
+    <option value=100>100</option>
+    <option value=500>500</option>
+    <option value=1000>1000</option>
+    <option value=2000>2000</option>
+    <option value=5000>5000</option>
+  </select></p>
+  <p><button class="DEGbt" onclick="DEGfind()"><b>Find</b></button></p>
+  <p id="DEGnote" style="color:red;"></p>
+  <div id="DEGspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+  <div id="DEGresize" style="width: 50%; height: 'auto'">
+    <table id="DEGtable" class="display"></table>
+  </div>
+</div><!--DEG-->
+
+
+<script type="text/javascript">
+window.biogen=[];
+
+function selFun(evt,sel){
+
+  var i, tabC, tabL;
+  tabC = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabC.length; i++) {
+    tabC[i].style.display = "none";
+  }
+  tabL = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tabL.length; i++) {
+    tabL[i].className = tabL[i].className.replace(" active", "");
+  }
+  document.getElementById(sel).style.display = "block";
+  evt.currentTarget.className += " active";
+  refresh();
+}
+
+function ZoomIn(strDiv){
+  var r = $("#"+strDiv).width() / $("#"+strDiv).parent().width() * 100;
+  r += 5;
+  $("#"+strDiv).width(Math.min(95,r)+'%');
+}
+function ZoomOut(strDiv){
+  var r = $("#"+strDiv).width() / $("#"+strDiv).parent().width() * 100;
+  r -= 5;
+  $("#"+strDiv).width(Math.max(10,r)+'%');
+}
+function savePNG(pngID){
+  var gh = document.getElementById(pngID).src;
+  var a = document.createElement('a');
+  a.href = gh;
+  a.download = pngID+".png";
+  a.target="_blank";
+  a.click();
+}
+
+function cellNupdate(){
+  var n1=0,n2=0;
+  if(!!window.store.getState().differential.celllist1){
+    n1 = window.store.getState().differential.celllist1.length;
+  }
+  if(!!window.store.getState().differential.celllist2){
+    n2 = window.store.getState().differential.celllist2.length;
+  }
+  $('#SGVcellN1').text(n1);
+  $('#PGVcellN1').text(n1);
+  $('#HEATcellN1').text(n1);
+  $('#DOTcellN1').text(n1);
+  $('#DEGcellN1').text(n1);
+  $('#GDcellN1').text(n1);
+
+  $('#SGVcellN2').text(n2);
+  $('#PGVcellN2').text(n2);
+  $('#HEATcellN2').text(n2);
+  $('#DEGcellN2').text(n2);
+  $('#DOTcellN2').text(n2);
+  $('#GDcellN2').text(n2);
+}
+
+//Page Initial functions
+function refresh(){
+  cellNupdate();
+  ABBRinit();
+  ABBRcombine();
+  GDinit();
+  SGVinit();
+  PGVinit();
+  HEATinit();
+  DOTinit();
+}
+function GDinit(){
+  var oNames = Object.keys(window.store.getState().universe.schema.annotations.obsByName);
+  var topNames = oNames.filter(s => s.includes('genes'));
+  $('#GDcutoff').children().remove().end();
+  x = document.getElementById("GDcutoff");
+  for(var i=0;i<topNames.length;i++){
+    var opt = document.createElement("option");
+    opt.text = topNames[i];
+    opt.value = topNames[i];
+    x.add(opt);
+  }
+  //$(".GDpngBT").prop('disabled',true);
+}
+
+function SGVinit(){
+  var i,x = document.getElementById("SGVgene");
+  var genes = window.store.getState().universe.varData.colIndex.rindex;
+  genes = genes.concat(window.biogen);
+  genes = [...new Set(genes)];
+  $('#SGVgene').children().remove().end();
+  for(i=0; i<genes.length;i++){
+    var opt = document.createElement("option");
+    opt.text = genes[i];
+    opt.value = genes[i];
+    x.add(opt);
+  }
+  
+  $('#SGVgrp').children().remove().end();
+  x = document.getElementById("SGVgrp");
+  var grps = Object.keys(window.store.getState().categoricalSelection);
+  for(i=0;i<grps.length;i++){
+    var opt = document.createElement("option");
+    opt.text = grps[i];
+    opt.value = grps[i];
+    x.add(opt);
+  }
+  
+  var grpKeys = Object.keys(window.bioCombine);
+  if(grpKeys.length>0){
+    var opt = document.createElement("option");
+    opt.text = "Custom_combine";
+    opt.value = "Custom_combine";
+    x.add(opt);
+  }
+}
+
+function PGVinit(){
+  var i;
+  var genes = window.store.getState().universe.varData.colIndex.rindex;
+  genes = genes.concat(window.biogen);
+  genes = [...new Set(genes)];
+
+  var htmlCheck= "";
+  for(i=0;i<genes.length;i++){
+    htmlCheck += '<label><input class="PGVgenes" type="checkbox" value="'+genes[i]+'" checked/> '+genes[i]+'</label>';
+  }
+  $('#PGVgene').html(htmlCheck);
+  
+  $('#PGVgrp').children().remove().end();
+  x = document.getElementById("PGVgrp");
+  var grps = Object.keys(window.store.getState().categoricalSelection);
+  for(i=0;i<grps.length;i++){
+    var opt = document.createElement("option");
+    opt.text = grps[i];
+    opt.value = grps[i];
+    x.add(opt);
+  } 
+
+  var grpKeys = Object.keys(window.bioCombine);
+  if(grpKeys.length>0){
+    var opt = document.createElement("option");
+    opt.text = "Custom_combine";
+    opt.value = "Custom_combine";
+    x.add(opt);
+  }
+
+}
+
+function HEATinit(){
+  var i;
+  var genes = window.store.getState().universe.varData.colIndex.rindex;
+  genes = genes.concat(window.biogen);
+  genes = [...new Set(genes)];
+  var htmlCheck= "";
+  for(i=0;i<genes.length;i++){
+    htmlCheck += '<label><input class="HEATgenes" type="checkbox" value="'+genes[i]+'" checked/> '+genes[i]+'</label>';
+  }
+  $('#HEATgene').html(htmlCheck);
+
+  $('#HEATorder').children().remove().end();
+  x = document.getElementById("HEATorder");
+  var grps = Object.keys(window.store.getState().categoricalSelection);
+  for(i=0;i<grps.length;i++){
+    var opt = document.createElement("option");
+    opt.text = grps[i];
+    opt.value = grps[i];
+    x.add(opt);
+  }  
+  if(window.store.getState().differential.celllist1 && window.store.getState().differential.celllist1.length<5000){
+    var opt = document.createElement("option");
+    opt.text = "Expression (<5k cells)";
+    opt.value = "Expression";
+    x.add(opt);
+  }
+
+  var grps = Object.keys(window.store.getState().categoricalSelection);
+  var grpL = window.store.getState().categoricalSelection;
+  htmlCheck= "";
+  for(i=0;i<grps.length;i++){
+    htmlCheck += '<label><input class="HEATgrps" type="checkbox" value="'+grps[i]+'"/> '+grps[i]+' ('+grpL[grps[i]].numCategoryValues+')</label>';
+  }  
+  $('#HEATgrp').html(htmlCheck);
+  $(".HEATpngBT").prop('disabled',true);
+}
+
+function DOTinit(){
+  if(!('bioGeneGrp' in window)){
+    window.bioGeneGrp={};
+  }
+  $('#DOTgrp').children().remove().end();
+  x = document.getElementById("DOTgrp");
+  var grps = Object.keys(window.store.getState().categoricalSelection);
+  for(i=0;i<grps.length;i++){
+    var opt = document.createElement("option");
+    opt.text = grps[i];
+    opt.value = grps[i];
+    x.add(opt);
+  } 
+
+  var grpKeys = Object.keys(window.bioCombine);
+  if(grpKeys.length>0){
+    var opt = document.createElement("option");
+    opt.text = "Custom_combine";
+    opt.value = "Custom_combine";
+    x.add(opt);
+  }
+
+}
+
+function ABBRinit(){
+  if(!('bioAbbr' in window)){
+    var grps = Object.keys(window.store.getState().categoricalSelection);
+    var grpL = window.store.getState().categoricalSelection;
+    var htmlCheck= "";
+    for(i=0;i<grps.length;i++){
+      htmlCheck += '<label><input class="ABBRgrps" type="checkbox" value="'+grps[i]+'" onclick="ABBRlist()"/> '+grps[i]+' ('+grpL[grps[i]].numCategoryValues+')</label>';
+    }  
+    $('#ABBRgrp').html(htmlCheck);
+    
+    var bioAbbr = {}
+    for(i=0;i<grps.length;i++){
+      var one = {}
+      for(var j=0;j<grpL[grps[i]].numCategoryValues;j++){
+        one[grpL[grps[i]].categoryValues[j]] = grpL[grps[i]].categoryValues[j];
+      }
+      bioAbbr[grps[i]] = one;
+    }
+    window.bioAbbr=bioAbbr;
+  }
+}
+
+// plot function 
+function GDplot(){
+  if(!window.store.getState().differential.celllist1 && !window.store.getState().differential.celllist2){
+    $('#GDnote').text("Please select cells into group 1 or/and group 2");
+    return;
+  }
+  var cells = {};
+  if(window.store.getState().differential.celllist1){
+    cells['group1'] = window.store.getState().differential.celllist1;
+  }
+  if(window.store.getState().differential.celllist2){
+    cells['group2'] = window.store.getState().differential.celllist2;
+  }
+  var cutGrp = $("#GDcutoff option:selected").val();
+  
+  var D = {'method':'GD',
+            'cells':cells,
+            'grp':[cutGrp]};
+  $(".GDbt").prop('disabled',true);
+  $(".GDpngBT").prop('disabled',true);
+  document.getElementById("GDspin").style.visibility="visible";
+  $.ajax({
+    type:"POST",
+    url: "/biogen",
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',
+    success: function(res){
+      document.getElementById("GDfig").innerHTML = '<img id="GDpng" src="data:image/png;base64,'+res+'" width=100% height="auto"/>';// height="450" width="450"
+      $(".GDbt").prop("disabled",false);
+      $(".GDpngBT").prop('disabled',false);
+      document.getElementById("GDspin").style.visibility="hidden";
+    }
+  })
+
+}
+
+function SGVplot(){
+  if($("#SGVgene option:selected").val()=="NA"){
+    $('#SGVnote').text("Please select a gene to plot");
+    return;
+  }
+  if($("#SGVgrp option:selected").val()=="NA"){
+    $('#SGVnote').text("Please select a category to plot");
+    return;
+  }
+  var cells=[], x = document.getElementsByClassName('SGVcell');
+  for(i=0;i<x.length;i++){
+    if(x[i].checked){
+      if(!!window.store.getState().differential[x[i].value]){
+        if(cells.length==0){
+          cells = window.store.getState().differential[x[i].value];
+        }else{
+          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
+          tmp.set(cells);
+          tmp.set(window.store.getState().differential[x[i].value],cells.length);
+          cells = tmp;
+        }
+      }
+    }
+  }
+  if(cells.length==0){
+    $('#SGVnote').text("Please select cells into selected groups");
+    return;
+  }
+  var grp = [$("#SGVgrp option:selected").val()];
+  var combGrp = [];
+  if(grp[0]=="Custom_combine"){
+    grp = Object.keys(window.bioCombine);
+    combGrp = window.bioCombine;
+  }
+  
+  $('#SGVnote').text("Plotting on "+cells.length+" selected cells");
+  var D = {'method':'SGV',
+            'cells':cells,
+            'genes':$("#SGVgene option:selected").val(),
+            'grp':grp,
+            'abb':window.bioAbbr,
+            'combine':combGrp};
+  $(".SGVbt").prop("disabled",true);
+  $(".SGVpngBT").prop('disabled',true);
+  document.getElementById("SGVspin").style.visibility="visible";
+  $.ajax({
+    type:"POST",
+    url: "/biogen",
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(res){
+      document.getElementById("SGVfig").innerHTML = '<img id="SGVpng" src="data:image/png;base64,'+res+'" width=100% height="auto"/>';// height="450" width="450"
+      $(".SGVbt").prop("disabled",false);
+      $(".SGVpngBT").prop('disabled',false);
+      document.getElementById("SGVspin").style.visibility="hidden";
+    }
+  })
+}
+
+function PGVplot(){
+  var genes = [];
+  var i, x = document.getElementsByClassName('PGVgenes');
+  for(i=0;i<x.length;i++){
+    if(x[i].checked){
+      genes.push(x[i].value);
+    }
+  }
+  if(genes.length==0){
+    $('#PGVnote').text("Please select a gene to plot");
+    return;
+  }
+  if($("#PGVgrp option:selected").val()=="NA"){
+    $('#PGVnote').text("Please select a category to plot");
+    return;
+  }
+  var cells=[], x = document.getElementsByClassName('PGVcell');
+  for(i=0;i<x.length;i++){
+    if(x[i].checked){
+      if(!!window.store.getState().differential[x[i].value]){
+        if(cells.length==0){
+          cells = window.store.getState().differential[x[i].value];
+        }else{
+          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
+          tmp.set(cells);
+          tmp.set(window.store.getState().differential[x[i].value],cells.length);
+          cells = tmp;
+        }
+      }
+    }
+  }
+  if(cells.length==0){
+    $('#PGVnote').text("Please select cells into selected groups");
+    return;
+  }
+
+  $('#PGVnote').text("");
+  var grp = [$("#SGVgrp option:selected").val()];
+  var combGrp = [];
+  if(grp[0]=="Custom_combine"){
+    grp = Object.keys(window.bioCombine);
+    combGrp = window.bioCombine;
+  }
+  var D = {'method':'PGV',
+            'cells':cells,
+            'genes':genes,
+            'grp':grp,
+            'by':$("#PGVgrpXY option:selected").val(),
+            'abb':window.bioAbbr,
+            'combine':combGrp};
+  $(".PGVbt").prop('disabled',true);
+  document.getElementById("PGVspin").style.visibility="visible";
+  $.ajax({
+    type:"POST",
+    url: "/biogen",
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(res){
+      document.getElementById("PGVfig").innerHTML = '<img id="PGVpng" src="data:image/png;base64,'+res+'" width=100% height="auto"/>';// height="450" width="450"
+      $(".PGVbt").prop("disabled",false);
+      $(".PGVpngBT").prop('disabled',false);
+      document.getElementById("PGVspin").style.visibility="hidden";
+    }
+  })
+}
+
+function HEATplot(){
+  var cells=[], x = document.getElementsByClassName('HEATcell');
+  for(i=0;i<x.length;i++){
+    if(x[i].checked){
+      if(!!window.store.getState().differential[x[i].value]){
+        if(cells.length==0){
+          cells = window.store.getState().differential[x[i].value];
+        }else{
+          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
+          tmp.set(cells);
+          tmp.set(window.store.getState().differential[x[i].value],cells.length);
+          cells = tmp;
+        }
+      }
+    }
+  }
+  if(cells.length==0){
+    $('#HEATnote').text("Please select cells into selected groups");
+    return;
+  }
+
+  var genes = [];
+  var i, x = document.getElementsByClassName('HEATgenes');
+  for(i=0;i<x.length;i++){
+    if(x[i].checked){
+      genes.push(x[i].value);
+    }
+  }
+  if(genes.length==0){
+    $('#HEATnote').text("Please select a gene to plot");
+    return;
+  }
+  var grps = [];
+  x = document.getElementsByClassName('HEATgrps');
+  for(i=0;i<x.length;i++){
+    if(x[i].checked){
+      grps.push(x[i].value);
+    }
+  }
+  var orderGrp = $("#HEATorder option:selected").val();
+  if(orderGrp=="Expression" && window.store.getState().differential.celllist1.length>5000){
+    $('#HEATnote').text("Clustering by expression is not available for the number of selected cells larger than 5k.");
+    return;
+  }
+  if(orderGrp!="Expression" && !grps.includes(orderGrp)){
+    grps.push(orderGrp);
+  }
+  if(grps.length==0){
+    $('#HEATnote').text("Please select groups to plot");
+    return;
+  }
+  $('#HEATnote').text("");
+  document.getElementById("HEATspin").style.visibility="visible";
+  $(".HEATbt").prop('disabled',true);
+  $(".HEATpngBT").prop('disabled',true);
+  var D = {'method':'HEAT',
+            'cells':cells,
+            'genes':genes,
+            'order':orderGrp,
+            'norm':$("#HEATnorm option:selected").val(),
+            'grp':grps};
+  $.ajax({
+    type:"POST",
+    url: "/biogen",
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(res){
+      document.getElementById("HEATfig").innerHTML = '<img id="HEATpng" src="data:image/png;base64,'+res+'" width=100% height="auto"/>';// height="450" width="450"
+      $(".HEATbt").prop("disabled",false);
+      $(".HEATpngBT").prop('disabled',false);
+      document.getElementById("HEATspin").style.visibility="hidden";
+    }
+  })
+
+}
+
+function DEGfind(){
+  var cells = {};
+  if(!window.store.getState().differential.celllist1 || !window.store.getState().differential.celllist2){
+    $('#DEGnote').text("Please select cells into both group 1 and group 2");
+    return;
+  }else{
+    cells['group1'] = window.store.getState().differential.celllist1;
+    cells['group2'] = window.store.getState().differential.celllist2;
+  }
+  var D = {'method':'DEG','topN':$("#DEGtop option:selected").val(),
+           'cells':{"group1":window.store.getState().differential.celllist1,
+                    "group2":window.store.getState().differential.celllist2}};
+  document.getElementById("DEGspin").style.visibility="visible";
+  $(".DEGbt").prop('disabled',true);
+  $.ajax({
+    type:"POST",
+    url: "/biogen",
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(data){
+      $('#DEGtable').empty();
+      var table = $('#DEGtable').DataTable({
+        destroy: true,
+        dom:'Blfrtip',
+        lengthMenu:[[10,50,100,200,-1],[10,50,100,200,"All"]],
+        order:[[3,"asc"]],
+        buttons:['csv'],
+        data:JSON.parse(data),
+        columns:[
+          {title: "Gene"},
+          {title: "Log Fold Change"},
+          {title: "p-value"},
+          {title: "padj"}
+        ]
+      });
+      document.getElementById("DEGspin").style.visibility="hidden";
+      $(".DEGbt").prop("disabled",false);
+      
+      window.biogen = [];
+      $('#DEGnote').text("");
+      $('#DEGtable tbody').on('click',"tr",function(){
+        var data = table.row(this).data();
+        //alert('Your clicked on '+data[0]+" row");
+        var genes =  window.biogen;
+        if(genes.includes(data[0])){
+          genes.splice(genes.indexOf(data[0]),1);
+        }else{
+          genes.push(data[0]);
+        }
+        $('#DEGnote').text("Selected genes: "+genes.join(", "));
+      });
+    }
+  })
+  
+}
+
+function ABBRlist(){
+  var grps = {},nrows=0,i;
+  var x = document.getElementsByClassName('ABBRgrps');
+  for(i=0;i<x.length;i++){
+    if(x[i].checked){
+      grps[x[i].value]=window.store.getState().categoricalSelection[x[i].value].categoryValues;
+      nrows = Math.max(nrows,grps[x[i].value].length);
+    }
+  }
+  var grpKey = Object.keys(grps);
+  var htmlTable = "<table style='width:100%;border-collapse: collapse;'><tr>";
+  //console.log(grpKey);
+  for(i=0;i<grpKey.length;i++){
+    htmlTable += "<th colspan='2' style='background-color: #4CAF50;color: white;'>"+grpKey[i]+"</th>"
+  }
+  htmlTable += "</tr><tr>";
+  for(i=0;i<nrows;i++){
+    for(var j=0;j<grpKey.length;j++){
+      if(j>0){
+        htmlTable += "<td align='right' style='border-left:2px solid #888'>"
+      }else{
+        htmlTable += "<td align='right'>"
+      }
+      if(i<grps[grpKey[j]].length){//grpKey[j]+"','"+grps[grpKey[j]][i]
+        htmlTable += grps[grpKey[j]][i]+'</td><td><input type="text" id="'+grpKey[j]+"|"+grps[grpKey[j]][i]+'" value="' +window.bioAbbr[grpKey[j]][grps[grpKey[j]][i]]+'" onchange=ABBRupdate(["'+grpKey[j].replace(/ /g,";;")+'","'+grps[grpKey[j]][i].replace(/ /g,";;")+'"])></td>';
+      }else{
+        htmlTable += "</td><td></td>";
+      }
+    }
+    htmlTable += "</tr><tr>"
+  }
+  htmlTable += "</tr></table>"
+  $('#ABBRtable').html(htmlTable);
+}
+function ABBRupdate(eID){
+  for(var i=0;i<eID.length;i++){
+    eID[i] = eID[i].replace(/;;/g," ");
+  }
+  window.bioAbbr[eID[0]][eID[1]] = $('#'+eID.join("\\|").replace(/ /g,"\\ ")).val();
+}
+function ABBRclear(){
+  var grpKeys = Object.keys(window.store.getState().categoricalSelection);
+  for(var i=0;i<grpKeys.length;i++) {
+    window.store.getState().categoricalSelection[grpKeys[i]].categorySelected=false;
+    for(var j=0;j<window.store.getState().categoricalSelection[grpKeys[i]].numCategoryValues;j++){
+      window.store.getState().categoricalSelection[grpKeys[i]].categoryValueSelected[j]=false;
+    }
+  }
+  //var a = document.getElementsByTagName("input");
+  //for(var i=0;i<a.length;i++){
+  //  if(a[i].getAttribute('data-testclass')=='category-select'||a[i].getAttribute('data-testclass')=='categorical-value-select'){
+  //    a[i].checked=false;
+  //  }
+  //}
+  var a = document.querySelectorAll("[data-testclass='category-select']");
+  for(var i=0;i<a.length;i++){
+    a[i].checked=false;
+    //a[i].id=a[i].
+  }
+  a = document.querySelectorAll("[data-testclass='categorical-value-select']");
+  for(var i=0;i<a.length;i++){
+    a[i].checked=false;
+  }
+}
+function ABBRcombine(){
+  window.bioCombine={};
+  var combGrp = {};
+  var grpKeys = Object.keys(window.store.getState().categoricalSelection);
+  for(var i=0;i<grpKeys.length;i++) {
+    if(window.store.getState().categoricalSelection[grpKeys[i]].categorySelected){
+      combGrp[grpKeys[i]] = window.store.getState().categoricalSelection[grpKeys[i]].categoryValues;
+    }else{
+      var one = [];
+      for(var j=0;j<window.store.getState().categoricalSelection[grpKeys[i]].numCategoryValues;j++){
+        if(window.store.getState().categoricalSelection[grpKeys[i]].categoryValueSelected[j]){
+          one.push(window.store.getState().categoricalSelection[grpKeys[i]].categoryValues[j]);
+        }
+      }
+      if(one.length>0){
+        combGrp[grpKeys[i]] = one;
+      }
+    }
+  }
+  grpKeys = Object.keys(combGrp);
+  //console.log(combGrp);
+  if(grpKeys.length==0||grpKeys.length>5) return
+  window.bioCombine=combGrp;
+  var combVal = [];
+  for(var i=0;i<grpKeys.length;i++){
+    if(combVal.length==0){
+      for(var j=0;j<combGrp[grpKeys[i]].length;j++){
+        combVal.push(window.bioAbbr[grpKeys[i]][combGrp[grpKeys[i]][j]])
+      }
+    }else{
+      newGrp = [];
+      for(var k=0;k<combVal.length;k++){
+        for(var j=0;j<combGrp[grpKeys[i]].length;j++){
+          newGrp.push(combVal[k]+"|"+window.bioAbbr[grpKeys[i]][combGrp[grpKeys[i]][j]])
+        }        
+      }
+      combVal = newGrp;
+    }
+  }
+  $('#ABBRcombine').html("<span style='color:red;'><strong>"+combVal.join('; ')+"</strong></span>");
+}
+function ABBRcombineUpdate(){
+  var combGrp = window.bioCombine;
+  var combKey = Object.keys(combGrp);
+  
+  var grpKeys = Object.keys(window.store.getState().categoricalSelection);
+  for(var i=0;i<grpKeys.length;i++) {
+    //window.store.getState().categoricalSelection[grpKeys[i]].categorySelected=false;
+    if(combKey.includes(grpKeys[i])){
+      for(var j=0;j<window.store.getState().categoricalSelection[grpKeys[i]].numCategoryValues;j++){
+        if(combGrp[grpKeys[i]].includes(window.store.getState().categoricalSelection[grpKeys[i]].categoryValues[j])){
+          window.store.getState().categoricalSelection[grpKeys[i]].categoryValueSelected[j]=true;
+        }
+      }
+    }
+  }
+  var a = document.querySelectorAll("[style='category']");
+  for(var i =0;i<a.length;i++){
+    a[i].reload();
+  }
+  
+  
+  
+  
+}
+function ABBRsave(){
+  var content = [window.bioAbbr,window.bioCombine];
+  var hiddenE = document.createElement('a');
+  hiddenE.href="data:attachment/text,"+encodeURIComponent(JSON.stringify(content));
+  hiddenE.target='_blank';
+  hiddenE.download='cellxgene.'+window.store.getState().config.displayNames.dataset+'.abbr.txt';
+  hiddenE.click();
+}
+function ABBRload(){
+  //var $field = $("#ABBRfile");
+  var reader = new FileReader();
+  reader.onload=function(ev){
+    var content = JSON.parse(decodeURIComponent(ev.target.result));
+    window.bioAbbr= content[0];
+    window.bioCombine = content[1]
+    ABBRlist();
+    ABBRclear();
+    ABBRcombineUpdate();
+    ABBRcombine();
+  };
+  console.log
+  reader.readAsText($("#ABBRfile")[0].files[0]);
+}
+
+function DOTadd(){
+  $("#DOTerror").text("");
+  var grpName = $("#DOTgrpName").val().trim();
+  if(grpName.length<2){
+    $("#DOTerror").text("Please provide a gene set name with at least two characters!");
+    return;
+  }
+  var grpKeys = Object.keys(window.bioGeneGrp);
+  if(grpKeys.includes(grpName)){
+    $("#DOTerror").text("The gene set name exists!");
+    return;
+  }
+  var definedG = [];
+  for(var i=0;i<grpKeys.length;i++){
+    definedG = definedG.concat(window.bioGeneGrp[grpKeys[i]]);
+  }
+  
+  var gNames = $("#DOTgeneName").val().split(",");
+  var notG = [],geneNames=[];
+  var totalG = window.store.getState().universe.varAnnotations.__columns[0];
+  for(var i=0;i<gNames.length;i++){
+    var one = gNames[i].trim();
+    if(totalG.includes(one)&&!definedG.includes(one)){
+      geneNames.push(one);
+    }else{
+      notG.push(one);
+    }
+  }
+  var eMsg= "";
+  if(notG.length>0){
+    eMsg +="The following genes cannot be found in the data or previously defined: "+notG;
+    $("#DOTerror").text(eMsg);
+  }
+  if(geneNames.length==0){
+    $("#DOTerror").text(eMsg+". No valid gene names is provided");
+    return;
+  }
+  $("#DOTgeneName").val("");
+  $("#DOTgrpName").val("");
+  window.bioGeneGrp[grpName] = geneNames;
+  DOTfresh();
+}
+function DOTfresh(){
+  var html= "";
+  var grpKeys = Object.keys(window.bioGeneGrp);
+  for(var i=0;i<grpKeys.length;i++){
+    html += "<p><button onclick=\"DOTdel('"+grpKeys[i]+"')\"><b>Delete</b></button> <b>"+grpKeys[i]+"</b>: " + window.bioGeneGrp[grpKeys[i]]+"</p>";
+  }
+  $("#DOTgrpGene").html(html);
+}
+function DOTdel(grpName){
+  delete window.bioGeneGrp[grpName];
+  DOTfresh();
+}
+function DOTplot(){
+  var cells=[], x = document.getElementsByClassName('HEATcell');
+  for(i=0;i<x.length;i++){
+    if(x[i].checked){
+      if(!!window.store.getState().differential[x[i].value]){
+        if(cells.length==0){
+          cells = window.store.getState().differential[x[i].value];
+        }else{
+          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
+          tmp.set(cells);
+          tmp.set(window.store.getState().differential[x[i].value],cells.length);
+          cells = tmp;
+        }
+      }
+    }
+  }
+  if(cells.length==0){
+    $('#DOTerror').text("Please select cells into selected groups");
+    return;
+  }
+  
+  var grpKeys = Object.keys(window.bioGeneGrp);
+  var genes = [];
+  for(var i=0;i<grpKeys.length;i++){
+    genes = genes.concat(window.bioGeneGrp[grpKeys[i]]);
+  }
+  if(genes.length==0){
+    $('#DOTerror').text("Please add gene sets!");
+    return;
+  }
+  
+  $('#DOTerror').text("");
+  var grp = [$("#DOTgrp option:selected").val()];
+  var combGrp = [];
+  if(grp[0]=="Custom_combine"){
+    grp = Object.keys(window.bioCombine);
+    combGrp = window.bioCombine;
+  }
+  var D = {'method':'DOT',
+            'cells':cells,
+            'genes':genes,
+            'grp':grp,
+            //'by':$("#PGVgrpXY option:selected").val(),
+            'abb':window.bioAbbr,
+            'combine':combGrp,
+            'geneGrp':window.bioGeneGrp,
+            'cutoff':$("#DOTcutoff").val()};
+  $(".DOTbt").prop('disabled',true);
+  document.getElementById("DOTspin").style.visibility="visible";
+  $.ajax({
+    type:"POST",
+    url: "/biogen",
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(res){
+      console.log(res);
+      document.getElementById("DOTfig").innerHTML = '<img id="DOTpng" src="data:image/png;base64,'+res+'" width=100% height="auto"/>';// height="450" width="450"
+      $(".DOTbt").prop("disabled",false);
+      $(".DOTpngBT").prop('disabled',false);
+      document.getElementById("DOTspin").style.visibility="hidden";
+    }
+  })
+//Fxyd3,Lgals7
+//Sfn,Krt5
+//Lsp,Rac2, Coro1a
+
+
+
+
+}
+
+
+
+</script>
+</body>
+</html>
+
+
+
