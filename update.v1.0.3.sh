@@ -12,7 +12,7 @@ sed -i "s|cell&times;gene|cellxgene VIP|" "cellxgene/client/index_template.html"
 sed -i "s|title=\"cellxgene|title=\"cellxgene VIP|" "cellxgene/client/src/components/app.js"
 sed -i "s|  gene|  gene VIP|" "cellxgene/client/src/components/leftSidebar/topLeftLogoAndTitle.js"
 
-sed -i "s|PLOTTING PANEL|Visualization in Plugin|" "cellxgene/client/index_template.html"
+sed -i "s|PLOTTING PANEL|Visualization in Plugin|i" "cellxgene/client/index_template.html"
 
 cd cellxgene/client; make build; cp build/index.html $strPath/server/common/web/templates/
 
