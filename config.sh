@@ -12,7 +12,7 @@ rm -rf cellxgene
 git clone https://github.com/chanzuckerberg/cellxgene.git
 cd cellxgene;git checkout 735eb11eb78b5e6c35ba84438970d0ce369604e1;cd ..
 
-## update the source code for the biogen -----
+## update the source code for the VIP -----
 echo -e "\nwindow.store = store;" >> cellxgene/client/src/reducers/index.js
 read -d '' insertL << EOF
 <link href='static/jspanel/dist/jspanel.css' rel='stylesheet'>
@@ -48,7 +48,7 @@ read -d '' insertL << EOF
           maximize: 'remove'
         },
         footerToolbar: '<span style="display:block; width:100%; height:4px; background-color:#F88519"></span>',
-        headerTitle: 'Plotting Panel',
+        headerTitle: 'Visualization in Plugin',
         contentAjax: {
             url: 'static/interface.html',
             done: function (panel) {
@@ -63,14 +63,18 @@ read -d '' insertL << EOF
 </script>
 EOF
 insertL=$(sed -e 's/[&\\/]/\\&/g; s/$/\\/' -e '$s/\\$//' <<<"$insertL")
-#########sed -i '/<\/noscript>/i /dev/stdin' "test.txt" <<< "$insertL"
 sed -i "s|<div id=\"root\"></div>|$insertL\n&|g" "cellxgene/client/index_template.html" 
 
 echo '
-from server.app.biogenInterface import route
-@webbp.route("/biogen", methods=["POST"])
-def biogen():
+from server.app.VIPInterface import route
+@webbp.route("/VIP", methods=["POST"])
+def VIP():
     return route(request.data,current_app.app_config)' >> cellxgene/server/app/app.py
+    
+## update the cellxgene title to cellxgene VIP
+sed -i "s|gene|geneVIP|g" "cellxgene/client/index_template.html"
+sed -i "s|gene|geneVIP|g" "cellxgene/client/index.html"
+
 
 
 ## buld the cellxgene and install -----------
@@ -93,6 +97,21 @@ cp jquery.min.js $strweb
 cp -R DataTables $strweb
 cp -R jspanel $strweb
 cp cellxgene/server/test/decode_fbs.py $strPath/server/app/.
-cp biogenInterface.py $strPath/server/app/.
+cp VIPInterface.py $strPath/server/app/.
+
+## update dotplot from scanpy to return matplotlib figure
+read -d '' strScanpy << EOF
+    _utils.savefig_or_show('dotplot', show=show, save=save)
+
+EOF
+read -d '' newScanpy << EOF
+    _utils.savefig_or_show('dotplot', show=show, save=save)
+    return fig
+EOF
+strScanpy=$(sed -e 's/[&\\/]/\\&/g; s/$/\\/' -e '$s/\\$//' <<<"$strScanpy")
+newScanpy=$(sed -e 's/[&\\/]/\\&/g; s/$/\\/' -e '$s/\\$//' <<<"$newScanpy")
+sed -i "s|$strScanpy|$newScanpy|g" "${strPath}/scanpy/plotting/_anndata.py"
+
+
 
 

@@ -4,7 +4,9 @@ import server.app.decode_fbs as decode_fbs
 import scanpy as sc
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib import pyplot as plt
 import seaborn as sns
 import matplotlib.patches as mpatches
 from matplotlib import rcParams
@@ -28,10 +30,7 @@ api_version = "/api/v0.2"
 #urlGen = 'http://127.0.0.1:8888/api/v0.2/annotations/var'
 #urlDiff = "http://127.0.0.1:8888/api/v0.2/diffexp/obs"
 
-def route(data,appConfig=None):#data,
-  #adata = createData(data)
-  #return(adata)
-  #url = f"http://{appConfig.server__host}:{appConfig.server__port}|{appConfig.single_dataset__datapath}"
+def route(data,appConfig=None):
   if appConfig is None:
     data["url"] = f'http://127.0.0.1:8888/{api_version}'
   else:
@@ -55,7 +54,7 @@ def cleanAbbr(data):
       
   return updated
   
-def createData(data):
+def createData(data,seperate=False):
   #print("CreateData")
   headers = {'content-type':'application/json'}
   if not 'genes' in data:
@@ -81,8 +80,9 @@ def createData(data):
     else:
       subGrp = [str(grp['columns'][0][i]) for i in data['cells'].values()]
     obsL += [subGrp]
-  obs = pd.DataFrame(obsL,index=['name_0']+data['grp'],columns=cNames).T
+  obs = pd.DataFrame(obsL,index=['name_0']+data['grp'],columns=cNames).T.astype('category')
   strGN = [i for i in data['grp'] if 'genes' in i]
+  
   if len(strGN)>0:
     obs[strGN] = obs[strGN].apply(pd.to_numeric)
   if combUpdate and len(data['grp'])>1:
@@ -90,13 +90,23 @@ def createData(data):
     obs[newGrp] = obs[data['grp'][0]]
     for i in data['grp']:
       if i!=data['grp'][0]:
-        obs[newGrp] += "|"+obs[i]
+        obs[newGrp] += "_"+obs[i]
     expr = expr[~obs[newGrp].str.contains("Other")]
     obs = obs[~obs[newGrp].str.contains("Other")]
     data['grp'] = [newGrp]
+  if seperate:
+    return {'expr':expr,'obs':obs}
+  if 'layout' in data.keys():## tsne or umap
+    res = requests.get('%s/layout/obs' % data["url"],params={'layout-name':data['layout']})
+    embed= decode_fbs.decode_matrix_FBS(res.content)
+    embed = pd.DataFrame([[embed['columns'][i][x] for x in data['cells'].values()] for i in range(len(embed['columns']))],
+                    index=embed['col_idx'],columns=cNames).T.to_numpy()
+    adata = sc.AnnData(expr,obs,obsm={'X_%s'%data['layout']:embed})
+    return adata
+
   adata = sc.AnnData(expr,obs)
   return adata
-
+  
 def errorTask(data):
   return "Error task!"
   
@@ -107,7 +117,8 @@ def distributeTask(aTask):
     'HEAT':pHeatmap,
     'GD':GD,
     'DEG':DEG,
-    'DOT':DOT
+    'DOT':DOT,
+    'EMBED':EMBED
   }.get(aTask,errorTask)
 
 def iostreamFig(fig):
@@ -162,8 +173,10 @@ def pHeatmap(data):
   # if the number of element in a category is smaller than 10, "Set1" or "Set3" is choosen
   # if the number of element in a category is between 10 and 20, default is choosen
   # if the number of element in a category is larger than 20, husl is choosen
-  adata = createData(data)
-  #return adata
+  Xsep = createData(data,True)
+  adata = sc.AnnData(Xsep['expr'],Xsep['obs'])
+  Xdata = pd.concat([Xsep['expr'],Xsep['obs']], axis=1, sort=False).to_csv()
+  
   exprOrder = True
   if data['order']!="Expression":
     exprOrder = False;
@@ -174,7 +187,6 @@ def pHeatmap(data):
   colName =['Set1','Set3']
   grpCol = list()
   grpLegend = list()
-  #grpSize = list()
   grpWd = list()
   grpLen = list()
   h = 8
@@ -191,18 +203,8 @@ def pHeatmap(data):
           lut = dict(zip(Ugrp,sns.color_palette("husl",len(Ugrp)).as_hex()))
       grpCol.append(grp.map(lut))
       grpLegend.append([mpatches.Patch(color=v,label=k) for k,v in lut.items()])
-      #fSize = int(min([15,math.sqrt(len(grp))/len(Ugrp)+4]))
-      #grpSize.append(fSize)
-      #fW = int(max([len(x) for x in Ugrp])*fSize/15)/10
-      #w += 1
       grpWd.append(max([len(x) for x in Ugrp]))#0.02*fW*max([len(x) for x in Ugrp])
       grpLen.append(len(Ugrp)+2)
-  #grpW = [1.05]
-  #for x in grpLen:
-  #  oneW = 1.2*max([0.2,x/max(grpLen)])
-  #  grpW.append(grpW[-1]+0.5)#oneW
-    #w += 1#oneW*1.5
-  #ix = sorted(range(len(grpLen)),key=lambda k:grpLen[k])
 
   w += 2 
   Zscore=None
@@ -246,7 +248,7 @@ def pHeatmap(data):
       leg.get_title().set_fontsize(6)#min(grpSize)+2
       g.ax_heatmap.add_artist(leg)
 
-  return iostreamFig(g)
+  return json.dumps([iostreamFig(g),Xdata])#)#
 
 def GD(data):
   adata = None;
@@ -292,13 +294,24 @@ def DOT(data):
   fig = sc.pl.dotplot(adata,data['geneGrp'],groupby=data['grp'][0],figsize=(w,h),show=False,expression_cutoff=float(data['cutoff']))#,show=False,ax=fig.gca()
   
   return iostreamFig(fig)
-#Fxyd3,Lgals7
-#Acta2,Krt5
-#Cd79a,Rac2,Coro1a
   
+def EMBED(data):
+  adata = createData(data)
+  grpWD = 0
+  for gID in data['grp']:
+      grp = adata.obs[gID]
+      Ugrp = grp.unique()
+      grpWD = max([grpWD]+[len(x) for x in Ugrp])
+  wSP = grpWD/3*0.1
   
+  if data['layout']=='umap':
+    fig = sc.pl.umap(adata,color=data['grp']+data['genes'],wspace=wSP,ncols=3,return_fig=True,show=False)
+  if data['layout']=='tsne':
+    fig = sc.pl.tsne(adata,color=data['grp']+data['genes'],wspace=wSP,ncols=3,return_fig=True,show=False)
+  return iostreamFig(fig)
+
 def version():
-  print("1.0.2")
+  print("1.0.3")
   ## 1.0.2: April 27, 2020
   ## 1. add Spinning button
   ## 2. Selection on both groups of selected cells
@@ -313,7 +326,25 @@ def version():
   ## 1.0.2: May 6, 2020
   ## 1. Panel violin add an option to swap the axes
   ## 2. Provide the user to add the annotation abbreviation, as well as a customized categoryby combining annotation across existing categories.
-  ## 3. Add dot plot as expression level and cell propotion for sepecified gene sets 
+  ## 3. Add dot plot as expression level and cell proportion for specified gene sets 
+  ## ---------------
+  ## 1.0.3: May 10, 2020
+  ## 1. Keep the selection when refresh is clicked;
+  ## 2. Multi-tsne/umap, embedding plots for genes; for annotations as well;
+  ## 3. Batch adding genes with verifications as well as adding gene sets;
+  ## 4. Download heatmap data including meta info as csv;
+  ## 5. Uncheck All features and check all features with the dispatch method;
+  ## 6. Updated using "_" to separate the combined groups;
+  ## the following is required reinstall cellxgene
+  ## 7. Change "PLOTTING PANEL" to "Visulization in Plugin";
+  ## 8. Change biogenInterface to VIPInterface.py, and change the ajax call to VIP instead of biogen
+
+  ## 1.0.4: not done yet
+  ## 1. update the data obtaining from ajax API to direct call by server.app.app.get_data_adaptor method
+  ## 2. Trackplot;
+  ## 3. Two gene embedding plots;
+  ## 4. Visualize marker genes with download
+  ## 5. DEG
 
   
   

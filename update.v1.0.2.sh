@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#Tcl_AsyncDelete: async handler deleted by the wrong thread
 strPath="$(python -c 'import site; print(site.getsitepackages())')"
 strPath=${strPath//"['"/}
 strPath=${strPath//"']"/}
