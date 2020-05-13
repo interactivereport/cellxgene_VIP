@@ -98,12 +98,14 @@
 <div class="tab">
   <button class="tablinks" onclick="selFun(event, 'ABBR')">Combine & Abbr.</button>
   <button class="tablinks" onclick="selFun(event, 'ADDG')">Add Genes</button>
-  <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detection</button>
-  <button class="tablinks" onclick="selFun(event, 'SGV')">Single Gene Violin</button>
-  <button class="tablinks" onclick="selFun(event, 'PGV')">Panel Violin</button>
+  <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
+  <button class="tablinks" onclick="selFun(event, 'SGV')">Violin</button>
+  <button class="tablinks" onclick="selFun(event, 'PGV')">Stacked Violin</button>
   <button class="tablinks" onclick="selFun(event, 'HEAT')">Heatmap</button>
-  <button class="tablinks" onclick="selFun(event, 'EMBED')">Embedding Plot</button>
+  <button class="tablinks" onclick="selFun(event, 'EMBED')">UMAP/tSNE</button>
   <button class="tablinks" onclick="selFun(event, 'DOT')">Dot Plot</button>
+  <button class="tablinks" onclick="selFun(event, 'TRAK')">Tracksplot</button>
+  <button class="tablinks" onclick="selFun(event, 'DUAL')">Dual Genes</button>
   <button class="tablinks" onclick="selFun(event, 'DEG')">DEG</button>
   <button class="tablinks" onclick="refresh()" style="float: right;">Refresh</button>
 </div>
@@ -289,6 +291,54 @@
 
 </div><!--EMBED-->
 
+<div  id="TRAK" class="tabcontent">
+  <h3>Plot a expression track for selected cells and genes</h3>
+  <p>Choose cell set(s):
+    <label><input class="TRAKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="TRAKcellN1" style="color:red">0</span>)</label>
+    <label><input class="TRAKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="TRAKcellN2" style="color:red">0</span>)</label>
+  </p>
+  <p>User defined Gene groups:</p><p id="TRAKgeneGrp"></p>
+  <p>Group by: <select id="TRAKgrp"></select></p>
+  <p id="TRAKerror" style="color:red;"></p>
+  <p><button onclick="TRAKplot()"><b>Plot</b></button></p>
+  <div id="TRAKspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+  <div style="text-align: center; width: 50%">
+    <button onclick="ZoomIn('TRAKresize')">Zoom In</button>
+    <button onclick="ZoomOut('TRAKresize')">Zoom Out</button>
+    <button class="TRAKpngBT" onclick="savePNG('TRAKpng')" disabled>Save</button>
+  </div>
+  <div id="TRAKresize" style="width: 50%; height: 'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="TRAKfig"></p></div>
+
+</div><!--TRAK-->
+  
+<div  id="DUAL" class="tabcontent">
+  <h3>Embedding visualization of two selected genes in selected cells</h3>
+  <p>Choose cell set(s):
+    <label><input class="DUALcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DUALcellN1" style="color:red">0</span>)</label>
+    <label><input class="DUALcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DUALcellN2" style="color:red">0</span>)</label>
+  </p>
+  <p>Choose two genes:</p>
+  <p id="DUALgene"></p>
+  <p>Please specify the gene expression cutoff: <input id="DUALcutoff" type="number" step="0.1" value="1"/></p>
+  <p>Select the embedding layout:
+  <select id="DUALlayout">
+    <option value="umap">UMAP</option>
+    <option value="tsne">tSNE</option>
+  </select>
+  </p>
+  
+  <p><button class="DUALbt"  onclick="DUALplot()"><b>Plot</b></button></p>
+  <p id="DUALnote" style="color:red;"></p>
+  <div id="DUALspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+  <div style="text-align: center; width: 50%">
+    <button onclick="ZoomIn('DUALresize')">Zoom In</button>
+    <button onclick="ZoomOut('DUALresize')">Zoom Out</button>
+    <button class="DUALpngBT" onclick="savePNG('DUALpng')" disabled>Save</button>
+  </div>
+  <div id="DUALresize" style="width: 50%; height: 'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="DUALfig"></p></div>
+  
+</div><!--DUAL-->
+
 <div id="DEG" class="tabcontent">
   <h3>Find differentially expressed genes</h3>
   <p>Between group 1 (<span id="DEGcellN1" style="color:red;">0</span>) cells and group 2 (<span id="DEGcellN2" style="color:red;">0</span>) cells</p>
@@ -361,6 +411,8 @@ function cellNupdate(){
   $('#DEGcellN1').text(n1);
   $('#GDcellN1').text(n1);
   $('#EMBEDcellN1').text(n1);
+  $('#TRAKcellN1').text(n1);
+  $('#DUALcellN1').text(n1);
 
   $('#SGVcellN2').text(n2);
   $('#PGVcellN2').text(n2);
@@ -369,6 +421,8 @@ function cellNupdate(){
   $('#DOTcellN2').text(n2);
   $('#GDcellN2').text(n2);
   $('#EMBEDcellN2').text(n2);
+  $('#TRAKcellN2').text(n2);
+  $('#DUALcellN2').text(n2);
 }
 
 //Page Initial functions
@@ -418,11 +472,13 @@ function init(){
     var pgv = document.getElementById("PGVgrp");
     var heat = document.getElementById("HEATorder");
     var dot = document.getElementById("DOTgrp");
+    var trak = document.getElementById("TRAKgrp");
     for(const one of grps){
       sgv.add(createOpt(one));
       pgv.add(createOpt(one));
       heat.add(createOpt(one));
       dot.add(createOpt(one));
+      trak.add(createOpt(one));
     }
     //--------------------------------------------------------------------------
     //HEAT
@@ -453,6 +509,8 @@ function refresh(){
   PGVref();
   HEATref();
   DOTref();
+  TRAKref();
+  DUALref();
   DEGref();
   EMBEDref();
 }
@@ -630,6 +688,44 @@ function DOTref(){
     x.remove(grps.length);
   }
 }
+function TRAKref(){
+  var gSets = Object.keys(window.bioGeneGrp);
+  var optG = [], NcheckG=[];
+  //remove checkbox which are not in the gene list
+  $(".TRAKsets").each(function(){
+    optG.push($(this).val());
+    if(!gSets.includes($(this).val())){
+      $('#TRAKck'+$(this).val()).remove();
+    }else if($(this).prop("checked") == false){
+      NcheckG.push($(this).val());
+    }
+  })
+  //add options which are missing from gene list
+  if(gSets.length>0){
+    var htmlCheck = $('#TRAKgeneGrp').html();
+    for(const g of gSets){
+      if(!optG.includes(g)){
+        htmlCheck += '<label id="TRAKck'+g+'"><input class="TRAKsets" type="checkbox" value="'+g+'" checked/>'+g+'</label>';// '+g+'
+      }
+    }
+    $('#TRAKgeneGrp').html(htmlCheck);
+  }
+  $(".TRAKsets").each(function(){
+    if(NcheckG.includes($(this).val())){
+      $(this).prop("checked",false);
+    }
+  })
+  
+  var x = document.getElementById("TRAKgrp");
+  var grps = Object.keys(window.store.getState().categoricalSelection);
+  var grpKeys = Object.keys(window.bioCombine);
+  if(grpKeys.length>0 && grps.length==x.length){
+    x.add(createOpt("Custom_combine"));
+  }else if(grpKeys.length==0 && grps.length<x.length){
+    x.remove(grps.length);
+  }
+
+}
 function EMBEDref(){
   var genes = window.store.getState().universe.varData.colIndex.rindex;
   genes = genes.concat(window.biogen);
@@ -659,6 +755,48 @@ function EMBEDref(){
       $(this).prop("checked",false);
     }
   })
+}
+function DUALref(){
+  var genes = window.store.getState().universe.varData.colIndex.rindex;
+  genes = genes.concat(window.biogen);
+  genes = [...new Set(genes)];
+  var optG = [], checkG=[];
+  //remove checkbox which are not in the gene list
+  $(".DUALgenes").each(function(){
+    optG.push($(this).val());
+    if(!genes.includes($(this).val())){
+      $('#DUALck'+$(this).val()).remove();
+    }else if($(this).prop("checked")){
+      checkG.push($(this).val());
+    }
+  })
+  //add options which are missing from gene list
+  if(genes.length>0){
+    var htmlCheck = $('#DUALgene').html();
+    for(const g of genes){
+      if(!optG.includes(g)){
+        htmlCheck += '<label id="DUALck'+g+'"><input class="DUALgenes" type="checkbox" value="'+g+'" onclick="DUALref()"/>'+g+'</label>';// '+g+'
+      }
+    }
+    $('#DUALgene').html(htmlCheck);
+  }
+  var iEnabled=0;
+  $(".DUALgenes").each(function(){
+    if(checkG.includes($(this).val())){
+      $(this).prop("checked",true);
+      iEnabled++;
+    }
+  })
+  if(iEnabled>1){
+    $(".DUALgenes").each(function(){
+      if($(this).prop("checked")==false){
+        $(this).prop("disabled",true);
+      }
+    })
+  }else{
+    $('.DUALgenes').prop("disabled",false);
+  }
+  
 }
 function DEGref(){
 
@@ -803,11 +941,15 @@ function ADDGadd(){
   var genes =  window.biogen;
   var notG = [];
   var totalG = window.store.getState().universe.varAnnotations.__columns[0];
+  var totalGlower = totalG.map(function(s){return s.toLowerCase();});
+  
   for(var i=0;i<addG.length;i++){
     var one = addG[i].trim();
-    if(one.length>1 && totalG.includes(one)){
-      if(!genes.includes(one)){
-        genes.push(one);
+    var ix = totalGlower.indexOf(one.toLowerCase());
+    if(ix !== -1){
+      var oneG = totalG[ix];
+      if(!genes.includes(oneG)){
+        genes.push(oneG);
       }
     }else{
       notG.push(one);
@@ -834,20 +976,27 @@ function ADDGsetAdd(){
     definedG = definedG.concat(window.bioGeneGrp[grpKeys[i]]);
   }
   
-  var gNames = $("#ADDGsetGene").val().split(",");
+  var gNames = $("#ADDGsetGene").val().split(/\s+|\,|\;/);
   var notG = [],geneNames=[];
   var totalG = window.store.getState().universe.varAnnotations.__columns[0];
+  var totalGlower = totalG.map(function(s){return s.toLowerCase();});
   for(var i=0;i<gNames.length;i++){
     var one = gNames[i].trim();
-    if(totalG.includes(one)&&!definedG.includes(one)){
-      geneNames.push(one);
+    var ix = totalGlower.indexOf(one.toLowerCase());
+    if(ix !== -1){
+      var oneG = totalG[ix];
+      if(!definedG.includes(oneG)){
+        geneNames.push(oneG);
+      }else{
+        notG.push(one);
+      }
     }else{
       notG.push(one);
     }
   }
   var eMsg= "";
   if(notG.length>0){
-    eMsg +="The following genes cannot be found in the data or previously defined: "+notG;
+    eMsg +="The following genes cannot be found in the data or defined in previous gene sets: "+notG;
     $("#ADDGsetError").text(eMsg);
   }
   if(geneNames.length==0){
@@ -942,7 +1091,7 @@ function SGVplot(){
   $('#SGVnote').text("Plotting on "+cells.length+" selected cells");
   var D = {'method':'SGV',
             'cells':cells,
-            'genes':$("#SGVgene option:selected").val(),
+            'genes':[$("#SGVgene option:selected").val()],
             'grp':grp,
             'abb':window.bioAbbr,
             'combine':combGrp};
@@ -1241,6 +1390,74 @@ function DOTplot(){
     }
   })
 }
+function TRAKplot(){
+  $('#TRAKerror').text("");
+  var cells=[], x = document.getElementsByClassName('TRAKcell');
+  for(i=0;i<x.length;i++){
+    if(x[i].checked){
+      if(!!window.store.getState().differential[x[i].value]){
+        if(cells.length==0){
+          cells = window.store.getState().differential[x[i].value];
+        }else{
+          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
+          tmp.set(cells);
+          tmp.set(window.store.getState().differential[x[i].value],cells.length);
+          cells = tmp;
+        }
+      }
+    }
+  }
+  if(cells.length==0){
+    $('#TRAKerror').text("Please select cells into selected groups");
+    return;
+  }
+
+  var grpKeys=[];
+  $(".TRAKsets").each(function(){
+    if($(this).prop("checked")){
+      grpKeys.push($(this).val());
+    }
+  })
+  var genes = [],selSets={};
+  for(const one of grpKeys){
+    genes = genes.concat(window.bioGeneGrp[one]);
+    selSets[one]=window.bioGeneGrp[one];
+  }
+  if(genes.length==0){
+    $('#TRAKerror').text("Please add gene sets!");
+    return;
+  }
+  
+  var grp = [$("#TRAKgrp option:selected").val()];
+  var combGrp = [];
+  if(grp[0]=="Custom_combine"){
+    grp = Object.keys(window.bioCombine);
+    combGrp = window.bioCombine;
+  }
+  var D = {'method':'TRAK',
+            'cells':cells,
+            'genes':genes,
+            'grp':grp,
+            'abb':window.bioAbbr,
+            'combine':combGrp,
+            'geneGrp':selSets};
+  $(".TRAKbt").prop('disabled',true);
+  document.getElementById("TRAKspin").style.visibility="visible";
+  $.ajax({
+    type:"POST",
+    url: "/VIP",
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(res){
+      console.log(res);
+      document.getElementById("TRAKfig").innerHTML = '<img id="TRAKpng" src="data:image/png;base64,'+res+'" width=100% height="auto"/>';// height="450" width="450"
+      $(".TRAKbt").prop("disabled",false);
+      $(".TRAKpngBT").prop('disabled',false);
+      document.getElementById("TRAKspin").style.visibility="hidden";
+    }
+  })
+  
+}
 
 function EMBEDplot(){
   $('#EMBEDnote').text("");
@@ -1309,6 +1526,64 @@ function EMBEDplot(){
     }
   })
 
+}
+
+function DUALplot(){
+  $('#DUALnote').text("");
+  var cells=[], x = document.getElementsByClassName('DUALcell');
+  for(i=0;i<x.length;i++){
+    if(x[i].checked){
+      if(!!window.store.getState().differential[x[i].value]){
+        if(cells.length==0){
+          cells = window.store.getState().differential[x[i].value];
+        }else{
+          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
+          tmp.set(cells);
+          tmp.set(window.store.getState().differential[x[i].value],cells.length);
+          cells = tmp;
+        }
+      }
+    }
+  }
+  if(cells.length==0){
+    $('#DUALnote').text("Please select cells into selected groups");
+    return;
+  }
+  
+  var genes = [];
+  $(".DUALgenes").each(function(){
+    if($(this).prop("checked")){
+      genes.push($(this).val());
+    }
+  })
+  if(genes.length!=2){
+    $('#DUALnote').text("Please select two genes to plot");
+    return;
+  }
+  
+  document.getElementById("DUALspin").style.visibility="visible";
+  $(".DUALbt").prop('disabled',true);
+  $(".DUALpngBT").prop('disabled',true);
+
+  var D = {'method':"DUAL",
+            'cells':cells,
+            'genes':genes,
+            'grp':[],
+            'layout':$("#DUALlayout option:selected").val(),
+            'cutoff':$("#DUALcutoff").val()};
+  $.ajax({
+    type:"POST",
+    url: "/VIP",
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(res){
+      document.getElementById("DUALfig").innerHTML = '<img id="DUALpng" src="data:image/png;base64,'+res+'" width=100% height="auto"/>';// height="450" width="450"
+      $(".DUALbt").prop("disabled",false);
+      $(".DUALpngBT").prop('disabled',false);
+      document.getElementById("DUALspin").style.visibility="hidden";
+    }
+  })
+  
 }
 
 </script>

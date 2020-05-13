@@ -18,17 +18,14 @@ import sys
 import pprint
 ppr = pprint.PrettyPrinter(depth=6)
 
-#sys.setrecursionlimit(10000)
+import server.app.app as app
+
+sys.setrecursionlimit(10000)
 sc.set_figure_params(dpi=150, color_map='viridis')
 sc.settings.verbosity = 2
 rcParams.update({'figure.autolayout': True})
 
 api_version = "/api/v0.2"
-
-#urlExpr = 'http://127.0.0.1:8888/api/v0.2/data/var'
-#urlGrp = 'http://127.0.0.1:8888/api/v0.2/annotations/obs'
-#urlGen = 'http://127.0.0.1:8888/api/v0.2/annotations/var'
-#urlDiff = "http://127.0.0.1:8888/api/v0.2/diffexp/obs"
 
 def route(data,appConfig=None):
   if appConfig is None:
@@ -39,6 +36,68 @@ def route(data,appConfig=None):
 
   return distributeTask(data["method"])(data)
   
+def subData(data):
+  selC = list(data['cells'].values())
+  cName = ["cell%d" %i for i in selC]
+
+  ## onbtain the expression matrix
+  gNames = []
+  X = []
+  if 'genes' in data.keys():
+    if len(data['genes'])>0:
+      with app.get_data_adaptor() as scD:
+        fullG = list(scD.data.var['name_0'])
+        selG = [fullG.index(i) for i in data['genes']]
+        X = scD.data.X[selC][:,selG]
+        gNames = data['genes']
+    else:
+      with app.get_data_adaptor() as scD:
+        X = scD.data.X[selC]
+        gNames = list(scD.data.var.index)
+  expr = expr = pd.DataFrame(X,columns=gNames,index=cName)
+
+  ## obtain the embedding
+  strEmbed = 'umap'
+  if 'layout' in data.keys():## tsne or umap
+    strEmbed = data['layout']
+  with app.get_data_adaptor() as scD:
+    embed = pd.DataFrame(scD.data.obsm['X_%s'%strEmbed][selC],columns=['%s1'%strEmbed,'%s2'%strEmbed],index=cName)
+
+  ## obtain the category annotation
+  with app.get_data_adaptor() as scD:
+    obs = scD.data.obs.loc[selC,['name_0']+data['grp']].astype('str')
+  obs.index = cName
+
+  ## update the annotation Abbreviation
+  combUpdate = cleanAbbr(data)
+  if 'abb' in data.keys():
+    for i in data['grp']:
+      obs[i] = obs[i].map(data['abb'][i])
+  obs = obs.astype('category')
+
+  ## change the gene detection number to be numeric
+  strGN = [i for i in data['grp'] if 'genes' in i]
+  if len(strGN)>0:
+    obs[strGN] = obs[strGN].apply(pd.to_numeric)
+    
+  ## create a custom annotation category and remove cells which are not in the selected annotation
+  if combUpdate and len(data['grp'])>1:
+    newGrp = 'Custom_combine'
+    obs[newGrp] = obs[data['grp'][0]]
+    for i in data['grp']:
+      if i!=data['grp'][0]:
+        obs[newGrp] += "_"+obs[i]
+    expr = expr[~obs[newGrp].str.contains("Other")]
+    embed = embed[~obs[newGrp].str.contains("Other")]
+    obs = obs[~obs[newGrp].str.contains("Other")]
+    data['grp'] = [newGrp]
+    
+  #expr.dropna()
+  #obs = obs.loc[expr.index,]
+  #embed = embed.loc[expr.index,]
+
+  return sc.AnnData(expr,obs,obsm={'X_%s'%strEmbed:embed.to_numpy()})
+
 def cleanAbbr(data):
   updated = False
   if 'abb' in data.keys() and 'combine' in data.keys():
@@ -53,9 +112,10 @@ def cleanAbbr(data):
           data['abb'][cate] = {key:"Other" for key in data['abb'][cate].keys()}
       
   return updated
-  
+
 def createData(data,seperate=False):
   #print("CreateData")
+  return subData(data)
   headers = {'content-type':'application/json'}
   if not 'genes' in data:
     data['genes'] = []
@@ -118,7 +178,9 @@ def distributeTask(aTask):
     'GD':GD,
     'DEG':DEG,
     'DOT':DOT,
-    'EMBED':EMBED
+    'EMBED':EMBED,
+    'TRAK':TRACK,
+    'DUAL':DUAL
   }.get(aTask,errorTask)
 
 def iostreamFig(fig):
@@ -173,9 +235,10 @@ def pHeatmap(data):
   # if the number of element in a category is smaller than 10, "Set1" or "Set3" is choosen
   # if the number of element in a category is between 10 and 20, default is choosen
   # if the number of element in a category is larger than 20, husl is choosen
-  Xsep = createData(data,True)
-  adata = sc.AnnData(Xsep['expr'],Xsep['obs'])
-  Xdata = pd.concat([Xsep['expr'],Xsep['obs']], axis=1, sort=False).to_csv()
+  #Xsep = createData(data,True)
+  #adata = sc.AnnData(Xsep['expr'],Xsep['obs'])
+  adata = createData(data)
+  Xdata = pd.concat([adata.to_df(),adata.obs], axis=1, sort=False).to_csv()
   
   exprOrder = True
   if data['order']!="Expression":
@@ -216,9 +279,10 @@ def pHeatmap(data):
     heatCol="vlag"
     heatCenter=0
     colTitle="column Z score"
-  g = sns.clustermap(pd.DataFrame(adata.X,index=list(adata.obs['name_0']),columns=list(adata.var.index)),
+
+  g = sns.clustermap(pd.DataFrame(adata.X,index=list(adata.obs.index),columns=list(adata.var.index)),
                      method="ward",row_cluster=exprOrder,z_score=Zscore,cmap=heatCol,center=heatCenter,
-                     row_colors=pd.concat(grpCol,axis=1),yticklabels=False,xticklabels=True,
+                     row_colors=pd.concat(grpCol,axis=1).astype('str'),yticklabels=False,xticklabels=True,
                      figsize=(w,h),colors_ratio=0.05,
                      cbar_pos=(.3, .95, .55, .02),
                      cbar_kws={"orientation": "horizontal","label": colTitle,"shrink": 0.5})
@@ -291,8 +355,9 @@ def DOT(data):
   w = ncharA/8+len(data['genes'])/2+0.5
   h = len(a)/4+0.5
   
-  fig = sc.pl.dotplot(adata,data['geneGrp'],groupby=data['grp'][0],figsize=(w,h),show=False,expression_cutoff=float(data['cutoff']))#,show=False,ax=fig.gca()
-  
+  #fig = 
+  sc.pl.dotplot(adata,data['geneGrp'],groupby=data['grp'][0],figsize=(w,h),show=False,expression_cutoff=float(data['cutoff']))#,show=False,ax=fig.gca()
+  fig = plt.gcf()
   return iostreamFig(fig)
   
 def EMBED(data):
@@ -309,9 +374,45 @@ def EMBED(data):
   if data['layout']=='tsne':
     fig = sc.pl.tsne(adata,color=data['grp']+data['genes'],wspace=wSP,ncols=3,return_fig=True,show=False)
   return iostreamFig(fig)
+  
+def TRACK(data):
+  adata = createData(data)
+  w = math.log2(adata.n_obs)
+  h = adata.n_vars/2
+  
+  ax = sc.pl.tracksplot(adata,data['geneGrp'],groupby=data['grp'][0],figsize=(w,h),show=False)
+  fig=ax[0].figure
+  return iostreamFig(fig)
+
+def cut(x,cutoff,anno):
+    iC = x[x>cutoff].count()
+    if iC ==0:
+        return "None"
+    elif iC==2:
+        return "Both"
+    elif x[0]>cutoff:
+        return anno[0]
+    elif x[1]>cutoff:
+        return anno[1]
+    return "ERROR"
+
+def DUAL(data):
+  adata = createData(data)
+  adata.obs['expred'] = adata.to_df().apply(cut,axis=1,args=(float(data['cutoff']),adata.var_names)).astype('category')
+  pCol = {"None":"#AAAAAA44","Both":"#EDDF01AA",data['genes'][0]:"#1CAF82AA",data['genes'][1]:"#FA2202AA"}
+  adata.uns["expred_colors"]=[pCol[i] for i in adata.obs['expred'].cat.categories]
+  
+  rcParams['figure.figsize'] = 4.5, 4
+  if data['layout']=='umap':
+    fig = sc.pl.umap(adata,color='expred',return_fig=True,show=False,legend_fontsize="small")
+  if data['layout']=='tsne':
+    fig = sc.pl.tsne(adata,color='expred',return_fig=True,show=False,legend_fontsize="small")
+  
+  rcParams['figure.figsize'] = 4, 4
+  return iostreamFig(fig)
 
 def version():
-  print("1.0.3")
+  print("1.0.2")
   ## 1.0.2: April 27, 2020
   ## 1. add Spinning button
   ## 2. Selection on both groups of selected cells
@@ -338,17 +439,18 @@ def version():
   ## the following is required reinstall cellxgene
   ## 7. Change "PLOTTING PANEL" to "Visulization in Plugin";
   ## 8. Change biogenInterface to VIPInterface.py, and change the ajax call to VIP instead of biogen
-
-  ## 1.0.4: not done yet
-  ## 1. update the data obtaining from ajax API to direct call by server.app.app.get_data_adaptor method
-  ## 2. Trackplot;
-  ## 3. Two gene embedding plots;
+  ## -------------------
+  ## 1.0.4: May 13, 2020
+  ## 1. Adding genes are case insensitive
+  ## 2. update the data obtaining from ajax API to direct call by server.app.app.get_data_adaptor method
+  ## 3. Trackplot;
+  ## 4. Two gene embedding plots;
+  ## ------------------
+  ## 1.0.5: not done yet
   ## 4. Visualize marker genes with download
   ## 5. DEG
 
-  
-  
-  
+
   
   
   
