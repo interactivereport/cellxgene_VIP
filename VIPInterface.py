@@ -19,6 +19,7 @@ import pprint
 ppr = pprint.PrettyPrinter(depth=6)
 
 import server.app.app as app
+import pickle
 
 sys.setrecursionlimit(10000)
 sc.set_figure_params(dpi=150, color_map='viridis')
@@ -39,7 +40,7 @@ def route(data,appConfig=None):
 def subData(data):
   selC = list(data['cells'].values())
   cName = ["cell%d" %i for i in selC]
-
+  
   ## onbtain the expression matrix
   gNames = []
   X = []
@@ -53,8 +54,8 @@ def subData(data):
     else:
       with app.get_data_adaptor() as scD:
         X = scD.data.X[selC]
-        gNames = list(scD.data.var.index)
-  expr = expr = pd.DataFrame(X,columns=gNames,index=cName)
+        gNames = list(scD.data.var["name_0"])
+  expr = pd.DataFrame(X,columns=gNames,index=cName)
 
   ## obtain the embedding
   strEmbed = 'umap'
@@ -73,13 +74,7 @@ def subData(data):
   if 'abb' in data.keys():
     for i in data['grp']:
       obs[i] = obs[i].map(data['abb'][i])
-  obs = obs.astype('category')
 
-  ## change the gene detection number to be numeric
-  strGN = [i for i in data['grp'] if 'genes' in i]
-  if len(strGN)>0:
-    obs[strGN] = obs[strGN].apply(pd.to_numeric)
-    
   ## create a custom annotation category and remove cells which are not in the selected annotation
   if combUpdate and len(data['grp'])>1:
     newGrp = 'Custom_combine'
@@ -92,10 +87,10 @@ def subData(data):
     obs = obs[~obs[newGrp].str.contains("Other")]
     data['grp'] = [newGrp]
     
-  #expr.dropna()
-  #obs = obs.loc[expr.index,]
-  #embed = embed.loc[expr.index,]
-
+  obs = obs.astype('category')
+  ## empty selection
+  if expr.shape[0]==0 or expr.shape[1]==0:
+    return []
   return sc.AnnData(expr,obs,obsm={'X_%s'%strEmbed:embed.to_numpy()})
 
 def cleanAbbr(data):
@@ -180,7 +175,9 @@ def distributeTask(aTask):
     'DOT':DOT,
     'EMBED':EMBED,
     'TRAK':TRACK,
-    'DUAL':DUAL
+    'DUAL':DUAL,
+    'MARK': MARK,
+    'MINX':MINX
   }.get(aTask,errorTask)
 
 def iostreamFig(fig):
@@ -190,11 +187,26 @@ def iostreamFig(fig):
   figD.close()
   plt.close('all')
   return imgD
+  
+def Msg(msg):
+  fig = plt.figure(figsize=(5,2))
+  plt.text(0,0.5,msg)
+  ax = plt.gca()
+  ax.axis('off')
+  return iostreamFig(fig)
+
+def MINX(data):
+  with app.get_data_adaptor() as scD:
+    minV = min(scD.data.X[0])
+  return '%.1f'%minV
 
 def SGV(data):
   # figure width and heights depends on number of unique categories
   # characters of category names, gene number
   adata = createData(data)
+  if len(adata)==0:
+    return Msg('No cells in the condition!')
+
   a = list(set(list(adata.obs[data['grp'][0]])))
   ncharA = max([len(x) for x in a])
   w = len(a)/4+1
@@ -211,6 +223,8 @@ def PGV(data):
   # figure width and heights depends on number of unique categories
   # characters of category names, gene number
   adata = createData(data)
+  if len(adata)==0:
+    return Msg('No cells in the condition!')
   a = list(set(list(adata.obs[data['grp'][0]])))
   ncharA = max([len(x) for x in a])
   w = ncharA/8+len(data['genes'])/2+0.5
@@ -278,7 +292,7 @@ def pHeatmap(data):
     Zscore=1
     heatCol="vlag"
     heatCenter=0
-    colTitle="Z score"
+    colTitle="column Z score"
 
   g = sns.clustermap(pd.DataFrame(adata.X,index=list(adata.obs.index),columns=list(adata.var.index)),
                      method="ward",row_cluster=exprOrder,z_score=Zscore,cmap=heatCol,center=heatCenter,
@@ -318,10 +332,10 @@ def GD(data):
   adata = None;
   for one in data['cells'].keys():
     oneD = {'cells':data['cells'][one],
-            'grp':data['grp'],
-            'url':data['url']}
+            'genes':[],
+            'grp':[]}
     D = createData(oneD)
-    D.obs['grp'] = one
+    D.obs['cellGrp'] = one
     if adata is None:
       adata = D
     else:
@@ -329,11 +343,15 @@ def GD(data):
   if adata is None:
     return ""
   ##
+  adata.obs.astype('category')
+  cutOff = 'geneN'+data['cutoff']
+  adata.obs[cutOff] = adata.to_df().apply(lambda x: sum(x>float(data['cutoff'])),axis=1)
+  ##
   w = 3
   if len(data['cells'])>1:
     w += 3
   fig = plt.figure(figsize=[w,4])
-  sc.pl.violin(adata,data['grp'],groupby='grp',ax=fig.gca(),show=False,rotation=0,size=2)
+  sc.pl.violin(adata,cutOff,groupby='cellGrp',ax=fig.gca(),show=False,rotation=0,size=2)
   return iostreamFig(fig)
 
 def DEG(data):
@@ -349,6 +367,8 @@ def DEG(data):
   
 def DOT(data):
   adata = createData(data)
+  if len(adata)==0:
+    return Msg('No cells in the condition!')
   #return adata
   a = list(set(list(adata.obs[data['grp'][0]])))
   ncharA = max([len(x) for x in a])
@@ -362,21 +382,32 @@ def DOT(data):
   
 def EMBED(data):
   adata = createData(data)
-  grpWD = 0
-  for gID in data['grp']:
-      grp = adata.obs[gID]
-      Ugrp = grp.unique()
-      grpWD = max([grpWD]+[len(x) for x in Ugrp])
-  wSP = grpWD/3*0.1
+  subSize = 4
+  ncol = int(data['ncol'])
+  ngrp = len(data['grp'])
+  ngene = len(data['genes'])
+  nrow = ngrp+math.ceil(ngene/ncol)
   
-  if data['layout']=='umap':
-    fig = sc.pl.umap(adata,color=data['grp']+data['genes'],wspace=wSP,ncols=3,return_fig=True,show=False)
-  if data['layout']=='tsne':
-    fig = sc.pl.tsne(adata,color=data['grp']+data['genes'],wspace=wSP,ncols=3,return_fig=True,show=False)
+  step =11
+  grpCol = {gID:math.ceil(len(list(adata.obs[gID].unique()))/step) for gID in data['grp']}
+  
+  fig = plt.figure(figsize=(ncol*subSize,subSize*nrow))
+  gs = fig.add_gridspec(nrow,ncol)
+  for i in range(ngrp):
+      ax = sc.pl.umap(adata,color=data['grp'][i],ax=fig.add_subplot(gs[i,0]),show=False)
+      if grpCol[data['grp'][i]]>3:
+          ax.legend(ncol=grpCol[data['grp'][i]],loc=6,bbox_to_anchor=(1,0.5),frameon=False)
+  for i in range(ngene):
+      x = int(i/ncol)+ngrp
+      y = i % ncol
+      sc.pl.umap(adata,color=data['genes'][i],ax=fig.add_subplot(gs[x,y]),show=False)
+
   return iostreamFig(fig)
   
 def TRACK(data):
   adata = createData(data)
+  if len(adata)==0:
+    return Msg('No cells in the condition!')
   w = math.log2(adata.n_obs)
   h = adata.n_vars/2
   
@@ -398,18 +429,50 @@ def cut(x,cutoff,anno):
 
 def DUAL(data):
   adata = createData(data)
-  adata.obs['expred'] = adata.to_df().apply(cut,axis=1,args=(float(data['cutoff']),adata.var_names)).astype('category')
+  adata.obs['Expressed'] = adata.to_df().apply(cut,axis=1,args=(float(data['cutoff']),adata.var_names)).astype('category')
   pCol = {"None":"#AAAAAA44","Both":"#EDDF01AA",data['genes'][0]:"#1CAF82AA",data['genes'][1]:"#FA2202AA"}
-  adata.uns["expred_colors"]=[pCol[i] for i in adata.obs['expred'].cat.categories]
+  adata.uns["Expressed_colors"]=[pCol[i] for i in adata.obs['Expressed'].cat.categories]
   
   rcParams['figure.figsize'] = 4.5, 4
   if data['layout']=='umap':
-    fig = sc.pl.umap(adata,color='expred',return_fig=True,show=False,legend_fontsize="small")
+    fig = sc.pl.umap(adata,color='Expressed',return_fig=True,show=False,legend_fontsize="small")
   if data['layout']=='tsne':
-    fig = sc.pl.tsne(adata,color='expred',return_fig=True,show=False,legend_fontsize="small")
+    fig = sc.pl.tsne(adata,color='Expressed',return_fig=True,show=False,legend_fontsize="small")
   
   rcParams['figure.figsize'] = 4, 4
   return iostreamFig(fig)
+
+def MARK(data):
+  adata = createData(data)
+  if len(adata)==0:
+    return Msg('No cells in the condition!')
+  ## remove the annotation whose cell counts are smaller than 2 to avoid division by zero
+  vCount = adata.obs[data["grp"][0]].value_counts()
+  keepG = [key for key,val in vCount.items() if val>2]
+  adata = adata[adata.obs[data["grp"][0]].isin(keepG),:]
+    
+  sc.tl.rank_genes_groups(adata,groupby=data["grp"][0],n_genes=int(data['geneN']),method=data['markMethod'])
+  sc.pl.rank_genes_groups(adata,n_genes=int(data['geneN']),ncols=3,show=False)
+  fig =plt.gcf()
+  
+  gScore = adata.uns['rank_genes_groups']
+  #ppr.pprint(gScore)
+  pKeys = [i for i in ['names','scores','logfoldchanges','pvals','pvals_adj'] if i in gScore.keys()]
+  scoreM = [pKeys+['Group']]
+  for i in gScore['scores'].dtype.names:
+    for j in range(len(gScore['scores'][i])):
+      one = []
+      for k in pKeys:
+        if k=='logfoldchanges':
+          one += ['%.2f' % gScore[k][i][j]]
+        elif k in ['pvals','pvals_adj']:
+          one += ['%.4E' % gScore[k][i][j]]
+        elif k=='scores':
+          one += ['%.4f' % gScore[k][i][j]]
+        else:
+          one += [gScore[k][i][j]]
+      scoreM += [one+[i]]
+  return json.dumps([scoreM,iostreamFig(fig)])
 
 def version():
   print("1.0.2")
@@ -446,11 +509,22 @@ def version():
   ## 3. Trackplot;
   ## 4. Two gene embedding plots;
   ## ------------------
-  ## 1.0.5: not done yet
-  ## 4. Visualize marker genes with download
-  ## 5. DEG
+  ## 1.0.5: May 15, 2020
+	## 1. Used “annotation” instead of group consistently across VIP;
+	## 2. Removed "',' separated" from adding gene groups;
+	## 3. Set the minimal value for gene expression in dual gene and dot plots
+	## 4. Added a button to create Combine Annotation which can only be changed in "Combine & Abbr" tab
+	## 5. Initialized the panel with full load main page by detecting the category number in window.store is NOT increased in 0.5 second interval
+	## 6. Updated the gene detection plot with cut-off instead of pre-calculation
+  ## 7. Change the location of the menu button from the top to the left side due to too many buttons;	
+	## 8. Visualize marker genes with download;
+	## 9. Fixed the tSNE/UMAP annotation legend is too wide by each annotation is in separated row while the number of gene plots per row is specified by user.
+	##------------------------------
+	## 1.0.6: not done yet
+	## 1. DEG (it seems like I have difficulty to install/import diffxpy and I submitted an issue: https://github.com/theislab/diffxpy/issues/158);
+	## 2. Save all user current information into file and load from a file;
 
-
+  
   
   
   
