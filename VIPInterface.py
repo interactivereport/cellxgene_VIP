@@ -292,7 +292,7 @@ def pHeatmap(data):
     Zscore=1
     heatCol="vlag"
     heatCenter=0
-    colTitle="column Z score"
+    colTitle="Z score"
 
   g = sns.clustermap(pd.DataFrame(adata.X,index=list(adata.obs.index),columns=list(adata.var.index)),
                      method="ward",row_cluster=exprOrder,z_score=Zscore,cmap=heatCol,center=heatCenter,
