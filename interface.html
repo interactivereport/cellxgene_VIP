@@ -71,7 +71,7 @@
       }
       .loading {
           width: 50%;
-          height: 100%;
+          height: auto;
           position: relative;
       }
       .loading-wheel {
@@ -215,12 +215,12 @@
       <p><button class="GDbt" onclick="GDplot()"><b>Plot</b></button></p>
       <p id="GDnote" style="color:red;"></p>
       <div id="GDspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div style="text-align: center; width: 70%">
+      <div style="text-align: center;">
         <button onclick="ZoomIn('GDresize')">Zoom In</button>
         <button onclick="ZoomOut('GDresize')">Zoom Out</button>
         <button class="GDpngBT" onclick="savePNG('GDpng')" disabled>Save</button>
       </div>
-      <div id="GDresize" style="width: 70%; height: 'auto'; padding: 0.5em; border: 1px solid #984ea3">
+      <div id="GDresize" style="height:'auto'; padding: 0.5em; border: 1px solid #984ea3">
         <p id="GDfig"></p></div>
     </div><!--GD-->
     
@@ -244,12 +244,12 @@
       <div id="MARKspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       
       <table id="MARKtable" class="display"></table>
-      <div style="text-align: center; width: 70%">
+      <div style="text-align: center;">
         <button onclick="ZoomIn('MARKresize')">Zoom In</button>
         <button onclick="ZoomOut('MARKresize')">Zoom Out</button>
         <button class="MARKpngBT" onclick="savePNG('MARKpng')" disabled>Save</button>
       </div>
-      <div id="MARKresize" style="width: 70%; height: 'auto'">
+      <div id="MARKresize" style="height:'auto'">
         <p id="MARKfig"></p>
       </div>
     </div> <!--MARK-->
@@ -267,12 +267,12 @@
       <button class="SGVbt" onclick="SGVplot()"><b>Plot</b></button>
       <p id="SGVnote" style="color:red;"></p>
       <div id="SGVspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div style="text-align: center; width: 70%">
+      <div style="text-align: center;">
         <button onclick="ZoomIn('SGVresize')">Zoom In</button>
         <button onclick="ZoomOut('SGVresize')">Zoom Out</button>
         <button class="SGVpngBT" onclick="savePNG('SGVpng')" disabled>Save</button>
       </div>
-      <div id="SGVresize" style="width: 70%; height: 'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="SGVfig"></p></div>
+      <div id="SGVresize" style="height:'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="SGVfig"></p></div>
     </div><!--SGV-->
     
     <div id="PGV" class="tabcontent">
@@ -293,12 +293,12 @@
       <p><button class="PGVbt"  onclick="PGVplot()"><b>Plot</b></button></p>
       <p id="PGVnote" style="color:red;"></p>
       <div id="PGVspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div style="text-align: center; width: 70%">
+      <div style="text-align: center;">
         <button onclick="ZoomIn('PGVresize')">Zoom In</button>
         <button onclick="ZoomOut('PGVresize')">Zoom Out</button>
         <button class="PGVpngBT" onclick="savePNG('PGVpng')" disabled>Save</button>
       </div>
-      <div id="PGVresize" style="width: 70%; height: 'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="PGVfig"></p></div>
+      <div id="PGVresize" style="height:'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="PGVfig"></p></div>
     </div><!--PGV-->
     
     <div id="HEAT" class="tabcontent">
@@ -321,13 +321,13 @@
       <p><button class="HEATbt"  onclick="HEATplot()"><b>Plot</b></button></p>
       <p id="HEATnote" style="color:red;"></p>
       <div id="HEATspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div style="text-align: center; width: 70%">
+      <div style="text-align: center;">
         <button onclick="ZoomIn('HEATresize')">Zoom In</button>
         <button onclick="ZoomOut('HEATresize')">Zoom Out</button>
         <button class="HEATpngBT" onclick="savePNG('HEATpng')" disabled>Save</button>
         <button class="HEATsaveBT" onclick="HEATsave()" disabled>Data</button>
       </div>
-      <div id="HEATresize" style="width: 70%; height: 'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="HEATfig"></p></div>
+      <div id="HEATresize" style="height:'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="HEATfig"></p></div>
       <div id="HEATdata" style="visibility: hidden;"></div>
     
     </div><!--HEAT-->
@@ -343,12 +343,12 @@
       <p id="DOTerror" style="color:red;"></p>
       <p><button onclick="DOTplot()"><b>Plot</b></button></p>
       <div id="DOTspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div style="text-align: center; width: 70%">
+      <div style="text-align: center;">
         <button onclick="ZoomIn('DOTresize')">Zoom In</button>
         <button onclick="ZoomOut('DOTresize')">Zoom Out</button>
         <button class="DOTpngBT" onclick="savePNG('DOTpng')" disabled>Save</button>
       </div>
-      <div id="DOTresize" style="width: 70%; height: 'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="DOTfig"></p></div>
+      <div id="DOTresize" style="height:'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="DOTfig"></p></div>
     
     </div><!--DOT-->
     
@@ -373,12 +373,12 @@
       <p><button class="EMBEDbt"  onclick="EMBEDplot()"><b>Plot</b></button></p>
       <p id="EMBEDnote" style="color:red;"></p>
       <div id="EMBEDspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div style="text-align: center; width: 70%">
+      <div style="text-align: center;">
         <button onclick="ZoomIn('EMBEDresize')">Zoom In</button>
         <button onclick="ZoomOut('EMBEDresize')">Zoom Out</button>
         <button class="EMBEDpngBT" onclick="savePNG('EMBEDpng')" disabled>Save</button>
       </div>
-      <div id="EMBEDresize" style="width: 70%; height: 'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="EMBEDfig"></p></div>
+      <div id="EMBEDresize" style="height:'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="EMBEDfig"></p></div>
     
     </div><!--EMBED-->
     
@@ -393,12 +393,12 @@
       <p id="TRAKerror" style="color:red;"></p>
       <p><button onclick="TRAKplot()"><b>Plot</b></button></p>
       <div id="TRAKspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div style="text-align: center; width: 70%">
+      <div style="text-align: center;">
         <button onclick="ZoomIn('TRAKresize')">Zoom In</button>
         <button onclick="ZoomOut('TRAKresize')">Zoom Out</button>
         <button class="TRAKpngBT" onclick="savePNG('TRAKpng')" disabled>Save</button>
       </div>
-      <div id="TRAKresize" style="width: 70%; height: 'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="TRAKfig"></p></div>
+      <div id="TRAKresize" style="height:'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="TRAKfig"></p></div>
     
     </div><!--TRAK-->
       
@@ -421,12 +421,12 @@
       <p><button class="DUALbt"  onclick="DUALplot()"><b>Plot</b></button></p>
       <p id="DUALnote" style="color:red;"></p>
       <div id="DUALspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div style="text-align: center; width: 70%">
+      <div style="text-align: center;">
         <button onclick="ZoomIn('DUALresize')">Zoom In</button>
         <button onclick="ZoomOut('DUALresize')">Zoom Out</button>
         <button class="DUALpngBT" onclick="savePNG('DUALpng')" disabled>Save</button>
       </div>
-      <div id="DUALresize" style="width: 70%; height: 'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="DUALfig"></p></div>
+      <div id="DUALresize" style="height:'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="DUALfig"></p></div>
       
     </div><!--DUAL-->
     
@@ -445,7 +445,7 @@
       <p><button class="DEGbt" onclick="DEGfind()"><b>Find</b></button></p>
       <p id="DEGnote" style="color:red;"></p>
       <div id="DEGspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div id="DEGresize" style="width: 70%; height: 'auto'">
+      <div id="DEGresize" style="height:'auto'">
         <table id="DEGtable" class="display"></table>
       </div>
     </div><!--DEG-->
