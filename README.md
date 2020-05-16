@@ -23,3 +23,7 @@ conda create -n <env name> python=3.7
 cellxgene launch ...h5ad --host ... -p ... --disable-annotations
 ```
 *note: while spinning up the cellxgene from HPC, do **NOT** use qlogin. **ssh directly to the server**.*
+
+# Updating
+## update.index_template.sh if jsPanel is modified, seldom.
+## update.VIPInterface.sh if interface.html or VIPInterface.py is changed, often.
