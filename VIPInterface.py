@@ -238,14 +238,15 @@ def PGV(data):
     swapAx = True
 
   # groupby_plots branch
-  vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=[w,h],swap_axes=swapAx)
-  vp.add_totals().style(yticklabels=True).show()
-  print(vp.get_axes())
-  #vp.get_axes()['mainplot_ax'].tick_params(axis='y',which='major',labelsize=20)
-  #for ax in vp.get_axes():
-    #ax.tick_params(axis='y',which='major',labelsize=7)
-  fig = plt.gcf()
-  return iostreamFig(fig)
+  if (sc.__version__ == '1.4.7.dev140+ge9cbc5f'):
+    vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=[w,h],swap_axes=swapAx)
+    vp.add_totals().style(yticklabels=True).show()
+    print(vp.get_axes())
+    #vp.get_axes()['mainplot_ax'].tick_params(axis='y',which='major',labelsize=20)
+    #for ax in vp.get_axes():
+      #ax.tick_params(axis='y',which='major',labelsize=7)
+    fig = plt.gcf()
+    return iostreamFig(fig)
 
   fig = plt.figure(figsize=[w,h])
   axes = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],show=False,ax=fig.gca(),swap_axes=swapAx)
@@ -386,10 +387,11 @@ def DOT(data):
   h = len(a)/4+0.5
   
   # groupby_plots branch
-  dp = sc.pl.dotplot(adata,data['geneGrp'],groupby=data['grp'][0],figsize=(w,h),return_fig=True,expression_cutoff=float(data['cutoff']))
-  dp.add_totals(size=0.5).legend(width=1.6, show_size_legend=True).style(cmap='Blues', dot_edge_color='black', dot_edge_lw=1, size_exponent=1.5).show()
-  fig = plt.gcf()
-  return iostreamFig(fig)
+  if (sc.__version__ == '1.4.7.dev140+ge9cbc5f'):
+    dp = sc.pl.dotplot(adata,data['geneGrp'],groupby=data['grp'][0],figsize=(w,h),return_fig=True,expression_cutoff=float(data['cutoff']))
+    dp.add_totals(size=0.5).legend(width=1.6, show_size_legend=True).style(cmap='Blues', dot_edge_color='black', dot_edge_lw=1, size_exponent=1.5).show()
+    fig = plt.gcf()
+    return iostreamFig(fig)
 
   #fig = 
   sc.pl.dotplot(adata,data['geneGrp'],groupby=data['grp'][0],figsize=(w,h),show=False,expression_cutoff=float(data['cutoff']))#,show=False,ax=fig.gca()
