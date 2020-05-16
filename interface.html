@@ -11,7 +11,7 @@
         display: block;
         width: 100%;
         border: none;
-        background-color: #984ea3;
+        background-color: #B6B6B6;
         color: white;
         padding: 4px 28px;
         font-size: 18px;
@@ -41,7 +41,7 @@
         border: none;
         outline: none;
         cursor: pointer;
-        padding: 5px 16px;
+        padding: 5px 10px;
         transition: 0.3s;
       }
       .tab button:hover {
@@ -57,8 +57,8 @@
         height:100%;
         
         display: none;
-        padding: 0px 20px;
-        border: 1px solid #ccc;
+        padding: 0px 10px;
+        // border: 1px solid #ccc;
       }
       h3 {
         display: block;
@@ -144,7 +144,8 @@
         padding: 0px;
         width: 100%;
         height: 100%;
-      }
+      }  
+      input,textarea{ font-size: 16px; }
     </style>
   </head>
 <body>
@@ -189,7 +190,7 @@
     
     <div id="ADDG" class="tabcontent">
       <h3>Add genes of interest for plotting</h3>
-      <p>Please paste the gene list:</p>
+      <p>Please input the gene list:</p>
       <p><textarea id="ADDGinput" rows="5" cols="70"></textarea></p>
       <p><button onclick="ADDGadd()"><b>Add</b></button></p>
       <p>The following genes were selected: <span id="ADDGsel"></span></p>
@@ -220,7 +221,7 @@
         <button onclick="ZoomOut('GDresize')">Zoom Out</button>
         <button class="GDpngBT" onclick="savePNG('GDpng')" disabled>Save</button>
       </div>
-      <div id="GDresize" style="height:'auto'; padding: 0.5em; border: 1px solid #984ea3">
+      <div id="GDresize" style="height:'auto'; padding: 0.5em; border: 1px solid #B6B6B6">
         <p id="GDfig"></p></div>
     </div><!--GD-->
     
@@ -272,7 +273,7 @@
         <button onclick="ZoomOut('SGVresize')">Zoom Out</button>
         <button class="SGVpngBT" onclick="savePNG('SGVpng')" disabled>Save</button>
       </div>
-      <div id="SGVresize" style="height:'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="SGVfig"></p></div>
+      <div id="SGVresize" style="height:'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="SGVfig"></p></div>
     </div><!--SGV-->
     
     <div id="PGV" class="tabcontent">
@@ -298,7 +299,7 @@
         <button onclick="ZoomOut('PGVresize')">Zoom Out</button>
         <button class="PGVpngBT" onclick="savePNG('PGVpng')" disabled>Save</button>
       </div>
-      <div id="PGVresize" style="height:'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="PGVfig"></p></div>
+      <div id="PGVresize" style="height:'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="PGVfig"></p></div>
     </div><!--PGV-->
     
     <div id="HEAT" class="tabcontent">
@@ -327,7 +328,7 @@
         <button class="HEATpngBT" onclick="savePNG('HEATpng')" disabled>Save</button>
         <button class="HEATsaveBT" onclick="HEATsave()" disabled>Data</button>
       </div>
-      <div id="HEATresize" style="height:'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="HEATfig"></p></div>
+      <div id="HEATresize" style="height:'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="HEATfig"></p></div>
       <div id="HEATdata" style="visibility: hidden;"></div>
     
     </div><!--HEAT-->
@@ -348,7 +349,7 @@
         <button onclick="ZoomOut('DOTresize')">Zoom Out</button>
         <button class="DOTpngBT" onclick="savePNG('DOTpng')" disabled>Save</button>
       </div>
-      <div id="DOTresize" style="height:'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="DOTfig"></p></div>
+      <div id="DOTresize" style="height:'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="DOTfig"></p></div>
     
     </div><!--DOT-->
     
@@ -378,7 +379,7 @@
         <button onclick="ZoomOut('EMBEDresize')">Zoom Out</button>
         <button class="EMBEDpngBT" onclick="savePNG('EMBEDpng')" disabled>Save</button>
       </div>
-      <div id="EMBEDresize" style="height:'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="EMBEDfig"></p></div>
+      <div id="EMBEDresize" style="height:'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="EMBEDfig"></p></div>
     
     </div><!--EMBED-->
     
@@ -398,7 +399,7 @@
         <button onclick="ZoomOut('TRAKresize')">Zoom Out</button>
         <button class="TRAKpngBT" onclick="savePNG('TRAKpng')" disabled>Save</button>
       </div>
-      <div id="TRAKresize" style="height:'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="TRAKfig"></p></div>
+      <div id="TRAKresize" style="height:'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="TRAKfig"></p></div>
     
     </div><!--TRAK-->
       
@@ -426,7 +427,7 @@
         <button onclick="ZoomOut('DUALresize')">Zoom Out</button>
         <button class="DUALpngBT" onclick="savePNG('DUALpng')" disabled>Save</button>
       </div>
-      <div id="DUALresize" style="height:'auto'; padding: 0.5em; border: 1px solid #984ea3"><p id="DUALfig"></p></div>
+      <div id="DUALresize" style="height:'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="DUALfig"></p></div>
       
     </div><!--DUAL-->
     
