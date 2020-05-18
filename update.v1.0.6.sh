@@ -21,5 +21,6 @@ pip install git+https://github.com/theislab/scanpy.git@groupby_plots
 
 cp VIPInterface.py $strPath/server/app/.
 cp interface.html $strPath/server/common/web/static/.
+cp color_map.png $strPath/server/common/web/static/.
 
 echo "Updating finished!"
