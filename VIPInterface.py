@@ -4,6 +4,7 @@ import server.app.decode_fbs as decode_fbs
 import scanpy as sc
 import pandas as pd
 import numpy as np
+import diffxpy.api as de
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
@@ -22,7 +23,6 @@ import server.app.app as app
 import pickle
 
 sys.setrecursionlimit(10000)
-sc.set_figure_params(dpi=150, color_map='viridis')
 sc.settings.verbosity = 2
 rcParams.update({'figure.autolayout': True})
 
@@ -34,9 +34,16 @@ def route(data,appConfig=None):
   else:
     data = json.loads(str(data,encoding='utf-8'))
     data["url"] = f'http://{appConfig.server__host}:{appConfig.server__port}/{api_version}'
-
-  return distributeTask(data["method"])(data)
   
+  if 'figOpt' in data.keys():
+    setFigureOpt(data['figOpt'])
+  
+  return distributeTask(data["method"])(data)
+
+def setFigureOpt(opt):
+  sc.set_figure_params(dpi_save=int(opt['dpi']),fontsize= int(opt['fontsize']),vector_friendly=(opt['vectorFriendly']=='true'),transparent=(opt['transparent']=='true'),color_map=opt['colorMap'])
+  rcParams.update({'savefig.format':opt['img']})
+
 def subData(data):
   selC = list(data['cells'].values())
   cName = ["cell%d" %i for i in selC]
@@ -91,6 +98,7 @@ def subData(data):
   ## empty selection
   if expr.shape[0]==0 or expr.shape[1]==0:
     return []
+  
   return sc.AnnData(expr,obs,obsm={'X_%s'%strEmbed:embed.to_numpy()})
 
 def cleanAbbr(data):
@@ -182,8 +190,8 @@ def distributeTask(aTask):
 
 def iostreamFig(fig):
   figD = BytesIO()
-  fig.savefig(figD,format='png',bbox_inches="tight")
-  imgD = base64.encodestring(figD.getvalue()).decode("utf-8")
+  fig.savefig(figD,bbox_inches="tight")
+  imgD = base64.encodebytes(figD.getvalue()).decode("utf-8")
   figD.close()
   plt.close('all')
   return imgD
@@ -199,11 +207,26 @@ def MINX(data):
   with app.get_data_adaptor() as scD:
     minV = min(scD.data.X[0])
   return '%.1f'%minV
+  
+def geneFiltering(adata,cutoff,opt):
+  ## 1. remove cells if the max expression of all genes is lower than the cutoff
+  if opt==1:
+    ix = adata.to_df().apply(lambda x: max(x)>float(cutoff),axis=1)
+    adata = adata[ix,]
+  ## 2. Set all expression level smaller than the cutoff to be NaN not for plotting without removing any cells
+  elif opt==2:
+    def cutoff(x):
+        return x if x>float(cutoff) else None
+    X = adata.to_df()
+    X=X.applymap(cutoff)
+    adata = sc.AnnData(X,adata.obs)
+  return adata
 
 def SGV(data):
   # figure width and heights depends on number of unique categories
   # characters of category names, gene number
   adata = createData(data)
+  adata = geneFiltering(adata,data['cutoff'],1)
   if len(adata)==0:
     return Msg('No cells in the condition!')
 
@@ -223,6 +246,7 @@ def PGV(data):
   # figure width and heights depends on number of unique categories
   # characters of category names, gene number
   adata = createData(data)
+  adata = geneFiltering(adata,data['cutoff'],1)
   if len(adata)==0:
     return Msg('No cells in the condition!')
   a = list(set(list(adata.obs[data['grp'][0]])))
@@ -237,21 +261,14 @@ def PGV(data):
     h = a
     swapAx = True
 
-  # groupby_plots branch
-  if (sc.__version__ == '1.4.7.dev140+ge9cbc5f'):
-    vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=[w,h],swap_axes=swapAx)
+  if '1.4.7' in sc.__version__:
+    vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=(w,h),swap_axes=swapAx)
     vp.add_totals().style(yticklabels=True).show()
-    print(vp.get_axes())
-    #vp.get_axes()['mainplot_ax'].tick_params(axis='y',which='major',labelsize=20)
-    #for ax in vp.get_axes():
-      #ax.tick_params(axis='y',which='major',labelsize=7)
     fig = plt.gcf()
-    return iostreamFig(fig)
+  else:
+    fig = plt.figure(figsize=[w,h])
+    axes = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],show=False,ax=fig.gca(),swap_axes=swapAx)
 
-  fig = plt.figure(figsize=[w,h])
-  axes = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],show=False,ax=fig.gca(),swap_axes=swapAx)
-  for ax in axes:
-    ax.tick_params(axis='y',which='major',labelsize=7)
   return iostreamFig(fig)
   
 def pHeatmap(data):
@@ -303,7 +320,7 @@ def pHeatmap(data):
     Zscore=1
     heatCol="vlag"
     heatCenter=0
-    colTitle="Z score"
+    colTitle="column Z score"
 
   g = sns.clustermap(pd.DataFrame(adata.X,index=list(adata.obs.index),columns=list(adata.var.index)),
                      method="ward",row_cluster=exprOrder,z_score=Zscore,cmap=heatCol,center=heatCenter,
@@ -352,7 +369,7 @@ def GD(data):
     else:
       adata = adata.concatenate(D)
   if adata is None:
-    return ""
+    return Msg("No cells were satisfied the condition!")
   ##
   adata.obs.astype('category')
   cutOff = 'geneN'+data['cutoff']
@@ -366,38 +383,59 @@ def GD(data):
   return iostreamFig(fig)
 
 def DEG(data):
-  res = requests.get('%s/annotations/var' % data["url"],params={'annotation-name':'name_0'})
-  gNames = decode_fbs.decode_matrix_FBS(res.content)['columns'][0]
-  fil = json.dumps({"mode":"topN","count":int(data['topN']),
-                  "set1":{"filter":{"obs":{"index":list(data['cells']['group1'].values())}}},
-                  "set2":{"filter":{"obs":{"index":list(data['cells']['group2'].values())}}}})
-  res = requests.post('%s/diffexp/obs' % data["url"],fil,headers={'content-type':'application/json'})
-  data = json.loads(res.content)
-  diff = [[gNames[data[i][0]]]+['%.2f' % data[i][1]]+['%.4E' % data[i][j] for j in range(2,len(data[i]))] for i in range(len(data))]
-  return json.dumps(diff)
+  adata = None;
+  for one in data['cells'].keys():
+    oneD = {'cells':data['cells'][one],
+            'genes':[],
+            'grp':[]}
+    D = createData(oneD)
+    D.obs['cellGrp'] = one
+    if adata is None:
+      adata = D
+    else:
+      adata = adata.concatenate(D)
+  if adata is None:
+    return Msg("No cells were satisfied the condition!")
   
+  adata.obs.astype('category')
+  nm = None
+  if data['DEmethod']=='wald': 
+    nm = 'nb'
+  res = de.test.two_sample(adata,'cellGrp',test=data['DEmethod'],noise_model=nm)
+  deg = res.summary()
+  deg = deg.sort_values(by=['qval']).loc[:,['gene','log2fc','pval','qval']]
+  deg = deg.iloc[range(int(data['topN'])),]
+  deg.loc[:,'log2fc'] = deg.loc[:,'log2fc'].apply(lambda x: '%.2f'%x)
+  deg.loc[:,'pval'] = deg.loc[:,'pval'].apply(lambda x: '%.4E'%x)
+  deg.loc[:,'qval'] = deg.loc[:,'qval'].apply(lambda x: '%.4E'%x)
+  
+  return json.dumps(deg.values.tolist())
+
 def DOT(data):
   adata = createData(data)
   if len(adata)==0:
     return Msg('No cells in the condition!')
   #return adata
-  a = list(set(list(adata.obs[data['grp'][0]])))
-  ncharA = max([len(x) for x in a])
-  w = ncharA/8+len(data['genes'])/2+0.5
-  h = len(a)/4+0.5
+  grp = adata.obs[data['grp'][0]].unique()
+  if len(grp)<10:
+      col = np.array(sns.color_palette('Set1',len(grp)).as_hex())
+  elif len(grp)<20:
+      col = np.array(sns.color_palette(n_colors=len(grp)).as_hex())
+  else:
+      col = np.array(sns.color_palette("husl",len(grp)).as_hex())
+  adata.uns[data['grp'][0]+'_colors'] = col
   
-  # groupby_plots branch
-  if (sc.__version__ == '1.4.7.dev140+ge9cbc5f'):
-    dp = sc.pl.dotplot(adata,data['geneGrp'],groupby=data['grp'][0],figsize=(w,h),return_fig=True,expression_cutoff=float(data['cutoff']))
-    dp.add_totals(size=0.5).legend(width=1.6, show_size_legend=True).style(cmap='Blues', dot_edge_color='black', dot_edge_lw=1, size_exponent=1.5).show()
+  if '1.4.7' in sc.__version__:
+    dp = sc.pl.dotplot(adata,data['geneGrp'],groupby=data['grp'][0],expression_cutoff=float(data['cutoff']),return_fig=True)#
+    dp = dp.add_totals(size=1.2).legend(show_size_legend=True).style(cmap='Blues', dot_edge_color='black', dot_edge_lw=1, size_exponent=1.5)
+    dp.show()
+    fig = dp.get_axes()['mainplot_ax'].figure
+  else:
+    sc.pl.dotplot(adata,data['geneGrp'],groupby=data['grp'][0],figsize=(w,h),show=False,expression_cutoff=float(data['cutoff']))
     fig = plt.gcf()
-    return iostreamFig(fig)
 
-  #fig = 
-  sc.pl.dotplot(adata,data['geneGrp'],groupby=data['grp'][0],figsize=(w,h),show=False,expression_cutoff=float(data['cutoff']))#,show=False,ax=fig.gca()
-  fig = plt.gcf()
   return iostreamFig(fig)
-  
+
 def EMBED(data):
   adata = createData(data)
   subSize = 4
@@ -409,16 +447,17 @@ def EMBED(data):
   step =11
   grpCol = {gID:math.ceil(len(list(adata.obs[gID].unique()))/step) for gID in data['grp']}
   
+  rcParams['figure.constrained_layout.use'] = False
   fig = plt.figure(figsize=(ncol*subSize,subSize*nrow))
-  gs = fig.add_gridspec(nrow,ncol)
+  gs = fig.add_gridspec(nrow,ncol,wspace=0.2)
   for i in range(ngrp):
-      ax = sc.pl.umap(adata,color=data['grp'][i],ax=fig.add_subplot(gs[i,0]),show=False)
-      if grpCol[data['grp'][i]]>3:
+      ax = getattr(sc.pl,data['layout'])(adata=adata,color=data['grp'][i],ax=fig.add_subplot(gs[i,0]),wspace=0.25,show=False)
+      if grpCol[data['grp'][i]]>1:
           ax.legend(ncol=grpCol[data['grp'][i]],loc=6,bbox_to_anchor=(1,0.5),frameon=False)
   for i in range(ngene):
       x = int(i/ncol)+ngrp
       y = i % ncol
-      sc.pl.umap(adata,color=data['genes'][i],ax=fig.add_subplot(gs[x,y]),show=False)
+      getattr(sc.pl,data['layout'])(adata,color=data['genes'][i],ax=fig.add_subplot(gs[x,y]),wspace=0.25,show=False)
 
   return iostreamFig(fig)
   
@@ -452,11 +491,7 @@ def DUAL(data):
   adata.uns["Expressed_colors"]=[pCol[i] for i in adata.obs['Expressed'].cat.categories]
   
   rcParams['figure.figsize'] = 4.5, 4
-  if data['layout']=='umap':
-    fig = sc.pl.umap(adata,color='Expressed',return_fig=True,show=False,legend_fontsize="small")
-  if data['layout']=='tsne':
-    fig = sc.pl.tsne(adata,color='Expressed',return_fig=True,show=False,legend_fontsize="small")
-  
+  fig = getattr(sc.pl,data['layout'])(adata,color='Expressed',return_fig=True,show=False,legend_fontsize="small")
   rcParams['figure.figsize'] = 4, 4
   return iostreamFig(fig)
 
@@ -468,7 +503,10 @@ def MARK(data):
   vCount = adata.obs[data["grp"][0]].value_counts()
   keepG = [key for key,val in vCount.items() if val>2]
   adata = adata[adata.obs[data["grp"][0]].isin(keepG),:]
-    
+  
+  if len(adata.obs[data['grp'][0]].unique())<2:
+    return json.dumps([[['name','scores'],['None','0']],Msg('Less than 2 groups in selected cells!')])
+  
   sc.tl.rank_genes_groups(adata,groupby=data["grp"][0],n_genes=int(data['geneN']),method=data['markMethod'])
   sc.pl.rank_genes_groups(adata,n_genes=int(data['geneN']),ncols=3,show=False)
   fig =plt.gcf()
@@ -493,7 +531,7 @@ def MARK(data):
   return json.dumps([scoreM,iostreamFig(fig)])
 
 def version():
-  print("1.0.2")
+  print("1.0.6")
   ## 1.0.2: April 27, 2020
   ## 1. add Spinning button
   ## 2. Selection on both groups of selected cells
@@ -533,14 +571,23 @@ def version():
 	## 3. Set the minimal value for gene expression in dual gene and dot plots
 	## 4. Added a button to create Combine Annotation which can only be changed in "Combine & Abbr" tab
 	## 5. Initialized the panel with full load main page by detecting the category number in window.store is NOT increased in 0.5 second interval
-	## 6. Updated the gene detection plot with cut-off instead of pre-calculation
+	## 6. Added a gene expression cut-off in the gene detection plot instead of pre-calculated in the meta data
   ## 7. Change the location of the menu button from the top to the left side due to too many buttons;	
 	## 8. Visualize marker genes with download;
-	## 9. Fixed the tSNE/UMAP annotation legend is too wide by each annotation is in separated row while the number of gene plots per row is specified by user.
+	## 9. Fixed the tSNE/UMAP when annotation legend is too wide with each annotation is in a separated row while the number of gene plots per row is specified by user.
 	##------------------------------
 	## 1.0.6: not done yet
-	## 1. DEG (it seems like I have difficulty to install/import diffxpy and I submitted an issue: https://github.com/theislab/diffxpy/issues/158);
-	## 2. Save all user current information into file and load from a file;
+	## 1. Update the scanpy to incorporate a fancier dotplot and updated the stacked violin plots;
+	## 2. Disabled the panel button until all categorical information ajaxed over, buttons will be automatically enabled after;
+	## 3. Adjust the image panel not to be limited by the VIP window size;
+	## 4. Fixed a bug of ignoring the tsne for embeding plot;
+	## 5. Adjust the embeding plot to improve the legend for annotation
+	## 6. Added handing ajax error to return control to the users
+	## 7. Added a new tab for figure setting, update the python to respond to those setting
+	## 8. Added a spliter between side menu buttons and content using more efficient JS code
+	## 9. Other UI bug fix pointed by Baohong
+	## 10. Add different DEG methods from diffxpy;
+	## 11. Save all user current information into local file and load from a local file;
 
   
   

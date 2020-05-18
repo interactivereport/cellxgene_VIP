@@ -43,12 +43,12 @@ read -d '' insertL << EOF
         },
         position:    'center-top 0 180',
         animateIn:   'jsPanelFadeIn',
-		contentOverflow: 'scroll scroll',
+        contentOverflow: 'scroll scroll',
         headerControls:{
           close: 'remove',
           maximize: 'remove'
         },
-        footerToolbar: '<span style="display:block; width:100%; height:4px; background-color:#F88519"></span>',
+        footerToolbar: '<span style="display:block; width:100%; height:4px; background-color:#AFBEC4"></span>',
         headerTitle: 'Visualization in Plugin',
         contentAjax: {
             url: 'static/interface.html',
