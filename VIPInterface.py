@@ -118,57 +118,60 @@ def cleanAbbr(data):
 
 def createData(data,seperate=False):
   #print("CreateData")
-  return subData(data)
-  headers = {'content-type':'application/json'}
-  if not 'genes' in data:
-    data['genes'] = []
-  fil = json.dumps({'filter':{'var':{'annotation_value':[{'name':'name_0','values':data['genes']}]}}})
-  res = requests.put('%s/data/var' % data["url"],fil,headers=headers)
-  expr = decode_fbs.decode_matrix_FBS(res.content)
-  res = requests.get('%s/annotations/var' % data["url"],params={'annotation-name':'name_0'})
-  gNames = decode_fbs.decode_matrix_FBS(res.content)['columns'][0]
-
-  cNames = ["cell%d" % x for x in data['cells'].values()]
-  expr = pd.DataFrame([[expr['columns'][i][x] for x in data['cells'].values()] for i in range(len(expr['columns']))],
-                    index=[gNames[x] for x in expr['col_idx']],columns=cNames).T
-  expr.dropna()
-  cNames = expr.index
-  obsL = [cNames]
-  combUpdate = cleanAbbr(data)
-  for one in data['grp']:
-    res = requests.get('%s/annotations/obs' % data["url"],params={'annotation-name':one})
-    grp = decode_fbs.decode_matrix_FBS(res.content)
-    if 'abb' in data.keys():
-      subGrp = [data['abb'][one][str(grp['columns'][0][i])] for i in data['cells'].values()]
+  with app.get_data_adaptor() as scD:
+    if (type(scD.data.X) is np.ndarray):
+      return subData(data)
     else:
-      subGrp = [str(grp['columns'][0][i]) for i in data['cells'].values()]
-    obsL += [subGrp]
-  obs = pd.DataFrame(obsL,index=['name_0']+data['grp'],columns=cNames).T.astype('category')
-  strGN = [i for i in data['grp'] if 'genes' in i]
-  
-  if len(strGN)>0:
-    obs[strGN] = obs[strGN].apply(pd.to_numeric)
-  if combUpdate and len(data['grp'])>1:
-    newGrp = 'Custom_combine'
-    obs[newGrp] = obs[data['grp'][0]]
-    for i in data['grp']:
-      if i!=data['grp'][0]:
-        obs[newGrp] += "_"+obs[i]
-    expr = expr[~obs[newGrp].str.contains("Other")]
-    obs = obs[~obs[newGrp].str.contains("Other")]
-    data['grp'] = [newGrp]
-  if seperate:
-    return {'expr':expr,'obs':obs}
-  if 'layout' in data.keys():## tsne or umap
-    res = requests.get('%s/layout/obs' % data["url"],params={'layout-name':data['layout']})
-    embed= decode_fbs.decode_matrix_FBS(res.content)
-    embed = pd.DataFrame([[embed['columns'][i][x] for x in data['cells'].values()] for i in range(len(embed['columns']))],
-                    index=embed['col_idx'],columns=cNames).T.to_numpy()
-    adata = sc.AnnData(expr,obs,obsm={'X_%s'%data['layout']:embed})
-    return adata
-
-  adata = sc.AnnData(expr,obs)
-  return adata
+      headers = {'content-type':'application/json'}
+      if not 'genes' in data:
+        data['genes'] = []
+      fil = json.dumps({'filter':{'var':{'annotation_value':[{'name':'name_0','values':data['genes']}]}}})
+      res = requests.put('%s/data/var' % data["url"],fil,headers=headers)
+      expr = decode_fbs.decode_matrix_FBS(res.content)
+      res = requests.get('%s/annotations/var' % data["url"],params={'annotation-name':'name_0'})
+      gNames = decode_fbs.decode_matrix_FBS(res.content)['columns'][0]
+    
+      cNames = ["cell%d" % x for x in data['cells'].values()]
+      expr = pd.DataFrame([[expr['columns'][i][x] for x in data['cells'].values()] for i in range(len(expr['columns']))],
+                        index=[gNames[x] for x in expr['col_idx']],columns=cNames).T
+      expr.dropna()
+      cNames = expr.index
+      obsL = [cNames]
+      combUpdate = cleanAbbr(data)
+      for one in data['grp']:
+        res = requests.get('%s/annotations/obs' % data["url"],params={'annotation-name':one})
+        grp = decode_fbs.decode_matrix_FBS(res.content)
+        if 'abb' in data.keys():
+          subGrp = [data['abb'][one][str(grp['columns'][0][i])] for i in data['cells'].values()]
+        else:
+          subGrp = [str(grp['columns'][0][i]) for i in data['cells'].values()]
+        obsL += [subGrp]
+      obs = pd.DataFrame(obsL,index=['name_0']+data['grp'],columns=cNames).T.astype('category')
+      strGN = [i for i in data['grp'] if 'genes' in i]
+      
+      if len(strGN)>0:
+        obs[strGN] = obs[strGN].apply(pd.to_numeric)
+      if combUpdate and len(data['grp'])>1:
+        newGrp = 'Custom_combine'
+        obs[newGrp] = obs[data['grp'][0]]
+        for i in data['grp']:
+          if i!=data['grp'][0]:
+            obs[newGrp] += "_"+obs[i]
+        expr = expr[~obs[newGrp].str.contains("Other")]
+        obs = obs[~obs[newGrp].str.contains("Other")]
+        data['grp'] = [newGrp]
+      if seperate:
+        return {'expr':expr,'obs':obs}
+      if 'layout' in data.keys():## tsne or umap
+        res = requests.get('%s/layout/obs' % data["url"],params={'layout-name':data['layout']})
+        embed= decode_fbs.decode_matrix_FBS(res.content)
+        embed = pd.DataFrame([[embed['columns'][i][x] for x in data['cells'].values()] for i in range(len(embed['columns']))],
+                        index=embed['col_idx'],columns=cNames).T.to_numpy()
+        adata = sc.AnnData(expr,obs,obsm={'X_%s'%data['layout']:embed})
+        return adata
+    
+      adata = sc.AnnData(expr,obs)
+      return adata
   
 def errorTask(data):
   return "Error task!"
