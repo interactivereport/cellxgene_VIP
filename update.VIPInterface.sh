@@ -5,5 +5,5 @@ strPath=${strPath//"']"/}
 echo $strPath
 
 cp VIPInterface.py $strPath/server/app/.
-#cp interface.html $strPath/server/common/web/static/.
+cp interface.html $strPath/server/common/web/static/.
 #cp color_map.png $strPath/server/common/web/static/.

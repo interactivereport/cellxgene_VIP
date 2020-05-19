@@ -467,7 +467,7 @@
         <option value='svg'>SVG</option>
       </select></p>
       <p>Choose a font size:
-      <input id="IMGfontsize" type="number" step="1" value="14" min="5" onchange="IMGset()"/></p>  
+      <input id="IMGfontsize" type="number" step="1" value="10" min="5" onchange="IMGset()"/></p>  
       <p>Choose vector friendly:
       <select id="IMGvector" onchange="IMGset()">
         <option value='true'>True</option>
@@ -679,7 +679,7 @@ function init(){
     window.bioCombine={};
     window.biogen=[];
     window.bioGeneGrp={};
-    window.figOpt={dpi:150,img:'png',fontsize:14,vectorFriendly:'true',transparent:'false',colorMap:'viridis'};
+    window.figOpt={dpi:150,img:'png',fontsize:10,vectorFriendly:'true',transparent:'false',colorMap:'viridis'};
     //--------------------------------------------------------------------------
     //SGV & PGV annotation categories
     var sgv = document.getElementById("SGVgrp");
