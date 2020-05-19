@@ -140,12 +140,14 @@ def createData(data,seperate=False):
 
   ## obtain the embedding
   strEmbed = 'umap'
+  embed = pd.DataFrame([[0 for x in range(len(cNames))] for i in range(2)],
+                        index=['%s1'%strEmbed,'%s2'%strEmbed],columns=cNames).T
   if 'layout' in data.keys():## tsne or umap
     strEmbed = data['layout']
-  res = requests.get('%s/layout/obs' % data["url"],params={'layout-name':strEmbed})
-  embed= decode_fbs.decode_matrix_FBS(res.content)
-  embed = pd.DataFrame([[embed['columns'][i][x] for x in data['cells'].values()] for i in range(len(embed['columns']))],
-                    index=embed['col_idx'],columns=cNames).T
+    res = requests.get('%s/layout/obs' % data["url"],params={'layout-name':strEmbed})
+    embed= decode_fbs.decode_matrix_FBS(res.content)
+    embed = pd.DataFrame([[embed['columns'][i][x] for x in data['cells'].values()] for i in range(len(embed['columns']))],
+                          index=embed['col_idx'],columns=cNames).T
 
   # obtain the meta grouping
   obsL = [cNames]
