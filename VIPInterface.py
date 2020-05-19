@@ -68,8 +68,7 @@ def subData(data):
     expr = X
   else:
     expr = pd.DataFrame(X,columns=gNames,index=cNames)
-  #ppr.pprint("Finished expression...")
-  
+
   ## obtain the embedding
   strEmbed = 'umap'
   embed = pd.DataFrame([[0 for x in range(len(cNames))] for i in range(2)],
@@ -371,7 +370,6 @@ def pHeatmap(data):
       
       leg.get_title().set_fontsize(6)#min(grpSize)+2
       g.ax_heatmap.add_artist(leg)
-  ppr.pprint("finished legend")
   return json.dumps([iostreamFig(g),Xdata])#)#
 
 def GD(data):
