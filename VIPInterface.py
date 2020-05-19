@@ -46,35 +46,42 @@ def setFigureOpt(opt):
 
 def subData(data):
   selC = list(data['cells'].values())
-  cName = ["cell%d" %i for i in selC]
+  cNames = ["cell%d" %i for i in selC]
   
+  fSparse = False
   ## onbtain the expression matrix
   gNames = []
   X = []
   if 'genes' in data.keys():
-    if len(data['genes'])>0:
-      with app.get_data_adaptor() as scD:
+    with app.get_data_adaptor() as scD:
+      if not type(scD.data.X) is np.ndarray:
+        fSparse = True
+      if len(data['genes'])>0:
         fullG = list(scD.data.var['name_0'])
         selG = [fullG.index(i) for i in data['genes']]
         X = scD.data.X[selC][:,selG]
         gNames = data['genes']
-    else:
-      with app.get_data_adaptor() as scD:
+      else:
         X = scD.data.X[selC]
         gNames = list(scD.data.var["name_0"])
-  expr = pd.DataFrame(X,columns=gNames,index=cName)
+  if fSparse:
+    expr = X
+  else:
+    expr = pd.DataFrame(X,columns=gNames,index=cNames)
 
   ## obtain the embedding
   strEmbed = 'umap'
+  embed = pd.DataFrame([[0 for x in range(len(cNames))] for i in range(2)],
+                        index=['%s1'%strEmbed,'%s2'%strEmbed],columns=cNames).T
   if 'layout' in data.keys():## tsne or umap
     strEmbed = data['layout']
-  with app.get_data_adaptor() as scD:
-    embed = pd.DataFrame(scD.data.obsm['X_%s'%strEmbed][selC],columns=['%s1'%strEmbed,'%s2'%strEmbed],index=cName)
+    with app.get_data_adaptor() as scD:
+      embed = pd.DataFrame(scD.data.obsm['X_%s'%strEmbed][selC],columns=['%s1'%strEmbed,'%s2'%strEmbed],index=cNames)
 
   ## obtain the category annotation
   with app.get_data_adaptor() as scD:
     obs = scD.data.obs.loc[selC,['name_0']+data['grp']].astype('str')
-  obs.index = cName
+  obs.index = cNames
 
   ## update the annotation Abbreviation
   combUpdate = cleanAbbr(data)
@@ -89,9 +96,10 @@ def subData(data):
     for i in data['grp']:
       if i!=data['grp'][0]:
         obs[newGrp] += "_"+obs[i]
-    expr = expr[~obs[newGrp].str.contains("Other")]
-    embed = embed[~obs[newGrp].str.contains("Other")]
-    obs = obs[~obs[newGrp].str.contains("Other")]
+    selC = ~obs[newGrp].str.contains("Other").to_numpy()
+    expr = expr[selC]
+    embed = embed[selC]
+    obs = obs[selC]
     data['grp'] = [newGrp]
     
   obs = obs.astype('category')
@@ -99,7 +107,7 @@ def subData(data):
   if expr.shape[0]==0 or expr.shape[1]==0:
     return []
   
-  return sc.AnnData(expr,obs,obsm={'X_%s'%strEmbed:embed.to_numpy()})
+  return sc.AnnData(expr,obs,var=pd.DataFrame([],index=gNames),obsm={'X_%s'%strEmbed:embed.to_numpy()})
 
 def cleanAbbr(data):
   updated = False
@@ -116,7 +124,7 @@ def cleanAbbr(data):
   return updated
 
 def createData(data,seperate=False):
-    
+  return subData(data)
   #print("CreateData")
   with app.get_data_adaptor() as scD:
     if (type(scD.data.X) is np.ndarray):
@@ -371,7 +379,8 @@ def GD(data):
   for one in data['cells'].keys():
     oneD = {'cells':data['cells'][one],
             'genes':[],
-            'grp':[]}
+            'grp':[],
+            'url':data['url']}
     D = createData(oneD)
     D.obs['cellGrp'] = one
     if adata is None:
@@ -397,7 +406,8 @@ def DEG(data):
   for one in data['cells'].keys():
     oneD = {'cells':data['cells'][one],
             'genes':[],
-            'grp':[]}
+            'grp':[],
+            'url':data['url']}
     D = createData(oneD)
     D.obs['cellGrp'] = one
     if adata is None:
