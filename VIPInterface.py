@@ -68,7 +68,8 @@ def subData(data):
     expr = X
   else:
     expr = pd.DataFrame(X,columns=gNames,index=cNames)
-
+  #ppr.pprint("Finished expression...")
+  
   ## obtain the embedding
   strEmbed = 'umap'
   embed = pd.DataFrame([[0 for x in range(len(cNames))] for i in range(2)],
@@ -106,7 +107,6 @@ def subData(data):
   ## empty selection
   if expr.shape[0]==0 or expr.shape[1]==0:
     return []
-  
   return sc.AnnData(expr,obs,var=pd.DataFrame([],index=gNames),obsm={'X_%s'%strEmbed:embed.to_numpy()})
 
 def cleanAbbr(data):
@@ -340,7 +340,7 @@ def pHeatmap(data):
     heatCenter=0
     colTitle="column Z score"
 
-  g = sns.clustermap(pd.DataFrame(adata.X,index=list(adata.obs.index),columns=list(adata.var.index)),
+  g = sns.clustermap(adata.to_df(),
                      method="ward",row_cluster=exprOrder,z_score=Zscore,cmap=heatCol,center=heatCenter,
                      row_colors=pd.concat(grpCol,axis=1).astype('str'),yticklabels=False,xticklabels=True,
                      figsize=(w,h),colors_ratio=0.05,
@@ -371,7 +371,7 @@ def pHeatmap(data):
       
       leg.get_title().set_fontsize(6)#min(grpSize)+2
       g.ax_heatmap.add_artist(leg)
-
+  ppr.pprint("finished legend")
   return json.dumps([iostreamFig(g),Xdata])#)#
 
 def GD(data):
