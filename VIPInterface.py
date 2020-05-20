@@ -107,13 +107,13 @@ def subData(data):
   with app.get_data_adaptor() as scD:
     obs = scD.data.obs.loc[selC,['name_0']+data['grp']].astype('str')
   obs.index = cNames
-
   ## update the annotation Abbreviation
+  ppr.pprint(data['abb'][data['grp'][0]])
   combUpdate = cleanAbbr(data)
   if 'abb' in data.keys():
     for i in data['grp']:
       obs[i] = obs[i].map(data['abb'][i])
-
+  
   ## create a custom annotation category and remove cells which are not in the selected annotation
   if combUpdate and len(data['grp'])>1:
     newGrp = 'Custom_combine'
@@ -267,17 +267,20 @@ def geneFiltering(adata,cutoff,opt):
 def SGV(data):
   # figure width and heights depends on number of unique categories
   # characters of category names, gene number
-  sT = time.time()
+  #sT = time.time()
   adata = createData(data)
-  ppr.pprint('SGV data reading cost %f seconds' % (time.time()-sT) )
-  sT = time.time()
+  #ppr.pprint('SGV data reading cost %f seconds' % (time.time()-sT) )
+  #sT = time.time()
   adata = geneFiltering(adata,data['cutoff'],1)
-  ppr.pprint('SGV filtering cost %f seconds' % (time.time()-sT) )
-  sT = time.time()
+  #ppr.pprint('SGV filtering cost %f seconds' % (time.time()-sT) )
+  #sT = time.time()
   if len(adata)==0:
     return Msg('No cells in the condition!')
-
+    
+  ppr.pprint(list(set(list(adata.obs[data['grp'][0]]))))
   a = list(set(list(adata.obs[data['grp'][0]])))
+  #ppr.pprint(adata.obs[data['grp'][0]])
+  #ppr.pprint(a)
   ncharA = max([len(x) for x in a])
   w = len(a)/4+1
   h = ncharA/6+2.5
@@ -286,19 +289,19 @@ def SGV(data):
   fig = plt.figure(figsize=[w,h])
   sc.pl.violin(adata,data['genes'],groupby=data['grp'][0],ax=fig.gca(),show=False)
   fig.autofmt_xdate(bottom=0.2,rotation=ro,ha='right')
-  ppr.pprint('SGV plotting cost %f seconds' % (time.time()-sT) )
+  #ppr.pprint('SGV plotting cost %f seconds' % (time.time()-sT) )
   return iostreamFig(fig)
 
 def PGV(data):
   # figure width and heights depends on number of unique categories
   # characters of category names, gene number
-  sT = time.time()
+  #sT = time.time()
   adata = createData(data)
-  ppr.pprint('PGV data reading cost %f seconds' % (time.time()-sT) )
-  sT = time.time()
+  #ppr.pprint('PGV data reading cost %f seconds' % (time.time()-sT) )
+  #sT = time.time()
   adata = geneFiltering(adata,data['cutoff'],1)
-  ppr.pprint('PGV filtering cost %f seconds' % (time.time()-sT) )
-  sT = time.time()
+  #ppr.pprint('PGV filtering cost %f seconds' % (time.time()-sT) )
+  #sT = time.time()
   if len(adata)==0:
     return Msg('No cells in the condition!')
   a = list(set(list(adata.obs[data['grp'][0]])))
@@ -319,7 +322,7 @@ def PGV(data):
   else:
     fig = plt.figure(figsize=[w,h])
     axes = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],show=False,ax=fig.gca(),swap_axes=swapAx)
-  ppr.pprint('PGV plotting cost %f seconds' % (time.time()-sT) )
+  #ppr.pprint('PGV plotting cost %f seconds' % (time.time()-sT) )
   return iostreamFig(fig)
   
 def pHeatmap(data):
@@ -330,9 +333,11 @@ def pHeatmap(data):
   # if the number of element in a category is larger than 20, husl is choosen
   #Xsep = createData(data,True)
   #adata = sc.AnnData(Xsep['expr'],Xsep['obs'])
+  sT = time.time()
   adata = createData(data)
   Xdata = pd.concat([adata.to_df(),adata.obs], axis=1, sort=False).to_csv()
-  
+  ppr.pprint('HEAT data reading cost %f seconds' % (time.time()-sT) )
+  sT = time.time()
   exprOrder = True
   if data['order']!="Expression":
     exprOrder = False;
@@ -372,13 +377,15 @@ def pHeatmap(data):
     heatCol="vlag"
     heatCenter=0
     colTitle="column Z score"
-
+  ppr.pprint('HEAT data preparing cost %f seconds' % (time.time()-sT) )
+  sT = time.time()
   g = sns.clustermap(adata.to_df(),
                      method="ward",row_cluster=exprOrder,z_score=Zscore,cmap=heatCol,center=heatCenter,
                      row_colors=pd.concat(grpCol,axis=1).astype('str'),yticklabels=False,xticklabels=True,
                      figsize=(w,h),colors_ratio=0.05,
                      cbar_pos=(.3, .95, .55, .02),
                      cbar_kws={"orientation": "horizontal","label": colTitle,"shrink": 0.5})
+  ppr.pprint('HEAT plotting cost %f seconds' % (time.time()-sT) )
   g.ax_col_dendrogram.set_visible(False)
   #g.ax_row_dendrogram.set_visible(False)
   plt.setp(g.ax_heatmap.xaxis.get_majorticklabels(), rotation=90)
