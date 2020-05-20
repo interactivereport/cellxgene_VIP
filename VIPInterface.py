@@ -15,6 +15,7 @@ import base64
 import math
 from io import BytesIO
 import sys
+import time
 
 import pprint
 ppr = pprint.PrettyPrinter(depth=6)
@@ -48,31 +49,55 @@ def subData(data):
   selC = list(data['cells'].values())
   cNames = ["cell%d" %i for i in selC]
   
-  fSparse = False
   ## onbtain the expression matrix
   gNames = []
-  X = []
-  if 'genes' in data.keys():
-    with app.get_data_adaptor() as scD:
-      if not type(scD.data.X) is np.ndarray:
-        fSparse = True
-      if len(data['genes'])>0:
-        fullG = list(scD.data.var['name_0'])
-        selG = [fullG.index(i) for i in data['genes']]
-        X = scD.data.X[selC][:,selG]
-        gNames = data['genes']
-      else:
-        X = scD.data.X[selC]
-        gNames = list(scD.data.var["name_0"])
-  if fSparse:
-    expr = X
+  expr = []
+  if True:
+    fSparse = False
+    X = []
+    if 'genes' in data.keys():
+      with app.get_data_adaptor() as scD:
+        if not type(scD.data.X) is np.ndarray:
+          fSparse = True
+        if len(data['genes'])>0:
+          fullG = list(scD.data.var['name_0'])
+          selG = [fullG.index(i) for i in data['genes']]
+          X = scD.data.X[selC][:,selG]
+          gNames = data['genes']
+        else:
+          X = scD.data.X[selC]
+          gNames = list(scD.data.var["name_0"])
+    if fSparse:
+      expr = X
+    else:
+      expr = pd.DataFrame(X,columns=gNames,index=cNames)
   else:
-    expr = pd.DataFrame(X,columns=gNames,index=cNames)
-
+    fSparse = False
+    if 'genes' in data.keys():
+      with app.get_data_adaptor() as scD:
+        if not type(scD.data.X) is np.ndarray:
+          fSparse = True
+        if len(data['genes'])>0:
+          fullG = list(scD.data.var['name_0'])
+          selG = [fullG.index(i) for i in data['genes']]
+          X = scD.data.X[selC][:,selG]
+          gNames = data['genes']
+          if fSparse:
+            expr = pd.DataFrame.sparse.from_spmatrix(X,index=cNames,columns=gNames)
+          else:
+            expr = pd.DataFrame(X,columns=gNames,index=cNames) 
+        else:
+          X = scD.data.X[selC]
+          gNames = list(scD.data.var["name_0"])
+          if fSparse:
+            expr = X
+          else:
+            expr = pd.DataFrame(X,columns=gNames,index=cNames) 
   ## obtain the embedding
   strEmbed = 'umap'
-  embed = pd.DataFrame([[0 for x in range(len(cNames))] for i in range(2)],
-                        index=['%s1'%strEmbed,'%s2'%strEmbed],columns=cNames).T
+  #embed = pd.DataFrame([[0 for x in range(len(cNames))] for i in range(2)],
+  #                      index=['%s1'%strEmbed,'%s2'%strEmbed],columns=cNames).T
+  embed = pd.DataFrame([],index=cNames)
   if 'layout' in data.keys():## tsne or umap
     strEmbed = data['layout']
     with app.get_data_adaptor() as scD:
@@ -242,8 +267,13 @@ def geneFiltering(adata,cutoff,opt):
 def SGV(data):
   # figure width and heights depends on number of unique categories
   # characters of category names, gene number
+  sT = time.time()
   adata = createData(data)
+  ppr.pprint('SGV data reading cost %f seconds' % (time.time()-sT) )
+  sT = time.time()
   adata = geneFiltering(adata,data['cutoff'],1)
+  ppr.pprint('SGV filtering cost %f seconds' % (time.time()-sT) )
+  sT = time.time()
   if len(adata)==0:
     return Msg('No cells in the condition!')
 
@@ -253,17 +283,22 @@ def SGV(data):
   h = ncharA/6+2.5
   ro = math.acos(10/max([15,ncharA]))/math.pi*180
   ##
-  
   fig = plt.figure(figsize=[w,h])
   sc.pl.violin(adata,data['genes'],groupby=data['grp'][0],ax=fig.gca(),show=False)
   fig.autofmt_xdate(bottom=0.2,rotation=ro,ha='right')
+  ppr.pprint('SGV plotting cost %f seconds' % (time.time()-sT) )
   return iostreamFig(fig)
 
 def PGV(data):
   # figure width and heights depends on number of unique categories
   # characters of category names, gene number
+  sT = time.time()
   adata = createData(data)
+  ppr.pprint('PGV data reading cost %f seconds' % (time.time()-sT) )
+  sT = time.time()
   adata = geneFiltering(adata,data['cutoff'],1)
+  ppr.pprint('PGV filtering cost %f seconds' % (time.time()-sT) )
+  sT = time.time()
   if len(adata)==0:
     return Msg('No cells in the condition!')
   a = list(set(list(adata.obs[data['grp'][0]])))
@@ -277,7 +312,6 @@ def PGV(data):
     w = h
     h = a
     swapAx = True
-
   if '1.4.7' in sc.__version__:
     vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=(w,h),swap_axes=swapAx)
     vp.add_totals().style(yticklabels=True).show()
@@ -285,7 +319,7 @@ def PGV(data):
   else:
     fig = plt.figure(figsize=[w,h])
     axes = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],show=False,ax=fig.gca(),swap_axes=swapAx)
-
+  ppr.pprint('PGV plotting cost %f seconds' % (time.time()-sT) )
   return iostreamFig(fig)
   
 def pHeatmap(data):
