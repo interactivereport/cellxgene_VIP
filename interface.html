@@ -136,7 +136,7 @@
       input[type=number]{
         width: 60px;
       }
-      input,textarea{ font-size: 16px; }
+      input,textarea,select{ font-size: 14px; }
     </style>
   </head>
 <body>
@@ -144,10 +144,7 @@
 	<div id="panel-left">
     <div class="tab">
       <button class="tablinks" onclick="refresh()" style="color:#4AB05A"><b>Refresh</b></button>
-      <button class="tablinks" onclick="selFun(event, 'ABBR')">Combine & Abbr.</button>
       <button class="tablinks" onclick="selFun(event, 'ADDG')">Add Genes</button>
-      <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
-      <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
       <button class="tablinks" onclick="selFun(event, 'SGV')">Violin</button>
       <button class="tablinks" onclick="selFun(event, 'PGV')">Stacked Violin</button>
       <button class="tablinks" onclick="selFun(event, 'HEAT')">Heatmap</button>
@@ -155,9 +152,12 @@
       <button class="tablinks" onclick="selFun(event, 'DOT')">Dot Plot</button>
       <button class="tablinks" onclick="selFun(event, 'TRAK')">Tracksplot</button>
       <button class="tablinks" onclick="selFun(event, 'DUAL')">Dual Genes</button>
+      <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'DEG')">DEG</button>
+      <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
       <hr size="1" noshade>
       <button class="tablinks" onclick="selFun(event, 'IMG')">Figure Option</button>
+      <button class="tablinks" onclick="selFun(event, 'ABBR')">Combine & Abbr.</button>
       <button class="tablinks" onclick="save()">Save</button>
       <button class="tablinks" onclick="inputClick()">Load</button>
     </div>
@@ -467,7 +467,7 @@
         <option value='svg'>SVG</option>
       </select></p>
       <p>Choose a font size:
-      <input id="IMGfontsize" type="number" step="1" value="14" min="5" onchange="IMGset()"/></p>  
+      <input id="IMGfontsize" type="number" step="1" value="11" min="5" onchange="IMGset()"/></p>  
       <p>Choose vector friendly:
       <select id="IMGvector" onchange="IMGset()">
         <option value='true'>True</option>
@@ -679,7 +679,7 @@ function init(){
     window.bioCombine={};
     window.biogen=[];
     window.bioGeneGrp={};
-    window.figOpt={dpi:150,img:'png',fontsize:14,vectorFriendly:'true',transparent:'false',colorMap:'viridis'};
+    window.figOpt={dpi:150,img:'png',fontsize:11,vectorFriendly:'true',transparent:'false',colorMap:'viridis'};
     //--------------------------------------------------------------------------
     //SGV & PGV annotation categories
     var sgv = document.getElementById("SGVgrp");
