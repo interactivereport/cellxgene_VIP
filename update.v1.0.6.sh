@@ -10,7 +10,6 @@ strPath=${strPath//"['"/}
 strPath=${strPath//"']"/}
 echo $strPath
 
-sed -i "s|headerControls|contentOverflow: \'scroll scroll\',\n\theaderControls|i" "cellxgene/client/index_template.html"
 sed -i "s|F88519|AFBEC4|i" "cellxgene/client/index_template.html"
 sed -i "s|width: \"190px\"|width: \"120px\"|" "cellxgene/client/src/components/leftSidebar/topLeftLogoAndTitle.js"
 cd cellxgene/client; make build; cp build/index.html $strPath/server/common/web/templates/.;cd ../..

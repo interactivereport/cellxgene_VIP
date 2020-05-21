@@ -64,7 +64,7 @@ read -d '' insertL << EOF
 </script>
 EOF
 insertL=$(sed -e 's/[&\\/]/\\&/g; s/$/\\/' -e '$s/\\$//' <<<"$insertL")
-sed -i "s|<div id=\"root\"></div>|$insertL\n&|g" "cellxgene/client/index_template.html" 
+sed -i "s|<div id=\"root\"></div>|$insertL\n&|;s|cell&times;gene|cellxgene VIP|" "cellxgene/client/index_template.html"
 
 echo '
 from server.app.VIPInterface import route
@@ -73,18 +73,20 @@ def VIP():
     return route(request.data,current_app.app_config)' >> cellxgene/server/app/app.py
     
 ## update the cellxgene title to cellxgene VIP
-sed -i "s|cell&times;gene|cellxgene VIP|" "cellxgene/client/index_template.html"
-sed -i "s|title=\"cellxgene|title=\"cellxgene VIP|" "cellxgene/client/src/components/app.js"
-sed -i "s|  gene|  gene VIP|" "cellxgene/client/src/components/leftSidebar/topLeftLogoAndTitle.js"
-
+sed -i "s|title=\"cellxgene\"|title=\"cellxgene VIP\"|" "cellxgene/client/src/components/app.js"
+sed -i "s|  gene|  gene VIP|;s|width: \"190px\"|width: \"120px\"|" "cellxgene/client/src/components/leftSidebar/topLeftLogoAndTitle.js"
 
 ## buld the cellxgene and install -----------
 conda remove PyYAML
 conda install fsspec=0.6.3
+pip install tensorflow
+pip install diffxpy
+pip install git+https://github.com/theislab/scanpy.git@groupby_plots
+# pip install 'scanpy==1.4.6'   # works for v1.4.6 too
+
 cd cellxgene
 make pydist
 make install-dist
-pip install 'scanpy==1.4.6'
 cd ..
 
 ## finished setting up ------ 
@@ -96,10 +98,9 @@ echo $strweb
 cp interface.html $strweb
 cp jquery.min.js $strweb
 cp color_map.png $strweb
+
 cp -R DataTables $strweb
 cp -R jspanel $strweb
+
 cp cellxgene/server/test/decode_fbs.py $strPath/server/app/.
 cp VIPInterface.py $strPath/server/app/.
-
-
-

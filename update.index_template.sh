@@ -13,7 +13,7 @@ read -d '' insertL << EOF
 <link href='static/jspanel/dist/jspanel.css' rel='stylesheet'>
 <!-- jsPanel JavaScript -->
 <script src='static/jspanel/dist/jspanel.js'></script>
-<!-- optiona jsPanel extensions -->
+<!-- optional jsPanel extensions -->
 <script src='static/jspanel/dist/extensions/modal/jspanel.modal.js'></script>
 <script src='static/jspanel/dist/extensions/tooltip/jspanel.tooltip.js'></script>
 <script src='static/jspanel/dist/extensions/hint/jspanel.hint.js'></script>
@@ -59,8 +59,6 @@ read -d '' insertL << EOF
 </script>
 EOF
 insertL=$(sed -e 's/[&\\/]/\\&/g; s/$/\\/' -e '$s/\\$//' <<<"$insertL")
-sed -i "s|<div id=\"root\"></div>|$insertL\n&|g" "cellxgene/client/index_template.html" 
+sed -i "s|<div id=\"root\"></div>|$insertL\n&|;s|cell&times;gene|cellxgene VIP|" "cellxgene/client/index_template.html" 
 
-cd cellxgene/client; make build; cp build/index.html $strPath/server/common/web/templates/
-
-cd ../..
+cd cellxgene/client; make build; cp build/index.html $strPath/server/common/web/templates/; cd ../..
