@@ -10,17 +10,24 @@ We present a new plugin Cellxgene VIP to address the urgent needs for such addit
 
 # installation instruction
 
-## 0. create anaconda python 3.7 and enable conda environment and install nodejs
+## 0. Install anaconda python 3.7 and nodejs if not available on server
+    - Anaconda3-2020.02-Linux-x86_64.sh
+    - node-v12.16.2-linux-x64
+
+## 1. create and enable conda environment
 ``` bash
 conda create -n <env name> python=3.7
+conda activate <env name>
 ```
-## 1. Install cellxgene by run the config.sh in the folder
+## 2. Install cellxgene by run the config.sh in the folder
 ```bash
+git clone https://github.com/interactivereport/cellxgene_VIP.git
+cd cellxgene_VIP
 ./config.sh
 ```
-## 2. Run cellxgene by specifiying the single cell h5ad file along with the host and the port:
+## 3. Run cellxgene by specifiying the single cell h5ad file along with the host and the port:
 ```bash
-cellxgene launch ...h5ad --host ... -p ... --disable-annotations
+cellxgene launch --host <xxx> --port <xxx> --disable-annotations --verbose <h5ad file>
 ```
 *note: while spinning up the cellxgene from HPC, do **NOT** use qlogin. **ssh directly to the server**.*
 
