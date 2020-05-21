@@ -108,7 +108,6 @@ def subData(data):
     obs = scD.data.obs.loc[selC,['name_0']+data['grp']].astype('str')
   obs.index = cNames
   ## update the annotation Abbreviation
-  ppr.pprint(data['abb'][data['grp'][0]])
   combUpdate = cleanAbbr(data)
   if 'abb' in data.keys():
     for i in data['grp']:
@@ -267,20 +266,13 @@ def geneFiltering(adata,cutoff,opt):
 def SGV(data):
   # figure width and heights depends on number of unique categories
   # characters of category names, gene number
-  #sT = time.time()
+
   adata = createData(data)
-  #ppr.pprint('SGV data reading cost %f seconds' % (time.time()-sT) )
-  #sT = time.time()
   adata = geneFiltering(adata,data['cutoff'],1)
-  #ppr.pprint('SGV filtering cost %f seconds' % (time.time()-sT) )
-  #sT = time.time()
   if len(adata)==0:
     return Msg('No cells in the condition!')
     
-  ppr.pprint(list(set(list(adata.obs[data['grp'][0]]))))
   a = list(set(list(adata.obs[data['grp'][0]])))
-  #ppr.pprint(adata.obs[data['grp'][0]])
-  #ppr.pprint(a)
   ncharA = max([len(x) for x in a])
   w = len(a)/4+1
   h = ncharA/6+2.5
@@ -289,7 +281,6 @@ def SGV(data):
   fig = plt.figure(figsize=[w,h])
   sc.pl.violin(adata,data['genes'],groupby=data['grp'][0],ax=fig.gca(),show=False)
   fig.autofmt_xdate(bottom=0.2,rotation=ro,ha='right')
-  #ppr.pprint('SGV plotting cost %f seconds' % (time.time()-sT) )
   return iostreamFig(fig)
 
 def PGV(data):
@@ -517,7 +508,6 @@ def EMBED(data):
       x = int(i/ncol)+ngrp
       y = i % ncol
       getattr(sc.pl,data['layout'])(adata,color=data['genes'][i],ax=fig.add_subplot(gs[x,y]),wspace=0.25,show=False)
-
   return iostreamFig(fig)
   
 def TRACK(data):
@@ -532,26 +522,42 @@ def TRACK(data):
   return iostreamFig(fig)
 
 def cut(x,cutoff,anno):
-    iC = x[x>cutoff].count()
-    if iC ==0:
-        return "None"
-    elif iC==2:
-        return "Both"
-    elif x[0]>cutoff:
-        return anno[0]
-    elif x[1]>cutoff:
-        return anno[1]
-    return "ERROR"
+  iC = x[x>cutoff].count()
+  if iC ==0:
+    return "None"
+  elif iC==2:
+    return "Both"
+  elif x[0]>cutoff:
+    return anno[0]
+  elif x[1]>cutoff:
+    return anno[1]
+  return "ERROR"
+def dualExp(df,cutoff,anno):
+  label = ['None']+list(anno)+['Both']
+  a = df.iloc[:,0]>cutoff
+  b = df.iloc[:,1]>cutoff
+  return pd.Series([label[i] for i in list(a+2*b)],index=df.index,dtype='category')
 
 def DUAL(data):
+  sT = time.time()
   adata = createData(data)
-  adata.obs['Expressed'] = adata.to_df().apply(cut,axis=1,args=(float(data['cutoff']),adata.var_names)).astype('category')
+  ppr.pprint('DUAL data reading cost %f seconds' % (time.time()-sT) )
+  sT = time.time()
+  #adata.obs['Expressed'] = adata.to_df().apply(cut,axis=1,args=(float(data['cutoff']),adata.var_names)).astype('category')
+  adata.obs['Expressed'] = dualExp(adata.to_df(),float(data['cutoff']),adata.var_names)
+  ppr.pprint(data['cutoff'])
+  ppr.pprint(adata.obs['Expressed'].cat.categories)
+  ppr.pprint(adata.obs['Expressed'].value_counts())
+  
+  ppr.pprint('DUAL filtering cost %f seconds' % (time.time()-sT) )
+  sT = time.time()
   pCol = {"None":"#AAAAAA44","Both":"#EDDF01AA",data['genes'][0]:"#1CAF82AA",data['genes'][1]:"#FA2202AA"}
   adata.uns["Expressed_colors"]=[pCol[i] for i in adata.obs['Expressed'].cat.categories]
   
   rcParams['figure.figsize'] = 4.5, 4
   fig = getattr(sc.pl,data['layout'])(adata,color='Expressed',return_fig=True,show=False,legend_fontsize="small")
   rcParams['figure.figsize'] = 4, 4
+  ppr.pprint('DUAL plotting cost %f seconds' % (time.time()-sT) )
   return iostreamFig(fig)
 
 def MARK(data):
