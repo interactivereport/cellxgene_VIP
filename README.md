@@ -25,8 +25,9 @@ git clone https://github.com/interactivereport/cellxgene_VIP.git
 cd cellxgene_VIP
 ./config.sh
 ```
-## 3. Run cellxgene by specifiying the single cell h5ad file along with the host and the port:
+## 3. Run cellxgene by specifiying the single cell h5ad file along with the host and the port, use ps to find used ports
 ```bash
+ps -ef | grep cellxgene
 cellxgene launch --host <xxx> --port <xxx> --disable-annotations --verbose <h5ad file>
 ```
 *note: while spinning up the cellxgene from HPC, do **NOT** use qlogin. **ssh directly to the server**.*
