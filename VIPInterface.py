@@ -367,7 +367,7 @@ def pHeatmap(data):
     Zscore=1
     heatCol="vlag"
     heatCenter=0
-    colTitle="column Z score"
+    colTitle="Z score"
   ppr.pprint('HEAT data preparing cost %f seconds' % (time.time()-sT) )
   sT = time.time()
   g = sns.clustermap(adata.to_df(),

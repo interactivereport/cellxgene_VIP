@@ -95,6 +95,7 @@ strweb="${strPath}/server/common/web/static/."
 echo $strweb
 cp interface.html $strweb
 cp jquery.min.js $strweb
+cp color_map.png $strweb
 cp -R DataTables $strweb
 cp -R jspanel $strweb
 cp cellxgene/server/test/decode_fbs.py $strPath/server/app/.
