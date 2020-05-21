@@ -252,7 +252,17 @@ def MINX(data):
 def geneFiltering(adata,cutoff,opt):
   ## 1. remove cells if the max expression of all genes is lower than the cutoff
   if opt==1:
-    ix = adata.to_df().apply(lambda x: max(x)>float(cutoff),axis=1)
+    #sT = time.time()
+    #ix = adata.to_df().apply(lambda x: max(x)>float(cutoff),axis=1)
+    #ppr.pprint(time.time()-sT)
+    #sT=time.time()
+    df = adata.to_df()
+    ix = df[df>float(cutoff)].count(axis=1)>0
+    #ppr.pprint(time.time()-sT)
+    #sT = time.time()
+    #ix = pd.DataFrame((adata.X>float(cutoff)).sum(1)>0,index=list(adata.obs.index)).iloc[:,0]
+    #ppr.pprint(time.time()-sT)
+    
     adata = adata[ix,]
   ## 2. Set all expression level smaller than the cutoff to be NaN not for plotting without removing any cells
   elif opt==2:
@@ -367,7 +377,7 @@ def pHeatmap(data):
     Zscore=1
     heatCol="vlag"
     heatCenter=0
-    colTitle="Z score"
+    colTitle="Z-score"
   ppr.pprint('HEAT data preparing cost %f seconds' % (time.time()-sT) )
   sT = time.time()
   g = sns.clustermap(adata.to_df(),
@@ -377,6 +387,7 @@ def pHeatmap(data):
                      cbar_pos=(.3, .95, .55, .02),
                      cbar_kws={"orientation": "horizontal","label": colTitle,"shrink": 0.5})
   ppr.pprint('HEAT plotting cost %f seconds' % (time.time()-sT) )
+  sT = time.time()
   g.ax_col_dendrogram.set_visible(False)
   #g.ax_row_dendrogram.set_visible(False)
   plt.setp(g.ax_heatmap.xaxis.get_majorticklabels(), rotation=90)
@@ -402,27 +413,42 @@ def pHeatmap(data):
       
       leg.get_title().set_fontsize(6)#min(grpSize)+2
       g.ax_heatmap.add_artist(leg)
+  ppr.pprint('HEAT post plotting cost %f seconds' % (time.time()-sT) )
   return json.dumps([iostreamFig(g),Xdata])#)#
 
 def GD(data):
   adata = None;
   for one in data['cells'].keys():
+    sT = time.time()
     oneD = {'cells':data['cells'][one],
             'genes':[],
             'grp':[],
             'url':data['url']}
     D = createData(oneD)
+    ppr.pprint("one grp aquire data cost %f seconds" % (time.time()-sT))
     D.obs['cellGrp'] = one
     if adata is None:
       adata = D
     else:
+      sT =time.time()
       adata = adata.concatenate(D)
+      ppr.pprint("Concatenate data cost %f seconds" % (time.time()-sT))
   if adata is None:
     return Msg("No cells were satisfied the condition!")
+  
   ##
   adata.obs.astype('category')
-  cutOff = 'geneN'+data['cutoff']
-  adata.obs[cutOff] = adata.to_df().apply(lambda x: sum(x>float(data['cutoff'])),axis=1)
+  cutOff = 'geneN_cutoff'+data['cutoff']
+  #sT = time.time()
+  #adata.obs[cutOff] = adata.to_df().apply(lambda x: sum(x>float(data['cutoff'])),axis=1)
+  #ppr.pprint(time.time()-sT)
+  #sT = time.time()
+  #df = adata.to_df()
+  #adata.obs[cutOff] = df[df>float(data['cutoff'])].count(axis=1)
+  #ppr.pprint(time.time()-sT)
+  sT = time.time()
+  adata.obs[cutOff] = (adata.X >float(data['cutoff'])).sum(1)
+  ppr.pprint(time.time()-sT)
   ##
   w = 3
   if len(data['cells'])>1:
