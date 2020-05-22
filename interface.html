@@ -4,19 +4,18 @@
     <!-- for datatables -->
     <script type="text/javascript" src="static/DataTables/datatables.min.js"></script>
     <link rel="stylesheet" type="text/css" href="static/DataTables/datatables.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
 
       .splitter {
-          width: 100%;
-          height: 100%;
           display: flex;
+          width: 100%;
       }
       
-      #separator {
+      #separator {  
           cursor: col-resize;
+          min-width: 6px;
           background-color: #aaa;
-          width: 6px;
-          height: 100%;
           background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAhCAQAAABOpSL+AAAAIklEQVR4AWMwbb/PdR+JZDD9f1/oPhI5sgVGBSruc9xHIgGdSQqqQJGkRgAAAABJRU5ErkJggg==') center center no-repeat #F1F1F1;
       /* prevent browser's built-in drag from interfering */
           -moz-user-select: none;
@@ -27,16 +26,15 @@
       #panel-left {
           background-color: #dde;
           width: 20%;
-          height: 100%;
-          min-width: 10px;
           white-space: nowrap;
       }
       
       #panel-right {
           background-color: #fff;
-          width: 79%;
-          height: 100%;
-          min-width: 10px;
+          width: 80%;
+      }
+      #separator, #panel-left, #panel-right {
+          vertical-align: top; 
       }
 
       .block {
@@ -60,7 +58,6 @@
         width: 100%;
         height: 100%;
         
-        overflow: hidden;
         border: 1px solid #ccc;
         background-color: #f1f1f1;
       }
@@ -143,7 +140,7 @@
 <div class="splitter">
 	<div id="panel-left">
     <div class="tab">
-      <button class="tablinks" onclick="refresh()" style="color:#4AB05A"><b>Refresh</b></button>
+      <button class="tablinks" onclick="sync()" style="color:#4AB05A"><b>Sync <i class="fa fa-refresh" style="color:#4AB05A"></i></b></button>
       <button class="tablinks" onclick="selFun(event, 'ADDG')">Add Genes</button>
       <button class="tablinks" onclick="selFun(event, 'SGV')">Violin</button>
       <button class="tablinks" onclick="selFun(event, 'PGV')">Stacked Violin</button>
@@ -505,7 +502,7 @@
 	</div>
 </div>
 
-<!-- <button class="block" onclick="refresh()">Refresh</button> -->
+<!-- <button class="block" onclick="sync()">Refresh</button> -->
 
 
 
@@ -572,7 +569,7 @@ function dragElement( element, direction){
 
           element.style.left = md.lper+moveR+"%";
           pLeft.style.width = md.lper+moveR+"%";
-          pRight.style.width = (99-(md.lper+moveR)) +"%";
+          pRight.style.width = (100-(md.lper+moveR)) +"%";
     	}
     }
 }
@@ -590,7 +587,7 @@ function selFun(evt,sel){
   }
   document.getElementById(sel).style.display = "block";
   evt.currentTarget.className += " active";
-  refresh();
+  sync();
 }
 function ZoomIn(strDiv){
   var r = $("#"+strDiv).width() / $("#"+strDiv).parent().width() * 100;
@@ -656,7 +653,7 @@ function init(){
     //----------------
     $("#panel-left").prop('style')['width'] = "20%";
     $("#separator").prop('style')['left'] = "20%";
-    $("#panel-right").prop('style')['width'] = "79%";
+    $("#panel-right").prop('style')['width'] = "80%";
     //--------------------------------------------------------------------------
     //ABBRinit
     var grps = Object.keys(window.store.getState().categoricalSelection);
@@ -728,13 +725,17 @@ function init(){
     $('#GDcutoff').prop('min',0);
     $('#DUALcutoff').prop('min',0);
     $('#DOTcutoff').prop('min',0);  
+
+    const unsubscribe = window.store.subscribe(() => {
+      sync();
+    });
     
     window.bioInit=true;
   }
   return true;
 }
-//Page refresh functions
-function refresh(){
+//Page sync functions
+function sync(){
   cellNupdate();
   ABBRref();
   ADDGref();
@@ -1320,7 +1321,7 @@ function MARKplot(){
     }
   }
   if(cells.length==0){
-    $('#MARKnote').text("Please select cells into selected groups");
+    $('#MARKnote').text("Please use selection tools to put cells into groups");
     return;
   }
   
@@ -1423,8 +1424,12 @@ function SGVplot(){
       }
     }
   }
+  if($("#SGVgene").val() == null) {
+    $('#SGVnote').text("Please add genes either from the VIP menu or the main window");
+    return;
+  } 
   if(cells.length==0){
-    $('#SGVnote').text("Please select cells into selected groups");
+    $('#SGVnote').text("Please use selection tools to put cells into groups");
     return;
   }
   if(+$("#SGVcutoff").val() < +$("#SGVcutoff").prop('min')){
@@ -1504,7 +1509,7 @@ function PGVplot(){
     }
   }
   if(cells.length==0){
-    $('#PGVnote').text("Please select cells into selected groups");
+    $('#PGVnote').text("Please use selection tools to put cells into groups");
     return;
   }
   if(+$("#PGVcutoff").val()< +$("#PGVcutoff").prop('min')){
@@ -1568,7 +1573,7 @@ function HEATplot(){
     }
   }
   if(cells.length==0){
-    $('#HEATnote').text("Please select cells into selected groups");
+    $('#HEATnote').text("Please use selection tools to put cells into groups");
     return;
   }
 
@@ -1727,7 +1732,7 @@ function DOTplot(){
     }
   }
   if(cells.length==0){
-    $('#DOTerror').text("Please select cells into selected groups");
+    $('#DOTerror').text("Please use selection tools to put cells into groups");
     return;
   }
 
@@ -1806,7 +1811,7 @@ function TRAKplot(){
     }
   }
   if(cells.length==0){
-    $('#TRAKerror').text("Please select cells into selected groups");
+    $('#TRAKerror').text("Please use selection tools to put cells into groups");
     return;
   }
 
@@ -1881,7 +1886,7 @@ function EMBEDplot(){
     }
   }
   if(cells.length==0){
-    $('#EMBEDnote').text("Please select cells into selected groups");
+    $('#EMBEDnote').text("Please use selection tools to put cells into groups");
     return;
   }
   
@@ -1962,7 +1967,7 @@ function DUALplot(){
     }
   }
   if(cells.length==0){
-    $('#DUALnote').text("Please select cells into selected groups");
+    $('#DUALnote').text("Please use selection tools to put cells into groups");
     return;
   }
   
@@ -2048,7 +2053,7 @@ function ADDsave(){
 function ADDload(content){
   window.biogen = content[0];
   window.bioGeneGrp = content[1];
-  refresh();
+  sync();
 }
 function IMGsave(){
   return(window.figOpt);
@@ -2176,7 +2181,7 @@ function DEGload(content){
   $("#DEGmethod").val(content[1]);
 }
 function save(){
-  refresh();
+  sync();
 
   var content = ['cellxgene.'+window.store.getState().config.displayNames.dataset];
   content.push(ABBRsave());
@@ -2198,7 +2203,7 @@ function save(){
   hiddenE.click();
 }
 function inputClick(){
-  refresh();
+  sync();
   $("#loadfile").trigger('click');
 }
 function load(){
