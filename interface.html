@@ -140,7 +140,6 @@
 <div class="splitter">
 	<div id="panel-left">
     <div class="tab">
-      <button class="tablinks" onclick="sync()" style="color:#4AB05A"><b>Sync <i class="fa fa-refresh" style="color:#4AB05A"></i></b></button>
       <button class="tablinks" onclick="selFun(event, 'ADDG')">Add Genes</button>
       <button class="tablinks" onclick="selFun(event, 'SGV')">Violin</button>
       <button class="tablinks" onclick="selFun(event, 'PGV')">Stacked Violin</button>
@@ -157,6 +156,7 @@
       <button class="tablinks" onclick="selFun(event, 'ABBR')">Combine & Abbr.</button>
       <button class="tablinks" onclick="save()">Save</button>
       <button class="tablinks" onclick="inputClick()">Load</button>
+      <button class="tablinks" onclick="sync()">Sync <i class="fa fa-refresh"></i></button>
     </div>
 	</div>
 	<div id="separator" ></div>
@@ -185,10 +185,10 @@
     
     <div id="ADDG" class="tabcontent">
       <h3>Add genes of interest for plotting</h3>
-      <p>Please input the gene list:</p>
+      <p>Please input a list of genes (comma, semicolon, space or tab delimited):</p>
       <p><textarea id="ADDGinput" rows="5" cols="70"></textarea></p>
       <p><button onclick="ADDGadd()"><b>Add</b></button></p>
-      <p>The following genes were selected: <span id="ADDGsel"></span></p>
+      <p>The following genes were added: <span id="ADDGsel"></span></p>
       <p>The following genes are not in the data: <span id="ADDGdel" style="color:red"></span></p>
       
       <h3>Add gene sets of interest for plotting</h3>
@@ -197,7 +197,7 @@
         <button onclick="ADDGsetAdd()"><b>Add</b></button>
       </p>
       <span id="ADDGsetError" style="color:red"></span><br>
-      The user-defined gene groups:
+      The user-defined gene sets:
       <p id="ADDGsets"></p>
     </div><!--ADDG-->
     
@@ -310,7 +310,7 @@
       <p>Select plotting scale:
       <select id="HEATnorm">
         <option value="X">Expression</option>
-        <option value="zscore">Gene Zscore</option>
+        <option value="zscore">Expression Z-score</option>
       </select></p>
       <p><button class="HEATbt"  onclick="HEATplot()"><b>Plot</b></button></p>
       <p id="HEATnote" style="color:red;"></p>
@@ -332,7 +332,7 @@
         <label><input class="DOTcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DOTcellN1" style="color:red">0</span>)</label>
         <label><input class="DOTcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DOTcellN2" style="color:red">0</span>)</label>
       </p>
-      <p>Select user defined gene groups:</p><p id="DOTgeneGrp"></p>
+      <p>Select user-defined gene sets:</p><p id="DOTgeneGrp"></p>
       <p>Group by: <select id="DOTgrp"></select> and the expression cuttoff: <input id="DOTcutoff" type="number" step="0.1" value="1"/></p>
       <p id="DOTerror" style="color:red;"></p>
       <p><button onclick="DOTplot()"><b>Plot</b></button></p>
@@ -382,7 +382,7 @@
         <label><input class="TRAKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="TRAKcellN1" style="color:red">0</span>)</label>
         <label><input class="TRAKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="TRAKcellN2" style="color:red">0</span>)</label>
       </p>
-      <p>>Select user defined gene groups: </p><p id="TRAKgeneGrp"></p>
+      <p>>Select user-defined gene sets: </p><p id="TRAKgeneGrp"></p>
       <p>Group by: <select id="TRAKgrp"></select></p>
       <p id="TRAKerror" style="color:red;"></p>
       <p><button onclick="TRAKplot()"><b>Plot</b></button></p>
@@ -1178,6 +1178,8 @@ function ADDGadd(){
   
   for(var i=0;i<addG.length;i++){
     var one = addG[i].trim();
+    if (addG[i].trim().length<1)
+      continue;
     var ix = totalGlower.indexOf(one.toLowerCase());
     if(ix !== -1){
       var oneG = totalG[ix];
@@ -1425,7 +1427,7 @@ function SGVplot(){
     }
   }
   if($("#SGVgene").val() == null) {
-    $('#SGVnote').text("Please add genes either from the VIP menu or the main window");
+     $('#SGVnote').text("Please add genes either from the VIP menu or the main window");
     return;
   } 
   if(cells.length==0){
@@ -1572,6 +1574,7 @@ function HEATplot(){
       }
     }
   }
+
   if(cells.length==0){
     $('#HEATnote').text("Please use selection tools to put cells into groups");
     return;
@@ -1584,8 +1587,8 @@ function HEATplot(){
       genes.push(x[i].value);
     }
   }
-  if(genes.length==0){
-    $('#HEATnote').text("Please select a gene to plot");
+  if(genes.length<2){
+    $('#HEATnote').text("It needs at least two genes");
     return;
   }
   var grps = [];
