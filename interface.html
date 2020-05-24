@@ -153,9 +153,9 @@
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
       <hr size="1" noshade>
       <button class="tablinks" onclick="selFun(event, 'IMG')">Figure Option</button>
-      <button class="tablinks" onclick="selFun(event, 'ABBR')">Combine & Abbr.</button>
-      <button class="tablinks" onclick="save()">Save</button>
-      <button class="tablinks" onclick="inputClick()">Load</button>
+      <button class="tablinks" onclick="selFun(event, 'ABBR')">Comb. & Abbr.</button>
+      <button class="tablinks" onclick="save()">Save Session</button>
+      <button class="tablinks" onclick="inputClick()">Load Session</button>
       <button class="tablinks" onclick="sync()">Sync <i class="fa fa-refresh"></i></button>
     </div>
 	</div>
@@ -219,12 +219,12 @@
     </div><!--GD-->
     
     <div id="MARK" class="tabcontent">
-      <h3>Marker genes among annotations in selected cells</h3>
+      <h3>Marker genes of annotation categories in selected cells</h3>
       <p>Choose cell set(s):
         <label><input class="MARKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="MARKcellN1" style="color:red">0</span>)</label>
         <label><input class="MARKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="MARKcellN2" style="color:red">0</span>)</label>
       </p>
-      <p>Markers for annotation: 
+      <p>Select an annotation: 
       <select id="MARKgrp"></select></p>
       <p>By method: 
       <select id="MARKmethod">
@@ -232,7 +232,7 @@
         <option value="t-test">t-test</option>
         <option value="wilcoxon">wilcoxon</option>
         <option value="t-test_overestim_var">t-test_overestim_var</option>
-      </select> with the number of markers per group: <input id="MARKn" type="number" step="1" value="10" min="3"/></p>
+      </select> with the number of genes per group: <input id="MARKn" type="number" step="1" value="10" min="3"/></p>
       <button class="MARKbt" onclick="MARKplot()"><b>Find/Plot</b></button>
       <p id="MARKnote" style="color:red;"></p>
       <div id="MARKspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
@@ -249,7 +249,7 @@
     </div><!--MARK-->
     
     <div id="SGV" class="tabcontent">
-      <h3>Plot Single Gene Violin on selected cells and a single gene</h3>
+      <h3>Violin plot of a gene on selected cells</h3>
       <p>Choose cell set(s):
         <label><input class="SGVcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="SGVcellN1" style="color:red">0</span>)</label>
         <label><input class="SGVcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="SGVcellN2" style="color:red">0</span>)</label>
@@ -270,7 +270,7 @@
     </div><!--SGV-->
     
     <div id="PGV" class="tabcontent">
-      <h3>Plot a Panel of Violins on selected cells and genes</h3>
+      <h3>Stacked violin plot of genes on selected cells</h3>
       <p>Choose cell set(s):
         <label><input class="PGVcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="PGVcellN1" style="color:red">0</span>)</label>
         <label><input class="PGVcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="PGVcellN2" style="color:red">0</span>)</label>
@@ -296,7 +296,7 @@
     </div><!--PGV-->
     
     <div id="HEAT" class="tabcontent">
-      <h3>Plot Heatmap on selected cells and genes</h3>
+      <h3>Heatmap on selected cells and genes</h3>
       <p>Choose cell set(s):
         <label><input class="HEATcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="HEATcellN1" style="color:red">0</span>)</label>
         <label><input class="HEATcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="HEATcellN2" style="color:red">0</span>)</label>
@@ -327,7 +327,7 @@
     </div><!--HEAT-->
     
     <div id="DOT" class="tabcontent">
-      <h3>Plot Dot as selected cell propotion which express selected genes</h3>
+      <h3>Dot plot shows per group, the fraction of cells expressing a gene (dot size) and the mean expression of the gene in those cell (color scale)</h3>
       <p>Choose cell set(s):
         <label><input class="DOTcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DOTcellN1" style="color:red">0</span>)</label>
         <label><input class="DOTcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DOTcellN2" style="color:red">0</span>)</label>
@@ -347,7 +347,7 @@
     </div><!--DOT-->
     
     <div id="EMBED" class="tabcontent">
-      <h3>Embedding visualization on selected genes and annotations</h3>
+      <h3>Embedding plots on selected genes and annotations</h3>
       <p>Choose cell set(s):
         <label><input class="EMBEDcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="EMBEDcellN1" style="color:red">0</span>)</label>
         <label><input class="EMBEDcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="EMBEDcellN2" style="color:red">0</span>)</label>
@@ -377,12 +377,12 @@
     </div><!--EMBED-->
     
     <div  id="TRAK" class="tabcontent">
-      <h3>Plot a expression track for selected cells and genes</h3>
+      <h3>Track plot shows the gene expression represented by height</h3>
       <p>Choose cell set(s):
         <label><input class="TRAKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="TRAKcellN1" style="color:red">0</span>)</label>
         <label><input class="TRAKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="TRAKcellN2" style="color:red">0</span>)</label>
       </p>
-      <p>>Select user-defined gene sets: </p><p id="TRAKgeneGrp"></p>
+      <p>Select user-defined gene sets: </p><p id="TRAKgeneGrp"></p>
       <p>Group by: <select id="TRAKgrp"></select></p>
       <p id="TRAKerror" style="color:red;"></p>
       <p><button onclick="TRAKplot()"><b>Plot</b></button></p>
@@ -397,7 +397,7 @@
     </div><!--TRAK-->
       
     <div  id="DUAL" class="tabcontent">
-      <h3>Embedding visualization of two selected genes in selected cells</h3>
+      <h3>Embedding plot of two genes in selected cells</h3>
       <p>Choose cell set(s):
         <label><input class="DUALcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DUALcellN1" style="color:red">0</span>)</label>
         <label><input class="DUALcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DUALcellN2" style="color:red">0</span>)</label>
@@ -451,7 +451,6 @@
     </div><!--DEG-->
     
     <div id="IMG" class="tabcontent">
-      <h3>Set figure options</h3>
       <p>Choose a DPI: 
       <select id="IMGdpi" onchange="IMGset()">
         <option value=150>150</option>
@@ -475,7 +474,7 @@
         <option value='true'>True</option>
         <option value='false'>False</option>
       </select></p>  
-      <p>Choose a default color map:
+      <p>Choose UMAP/tSNE color map:
       <select id="IMGcolor" onchange="IMGset()">
         <option value='viridis'>viridis</option>
         <option value='plasma'>plasma</option>
@@ -1197,8 +1196,8 @@ function ADDGadd(){
 function ADDGsetAdd(){
   $("#ADDGsetError").text("");
   var grpName = $("#ADDGsetName").val().trim();
-  if(grpName.length<2){
-    $("#ADDGsetError").text("Please provide a gene set name with at least two characters!");
+  if(grpName.length<1){
+    $("#ADDGsetError").text("Please provide a gene set name with at least one character!");
     return;
   }
   var grpKeys = Object.keys(window.bioGeneGrp);
@@ -2230,7 +2229,7 @@ function load(){
     TRAKload(content[i++]);
     DUALload(content[i++]);
     DEGload(content[i++]);
-    alert("Saved information was loaded successfully!\nYou might start with 'Check All Features' in 'Combine & Abbr' tab!");
+    alert("Saved information was loaded successfully!\nYou might start with 'Check All Features' in 'Comb. & Abbr.' tab!");
   };
   reader.readAsText($("#loadfile")[0].files[0]);
   
