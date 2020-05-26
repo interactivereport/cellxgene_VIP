@@ -141,7 +141,7 @@
 	<div id="panel-left">
     <div class="tab">
       <button class="tablinks" onclick="selFun(event, 'ADDG')">Add Genes</button>
-      <button class="tablinks" onclick="selFun(event, 'SGV')">Violin</button>
+      <button class="tablinks" onclick="selFun(event, 'SGV');if($('#SGVgene').val() == null) $('#SGVnote').text('Please add genes either from the VIP menu or the main window');">Violin</button>
       <button class="tablinks" onclick="selFun(event, 'PGV')">Stacked Violin</button>
       <button class="tablinks" onclick="selFun(event, 'HEAT')">Heatmap</button>
       <button class="tablinks" onclick="selFun(event, 'EMBED')">UMAP/tSNE</button>
@@ -156,7 +156,7 @@
       <button class="tablinks" onclick="selFun(event, 'ABBR')">Comb. & Abbr.</button>
       <button class="tablinks" onclick="save()">Save Session</button>
       <button class="tablinks" onclick="inputClick()">Load Session</button>
-      <button class="tablinks" onclick="sync()">Sync <i class="fa fa-refresh"></i></button>
+      <button class="tablinks" onclick="sync();">Sync <i class="fa fa-refresh"></i></button>
     </div>
 	</div>
 	<div id="separator" ></div>
@@ -451,6 +451,7 @@
     </div><!--DEG-->
     
     <div id="IMG" class="tabcontent">
+      <p>
       <p>Choose a DPI: 
       <select id="IMGdpi" onchange="IMGset()">
         <option value=150>150</option>
@@ -1425,10 +1426,10 @@ function SGVplot(){
       }
     }
   }
-  if($("#SGVgene").val() == null) {
-     $('#SGVnote').text("Please add genes either from the VIP menu or the main window");
+  if($('#SGVgene').val() == null) {
+    $('#SGVnote').text('Please add genes either from the VIP menu or the main window');
     return;
-  } 
+  }
   if(cells.length==0){
     $('#SGVnote').text("Please use selection tools to put cells into groups");
     return;
