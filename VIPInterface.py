@@ -218,7 +218,8 @@ def distributeTask(aTask):
   return {
     'SGV':SGV,
     'PGV':PGV,
-    'HEAT':pHeatmap,
+    'HEATplot':pHeatmap,
+    'HEATdata':HeatData,
     'GD':GD,
     'DEG':DEG,
     'DOT':DOT,
@@ -226,7 +227,8 @@ def distributeTask(aTask):
     'TRAK':TRACK,
     'DUAL':DUAL,
     'MARK': MARK,
-    'MINX':MINX
+    'MINX':MINX,
+    'DENS':DENS
   }.get(aTask,errorTask)
 
 def iostreamFig(fig):
@@ -334,11 +336,11 @@ def pHeatmap(data):
   # if the number of element in a category is larger than 20, husl is choosen
   #Xsep = createData(data,True)
   #adata = sc.AnnData(Xsep['expr'],Xsep['obs'])
-  sT = time.time()
+  #sT = time.time()
   adata = createData(data)
-  Xdata = pd.concat([adata.to_df(),adata.obs], axis=1, sort=False).to_csv()
-  ppr.pprint('HEAT data reading cost %f seconds' % (time.time()-sT) )
-  sT = time.time()
+  #Xdata = pd.concat([adata.to_df(),adata.obs], axis=1, sort=False).to_csv()
+  #ppr.pprint('HEAT data reading cost %f seconds' % (time.time()-sT) )
+  #sT = time.time()
   exprOrder = True
   if data['order']!="Expression":
     exprOrder = False;
@@ -378,16 +380,16 @@ def pHeatmap(data):
     heatCol="vlag"
     heatCenter=0
     colTitle="Z-score"
-  ppr.pprint('HEAT data preparing cost %f seconds' % (time.time()-sT) )
-  sT = time.time()
+  #ppr.pprint('HEAT data preparing cost %f seconds' % (time.time()-sT) )
+  #sT = time.time()
   g = sns.clustermap(adata.to_df(),
                      method="ward",row_cluster=exprOrder,z_score=Zscore,cmap=heatCol,center=heatCenter,
                      row_colors=pd.concat(grpCol,axis=1).astype('str'),yticklabels=False,xticklabels=True,
                      figsize=(w,h),colors_ratio=0.05,
                      cbar_pos=(.3, .95, .55, .02),
                      cbar_kws={"orientation": "horizontal","label": colTitle,"shrink": 0.5})
-  ppr.pprint('HEAT plotting cost %f seconds' % (time.time()-sT) )
-  sT = time.time()
+  #ppr.pprint('HEAT plotting cost %f seconds' % (time.time()-sT) )
+  #sT = time.time()
   g.ax_col_dendrogram.set_visible(False)
   #g.ax_row_dendrogram.set_visible(False)
   plt.setp(g.ax_heatmap.xaxis.get_majorticklabels(), rotation=90)
@@ -413,9 +415,14 @@ def pHeatmap(data):
       
       leg.get_title().set_fontsize(6)#min(grpSize)+2
       g.ax_heatmap.add_artist(leg)
-  ppr.pprint('HEAT post plotting cost %f seconds' % (time.time()-sT) )
-  return json.dumps([iostreamFig(g),Xdata])#)#
+  #ppr.pprint('HEAT post plotting cost %f seconds' % (time.time()-sT) )
+  return iostreamFig(g)#json.dumps([iostreamFig(g),Xdata])#)#
 
+def HeatData(data):
+  adata = createData(data)
+  Xdata = pd.concat([adata.to_df(),adata.obs], axis=1, sort=False).to_csv()
+  return Xdata
+  
 def GD(data):
   adata = None;
   for one in data['cells'].keys():
@@ -620,6 +627,48 @@ def MARK(data):
           one += [gScore[k][i][j]]
       scoreM += [one+[i]]
   return json.dumps([scoreM,iostreamFig(fig)])
+
+def DENS(data):
+  #sT = time.time()
+  adata = createData(data)
+  #ppr.pprint("read data cost: %f seconds" % (time.time()-sT))
+  #sT = time.time()
+  bw=float(data['bw'])
+  sGrp = data['category'][0]
+  cGrp = data['category'][1]
+  
+  subSize = 4
+  split = list(adata.obs[sGrp].unique())
+  genes = list(adata.var.index)
+  colGrp = list(adata.obs[cGrp].unique())
+  #legendCol = math.ceil(len(colGrp)/11)
+  fig = plt.figure(figsize=(len(genes)*subSize,len(split)*(subSize-1)))
+  gs = fig.add_gridspec(len(split),len(genes))#,wspace=0.2
+  #dataT = 0
+  #plotT = 0
+  for i in range(len(split)):
+    #resT = time.time()
+    Dobs = adata[adata.obs[sGrp]==split[i]].obs[cGrp]
+    D = adata[adata.obs[sGrp]==split[i]].to_df()
+    #dataT += (time.time()-resT)
+    for j in range(len(genes)):
+      ax = fig.add_subplot(gs[i,j])
+      #resT = time.time()
+      for one in colGrp:
+        sns.kdeplot(D[Dobs==one][genes[j]].to_numpy(),bw=bw,label=one)
+      #plotT += (time.time()-resT)
+      if i==0:
+        ax.set_title(genes[j])
+      if j==0:
+        ax.set_ylabel(split[i],fontsize=float(data['figOpt']['fontsize']))
+      if i==0 and j==(len(genes)-1):
+        ax.legend(prop={'size': 10},title = cGrp,loc=2,bbox_to_anchor=(1,0.5),frameon=False)#,ncol=legendCol
+      else:
+        ax.get_legend().remove()
+  #ppr.pprint("plotting data cost: %f seconds" % dataT)
+  #ppr.pprint("plotting plot cost: %f seconds" % plotT)
+  #ppr.pprint("plotting total cost: %f seconds" % (time.time()-sT))
+  return iostreamFig(fig)
 
 def version():
   print("1.0.6")

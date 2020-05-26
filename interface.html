@@ -147,6 +147,7 @@
       <button class="tablinks" onclick="selFun(event, 'EMBED')">UMAP/tSNE</button>
       <button class="tablinks" onclick="selFun(event, 'DOT')">Dot Plot</button>
       <button class="tablinks" onclick="selFun(event, 'TRAK')">Tracksplot</button>
+      <button class="tablinks" onclick="selFun(event, 'DENS')">Panel Density</button>
       <button class="tablinks" onclick="selFun(event, 'DUAL')">Dual Genes</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'DEG')">DEG</button>
@@ -319,7 +320,7 @@
         <button onclick="ZoomIn('HEATresize')">Zoom In</button>
         <button onclick="ZoomOut('HEATresize')">Zoom Out</button>
         <button class="HEATpngBT" onclick="saveImg('HEATimg')" disabled>Save</button>
-        <button class="HEATsaveBT" onclick="HEATsave()" disabled>Data</button>
+        <button class="HEATsaveBT" onclick="HEATdata()" disabled>Download Expression Data</button>
       </div>
       <div id="HEATresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="HEATfig"></p></div>
       <div id="HEATdata" style="visibility: hidden;"></div>
@@ -395,6 +396,31 @@
       <div id="TRAKresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="TRAKfig"></p></div>
     
     </div><!--TRAK-->
+
+    <div  id="DENS" class="tabcontent">
+      <h3>Plot a panel of gene expression density</h3>
+      <p>Choose cell set(s):
+        <label><input class="DENScell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DENScellN1" style="color:red">0</span>)</label>
+        <label><input class="DENScell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DENScellN2" style="color:red">0</span>)</label>
+      </p>
+      <p>Choose genes:</p>
+      <p id="DENSgene"></p>
+      <p>Split by:
+      <select id="DENSsplit"></select></p>
+      <p>Color by:
+      <select id="DENSgrp"></select></p>
+      <p>Desity estimation precision: <input id="DENSprec" type="number" step="0.1" value="1" min="0.1"/></p>
+      <p id="DENSerror" style="color:red;"></p>
+      <p><button onclick="DENSplot()"><b>Plot</b></button></p>
+      <div id="DENSspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+      <div style="text-align: center;">
+        <button onclick="ZoomIn('DENSresize')">Zoom In</button>
+        <button onclick="ZoomOut('DENSresize')">Zoom Out</button>
+        <button class="DENSpngBT" onclick="saveImg('DENSimg')" disabled>Save</button>
+      </div>
+      <div id="DENSresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="DENSfig"></p></div>
+    
+    </div><!--DENS-->
       
     <div  id="DUAL" class="tabcontent">
       <h3>Embedding plot of two genes in selected cells</h3>
@@ -627,6 +653,7 @@ function cellNupdate(){
   $('#EMBEDcellN1').text(n1);
   $('#TRAKcellN1').text(n1);
   $('#DUALcellN1').text(n1);
+  $('#DENScellN1').text(n1);
 
   $('#MARKcellN2').text(n2);
   $('#SGVcellN2').text(n2);
@@ -638,6 +665,7 @@ function cellNupdate(){
   $('#EMBEDcellN2').text(n2);
   $('#TRAKcellN2').text(n2);
   $('#DUALcellN2').text(n2);
+  $('#DENScellN2').text(n2);
 }
 
 //Page Initial functions
@@ -684,6 +712,8 @@ function init(){
     var dot = document.getElementById("DOTgrp");
     var trak = document.getElementById("TRAKgrp");
     var mark = document.getElementById("MARKgrp");
+    var densS = document.getElementById("DENSsplit");
+    var densG = document.getElementById("DENSgrp");
     for(const one of grps){
       sgv.add(createOpt(one));
       pgv.add(createOpt(one));
@@ -691,6 +721,8 @@ function init(){
       dot.add(createOpt(one));
       trak.add(createOpt(one));
       mark.add(createOpt(one));
+      densS.add(createOpt(one));
+      densG.add(createOpt(one));
     }
     //--------------------------------------------------------------------------
     //HEAT
@@ -748,6 +780,7 @@ function sync(){
   DEGref();
   EMBEDref();
   IMGref();
+  DENSref();
 }
 function ABBRref(){
 }
@@ -973,6 +1006,48 @@ function TRAKref(){
     x.remove(grps.length);
   }
 
+}
+function DENSref(){
+  var genes = window.store.getState().universe.varData.colIndex.rindex;
+  genes = genes.concat(window.biogen);
+  genes = [...new Set(genes)];
+  var optG = [], NcheckG=[];
+  //remove checkbox which are not in the gene list
+  $(".DENSgenes").each(function(){
+    optG.push($(this).val());
+    if(!genes.includes($(this).val())){
+      $('#DENSck'+$(this).val()).remove();
+    }else if($(this).prop("checked") == false){
+      NcheckG.push($(this).val());
+    }
+  })
+  //add options which are missing from gene list
+  if(genes.length>0){
+    var htmlCheck = $('#DENSgene').html();
+    for(const g of genes){
+      if(!optG.includes(g)){
+        htmlCheck += '<label id="DENSck'+g+'"><input class="DENSgenes" type="checkbox" value="'+g+'" checked/>'+g+'</label>';//
+      }
+    }
+    $('#DENSgene').html(htmlCheck);
+  }
+  $(".DENSgenes").each(function(){
+    if(NcheckG.includes($(this).val())){
+      $(this).prop("checked",false);
+    }
+  })
+
+  var x = document.getElementById("DENSgrp");
+  var y = document.getElementById("DENSsplit");
+  var grps = Object.keys(window.store.getState().categoricalSelection);
+  var grpKeys = Object.keys(window.bioCombine);
+  if(grpKeys.length>0 && grps.length==x.length){
+    x.add(createOpt("Custom_combine"));
+    y.add(createOpt("Custom_combine"));
+  }else if(grpKeys.length==0 && grps.length<x.length){
+    x.remove(grps.length);
+    y.remove(grps.length);
+  }
 }
 function EMBEDref(){
   var genes = window.store.getState().universe.varData.colIndex.rindex;
@@ -1556,7 +1631,7 @@ function PGVplot(){
     }
   })
 }
-function HEATplot(){
+function HEATcheck(){
   $('#HEATnote').text("");
   var cells=[], x = document.getElementsByClassName('HEATcell');
   for(i=0;i<x.length;i++){
@@ -1620,16 +1695,21 @@ function HEATplot(){
             'norm':$("#HEATnorm option:selected").val(),
             'grp':grps,
             'figOpt':window.figOpt};
+  return D;
+}
+function HEATplot(){
+  D = HEATcheck();
+  if(D==undefined) return;
+  D['method'] = 'HEATplot';
   $.ajax({
     type:"POST",
     url: "/VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
-      resD = JSON.parse(res);
-      showImg('HEATfig',resD[0]);
+      //resD = JSON.parse(res);
+      showImg('HEATfig',res);//resD[0]
       //document.getElementById("HEATfig").innerHTML = '<img id="HEATpng" src="data:image/png;base64,'+resD[0]+'" width=100% height="auto"/>';// height="450" width="450"
-      $("#HEATdata").text(resD[1]);//Cd79a, Fxyd3, Cd74, Cd52, Krt5
       $(".HEATbt").prop("disabled",false);
       $(".HEATpngBT").prop('disabled',false);
       $(".HEATsaveBT").prop('disabled',false);
@@ -1638,21 +1718,42 @@ function HEATplot(){
     error: function(request,status,error){
       $('#HEATnote').text(request.status+request.responseText);
       document.getElementById("HEATfig").innerHTML = '<img id="HEATpng" src="data:image/png;base64," width=100% height="auto"/>';// height="450" width="450"
-      $("#HEATdata").text('');//Cd79a, Fxyd3, Cd74, Cd52, Krt5
       $(".HEATbt").prop("disabled",false);
       document.getElementById("HEATspin").style.visibility="hidden";
 
     }
-  })
-
+  });
 }
-function HEATsave(){
-  var content = $("#HEATdata").text();
-  var hiddenE = document.createElement('a');
-  hiddenE.href="data:attachment/text,"+encodeURIComponent(content);
-  hiddenE.target='_blank';
-  hiddenE.download='cellxgene.'+window.store.getState().config.displayNames.dataset+'.heatmapData.csv';
-  hiddenE.click();
+function HEATdata(){
+  console.log("HEATsave");
+  D = HEATcheck();
+  if(D==undefined) return;
+  D['method'] = 'HEATdata';
+  $.ajax({
+    type:"POST",
+    url: "/VIP",
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(res){
+      var hiddenE = document.createElement('a');
+      hiddenE.href="data:attachment/text,"+encodeURIComponent(res);
+      hiddenE.target='_blank';
+      hiddenE.download='cellxgene.'+window.store.getState().config.displayNames.dataset+'.heatmapData.csv';
+      hiddenE.click();
+
+      $(".HEATbt").prop("disabled",false);
+      $(".HEATpngBT").prop('disabled',false);
+      $(".HEATsaveBT").prop('disabled',false);
+      document.getElementById("HEATspin").style.visibility="hidden";
+    },
+    error: function(request,status,error){
+      $('#HEATnote').text(request.status+request.responseText);
+      document.getElementById("HEATfig").innerHTML = '<img id="HEATpng" src="data:image/png;base64," width=100% height="auto"/>';// height="450" width="450"
+      $(".HEATbt").prop("disabled",false);
+      document.getElementById("HEATspin").style.visibility="hidden";
+
+    }
+  });
 }
 function DEGfind(){
   var cells = {};
@@ -1869,6 +1970,91 @@ function TRAKplot(){
     }
   })
   
+}
+function DENSplot(){
+  $('#DENSerror').text("");
+  var cells=[], x = document.getElementsByClassName('DENScell');
+  for(i=0;i<x.length;i++){
+    if(x[i].checked){
+      if(!!window.store.getState().differential[x[i].value]){
+        if(cells.length==0){
+          cells = window.store.getState().differential[x[i].value];
+        }else{
+          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
+          tmp.set(cells);
+          tmp.set(window.store.getState().differential[x[i].value],cells.length);
+          cells = tmp;
+        }
+      }
+    }
+  }
+  if(cells.length==0){
+    $('#DENSerror').text("Please use selection tools to put cells into groups");
+    return;
+  }
+  
+  var genes = [];
+  var i, x = document.getElementsByClassName('DENSgenes');
+  for(i=0;i<x.length;i++){
+    if(x[i].checked){
+      genes.push(x[i].value);
+    }
+  }
+  if(genes.length<1){
+    $('#DENSerror').text("It needs at least a gene");
+    return;
+  }
+  if(+$("#DENSprec").val() < +$("#DENSprec").prop('min')){
+    $('#DENSerror').text("The minimal precision is "+$("#DENSprec").prop('min'));
+    return;
+  }
+  
+  var category = [$("#DENSsplit").val(),$("#DENSgrp").val()];
+  var combGrp = [];
+  var grp= [];
+  if(category.includes("Custom_combine")){
+    grp = Object.keys(window.bioCombine);
+    combGrp = window.bioCombine;
+  }
+  if($("#DENSsplit").val()!="Custom_combine"){
+    grp.push($("#DENSsplit").val())
+  }
+  if($("#DENSgrp").val()!="Custom_combine"){
+    grp.push($("#DENSgrp").val())
+  }
+
+  var bw = $("#DENSprec").val();
+  var D = {'method':'DENS',
+            'cells':cells,
+            'genes':genes,
+            'grp':grp,
+            'bw':bw,
+            'category':category,
+            'abb':window.bioAbbr,
+            'combine':combGrp,
+            'figOpt':window.figOpt};
+  $(".DENSbt").prop('disabled',true);
+  document.getElementById("DENSspin").style.visibility="visible";
+  $.ajax({
+    type:"POST",
+    url: "/VIP",
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(res){
+      showImg('DENSfig',res);
+      //document.getElementById("TRAKfig").innerHTML = '<img id="TRAKpng" src="data:image/png;base64,'+res+'" width=100% height="auto"/>';// height="450" width="450"
+      $(".DENSbt").prop("disabled",false);
+      $(".DENSpngBT").prop('disabled',false);
+      document.getElementById("DENSspin").style.visibility="hidden";
+    },
+    error: function(request,status,error){
+      $('#DENSerror').text(request.status+request.responseText);
+      document.getElementById("DENSfig").innerHTML = '<img id="DENSpng" src="data:image/png;base64," width=100% height="auto"/>';// height="450" width="450"
+      $(".DENSbt").prop("disabled",false);
+      document.getElementById("DENSspin").style.visibility="hidden";
+    }
+  })
+            
 }
 function EMBEDplot(){
   $('#EMBEDnote').text("");
