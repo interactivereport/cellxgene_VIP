@@ -643,7 +643,7 @@ def DENS(data):
   colGrp = list(adata.obs[cGrp].unique())
   #legendCol = math.ceil(len(colGrp)/11)
   fig = plt.figure(figsize=(len(genes)*subSize,len(split)*(subSize-1)))
-  gs = fig.add_gridspec(len(split),len(genes))#,wspace=0.2
+  gs = fig.add_gridspec(len(split),len(genes),wspace=0.2)#
   #dataT = 0
   #plotT = 0
   for i in range(len(split)):
@@ -716,7 +716,7 @@ def version():
 	## 8. Visualize marker genes with download;
 	## 9. Fixed the tSNE/UMAP when annotation legend is too wide with each annotation is in a separated row while the number of gene plots per row is specified by user.
 	##------------------------------
-	## 1.0.6: not done yet
+	## 1.0.6: May 17, 2020
 	## 1. Update the scanpy to incorporate a fancier dotplot and updated the stacked violin plots;
 	## 2. Disabled the panel button until all categorical information ajaxed over, buttons will be automatically enabled after;
 	## 3. Adjust the image panel not to be limited by the VIP window size;
@@ -728,7 +728,11 @@ def version():
 	## 9. Other UI bug fix pointed by Baohong
 	## 10. Add different DEG methods from diffxpy;
 	## 11. Save all user current information into local file and load from a local file;
-
+  ## --------------------------
+  ## 1.0.7: May 26, 2020
+  ## 1. Performance (time) was significantly improved for several plots (gene detection, violin, stack violin, tSNE/UMAP,...) on large data half million cells
+  ## 2. Separated the heatmap data downloading from heatmap plotting, which improved the time for heatmap plotting
+  ## 3. Added gene expression density plots splitted by one annoation and colored by one annotation
   
   
   
