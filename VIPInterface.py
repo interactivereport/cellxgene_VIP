@@ -643,8 +643,8 @@ def DENS(data):
   colGrp = list(adata.obs[cGrp].unique())
   legendCol = math.ceil(len(colGrp)/(len(split)*11))
   fig = plt.figure(figsize=(len(genes)*subSize,len(split)*(subSize-1)))
-  plt.xlabel("Expression")
-  plt.ylabel(sGrp)
+  #plt.xlabel("Expression")
+  #plt.ylabel(sGrp)
   gs = fig.add_gridspec(len(split),len(genes),wspace=0.2)#
   #dataT = 0
   #plotT = 0
@@ -667,6 +667,7 @@ def DENS(data):
         ax.legend(prop={'size': 10},title = cGrp,loc=2,bbox_to_anchor=(1,1),ncol=legendCol,frameon=False)#
       else:
         ax.get_legend().remove()
+  fig.text(0.6,0.09,"Expression",ha='center')
   #ppr.pprint("plotting data cost: %f seconds" % dataT)
   #ppr.pprint("plotting plot cost: %f seconds" % plotT)
   #ppr.pprint("plotting total cost: %f seconds" % (time.time()-sT))
