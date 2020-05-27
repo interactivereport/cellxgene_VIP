@@ -641,8 +641,10 @@ def DENS(data):
   split = list(adata.obs[sGrp].unique())
   genes = list(adata.var.index)
   colGrp = list(adata.obs[cGrp].unique())
-  #legendCol = math.ceil(len(colGrp)/11)
+  legendCol = math.ceil(len(colGrp)/(len(split)*11))
   fig = plt.figure(figsize=(len(genes)*subSize,len(split)*(subSize-1)))
+  plt.xlabel("Expression")
+  plt.ylabel(sGrp)
   gs = fig.add_gridspec(len(split),len(genes),wspace=0.2)#
   #dataT = 0
   #plotT = 0
@@ -662,7 +664,7 @@ def DENS(data):
       if j==0:
         ax.set_ylabel(split[i],fontsize=float(data['figOpt']['fontsize']))
       if i==0 and j==(len(genes)-1):
-        ax.legend(prop={'size': 10},title = cGrp,loc=2,bbox_to_anchor=(1,0.5),frameon=False)#,ncol=legendCol
+        ax.legend(prop={'size': 10},title = cGrp,loc=2,bbox_to_anchor=(1,1),ncol=legendCol,frameon=False)#
       else:
         ax.get_legend().remove()
   #ppr.pprint("plotting data cost: %f seconds" % dataT)
@@ -733,7 +735,9 @@ def version():
   ## 1. Performance (time) was significantly improved for several plots (gene detection, violin, stack violin, tSNE/UMAP,...) on large data half million cells
   ## 2. Separated the heatmap data downloading from heatmap plotting, which improved the time for heatmap plotting
   ## 3. Added gene expression density plots splitted by one annoation and colored by one annotation
-  
+  ## -------------------------
+  ## 1.0.8:
+  ## 1. Optimize the legend 
   
   
   
