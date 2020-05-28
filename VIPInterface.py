@@ -38,8 +38,11 @@ def route(data,appConfig=None):
   
   if 'figOpt' in data.keys():
     setFigureOpt(data['figOpt'])
-  
-  return distributeTask(data["method"])(data)
+  try:
+    return distributeTask(data["method"])(data)
+  except Exception as e:
+    return 'ERROR:'+str(e)
+  #return distributeTask(data["method"])(data)
 
 def setFigureOpt(opt):
   sc.set_figure_params(dpi_save=int(opt['dpi']),fontsize= int(opt['fontsize']),vector_friendly=(opt['vectorFriendly']=='true'),transparent=(opt['transparent']=='true'),color_map=opt['colorMap'])
@@ -479,7 +482,8 @@ def DEG(data):
       adata = adata.concatenate(D)
   if adata is None:
     return Msg("No cells were satisfied the condition!")
-  
+  with open("adata.pkl",'wb') as f:
+    pickle.dump(adata,f)
   adata.obs.astype('category')
   nm = None
   if data['DEmethod']=='wald': 
@@ -738,7 +742,10 @@ def version():
   ## 3. Added gene expression density plots splitted by one annoation and colored by one annotation
   ## -------------------------
   ## 1.0.8:
-  ## 1. Optimize the legend 
+  ## 1. Optimize the legend for the density plots;
+  ## 2. Add the display on cell numbers for custom combined annotations;
+  ## 3. Add DEG option on custom combined annotations;
+  ## 4. Add the python error return to the user interface.
   
   
   

@@ -452,7 +452,12 @@
     
     <div id="DEG" class="tabcontent">
       <h3>Find differentially expressed genes</h3>
-      <p>Between group 1 (<span id="DEGcellN1" style="color:red;">0</span>) cells and group 2 (<span id="DEGcellN2" style="color:red;">0</span>) cells</p>
+      <p>Group 1 (<span id="DEGcellN1" style="color:red;">0</span>) cells and group 2 (<span id="DEGcellN2" style="color:red;">0</span>) cells</p>
+      <p>Differentially expressed genes will be detected between the two cell gorups defined above, unless two of the following 'Custom_combine' annotations are selected, 
+      which enable the defferentially expressed genes to be between those two selected annotations:</p>
+      <p id="DEGgrp"></p>
+      
+      
       <p>Select the number of top DEG: 
       <select id="DEGtop">
         <option value=100>100</option>
@@ -533,6 +538,7 @@
 
 
 <script type="text/javascript">
+//Fxyd3,Lgals7,Acta2,Krt5,Cd79a,Rac2,Coro1a
 var heatCell = 10000;
 function checkLoading(){
     if(!window.store || !window.store.getState().categoricalSelection){
@@ -702,6 +708,7 @@ function init(){
     }
     window.bioAbbr=bioAbbr;
     window.bioCombine={};
+    window.bioCombineCell={};
     window.biogen=[];
     window.bioGeneGrp={};
     window.figOpt={dpi:150,img:'png',fontsize:11,vectorFriendly:'true',transparent:'false',colorMap:'viridis'};
@@ -1123,7 +1130,51 @@ function DUALref(){
   
 }
 function DEGref(){
+  var cName=[],cVal=Object.keys(window.bioCombineCell);
+  for(const one of Object.values(window.bioCombineCell)){
+    cName.push(one.cName);
+  }
+  
+  var optG = [], checkG=[];
+  //remove checkbox which are not in the annotation list
+  $(".DEGgrps").each(function(){
+    optG.push($(this).val());
+    if(!cVal.includes($(this).val())){
+      $('#DEGck'+$(this).val()).remove();
+    }else if($(this).prop("checked")){
+      checkG.push($(this).val());
+    }
+  })
+  //add options which are missing from annotation list
+  if(cVal.length>0){
+    var htmlCheck = $('#DEGgrp').html();
+    for(var i=0;i<cVal.length;i++){
+      if(!optG.includes(cVal[i])){
+        htmlCheck += '<label id="DEGck'+cVal[i]+'"><input class="DEGgrps" type="checkbox" value="'+cVal[i]+'" onclick="DEGref()"/>'+cName[i]+'</label>';
+      }
+    }
+    $('#DEGgrp').html(htmlCheck);
+  }
 
+  //check the originally checked
+  var iEnabled=0;
+  $(".DEGgrps").each(function(){
+    if(checkG.includes($(this).val())){
+      $(this).prop("checked",true);
+      iEnabled++;
+    }
+  })
+  //disable when 2 are checked or enable when less than 2 is checked
+  if(iEnabled>1){
+    $(".DEGgrps").each(function(){
+      if($(this).prop("checked")==false){
+        $(this).prop("disabled",true);
+      }
+    })
+  }else{
+    $('.DEGgrps').prop("disabled",false);
+  }
+ 
 }
 function IMGref(){
   $('#IMGdpi').val(window.figOpt['dpi']);
@@ -1187,6 +1238,44 @@ function ABBRall(){
   }
   return;
 }
+const indexOfAll = (arr, val) => arr.reduce((acc, el, i) => (el === val ? [...acc, i] : acc), []);
+function ABBRcombineCell(){
+  var annKeys = Object.keys(window.store.getState().categoricalSelection);
+  var obsMap = window.store.getState().universe.obsAnnotations.colIndex.index;
+  var grpKeys = Object.keys(window.bioCombine);
+  var cName = [], cVal = [], selC=[];
+  for(const key of grpKeys){
+    var k = annKeys.indexOf(key);
+    if(cName.length==0){
+      for(const v of window.bioCombine[key]){
+        cName.push(window.bioAbbr[key][v]);
+        cVal.push(k+"_"+window.store.getState().categoricalSelection[key].categoryValueIndices.get(v));
+        selC.push(indexOfAll(window.store.getState().universe.obsAnnotations.__columns[obsMap.get(key)],v));
+      }
+    }else{
+      var newGrp = [], newVal = [], newC = [];
+      for(var i=0;i<cName.length;i++){
+        window.bioCombine[key].forEach(function(v){
+          newGrp.push(cName[i]+"_"+window.bioAbbr[key][v]);
+          newVal.push(cVal[i]+"__"+k+"_"+window.store.getState().categoricalSelection[key].categoryValueIndices.get(v));
+          var oneSel = indexOfAll(window.store.getState().universe.obsAnnotations.__columns[obsMap.get(key)],v);
+          newC.push(selC[i].filter(v => oneSel.includes(v)));
+        });
+      }
+      cName = newGrp;
+      cVal = newVal;
+      selC = newC;
+    }
+  }
+  var combCell = {};
+  for(var i=0;i<cName.length;i++){
+    cName[i] += " ("+selC[i].length+")";
+    var cells = new Int32Array(selC[i].length);
+    cells.set(selC[i]);
+    combCell[cVal[i]] = {cName:cName[i],selC:cells};
+  }
+  return combCell;
+}
 function ABBRcombine(){
   window.bioCombine={};
   var combGrp = {};
@@ -1206,25 +1295,13 @@ function ABBRcombine(){
       }
     }
   }
-  grpKeys = Object.keys(combGrp);
-  if(grpKeys.length==0||grpKeys.length>5) return
   window.bioCombine=combGrp;
+  window.bioCombineCell = ABBRcombineCell();
   var combVal = [];
-  for(var i=0;i<grpKeys.length;i++){
-    if(combVal.length==0){
-      for(var j=0;j<combGrp[grpKeys[i]].length;j++){
-        combVal.push(window.bioAbbr[grpKeys[i]][combGrp[grpKeys[i]][j]])
-      }
-    }else{
-      newGrp = [];
-      for(var k=0;k<combVal.length;k++){
-        for(var j=0;j<combGrp[grpKeys[i]].length;j++){
-          newGrp.push(combVal[k]+"_"+window.bioAbbr[grpKeys[i]][combGrp[grpKeys[i]][j]])
-        }        
-      }
-      combVal = newGrp;
-    }
+  for(const one of Object.values(window.bioCombineCell)){
+    combVal.push(one.cName);
   }
+  
   $('#ABBRcombine').html("<span style='color:red;'><strong>"+combVal.join('; ')+"</strong></span>");
 }
 function ABBRcombineUpdate(){
@@ -1243,7 +1320,6 @@ function ABBRcombineUpdate(){
   return;
 }
 // process genes
-//Fxyd3,Lgals7,Acta2,Krt5,Cd79a,Rac2,Coro1a
 function ADDGadd(){
   var addG = $("#ADDGinput").val().split(/\s+|\,|\;/);
   var genes =  window.biogen;
@@ -1367,10 +1443,15 @@ function GDplot(){
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',
     success: function(res){
-      showImg('GDfig',res);
       $(".GDbt").prop("disabled",false);
-      $(".GDpngBT").prop('disabled',false);
       document.getElementById("GDspin").style.visibility="hidden";
+      if(res.startsWith('ERROR')){
+        $('#GDnote').text(res);
+        document.getElementById("GDfig").innerHTML = '<img id="GDpng" src="data:image/png;base64," width=100% height="auto"/>';
+        return;
+      }
+      showImg('GDfig',res);
+      $(".GDpngBT").prop('disabled',false);
     },
     error: function(request,status,error){
       $('#GDnote').text(request.status+request.responseText);
@@ -1432,6 +1513,15 @@ function MARKplot(){
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
+      document.getElementById("MARKspin").style.visibility="hidden";
+      $(".MARKbt").prop("disabled",false);
+      if(res.startsWith('ERROR')){
+        $('#MARKnote').text(res);
+        $('#MARKtable').empty();
+        document.getElementById("MARKfig").innerHTML = '';
+        return;
+      }
+
       resD = JSON.parse(res);
       var tD = resD[0];
       var keyD = tD.shift();
@@ -1462,8 +1552,6 @@ function MARKplot(){
         $('#MARKnote').text("Selected genes: "+genes.join(", "));
       });
       showImg('MARKfig',resD[1]);
-      document.getElementById("MARKspin").style.visibility="hidden";
-      $(".MARKbt").prop("disabled",false);
       $(".MARKpngBT").prop('disabled',false);
     },
     error: function(request,status,error){
@@ -1539,11 +1627,16 @@ function SGVplot(){
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
+      $(".SGVbt").prop("disabled",false);
+      document.getElementById("SGVspin").style.visibility="hidden";
+      if(res.startsWith('ERROR')){
+        $('#SGVnote').text(res);
+        document.getElementById("SGVfig").innerHTML = '';
+        return;
+      }
       showImg('SGVfig',res);
       //document.getElementById("SGVfig").innerHTML = '<img id="SGVpng" src="data:image/png;base64,'+res+'" width=100% height="auto"/>';// height="450" width="450"
-      $(".SGVbt").prop("disabled",false);
       $(".SGVpngBT").prop('disabled',false);
-      document.getElementById("SGVspin").style.visibility="hidden";
     },
     error: function(request,status,error){
       $('#SGVnote').text(request.status+request.responseText);
@@ -1617,11 +1710,17 @@ function PGVplot(){
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
+      $(".PGVbt").prop("disabled",false);
+      document.getElementById("PGVspin").style.visibility="hidden";
+      if(res.startsWith('ERROR')){
+        $('#PGVnote').text(res);
+        document.getElementById("PGVfig").innerHTML = '';
+        return;
+      }
+      
       showImg('PGVfig',res);
       //document.getElementById("PGVfig").innerHTML = '<img id="PGVpng" src="data:image/png;base64,'+res+'" width=100% height="auto"/>';// height="450" width="450"
-      $(".PGVbt").prop("disabled",false);
       $(".PGVpngBT").prop('disabled',false);
-      document.getElementById("PGVspin").style.visibility="hidden";
     },
     error: function(request,status,error){
       $('#PGVnote').text(request.status+request.responseText);
@@ -1708,13 +1807,18 @@ function HEATplot(){
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
-      //resD = JSON.parse(res);
+      $(".HEATbt").prop("disabled",false);
+      document.getElementById("HEATspin").style.visibility="hidden";
+      if(res.startsWith('ERROR')){
+        $('#HEATnote').text(res);
+        document.getElementById("HEATfig").innerHTML = '';
+        return;
+      }
+
       showImg('HEATfig',res);//resD[0]
       //document.getElementById("HEATfig").innerHTML = '<img id="HEATpng" src="data:image/png;base64,'+resD[0]+'" width=100% height="auto"/>';// height="450" width="450"
-      $(".HEATbt").prop("disabled",false);
       $(".HEATpngBT").prop('disabled',false);
       $(".HEATsaveBT").prop('disabled',false);
-      document.getElementById("HEATspin").style.visibility="hidden";
     },
     error: function(request,status,error){
       $('#HEATnote').text(request.status+request.responseText);
@@ -1736,16 +1840,21 @@ function HEATdata(){
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
+      $(".HEATbt").prop("disabled",false);
+      document.getElementById("HEATspin").style.visibility="hidden";
+      if(res.startsWith('ERROR')){
+        $('#HEATnote').text(res);
+        return;
+      }
+
       var hiddenE = document.createElement('a');
       hiddenE.href="data:attachment/text,"+encodeURIComponent(res);
       hiddenE.target='_blank';
       hiddenE.download='cellxgene.'+window.store.getState().config.displayNames.dataset+'.heatmapData.csv';
       hiddenE.click();
 
-      $(".HEATbt").prop("disabled",false);
       $(".HEATpngBT").prop('disabled',false);
       $(".HEATsaveBT").prop('disabled',false);
-      document.getElementById("HEATspin").style.visibility="hidden";
     },
     error: function(request,status,error){
       $('#HEATnote').text(request.status+request.responseText);
@@ -1756,20 +1865,33 @@ function HEATdata(){
     }
   });
 }
+function DEGselCells(){
+  var selC = {};
+  $(".DEGgrps").each(function(){
+    if($(this).prop("checked")){
+      selC[window.bioCombineCell[$(this).val()].cName.split(' ')[0]] = window.bioCombineCell[$(this).val()].selC;
+    }
+  })
+  return selC;
+}
 function DEGfind(){
-  var cells = {};
-  if(!window.store.getState().differential.celllist1 || !window.store.getState().differential.celllist2){
-    $('#DEGnote').text("Please select cells into both group 1 and group 2");
-    return;
+  var cells = DEGselCells();
+  if(Object.keys(cells).length!=2){
+    if(!window.store.getState().differential.celllist1 || !window.store.getState().differential.celllist2){
+      $('#DEGnote').text("Please select cells into both group 1 and group 2");
+      return;
+    }else{
+      cells['group1'] = window.store.getState().differential.celllist1;
+      cells['group2'] = window.store.getState().differential.celllist2;
+    }    
   }else{
-    cells['group1'] = window.store.getState().differential.celllist1;
-    cells['group2'] = window.store.getState().differential.celllist2;
+    $('#DEGnote').text("DEG between"+Object.keys(cells).join(' and '));
   }
+
   var D = {'method':'DEG',
            'topN':$("#DEGtop").val(),
            'DEmethod':$("#DEGmethod").val(),
-           'cells':{"group1":window.store.getState().differential.celllist1,
-                    "group2":window.store.getState().differential.celllist2}};
+           'cells':cells};
   document.getElementById("DEGspin").style.visibility="visible";
   $(".DEGbt").prop('disabled',true);
   $.ajax({
@@ -1778,7 +1900,13 @@ function DEGfind(){
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(data){
+      document.getElementById("DEGspin").style.visibility="hidden";
+      $(".DEGbt").prop("disabled",false);
       $('#DEGtable').empty();
+      if(data.startsWith('ERROR')){
+        $('#DEGnote').text(data);
+        return;
+      }
       var table = $('#DEGtable').DataTable({
         destroy: true,
         dom:'Blfrtip',
@@ -1793,8 +1921,6 @@ function DEGfind(){
           {title: "padj"}
         ]
       });
-      document.getElementById("DEGspin").style.visibility="hidden";
-      $(".DEGbt").prop("disabled",false);
       
       $('#DEGnote').text("");
       $('#DEGtable tbody').on('click',"tr",function(){
@@ -1883,11 +2009,17 @@ function DOTplot(){
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
+      $(".DOTbt").prop("disabled",false);
+      document.getElementById("DOTspin").style.visibility="hidden";
+      if(res.startsWith('ERROR')){
+        $('#DOTnote').text(res);
+        document.getElementById("DOTfig").innerHTML = '';
+        return;
+      }
+      
       showImg('DOTfig',res)
       //document.getElementById("DOTfig").innerHTML = '<img id="DOTpng" src="data:image/png;base64,'+res+'" width=100% height="auto"/>';// height="450" width="450"
-      $(".DOTbt").prop("disabled",false);
       $(".DOTpngBT").prop('disabled',false);
-      document.getElementById("DOTspin").style.visibility="hidden";
     },
     error: function(request,status,error){
       $('#DOTnote').text(request.status+request.responseText);
@@ -1957,11 +2089,17 @@ function TRAKplot(){
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
+      $(".TRAKbt").prop("disabled",false);
+      document.getElementById("TRAKspin").style.visibility="hidden";
+      if(res.startsWith('ERROR')){
+        $('#TRAKnote').text(res);
+        document.getElementById("TRAKfig").innerHTML = '';
+        return;
+      }
+
       showImg('TRAKfig',res);
       //document.getElementById("TRAKfig").innerHTML = '<img id="TRAKpng" src="data:image/png;base64,'+res+'" width=100% height="auto"/>';// height="450" width="450"
-      $(".TRAKbt").prop("disabled",false);
       $(".TRAKpngBT").prop('disabled',false);
-      document.getElementById("TRAKspin").style.visibility="hidden";
     },
     error: function(request,status,error){
       $('#TRAKnote').text(request.status+request.responseText);
@@ -2042,11 +2180,17 @@ function DENSplot(){
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
+      $(".DENSbt").prop("disabled",false);
+      document.getElementById("DENSspin").style.visibility="hidden";
+      if(res.startsWith('ERROR')){
+        $('#DENSerror').text(res);
+        document.getElementById("DENSfig").innerHTML = '';
+        return;
+      }
+
       showImg('DENSfig',res);
       //document.getElementById("TRAKfig").innerHTML = '<img id="TRAKpng" src="data:image/png;base64,'+res+'" width=100% height="auto"/>';// height="450" width="450"
-      $(".DENSbt").prop("disabled",false);
       $(".DENSpngBT").prop('disabled',false);
-      document.getElementById("DENSspin").style.visibility="hidden";
     },
     error: function(request,status,error){
       $('#DENSerror').text(request.status+request.responseText);
@@ -2123,11 +2267,17 @@ function EMBEDplot(){
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
+      $(".EMBEDbt").prop("disabled",false);
+      document.getElementById("EMBEDspin").style.visibility="hidden";
+      if(res.startsWith('ERROR')){
+        $('#EMBEDnote').text(res);
+        document.getElementById("EMBEDfig").innerHTML = '';
+        return;
+      }
+
       showImg('EMBEDfig',res);
       //document.getElementById("EMBEDfig").innerHTML = '<img id="EMBEDpng" src="data:image/png;base64,'+res+'" width=100% height="auto"/>';// height="450" width="450"
-      $(".EMBEDbt").prop("disabled",false);
       $(".EMBEDpngBT").prop('disabled',false);
-      document.getElementById("EMBEDspin").style.visibility="hidden";
     },
     error: function(request,status,error){
       $('#EMBEDnote').text(request.status+request.responseText);
@@ -2192,11 +2342,17 @@ function DUALplot(){
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
+      $(".DUALbt").prop("disabled",false);
+      document.getElementById("DUALspin").style.visibility="hidden";
+      if(res.startsWith('ERROR')){
+        $('#DUALnote').text(res);
+        document.getElementById("DUALfig").innerHTML = '';
+        return;
+      }
+
       showImg('DUALfig',res);
       //document.getElementById("DUALfig").innerHTML = '<img id="DUALpng" src="data:image/png;base64,'+res+'" width=100% height="auto"/>';// height="450" width="450"
-      $(".DUALbt").prop("disabled",false);
       $(".DUALpngBT").prop('disabled',false);
-      document.getElementById("DUALspin").style.visibility="hidden";
     },
     error: function(request,status,error){
       $('#DUALnote').text(request.status+request.responseText);
