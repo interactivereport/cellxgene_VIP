@@ -647,6 +647,11 @@ def DENS(data):
   colGrp = list(adata.obs[cGrp].unique())
   legendCol = math.ceil(len(colGrp)/(len(split)*11))
   fig = plt.figure(figsize=(len(genes)*subSize,len(split)*(subSize-1)))
+  plt.xticks([])
+  plt.yticks([])
+  plt.xlabel("Expression",labelpad=20)
+  plt.ylabel(sGrp,labelpad=50)
+
   #plt.xlabel("Expression")
   #plt.ylabel(sGrp)
   gs = fig.add_gridspec(len(split),len(genes),wspace=0.2)#
@@ -678,7 +683,7 @@ def DENS(data):
   return iostreamFig(fig)
 
 def version():
-  print("1.0.6")
+  print("1.0.8")
   ## 1.0.2: April 27, 2020
   ## 1. add Spinning button
   ## 2. Selection on both groups of selected cells
@@ -741,7 +746,7 @@ def version():
   ## 2. Separated the heatmap data downloading from heatmap plotting, which improved the time for heatmap plotting
   ## 3. Added gene expression density plots splitted by one annoation and colored by one annotation
   ## -------------------------
-  ## 1.0.8:
+  ## 1.0.8: May 28, 2020
   ## 1. Optimize the legend for the density plots;
   ## 2. Add the display on cell numbers for custom combined annotations;
   ## 3. Add DEG option on custom combined annotations;
