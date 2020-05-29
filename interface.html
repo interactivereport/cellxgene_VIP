@@ -147,7 +147,7 @@
       <button class="tablinks" onclick="selFun(event, 'EMBED')">UMAP/tSNE</button>
       <button class="tablinks" onclick="selFun(event, 'DOT')">Dot Plot</button>
       <button class="tablinks" onclick="selFun(event, 'TRAK')">Tracksplot</button>
-      <button class="tablinks" onclick="selFun(event, 'DENS')">Panel Density</button>
+      <button class="tablinks" onclick="selFun(event, 'DENS')">Density Plots</button>
       <button class="tablinks" onclick="selFun(event, 'DUAL')">Dual Genes</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'DEG')">DEG</button>
@@ -398,7 +398,7 @@
     </div><!--TRAK-->
 
     <div  id="DENS" class="tabcontent">
-      <h3>Plot a panel of gene expression density</h3>
+      <h3>Density plots of selected genes</h3>
       <p>Choose cell set(s):
         <label><input class="DENScell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DENScellN1" style="color:red">0</span>)</label>
         <label><input class="DENScell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DENScellN2" style="color:red">0</span>)</label>
@@ -409,7 +409,7 @@
       <select id="DENSsplit"></select></p>
       <p>Color by:
       <select id="DENSgrp"></select></p>
-      <p>Bandwidth: <input id="DENSprec" type="number" step="0.1" value="1" min="0.1"/> controls how tightly the curve is fit to the data, much like the bin size in a histogram.</p>
+      <p>Bandwidth: <input id="DENSprec" type="number" step="0.1" value="0.5" min="0.1"/> controls how tightly the curve is fit to the data, much like the bin size in a histogram.</p>
       <p id="DENSerror" style="color:red;"></p>
       <p><button onclick="DENSplot()"><b>Plot</b></button></p>
       <div id="DENSspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
@@ -453,8 +453,8 @@
     <div id="DEG" class="tabcontent">
       <h3>Find differentially expressed genes</h3>
       <p>Group 1 (<span id="DEGcellN1" style="color:red;">0</span>) cells and group 2 (<span id="DEGcellN2" style="color:red;">0</span>) cells</p>
-      <p>Differentially expressed genes will be detected between the two cell gorups defined above, unless two of the following 'Custom_combine' annotations are selected, 
-      which enable the defferentially expressed genes to be between those two selected annotations:</p>
+      <p>Differentially expressed genes will be detected between the two cell gorups defined above, unless two categories of the 'Custom_combine' annotation are selected, 
+      which enables DE analysis between those two:</p>
       <p id="DEGgrp"></p>
       <p>Select the number of top DEG: 
       <select id="DEGtop">
@@ -2162,7 +2162,7 @@ function DENSplot(){
     return;
   }
   if(+$("#DENSprec").val() < +$("#DENSprec").prop('min')){
-    $('#DENSerror').text("The minimal precision is "+$("#DENSprec").prop('min'));
+    $('#DENSerror').text("The minimal bandwidth is "+$("#DENSprec").prop('min'));
     return;
   }
   
