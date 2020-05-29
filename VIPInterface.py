@@ -41,7 +41,7 @@ def route(data,appConfig=None):
   try:
     return distributeTask(data["method"])(data)
   except Exception as e:
-    return 'ERROR:'+str(e)
+    return 'ERROR @server: {}, {}'.format(type(e),str(e))
   #return distributeTask(data["method"])(data)
 
 def setFigureOpt(opt):
@@ -215,7 +215,7 @@ def createData(data,seperate=False):
   return sc.AnnData(expr,obs,obsm={'X_%s'%strEmbed:embed.to_numpy()})
 
 def errorTask(data):
-  return "Error task!"
+  raise ValueError('Error task!')
   
 def distributeTask(aTask):
   return {
@@ -469,26 +469,35 @@ def GD(data):
 
 def DEG(data):
   adata = None;
-  for one in data['cells'].keys():
-    oneD = {'cells':data['cells'][one],
-            'genes':[],
-            'grp':[],
-            'url':data['url']}
-    D = createData(oneD)
-    D.obs['cellGrp'] = one
-    if adata is None:
-      adata = D
-    else:
-      adata = adata.concatenate(D)
-  if adata is None:
-    return Msg("No cells were satisfied the condition!")
-  with open("adata.pkl",'wb') as f:
-    pickle.dump(adata,f)
+  comGrp = 'cellGrp'
+  if 'combine' in data.keys():
+    adata = createData(data)
+    comGrp = data['grp'][0]
+    adata = adata[adata.obs[comGrp].isin(data['comGrp'])]
+  else:
+    for one in data['cells'].keys():
+      oneD = {'cells':data['cells'][one],
+              'genes':[],
+              'grp':[],
+              'url':data['url']}
+      D = createData(oneD)
+      D.obs[comGrp] = one
+      if adata is None:
+        adata = D
+      else:
+        adata = adata.concatenate(D)
+  #ppr.pprint(adata) 
+  #with open("adata.pkl",'wb') as f:
+  #  pickle.dump(adata,f)
+    
+  if not 'AnnData' in str(type(adata)):
+    raise ValueError('No data extracted by user selection')
+    
   adata.obs.astype('category')
   nm = None
   if data['DEmethod']=='wald': 
     nm = 'nb'
-  res = de.test.two_sample(adata,'cellGrp',test=data['DEmethod'],noise_model=nm)
+  res = de.test.two_sample(adata,comGrp,test=data['DEmethod'],noise_model=nm)
   deg = res.summary()
   deg = deg.sort_values(by=['qval']).loc[:,['gene','log2fc','pval','qval']]
   deg = deg.iloc[range(int(data['topN'])),]
@@ -666,8 +675,11 @@ def DENS(data):
       ax = fig.add_subplot(gs[i,j])
       #resT = time.time()
       for one in colGrp:
-        sns.kdeplot(D[Dobs==one][genes[j]].to_numpy(),bw=bw,label=one)
-      #plotT += (time.time()-resT)
+        if sum(Dobs==one)<1:
+          sns.kdeplot([0],label=one)
+        else:
+          sns.kdeplot(D[Dobs==one][genes[j]].to_numpy(),bw=bw,label=one)
+
       if i==0:
         ax.set_title(genes[j])
       if j==0:

@@ -456,8 +456,6 @@
       <p>Differentially expressed genes will be detected between the two cell gorups defined above, unless two of the following 'Custom_combine' annotations are selected, 
       which enable the defferentially expressed genes to be between those two selected annotations:</p>
       <p id="DEGgrp"></p>
-      
-      
       <p>Select the number of top DEG: 
       <select id="DEGtop">
         <option value=100>100</option>
@@ -473,7 +471,7 @@
         <option value='wald'>Wald test</option>
       </select></p>
       
-      <p><button class="DEGbt" onclick="DEGfind()"><b>Find</b></button></p>
+      <p><button class="DEGbt" onclick="DEGfind()"><b>Find</b></button> <label id='DEGinfo'></label></p>
       <p id="DEGnote" style="color:red;"></p>
       <div id="DEGspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="DEGresize" style="height: 'auto'">
@@ -1238,41 +1236,41 @@ function ABBRall(){
   }
   return;
 }
-const indexOfAll = (arr, val) => arr.reduce((acc, el, i) => (el === val ? [...acc, i] : acc), []);
+//const indexOfAll = (arr, val) => arr.reduce((acc, el, i) => (el === val ? [...acc, i] : acc), []);
 function ABBRcombineCell(){
   var annKeys = Object.keys(window.store.getState().categoricalSelection);
   var obsMap = window.store.getState().universe.obsAnnotations.colIndex.index;
   var grpKeys = Object.keys(window.bioCombine);
-  var cName = [], cVal = [], selC=[];
+  var cName = [], cVal = [];//, selC=[]
   for(const key of grpKeys){
     var k = annKeys.indexOf(key);
     if(cName.length==0){
       for(const v of window.bioCombine[key]){
         cName.push(window.bioAbbr[key][v]);
         cVal.push(k+"_"+window.store.getState().categoricalSelection[key].categoryValueIndices.get(v));
-        selC.push(indexOfAll(window.store.getState().universe.obsAnnotations.__columns[obsMap.get(key)],v));
+        //selC.push(indexOfAll(window.store.getState().universe.obsAnnotations.__columns[obsMap.get(key)],v));
       }
     }else{
-      var newGrp = [], newVal = [], newC = [];
+      var newGrp = [], newVal = [];//, newC = []
       for(var i=0;i<cName.length;i++){
         window.bioCombine[key].forEach(function(v){
           newGrp.push(cName[i]+"_"+window.bioAbbr[key][v]);
           newVal.push(cVal[i]+"__"+k+"_"+window.store.getState().categoricalSelection[key].categoryValueIndices.get(v));
-          var oneSel = indexOfAll(window.store.getState().universe.obsAnnotations.__columns[obsMap.get(key)],v);
-          newC.push(selC[i].filter(v => oneSel.includes(v)));
+          //var oneSel = indexOfAll(window.store.getState().universe.obsAnnotations.__columns[obsMap.get(key)],v);
+          //newC.push(selC[i].filter(v => oneSel.includes(v)));
         });
       }
       cName = newGrp;
       cVal = newVal;
-      selC = newC;
+      //selC = newC;
     }
   }
   var combCell = {};
   for(var i=0;i<cName.length;i++){
-    cName[i] += " ("+selC[i].length+")";
-    var cells = new Int32Array(selC[i].length);
-    cells.set(selC[i]);
-    combCell[cVal[i]] = {cName:cName[i],selC:cells};
+    //cName[i] += " ("+selC[i].length+")";
+    //var cells = new Int32Array(selC[i].length);
+    //cells.set(selC[i]);
+    combCell[cVal[i]] = {cName:cName[i]};//,selC:cells
   }
   return combCell;
 }
@@ -1607,7 +1605,6 @@ function SGVplot(){
   if(grp[0]=="Custom_combine"){
     grp = Object.keys(window.bioCombine);
     combGrp = window.bioCombine;
-    $('#SGVnote').text("");
   }
   
   var D = {'method':'SGV',
@@ -1866,32 +1863,53 @@ function HEATdata(){
   });
 }
 function DEGselCells(){
-  var selC = {};
+  var selAnno = {};
+  var selNames = [];
+  //var selC = {};
+  var grpKey = Object.keys(window.store.getState().categoricalSelection);
   $(".DEGgrps").each(function(){
     if($(this).prop("checked")){
-      selC[window.bioCombineCell[$(this).val()].cName.split(' ')[0]] = window.bioCombineCell[$(this).val()].selC;
+      selNames.push(window.bioCombineCell[$(this).val()].cName);
+      //selC[window.bioCombineCell[$(this).val()].cName.split(' ')[0]] = window.bioCombineCell[$(this).val()].selC;
+      //window.store.getState().categoricalSelection[key].categoryValueIndices.get(v)
+      $(this).val().split("__").forEach(function(one){
+        [k,v]=one.split("_");
+        if(selAnno[grpKey[k]]==undefined){selAnno[grpKey[k]]=[]}
+        if(!selAnno[grpKey[k]].includes(window.store.getState().categoricalSelection[grpKey[k]].categoryValues[v])){
+          selAnno[grpKey[k]].push(window.store.getState().categoricalSelection[grpKey[k]].categoryValues[v]);
+        }
+      });
     }
   })
-  return selC;
+  return [selAnno,selNames];
+  //return selC;
 }
 function DEGfind(){
-  var cells = DEGselCells();
-  if(Object.keys(cells).length!=2){
+  var D = {'method':'DEG',
+           'topN':$("#DEGtop").val(),
+           'DEmethod':$("#DEGmethod").val(),
+           'genes':[]}
+  const [combGrp,combName] = DEGselCells();
+  var cells = {};
+  if(combName.length!=2){
     if(!window.store.getState().differential.celllist1 || !window.store.getState().differential.celllist2){
       $('#DEGnote').text("Please select cells into both group 1 and group 2");
       return;
     }else{
       cells['group1'] = window.store.getState().differential.celllist1;
       cells['group2'] = window.store.getState().differential.celllist2;
-    }    
+    }
+    D['cells'] = cells;
+    $('#DEGinfo').text("DEG between selected group 1 and group 2");
   }else{
-    $('#DEGnote').text("DEG between"+Object.keys(cells).join(' and '));
+    D['combine']=combGrp;
+    D['abb']=window.bioAbbr;
+    D['grp'] = Object.keys(combGrp);
+    D['cells'] = new Int32Array(Array(window.store.getState().universe.nObs).keys());
+    D['comGrp'] = combName;
+    $('#DEGinfo').text("DEG between "+combName.join(" and "));
   }
 
-  var D = {'method':'DEG',
-           'topN':$("#DEGtop").val(),
-           'DEmethod':$("#DEGmethod").val(),
-           'cells':cells};
   document.getElementById("DEGspin").style.visibility="visible";
   $(".DEGbt").prop('disabled',true);
   $.ajax({
@@ -2541,6 +2559,8 @@ function save(){
   content.push(TRAKsave());
   content.push(DUALsave());
   content.push(DEGsave());
+  
+  
   var hiddenE = document.createElement('a');
   hiddenE.href="data:attachment/text,"+encodeURIComponent(JSON.stringify(content));
   hiddenE.target='_blank';
@@ -2554,6 +2574,8 @@ function inputClick(){
 function load(){
   var reader = new FileReader();
   reader.onload=function(ev){
+    
+    
     var content = JSON.parse(decodeURIComponent(ev.target.result));
     if(content[0]!='cellxgene.'+window.store.getState().config.displayNames.dataset){
       alert("Saved information is NOT matching with the current data!");
