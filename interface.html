@@ -146,8 +146,8 @@
       <button class="tablinks" onclick="selFun(event, 'HEAT')">Heatmap</button>
       <button class="tablinks" onclick="selFun(event, 'EMBED')">UMAP/tSNE</button>
       <button class="tablinks" onclick="selFun(event, 'DOT')">Dot Plot</button>
-      <button class="tablinks" onclick="selFun(event, 'TRAK')">Tracksplot</button>
-      <button class="tablinks" onclick="selFun(event, 'DENS')">Density Plots</button>
+      <button class="tablinks" onclick="selFun(event, 'TRAK')">Track Plot</button>
+      <button class="tablinks" onclick="selFun(event, 'DENS')">Density Plot</button>
       <button class="tablinks" onclick="selFun(event, 'DUAL')">Dual Genes</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'DEG')">DEG</button>
@@ -157,6 +157,7 @@
       <button class="tablinks" onclick="selFun(event, 'ABBR')">Comb. & Abbr.</button>
       <button class="tablinks" onclick="save()">Save Session</button>
       <button class="tablinks" onclick="inputClick()">Load Session</button>
+      <button class="tablinks" onclick="ABBRall()">Check All Annotations</button>
       <button class="tablinks" onclick="sync();">Sync <i class="fa fa-refresh"></i></button>
     </div>
 	</div>
@@ -165,20 +166,15 @@
     	  
     <input id="loadfile" type="file" onchange="load()" style="display:none"/>
     <div id="ABBR" class="tabcontent"> <!-- Abbreviation -->
-      <h3>Combining annotations</h3>
-      <label>Create a customized annotation category by combining multiple annotations.</label> 
+      <h3>Create a combinatorial annotation</h3>
       <ol type="1">
-        <li>Use the following button to uncheck all annotations from the main page, and then a new annotation category will be created by permuting all possible combinations from checked annotations.</li>
-        <button onclick="ABBRclear()">Uncheck All Features</button>
-        <li>After check the annotations of interest, use the 'Create' button to list the newly created category.</li>
-        <button onclick="ABBRcombine()">Create</button>
-        <li>Return back to original cell selection mode, please check all annotations</li>
-        <button onclick="ABBRall()">Check All Features</button>
+        <li><button onclick="ABBRclear()">Uncheck All Annotations</button></li>
+        <li><p>Select the annotations of interest on the left panel of main window, then <button onclick="ABBRcombine();ABBRall()">Create</button> a new annotation named "Custom_combine" includes the following categories: <p id="ABBRcombine"></p>
+		</li>
       </ol>
-      <label>The new annotation named "Custom_combine" includes the folioing annotations:</label>
-      <p id="ABBRcombine"></p>
     
-      <h3>Abbreviation for cell annotations</h3><!-- <button onclick="ABBRsave()">Save to local</button><input id="ABBRfile" type="file" value="Load from local" onchange="ABBRload()"/>-->
+      <hr>
+      <h3>Create abbreviations of annotations</h3><!-- <button onclick="ABBRsave()">Save to local</button><input id="ABBRfile" type="file" value="Load from local" onchange="ABBRload()"/>-->
       <p>Choose annotations:</p>
       <p id="ABBRgrp"></p>
       <p id="ABBRtable"></p>
