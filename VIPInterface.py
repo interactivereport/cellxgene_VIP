@@ -45,7 +45,7 @@ def route(data,appConfig=None):
   #return distributeTask(data["method"])(data)
 
 def setFigureOpt(opt):
-  sc.set_figure_params(dpi_save=int(opt['dpi']),fontsize= int(opt['fontsize']),vector_friendly=(opt['vectorFriendly']=='true'),transparent=(opt['transparent']=='true'),color_map=opt['colorMap'])
+  sc.set_figure_params(dpi_save=int(opt['dpi']),fontsize= float(opt['fontsize']),vector_friendly=(opt['vectorFriendly']=='true'),transparent=(opt['transparent']=='true'),color_map=opt['colorMap'])
   rcParams.update({'savefig.format':opt['img']})
 
 def subData(data):
@@ -668,16 +668,20 @@ def DENS(data):
   sGrp = data['category'][0]
   cGrp = data['category'][1]
   
+  defaultFontsize = 16
+  if 'figOpt' in data.keys():
+    defaultFontsize = float(data['figOpt']['fontsize'])
   subSize = 4
   split = list(adata.obs[sGrp].unique())
   genes = list(adata.var.index)
   colGrp = list(adata.obs[cGrp].unique())
   legendCol = math.ceil(len(colGrp)/(len(split)*11))
   fig = plt.figure(figsize=(len(genes)*subSize,len(split)*(subSize-1)))
+  plt.xlabel("Expression",labelpad=20,fontsize=defaultFontsize+1)
+  plt.ylabel(sGrp,labelpad=50,fontsize=defaultFontsize+1)
   plt.xticks([])
   plt.yticks([])
-  plt.xlabel("Expression",labelpad=20)
-  plt.ylabel(sGrp,labelpad=50)
+  plt.box(on=None)
 
   #plt.xlabel("Expression")
   #plt.ylabel(sGrp)
@@ -699,9 +703,9 @@ def DENS(data):
           sns.kdeplot(D[Dobs==one][genes[j]].to_numpy(),bw=bw,label=one)
 
       if i==0:
-        ax.set_title(genes[j])
+        ax.set_title(genes[j],fontsize=defaultFontsize+2)
       if j==0:
-        ax.set_ylabel(split[i],fontsize=float(data['figOpt']['fontsize']))
+        ax.set_ylabel(split[i],fontsize=defaultFontsize)
       if i==0 and j==(len(genes)-1):
         ax.legend(prop={'size': 10},title = cGrp,loc=2,bbox_to_anchor=(1,1),ncol=legendCol,frameon=False)#
       else:
