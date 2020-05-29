@@ -706,7 +706,7 @@ def DENS(data):
         ax.legend(prop={'size': 10},title = cGrp,loc=2,bbox_to_anchor=(1,1),ncol=legendCol,frameon=False)#
       else:
         ax.get_legend().remove()
-  fig.text(0.6,0.09,"Expression",ha='center')
+  #fig.text(0.6,0.09,"Expression",ha='center')
   #ppr.pprint("plotting data cost: %f seconds" % dataT)
   #ppr.pprint("plotting plot cost: %f seconds" % plotT)
   #ppr.pprint("plotting total cost: %f seconds" % (time.time()-sT))
@@ -781,8 +781,9 @@ def version():
   ## 2. Add the display on cell numbers for custom combined annotations;
   ## 3. Add DEG option on custom combined annotations;
   ## 4. Add the python error return to the user interface.
-  
-  
+  ## -------------------------
+  ## 1.0.9: May 29, 2020
+  ## 1. Add the annotation split for gene express in tsne/umap plot 
   
   
   
