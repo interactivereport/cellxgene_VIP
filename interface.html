@@ -353,10 +353,15 @@
         <label><input class="EMBEDcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="EMBEDcellN1" style="color:red">0</span>)</label>
         <label><input class="EMBEDcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="EMBEDcellN2" style="color:red">0</span>)</label>
       </p>
-      <p>Choose genes:</p>
-      <p id="EMBEDgene"></p>
       <p>Choose annotation groups:</p>
       <p id="EMBEDgrp"></p>
+      <p>Choose genes:</p>
+      <p id="EMBEDgene"></p>
+      <p>Select the annotation group where the gene expression will split: 
+      <select id="EMBEDsplit">
+        <option value="NONE">NONE</option>
+      </select>
+      </p>
       <p>Select the embedding layout:
       <select id="EMBEDlayout">
         <option value="umap">UMAP</option>
@@ -720,6 +725,7 @@ function init(){
     var mark = document.getElementById("MARKgrp");
     var densS = document.getElementById("DENSsplit");
     var densG = document.getElementById("DENSgrp");
+    var embed = document.getElementById("EMBEDsplit");
     for(const one of grps){
       sgv.add(createOpt(one));
       pgv.add(createOpt(one));
@@ -729,6 +735,7 @@ function init(){
       mark.add(createOpt(one));
       densS.add(createOpt(one));
       densG.add(createOpt(one));
+      embed.add(createOpt(one));
     }
     //--------------------------------------------------------------------------
     //HEAT
@@ -2268,6 +2275,8 @@ function EMBEDplot(){
     $('#EMBEDnote').text("The minimal number of plots per row is 2");
     return;
   }
+  
+  
   document.getElementById("EMBEDspin").style.visibility="visible";
   $(".EMBEDbt").prop('disabled',true);
   $(".EMBEDpngBT").prop('disabled',true);
@@ -2279,6 +2288,11 @@ function EMBEDplot(){
             'ncol':$('#EMBEDslot').val(),
             'layout':$("#EMBEDlayout").val(),
             'figOpt':window.figOpt};
+  if($("#EMBEDsplit").val()!="NONE"){
+    D['splitGrp'] = $("#EMBEDsplit").val();
+    grps.push($("#EMBEDsplit").val());
+    D['grp'] = [...new Set(grps)];
+  }
   $.ajax({
     type:"POST",
     url: "/VIP",

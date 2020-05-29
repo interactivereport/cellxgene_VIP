@@ -539,6 +539,10 @@ def EMBED(data):
   ngrp = len(data['grp'])
   ngene = len(data['genes'])
   nrow = ngrp+math.ceil(ngene/ncol)
+  if 'splitGrp' in data.keys():
+    splitName = list(adata.obs[data['splitGrp']].unique())
+    nsplitRow = math.ceil(len(splitName)/ncol)
+    nrow = ngrp+ngene*nsplitRow
   
   step =11
   grpCol = {gID:math.ceil(len(list(adata.obs[gID].unique()))/step) for gID in data['grp']}
@@ -547,13 +551,27 @@ def EMBED(data):
   fig = plt.figure(figsize=(ncol*subSize,subSize*nrow))
   gs = fig.add_gridspec(nrow,ncol,wspace=0.2)
   for i in range(ngrp):
-      ax = getattr(sc.pl,data['layout'])(adata=adata,color=data['grp'][i],ax=fig.add_subplot(gs[i,0]),wspace=0.25,show=False)
+      ax = getattr(sc.pl,data['layout'])(adata=adata,color=data['grp'][i],ax=fig.add_subplot(gs[i,0]),show=False)#,wspace=0.25
       if grpCol[data['grp'][i]]>1:
           ax.legend(ncol=grpCol[data['grp'][i]],loc=6,bbox_to_anchor=(1,0.5),frameon=False)
-  for i in range(ngene):
-      x = int(i/ncol)+ngrp
-      y = i % ncol
-      getattr(sc.pl,data['layout'])(adata,color=data['genes'][i],ax=fig.add_subplot(gs[x,y]),wspace=0.25,show=False)
+
+  if 'splitGrp' in data.keys():
+    vMax = adata.to_df().apply(lambda x: max(x))
+    vMin = adata.to_df().apply(lambda x: min(x))
+    dotSize = 120000 / adata.n_obs
+    for i in range(ngene):
+      for j in range(len(splitName)):
+        x = ngrp + i*nsplitRow+int(j/ncol)
+        y = j % ncol
+        ax = getattr(sc.pl,data['layout'])(adata,ax=fig.add_subplot(gs[x,y]),show=False)#color=data['genes'][i],wspace=0.25,
+        getattr(sc.pl,data['layout'])(adata[adata.obs[data['splitGrp']]==splitName[j]],color=data['genes'][i],
+                vmin=vMin[data['genes'][i]],vmax=vMax[data['genes'][i]],ax=ax,show=False,
+                size=dotSize,title='{} in {}'.format(data['genes'][i],splitName[j]))
+  else:
+    for i in range(ngene):
+        x = int(i/ncol)+ngrp
+        y = i % ncol
+        getattr(sc.pl,data['layout'])(adata,color=data['genes'][i],ax=fig.add_subplot(gs[x,y]),show=False)
   return iostreamFig(fig)
   
 def TRACK(data):
