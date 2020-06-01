@@ -122,7 +122,7 @@ def subData(data):
     obs[newGrp] = obs[data['grp'][0]]
     for i in data['grp']:
       if i!=data['grp'][0]:
-        obs[newGrp] += "_"+obs[i]
+        obs[newGrp] += ":"+obs[i]
     selC = ~obs[newGrp].str.contains("Other").to_numpy()
     expr = expr[selC]
     embed = embed[selC]
