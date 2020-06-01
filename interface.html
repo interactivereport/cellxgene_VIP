@@ -1250,7 +1250,7 @@ function ABBRcombineCell(){
     if(cName.length==0){
       for(const v of window.bioCombine[key]){
         cName.push(window.bioAbbr[key][v]);
-        cVal.push(k+":"+window.store.getState().categoricalSelection[key].categoryValueIndices.get(v));
+        cVal.push(k+"_"+window.store.getState().categoricalSelection[key].categoryValueIndices.get(v));
         //selC.push(indexOfAll(window.store.getState().universe.obsAnnotations.__columns[obsMap.get(key)],v));
       }
     }else{
@@ -1258,7 +1258,7 @@ function ABBRcombineCell(){
       for(var i=0;i<cName.length;i++){
         window.bioCombine[key].forEach(function(v){
           newGrp.push(cName[i]+":"+window.bioAbbr[key][v]);
-          newVal.push(cVal[i]+"__"+k+":"+window.store.getState().categoricalSelection[key].categoryValueIndices.get(v));
+          newVal.push(cVal[i]+"__"+k+"_"+window.store.getState().categoricalSelection[key].categoryValueIndices.get(v));
           //var oneSel = indexOfAll(window.store.getState().universe.obsAnnotations.__columns[obsMap.get(key)],v);
           //newC.push(selC[i].filter(v => oneSel.includes(v)));
         });
