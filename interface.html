@@ -1268,8 +1268,6 @@ function ABBRcombineCell(){
       //selC = newC;
     }
   }
-console.log(cName);
-console.log(cVal);
   var combCell = {};
   for(var i=0;i<cName.length;i++){
     //cName[i] += " ("+selC[i].length+")";
@@ -1878,7 +1876,7 @@ function DEGselCells(){
       //selC[window.bioCombineCell[$(this).val()].cName.split(' ')[0]] = window.bioCombineCell[$(this).val()].selC;
       //window.store.getState().categoricalSelection[key].categoryValueIndices.get(v)
       $(this).val().split("__").forEach(function(one){
-        [k,v]=one.split(":");
+        [k,v]=one.split("_");
         if(selAnno[grpKey[k]]==undefined){selAnno[grpKey[k]]=[]}
         if(!selAnno[grpKey[k]].includes(window.store.getState().categoricalSelection[grpKey[k]].categoryValues[v])){
           selAnno[grpKey[k]].push(window.store.getState().categoricalSelection[grpKey[k]].categoryValues[v]);
