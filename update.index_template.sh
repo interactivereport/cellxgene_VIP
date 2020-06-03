@@ -59,7 +59,7 @@ read -d '' insertL << EOF
 </script>
 EOF
 insertL=$(sed -e 's/[&\\/]/\\&/g; s/$/\\/' -e '$s/\\$//' <<<"$insertL")
-sed -i "s|<div id=\"root\"></div>|$insertL\n&|;s|cell&times;gene|cellxgene VIP|" "cellxgene/client/index_template.html" 
+sed -i "s|<div id=\"root\"></div>|$insertL\n&|;s|cell&times;gene|cellxgene VIP|" "cellxgene/client/index_template.html"
 
 sed -i "s|  gene|  gene VIP<br\/>|; s|width: \"190px\"|width: \"300px\"|; s|{aboutURL ? <a href={aboutURL}|{myURL ? <a href={myURL}|; s|return|var myURL=displayTitle.split('_')[0].startsWith('GSE') \? 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc='\+displayTitle.split('_')[0]:null;\n    return|" "cellxgene/client/src/components/leftSidebar/topLeftLogoAndTitle.js"
 
