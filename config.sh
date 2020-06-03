@@ -66,6 +66,10 @@ EOF
 insertL=$(sed -e 's/[&\\/]/\\&/g; s/$/\\/' -e '$s/\\$//' <<<"$insertL")
 sed -i "s|<div id=\"root\"></div>|$insertL\n&|;s|cell&times;gene|cellxgene VIP|" "cellxgene/client/index_template.html"
 
+sed -i "s|  gene|  gene VIP<br\/>|; s|width: \"190px\"|width: \"300px\"|; s|{aboutURL ? <a href={aboutURL}|{myURL ? <a href={myURL}|; s|return|var myURL=displayTitle.split('_')[0].startsWith('GSE') \? 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc='\+displayTitle.split('_')[0]:null;\n    return|" "cellxgene/client/src/components/leftSidebar/topLeftLogoAndTitle.js"
+
+sed -i "s|logoRelatedPadding = 50|logoRelatedPadding = 60|" "cellxgene/client/src/components/leftSidebar/index.js"
+
 echo '
 from server.app.VIPInterface import route
 @webbp.route("/VIP", methods=["POST"])
@@ -74,7 +78,6 @@ def VIP():
     
 ## update the cellxgene title to cellxgene VIP
 sed -i "s|title=\"cellxgene\"|title=\"cellxgene VIP\"|" "cellxgene/client/src/components/app.js"
-sed -i "s|  gene|  gene VIP|;s|width: \"190px\"|width: \"120px\"|" "cellxgene/client/src/components/leftSidebar/topLeftLogoAndTitle.js"
 
 ## buld the cellxgene and install -----------
 conda remove PyYAML
