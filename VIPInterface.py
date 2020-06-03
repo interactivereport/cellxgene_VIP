@@ -298,10 +298,29 @@ def SGV(data):
   fig.autofmt_xdate(bottom=0.2,rotation=ro,ha='right')
   return iostreamFig(fig)
 
+def unique(seq):
+    seen = set()
+    seen_add = seen.add
+    return [x for x in seq if not (x in seen or seen_add(x))]
+def updateGene(data):
+  grpID = []
+  grpLoc=[]
+  allG = []
+  if 'geneGrp' in data.keys():
+    for aN in data['geneGrp'].keys():
+      grpLoc += [(len(allG),len(allG)+len(data['geneGrp'][aN])-1)]
+      allG += data['geneGrp'][aN]
+      grpID += [aN]
+  data['genes'] = unique(allG+data['genes'])
+  data['grpLoc'] = grpLoc
+  data['grpID'] = grpID
+
 def PGV(data):
   # figure width and heights depends on number of unique categories
   # characters of category names, gene number
   #sT = time.time()
+  updateGene(data)
+
   adata = createData(data)
   #ppr.pprint('PGV data reading cost %f seconds' % (time.time()-sT) )
   #sT = time.time()
@@ -322,12 +341,14 @@ def PGV(data):
     h = a
     swapAx = True
   if '1.4.7' in sc.__version__:
-    vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=(w,h),swap_axes=swapAx)
+    vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=(w,h),swap_axes=swapAx,
+                              var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
     vp.add_totals().style(yticklabels=True).show()
     fig = plt.gcf()
   else:
     fig = plt.figure(figsize=[w,h])
-    axes = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],show=False,ax=fig.gca(),swap_axes=swapAx)
+    axes = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],show=False,ax=fig.gca(),swap_axes=swapAx,
+                                var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
   #ppr.pprint('PGV plotting cost %f seconds' % (time.time()-sT) )
   return iostreamFig(fig)
   
@@ -508,6 +529,7 @@ def DEG(data):
   return json.dumps(deg.values.tolist())
 
 def DOT(data):
+  updateGene(data)
   adata = createData(data)
   if len(adata)==0:
     return Msg('No cells in the condition!')
@@ -522,12 +544,15 @@ def DOT(data):
   adata.uns[data['grp'][0]+'_colors'] = col
   
   if '1.4.7' in sc.__version__:
-    dp = sc.pl.dotplot(adata,data['geneGrp'],groupby=data['grp'][0],expression_cutoff=float(data['cutoff']),return_fig=True)#
+    dp = sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],expression_cutoff=float(data['cutoff']),
+                       var_group_positions=data['grpLoc'],var_group_labels=data['grpID'],
+                       return_fig=True)#
     dp = dp.add_totals(size=1.2).legend(show_size_legend=True).style(cmap='Blues', dot_edge_color='black', dot_edge_lw=1, size_exponent=1.5)
     dp.show()
     fig = dp.get_axes()['mainplot_ax'].figure
   else:
-    sc.pl.dotplot(adata,data['geneGrp'],groupby=data['grp'][0],figsize=(w,h),show=False,expression_cutoff=float(data['cutoff']))
+    sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],figsize=(w,h),show=False,expression_cutoff=float(data['cutoff']),
+                  var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
     fig = plt.gcf()
 
   return iostreamFig(fig)
@@ -575,13 +600,22 @@ def EMBED(data):
   return iostreamFig(fig)
   
 def TRACK(data):
+  updateGene(data)
   adata = createData(data)
   if len(adata)==0:
     return Msg('No cells in the condition!')
   w = math.log2(adata.n_obs)
   h = adata.n_vars/2
+
+  ## a bug in scanpy reported: https://github.com/theislab/scanpy/issues/1265, if resolved the following code is not needed
+  if data['grpLoc'][len(data['grpLoc'])-1][1] < (len(data['genes'])-1):
+    data['grpLoc'] += [(data['grpLoc'][len(data['grpLoc'])-1][1]+1,len(data['genes'])-1)]
+    data['grpID'] += ['others']
+  ##############
   
-  ax = sc.pl.tracksplot(adata,data['geneGrp'],groupby=data['grp'][0],figsize=(w,h),show=False)
+  ax = sc.pl.tracksplot(adata,data['genes'],groupby=data['grp'][0],figsize=(w,h),
+                        var_group_positions=data['grpLoc'],var_group_labels=data['grpID'],
+                        show=False)
   fig=ax[0].figure
   return iostreamFig(fig)
 
@@ -788,6 +822,8 @@ def version():
   ## -------------------------
   ## 1.0.9: May 29, 2020
   ## 1. Add the annotation split for gene express in tsne/umap plot 
+  ## 2. Add the gene sets selection for stack violin
+  ## 3. Add the gene selection for Dot plot and track plot
   
   
   
