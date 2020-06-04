@@ -32,15 +32,15 @@ read -d '' insertL << EOF
         });
     }
     var plotPanel = jsPanel.create({
-        contentSize: {
-            width: function() { return Math.min(730, window.innerWidth*0.9);},
-            height: function() { return Math.min(400, window.innerHeight*0.5);}
-        },
-        position:    'center-top 0 180',
+        panelSize: '190 0',
+        position:    'left-top 160 6',
         animateIn:   'jsPanelFadeIn',
+        boxShadow:    1,
+        border: "solid #AFBEC4 thin",
         contentOverflow: 'scroll scroll',
         headerControls:{
           close: 'remove',
+          minimize: 'remove',
           maximize: 'remove'
         },
         footerToolbar: '<span style="display:block; width:100%; height:4px; background-color:#AFBEC4"></span>',
@@ -51,17 +51,22 @@ read -d '' insertL << EOF
                    setInnerHTML(panel.content, this.responseText);
             }
         },
-        onbeforeclose: function () {
-            return confirm('Do you really want to close the panel?');
+
+        onunsmallified: function (panel, status) {
+            this.reposition('center-top -370 180');
+            this.resize({ width: 740, height: function() { return Math.min(480, window.innerHeight*0.6);} });
+        },
+        onsmallified: function (panel, status) {
+            this.reposition('left-top 160 6');
+            this.style.width = '190px';
         }
-    });
-    plotPanel.minimize();
+    }).smallify();
 </script>
 EOF
 insertL=$(sed -e 's/[&\\/]/\\&/g; s/$/\\/' -e '$s/\\$//' <<<"$insertL")
 sed -i "s|<div id=\"root\"></div>|$insertL\n&|;s|cell&times;gene|cellxgene VIP|" "cellxgene/client/index_template.html"
 
-sed -i "s|  gene|  gene VIP<br\/>|; s|globals.datasetTitleMaxCharacterCount|50|; s|width: \"190px\"|width: \"300px\"|; s|{aboutURL ? <a href={aboutURL}|{myURL ? <a href={myURL}|; s|return|var myURL=displayTitle.split('_')[0].startsWith('GSE') \? 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc='\+displayTitle.split('_')[0]:null;\n    return|" "cellxgene/client/src/components/leftSidebar/topLeftLogoAndTitle.js"
+sed -i "s|globals.datasetTitleMaxCharacterCount|50|; s|width: \"190px\"|width: \"300px\"|; s|{aboutURL ? <a href={aboutURL}|{myURL ? <a href={myURL}|; s|return|var myURL=displayTitle.split('_')[0].startsWith('GSE') \? 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc='\+displayTitle.split('_')[0]:null;\n    return|" "cellxgene/client/src/components/leftSidebar/topLeftLogoAndTitle.js"
 
 sed -i "s|logoRelatedPadding = 50|logoRelatedPadding = 60|" "cellxgene/client/src/components/leftSidebar/index.js"
 
