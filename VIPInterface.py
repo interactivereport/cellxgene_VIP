@@ -657,17 +657,17 @@ def DUAL(data):
   #ppr.pprint(adata.obs['Expressed'].value_counts())
   
   #ppr.pprint('DUAL filtering cost %f seconds' % (time.time()-sT) )
-  sT = time.time()
+  #sT = time.time()
   pCol = {"None":"#AAAAAA44","Both":"#EDDF01AA",data['genes'][0]:"#1CAF82AA",data['genes'][1]:"#FA2202AA"}
   adata.uns["Expressed_colors"]=[pCol[i] for i in adata.obs['Expressed'].cat.categories]
   
   rcParams['figure.figsize'] = 4.5, 4
-  ax = sc.pl.umap(adata,color='Expressed',return_fig=True,show=False,legend_fontsize="small")
-  ax.set_xlabel('%s1'%data['layout'])
-  ax.set_ylabel('%s2'%data['layout'])
+  fig = sc.pl.umap(adata,color='Expressed',return_fig=True,show=False,legend_fontsize="small")
+  plt.xlabel('%s1'%data['layout'])
+  plt.ylabel('%s2'%data['layout'])
   rcParams['figure.figsize'] = 4, 4
   #ppr.pprint('DUAL plotting cost %f seconds' % (time.time()-sT) )
-  return iostreamFig(ax)
+  return iostreamFig(fig)
 
 def MARK(data):
   adata = createData(data)
