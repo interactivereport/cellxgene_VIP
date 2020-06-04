@@ -363,8 +363,6 @@
       </p>
       <p>Select the embedding layout:
       <select id="EMBEDlayout">
-        <option value="umap">UMAP</option>
-        <option value="tsne">tSNE</option>
       </select> the number of plots per row:
       <input id="EMBEDslot" type="number" value="4" min="2"/>
       </p>
@@ -439,8 +437,6 @@
       <p>Please specify the gene expression cutoff: <input id="DUALcutoff" type="number" step="0.1" value="1"/></p>
       <p>Select the embedding layout:
       <select id="DUALlayout">
-        <option value="umap">UMAP</option>
-        <option value="tsne">tSNE</option>
       </select>
       </p>
       
@@ -715,7 +711,7 @@ function init(){
     window.bioGeneGrp={};
     window.figOpt={dpi:150,img:'png',fontsize:11,vectorFriendly:'true',transparent:'false',colorMap:'viridis'};
     //--------------------------------------------------------------------------
-    //SGV & PGV annotation categories
+    //add dropdown annotation categories
     var sgv = document.getElementById("SGVgrp");
     var pgv = document.getElementById("PGVgrp");
     var heat = document.getElementById("HEATorder");
@@ -735,6 +731,14 @@ function init(){
       densS.add(createOpt(one));
       densG.add(createOpt(one));
       embed.add(createOpt(one));
+    }
+    //--------------------------------------------------------------------------
+    //add layout
+    var embedLay = document.getElementById("EMBEDlayout");
+    var dualLay = document.getElementById("DUALlayout");
+    for(const ix of Object.keys(window.store.getState().universe.schema.layout.obs)){
+      embedLay.add(createOpt(window.store.getState().universe.schema.layout.obs[ix].name));
+      dualLay.add(createOpt(window.store.getState().universe.schema.layout.obs[ix].name));
     }
     //--------------------------------------------------------------------------
     //HEAT
@@ -2505,7 +2509,7 @@ function TRAKload(content){
 }
 function DENSsave(){
   return [checkSave('DENScell'),checkSave("DENSgenes"),
-          $("#DENSsplit").val(),$("#DENSgrp").val(),$("#DENSsplit").val(),$("#DENSgrp").val(),
+          $("#DENSsplit").val(),$("#DENSgrp").val(),
           $("#DENScutoff").val()]
 }
 function DENSload(content){

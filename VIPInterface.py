@@ -104,7 +104,9 @@ def subData(data):
   if 'layout' in data.keys():## tsne or umap
     strEmbed = data['layout']
     with app.get_data_adaptor() as scD:
-      embed = pd.DataFrame(scD.data.obsm['X_%s'%strEmbed][selC],columns=['%s1'%strEmbed,'%s2'%strEmbed],index=cNames)
+      embed = pd.DataFrame(scD.data.obsm['X_%s'%strEmbed][selC][:,[0,1]],columns=['%s1'%strEmbed,'%s2'%strEmbed],index=cNames)
+    strEmbed = 'umap'
+    
 
   ## obtain the category annotation
   with app.get_data_adaptor() as scD:
@@ -576,9 +578,11 @@ def EMBED(data):
   fig = plt.figure(figsize=(ncol*subSize,subSize*nrow))
   gs = fig.add_gridspec(nrow,ncol,wspace=0.2)
   for i in range(ngrp):
-      ax = getattr(sc.pl,data['layout'])(adata=adata,color=data['grp'][i],ax=fig.add_subplot(gs[i,0]),show=False)#,wspace=0.25
+      ax = sc.pl.umap(adata=adata,color=data['grp'][i],ax=fig.add_subplot(gs[i,0]),show=False)#,wspace=0.25
       if grpCol[data['grp'][i]]>1:
           ax.legend(ncol=grpCol[data['grp'][i]],loc=6,bbox_to_anchor=(1,0.5),frameon=False)
+      ax.set_xlabel('%s1'%data['layout'])
+      ax.set_ylabel('%s2'%data['layout'])
 
   if 'splitGrp' in data.keys():
     vMax = adata.to_df().apply(lambda x: max(x))
@@ -588,15 +592,20 @@ def EMBED(data):
       for j in range(len(splitName)):
         x = ngrp + i*nsplitRow+int(j/ncol)
         y = j % ncol
-        ax = getattr(sc.pl,data['layout'])(adata,ax=fig.add_subplot(gs[x,y]),show=False)#color=data['genes'][i],wspace=0.25,
-        getattr(sc.pl,data['layout'])(adata[adata.obs[data['splitGrp']]==splitName[j]],color=data['genes'][i],
+        ax = sc.pl.umap(adata,ax=fig.add_subplot(gs[x,y]),show=False)#color=data['genes'][i],wspace=0.25,
+        ax = sc.pl.umap(adata[adata.obs[data['splitGrp']]==splitName[j]],color=data['genes'][i],
                 vmin=vMin[data['genes'][i]],vmax=vMax[data['genes'][i]],ax=ax,show=False,
                 size=dotSize,title='{} in {}'.format(data['genes'][i],splitName[j]))
+        ax.set_xlabel('%s1'%data['layout'])
+        ax.set_ylabel('%s2'%data['layout'])
   else:
     for i in range(ngene):
         x = int(i/ncol)+ngrp
         y = i % ncol
-        getattr(sc.pl,data['layout'])(adata,color=data['genes'][i],ax=fig.add_subplot(gs[x,y]),show=False)
+        ax = sc.pl.umap(adata,color=data['genes'][i],ax=fig.add_subplot(gs[x,y]),show=False)
+        ax.set_xlabel('%s1'%data['layout'])
+        ax.set_ylabel('%s2'%data['layout'])
+
   return iostreamFig(fig)
   
 def TRACK(data):
@@ -637,9 +646,9 @@ def dualExp(df,cutoff,anno):
   return pd.Series([label[i] for i in list(a+2*b)],index=df.index,dtype='category')
 
 def DUAL(data):
-  sT = time.time()
+  #sT = time.time()
   adata = createData(data)
-  ppr.pprint('DUAL data reading cost %f seconds' % (time.time()-sT) )
+  #ppr.pprint('DUAL data reading cost %f seconds' % (time.time()-sT) )
   #sT = time.time()
   #adata.obs['Expressed'] = adata.to_df().apply(cut,axis=1,args=(float(data['cutoff']),adata.var_names)).astype('category')
   adata.obs['Expressed'] = dualExp(adata.to_df(),float(data['cutoff']),adata.var_names)
@@ -653,10 +662,12 @@ def DUAL(data):
   adata.uns["Expressed_colors"]=[pCol[i] for i in adata.obs['Expressed'].cat.categories]
   
   rcParams['figure.figsize'] = 4.5, 4
-  fig = getattr(sc.pl,data['layout'])(adata,color='Expressed',return_fig=True,show=False,legend_fontsize="small")
+  ax = sc.pl.umap(adata,color='Expressed',return_fig=True,show=False,legend_fontsize="small")
+  ax.set_xlabel('%s1'%data['layout'])
+  ax.set_ylabel('%s2'%data['layout'])
   rcParams['figure.figsize'] = 4, 4
-  ppr.pprint('DUAL plotting cost %f seconds' % (time.time()-sT) )
-  return iostreamFig(fig)
+  #ppr.pprint('DUAL plotting cost %f seconds' % (time.time()-sT) )
+  return iostreamFig(ax)
 
 def MARK(data):
   adata = createData(data)
@@ -820,7 +831,7 @@ def version():
   ## 3. Add DEG option on custom combined annotations;
   ## 4. Add the python error return to the user interface.
   ## -------------------------
-  ## 1.0.9: May 29, 2020
+  ## 1.0.9: June 3, 2020
   ## 1. Add the annotation split for gene express in tsne/umap plot 
   ## 2. Add the gene sets selection for stack violin
   ## 3. Add the gene selection for Dot plot and track plot
