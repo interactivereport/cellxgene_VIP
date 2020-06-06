@@ -563,6 +563,15 @@ function enableButton(){
       for(const one of document.getElementsByClassName('tablinks')){
         one.disabled=false;
       }
+      if (window.store.getState().categoricalSelection["||"] != null) {
+        var ginit = window.store.getState().categoricalSelection["||"].categoryValues[0].split(";");
+console.log(ginit);
+
+        window.store.dispatch({type: "set layout choice", layoutChoice: ginit[0]});
+        window.store.dispatch({type: "color by categorical metadata", colorAccessor: ginit[1]});
+        window.store.dispatch({type: "show centroid labels for category", showLabels: true});
+      }
+      
       init();
     }
 }
