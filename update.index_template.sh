@@ -31,21 +31,20 @@ read -d '' insertL << EOF
             oldScript.parentNode.replaceChild(newScript, oldScript);
         });
     }
-console.log(window.innerHeight);
     var plotPanel = jsPanel.create({
         panelSize: '190 0',
         position: 'left-top 160 6',
         dragit: { containment: [-10, -600, -400-window.innerHeight, -600] },
         animateIn: 'jsPanelFadeIn',
         boxShadow: 1,
-        border: "solid #AFBEC4 thin",
+        border: "solid #D4DBDE thin",
         contentOverflow: 'scroll scroll',
         headerControls:{
           close: 'remove',
           minimize: 'remove',
           maximize: 'remove'
         },
-        headerTitle: 'Visualization in Plugin',
+        headerTitle: function () {return '<strong>Visualization in Plugin</strong>'},
         contentAjax: {
             url: 'static/interface.html',
             done: function (panel) {
@@ -62,6 +61,7 @@ console.log(window.innerHeight);
             this.style.width = '190px';
         }
     }).smallify();
+    plotPanel.headerbar.style.background = "#D4DBDE";
 </script>
 EOF
 insertL=$(sed -e 's/[&\\/]/\\&/g; s/$/\\/' -e '$s/\\$//' <<<"$insertL")

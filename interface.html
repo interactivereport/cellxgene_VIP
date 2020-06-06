@@ -701,6 +701,8 @@ function init(){
     var grpL = window.store.getState().categoricalSelection;
     var htmlCheck= "";
     for(i=0;i<grps.length;i++){
+      var one = grps[i];
+      if (one == "||" || one.startsWith(">")) continue;
       htmlCheck += '<label><input class="ABBRgrps" type="checkbox" value="'+grps[i]+'" onclick="ABBRlist()"/> '+grps[i]+' ('+grpL[grps[i]].numCategoryValues+')</label>';
     }  
     $('#ABBRgrp').html(htmlCheck);
@@ -731,6 +733,7 @@ function init(){
     var densG = document.getElementById("DENSgrp");
     var embed = document.getElementById("EMBEDsplit");
     for(const one of grps){
+      if (one == "||" || one.startsWith(">")) continue; 
       sgv.add(createOpt(one));
       pgv.add(createOpt(one));
       heat.add(createOpt(one));
@@ -753,6 +756,7 @@ function init(){
     //HEAT
     htmlCheck= "";
     for(const one of grps){
+      if (one == "||" || one.startsWith(">")) continue;
       htmlCheck += '<label><input class="HEATgrps" type="checkbox" value="'+one+'"/> '+one+' ('+grpL[one].numCategoryValues+')</label>';
     }  
     $('#HEATgrp').html(htmlCheck);
@@ -760,6 +764,7 @@ function init(){
     //EMBED
     htmlCheck= "";
     for(const one of grps){
+      if (one == "||" || one.startsWith(">")) continue;
       htmlCheck += '<label><input class="EMBEDgrps" type="checkbox" value="'+one+'"/> '+one+' ('+grpL[one].numCategoryValues+')</label>';
     }  
     $('#EMBEDgrp').html(htmlCheck);
