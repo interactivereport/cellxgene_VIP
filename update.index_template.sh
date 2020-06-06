@@ -31,11 +31,13 @@ read -d '' insertL << EOF
             oldScript.parentNode.replaceChild(newScript, oldScript);
         });
     }
+console.log(window.innerHeight);
     var plotPanel = jsPanel.create({
         panelSize: '190 0',
-        position:    'left-top 160 6',
-        animateIn:   'jsPanelFadeIn',
-        boxShadow:    1,
+        position: 'left-top 160 6',
+        dragit: { containment: [-10, -600, -400-window.innerHeight, -600] },
+        animateIn: 'jsPanelFadeIn',
+        boxShadow: 1,
         border: "solid #AFBEC4 thin",
         contentOverflow: 'scroll scroll',
         headerControls:{
@@ -43,7 +45,6 @@ read -d '' insertL << EOF
           minimize: 'remove',
           maximize: 'remove'
         },
-        footerToolbar: '<span style="display:block; width:100%; height:4px; background-color:#AFBEC4"></span>',
         headerTitle: 'Visualization in Plugin',
         contentAjax: {
             url: 'static/interface.html',
