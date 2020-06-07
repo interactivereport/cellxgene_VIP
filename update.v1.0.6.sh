@@ -10,16 +10,8 @@ strPath=${strPath//"['"/}
 strPath=${strPath//"']"/}
 echo $strPath
 
-sed -i "s|F88519|AFBEC4|i" "cellxgene/client/index_template.html"
-sed -i "s|width: \"190px\"|width: \"120px\"|" "cellxgene/client/src/components/leftSidebar/topLeftLogoAndTitle.js"
-cd cellxgene/client; make build; cp build/index.html $strPath/server/common/web/templates/.;cd ../..
-
 pip install tensorflow
 pip install diffxpy
 pip install git+https://github.com/theislab/scanpy.git@groupby_plots
-
-cp VIPInterface.py $strPath/server/app/.
-cp interface.html $strPath/server/common/web/static/.
-cp color_map.png $strPath/server/common/web/static/.
 
 echo "Updating finished!"

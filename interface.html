@@ -563,12 +563,11 @@ function enableButton(){
       for(const one of document.getElementsByClassName('tablinks')){
         one.disabled=false;
       }
-      if (window.store.getState().categoricalSelection["||"] != null) {
-        var ginit = window.store.getState().categoricalSelection["||"].categoryValues[0].split(";");
+      var ginit = window.store.getState().categoricalSelection[">Description"].categoryValues[0].split("|")[1].split(";");
 console.log(ginit);
-
-        window.store.dispatch({type: "set layout choice", layoutChoice: ginit[0]});
-        window.store.dispatch({type: "color by categorical metadata", colorAccessor: ginit[1]});
+      if (ginit != null) {
+        window.store.dispatch({type: "set layout choice", layoutChoice: ginit[0].split("by")[1].trim()});
+        window.store.dispatch({type: "color by categorical metadata", colorAccessor: ginit[1].split("by")[1].trim()});
         window.store.dispatch({type: "show centroid labels for category", showLabels: true});
       }
       
@@ -788,7 +787,10 @@ function init(){
     $('#DOTcutoff').prop('min',0);  
 
     const unsubscribe = window.store.subscribe(() => {
-      sync();
+      actionType = window.store.getState()["@@undoable/filterState"].prevAction.type;
+      if (actionType.includes("user defined gene success") || actionType.includes("store current cell selection as differential set")) {
+        sync();
+      }
     });
     
     window.bioInit=true;
@@ -828,18 +830,18 @@ function ADDGref(){
 }
 function GDref(){
 }
-function MARKref(){
-  var x = document.getElementById("MARKgrp");
-  var grps = Object.keys(window.store.getState().categoricalSelection);
+function addCustomCombine(element) {
+  var x = document.getElementById(element);
+  var grps = Object.keys(window.store.getState().categoricalSelection).filter(function(e) { return !(e.startsWith('>') || e.startsWith('|')) });
   var grpKeys = Object.keys(window.bioCombine);
   if(grpKeys.length>0 && grps.length==x.length){
-    var opt = document.createElement("option");
-    opt.text = "Custom_combine";
-    opt.value = "Custom_combine";
-    x.add(opt);
+    x.add(createOpt("Custom_combine"));
   }else if(grpKeys.length==0 && grps.length<x.length){
     x.remove(grps.length);
   }
+}
+function MARKref(){
+  addCustomCombine("MARKgrp");
 }
 function SGVref(){
   var genes = window.store.getState().universe.varData.colIndex.rindex;
@@ -862,18 +864,7 @@ function SGVref(){
       }
     }
   }
-  
-  var x = document.getElementById("SGVgrp");
-  var grps = Object.keys(window.store.getState().categoricalSelection);
-  var grpKeys = Object.keys(window.bioCombine);
-  if(grpKeys.length>0 && grps.length==x.length){
-    var opt = document.createElement("option");
-    opt.text = "Custom_combine";
-    opt.value = "Custom_combine";
-    x.add(opt);
-  }else if(grpKeys.length==0 && grps.length<x.length){
-    x.remove(grps.length);
-  }
+  addCustomCombine("SGVgrp");
 }
 function showGeneSet(aID){
   var gSets = Object.keys(window.bioGeneGrp);
@@ -937,17 +928,7 @@ function showGene(aID){
 function PGVref(){
   showGene('PGV');
   showGeneSet('PGV');
-
-  var x = document.getElementById("PGVgrp");
-  var grps = Object.keys(window.store.getState().categoricalSelection);
-  var grpKeys = Object.keys(window.bioCombine);
-  if(grpKeys.length>0 && grps.length==x.length){
-    x.add(createOpt("Custom_combine"));
-  }else if(grpKeys.length==0 && grps.length<x.length){
-    x.remove(grps.length);
-  }
-
-
+  addCustomCombine("PGVgrp");
 }
 function HEATref(){
   showGene('HEAT');
@@ -970,29 +951,12 @@ function HEATref(){
 function DOTref(){
   showGene('DOT');
   showGeneSet('DOT');
-  
-  var x = document.getElementById("DOTgrp");
-  var grps = Object.keys(window.store.getState().categoricalSelection);
-  var grpKeys = Object.keys(window.bioCombine);
-  if(grpKeys.length>0 && grps.length==x.length){
-    x.add(createOpt("Custom_combine"));
-  }else if(grpKeys.length==0 && grps.length<x.length){
-    x.remove(grps.length);
-  }
+  addCustomCombine("DOTgrp");
 }
 function TRAKref(){
   showGene('TRAK');
   showGeneSet('TRAK');
-
-  var x = document.getElementById("TRAKgrp");
-  var grps = Object.keys(window.store.getState().categoricalSelection);
-  var grpKeys = Object.keys(window.bioCombine);
-  if(grpKeys.length>0 && grps.length==x.length){
-    x.add(createOpt("Custom_combine"));
-  }else if(grpKeys.length==0 && grps.length<x.length){
-    x.remove(grps.length);
-  }
-
+  addCustomCombine("TRAKgrp");
 }
 function DENSref(){
   var genes = window.store.getState().universe.varData.colIndex.rindex;
@@ -1023,18 +987,8 @@ function DENSref(){
       $(this).prop("checked",false);
     }
   })
-
-  var x = document.getElementById("DENSgrp");
-  var y = document.getElementById("DENSsplit");
-  var grps = Object.keys(window.store.getState().categoricalSelection);
-  var grpKeys = Object.keys(window.bioCombine);
-  if(grpKeys.length>0 && grps.length==x.length){
-    x.add(createOpt("Custom_combine"));
-    y.add(createOpt("Custom_combine"));
-  }else if(grpKeys.length==0 && grps.length<x.length){
-    x.remove(grps.length);
-    y.remove(grps.length);
-  }
+  addCustomCombine("DENSgrp");
+  addCustomCombine("DENSsplit");
 }
 function EMBEDref(){
   var genes = window.store.getState().universe.varData.colIndex.rindex;
@@ -2613,6 +2567,3 @@ function load(){
 <script type="text/javascript" src="static/DataTables/datatables.min.js"></script>
 </body>
 </html>
-
-
-
