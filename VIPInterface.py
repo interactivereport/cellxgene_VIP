@@ -11,6 +11,8 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 import matplotlib.patches as mpatches
 from matplotlib import rcParams
+import plotly.graph_objects as go
+import plotly.io as plotIO
 import base64
 import math
 from io import BytesIO
@@ -233,7 +235,8 @@ def distributeTask(aTask):
     'DUAL':DUAL,
     'MARK': MARK,
     'MINX':MINX,
-    'DENS':DENS
+    'DENS':DENS,
+    'SANK':SANK
   }.get(aTask,errorTask)
 
 def iostreamFig(fig):
@@ -761,6 +764,171 @@ def DENS(data):
   #ppr.pprint("plotting total cost: %f seconds" % (time.time()-sT))
   return iostreamFig(fig)
 
+def SANK(data):
+  adata = createData(data)
+  #with open("/share/cellxgene/adata.pkl",'wb') as f:
+  #  pickle.dump(adata,f)
+    
+  D = pd.concat([adata.obs,
+                 adata.to_df().apply(lambda x:pd.cut(x,10,labels=False).apply(lambda y:x.name+"_"+str(y)))],
+                axis=1,sort=False)
+  D = D.astype('category')
+  if 'name_0' in D.columns:
+    del D['name_0']
+  
+  colName =['Set1','Set3','viridis']
+  labels = []
+  cols = []
+  colindex = 0
+  for gID in D.columns:
+    gNames = list(D[gID].unique())
+    labels += gNames
+    if len(gNames) <10:
+      cols += sns.color_palette(colName[colindex%2],len(gNames)).as_hex()
+      colindex += 1
+    else:
+      cols += sns.color_palette(colName[2],len(gNames)).as_hex()
+  
+  sIDs =[]
+  dIDs =[]
+  v=[]
+  Dnames = list(D.columns)
+  #maxGrp = 0
+  #ppr.pprint(Dnames)
+  for i in range(D.shape[1]-1):
+    oneName = Dnames[i:i+2]
+    #maxGrp = max(maxGrp,len(D[oneName[0]].unique()))
+    summaryOne = D.groupby(oneName).size().reset_index(name='Count')
+    summaryOne=summaryOne[summaryOne['Count']>0]
+    sIDs += list(summaryOne[oneName[0]].apply(lambda x: labels.index(x)))
+    dIDs += list(summaryOne[oneName[1]].apply(lambda x: labels.index(x)))
+    v += list(summaryOne['Count'])
+    
+  data_trace = dict(
+    type='sankey',
+    domain=dict(x=[0,1],y=[0,1]),
+    orientation='h',
+    valueformat = ".0f",
+    valuesuffix = "TWh",
+    node = dict(
+      pad = 10,
+      thickness = 15,
+      line = dict(
+        color = "black",
+        width = 0.5
+      ),
+      label =  labels,
+      color =  cols
+    ),
+    link = dict(
+      source = sIDs,
+      target = dIDs,
+      value = v
+    )
+  )
+  layout = dict(
+    title = 'Sankey diagram',
+    font = dict(size=10),
+    height= 700,
+    width = 200*D.shape[1],
+    updatemenus= [
+            dict(
+                y=1,
+                buttons=[
+                    dict(
+                        label='Light',
+                        method='relayout',
+                        args=['paper_bgcolor', 'white']
+                    ),
+                    dict(
+                        label='Dark',
+                        method='relayout',
+                        args=['paper_bgcolor', 'black']
+                    )
+                ]
+            
+            ),
+            dict(
+                y=0.9,
+                buttons=[
+                    dict(
+                        label='Thick',
+                        method='restyle',
+                        args=['node.thickness', 15]
+                    ),
+                    dict(
+                        label='Thin',
+                        method='restyle',
+                        args=['node.thickness', 8]
+                    )      
+                ]
+            ),
+            dict(
+                y=0.8,
+                buttons=[
+                    dict(
+                        label='Small gap',
+                        method='restyle',
+                        args=['node.pad', 15]
+                    ),
+                    dict(
+                        label='Large gap',
+                        method='restyle',
+                        args=['node.pad', 20]
+                    )
+                ]
+            ),
+            dict(
+                y=0.7,
+                buttons=[
+                    dict(
+                        label='Snap',
+                        method='restyle',
+                        args=['arrangement', 'snap']
+                    ),
+                    dict(
+                        label='Perpendicular',
+                        method='restyle',
+                        args=['arrangement', 'perpendicular']
+                    ),
+                    dict(
+                        label='Freeform',
+                        method='restyle',
+                        args=['arrangement', 'freeform']
+                    ),
+                    dict(
+                        label='Fixed',
+                        method='restyle',
+                        args=['arrangement', 'fixed']
+                    )       
+                ]
+            ),
+            dict(
+                y=0.6,
+                buttons=[             
+                    dict(
+                        label='Horizontal',
+                        method='restyle',
+                        args=['orientation', 'h']
+                    ),
+                    dict(
+                        label='Vertical',
+                        method='restyle',
+                        args=['orientation', 'v']
+                    )
+                ]
+            
+            )
+        ]    
+  )
+  fig = go.Figure(data=[go.Sankey(data_trace)],layout=layout)
+  #with open("/share/cellxgene/sankey.pkl",'wb') as f:
+  #  pickle.dump(fig,f)
+  div = plotIO.to_html(fig)
+  #ppr.pprint(div)
+  return div#[div.find('<div>'):(div.find('</div>')+6)]
+  
+
 def version():
   print("1.0.8")
   ## 1.0.2: April 27, 2020
@@ -835,6 +1003,10 @@ def version():
   ## 1. Add the annotation split for gene express in tsne/umap plot 
   ## 2. Add the gene sets selection for stack violin
   ## 3. Add the gene selection for Dot plot and track plot
+  ## -------------------------
+  ## 1.0.10: Jun 8, 2020
+  ## 1. Add Sankey diagram
+  
   
   
   

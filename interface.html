@@ -146,6 +146,7 @@
       <button class="tablinks" onclick="selFun(event, 'TRAK')">Track Plot</button>
       <button class="tablinks" onclick="selFun(event, 'DENS')">Density Plot</button>
       <button class="tablinks" onclick="selFun(event, 'DUAL')">Dual Genes</button>
+      <button class="tablinks" onclick="selFun(event, 'SANK')">Sankey Diagram</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'DEG')">DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
@@ -449,6 +450,28 @@
       <div id="DUALresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="DUALfig"></p></div>
       
     </div><!--DUAL-->
+
+    <div  id="SANK" class="tabcontent">
+      <h3>Sankey Diagrams on selected cells for selected annotations</h3>
+      <p>Choose cell set(s):
+        <label><input class="SANKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="SANKcellN1" style="color:red">0</span>)</label>
+        <label><input class="SANKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="SANKcellN2" style="color:red">0</span>)</label>
+      </p>
+      <p>Choose two genes:</p><p id="SANKgene"></p>
+      <p>Choose user-defined gene sets:</p><p id="SANKgeneGrp"></p>
+      <p>Choose annotation:</p><p id="SANKgrp"></p>
+
+      
+      <p><button class="SANKbt"  onclick="SANKplot()"><b>Plot</b></button></p>
+      <p id="SANKnote" style="color:red;"></p>
+      <div id="SANKspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+      <div style="text-align: center;">
+        <button onclick="ZoomIn('SANKresize')">Zoom In</button>
+        <button onclick="ZoomOut('SANKresize')">Zoom Out</button>
+      </div>
+      <div id="SANKresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"></div>
+      
+    </div><!--SANK-->
     
     <div id="DEG" class="tabcontent">
       <h3>Find differentially expressed genes</h3>
@@ -655,6 +678,7 @@ function cellNupdate(){
   $('#TRAKcellN1').text(n1);
   $('#DUALcellN1').text(n1);
   $('#DENScellN1').text(n1);
+  $('#SANKcellN1').text(n1);
 
   $('#MARKcellN2').text(n2);
   $('#SGVcellN2').text(n2);
@@ -667,6 +691,7 @@ function cellNupdate(){
   $('#TRAKcellN2').text(n2);
   $('#DUALcellN2').text(n2);
   $('#DENScellN2').text(n2);
+  $('#SANKcellN2').text(n2);
 }
 
 //Page Initial functions
@@ -740,21 +765,15 @@ function init(){
       dualLay.add(createOpt(window.store.getState().universe.schema.layout.obs[ix].name));
     }
     //--------------------------------------------------------------------------
-    //HEAT
     htmlCheck= "";
     for(const one of grps){
-      if (one == "||" || one.startsWith(">")) continue;
-      htmlCheck += '<label><input class="HEATgrps" type="checkbox" value="'+one+'"/> '+one+' ('+grpL[one].numCategoryValues+')</label>';
+      htmlCheck += '<label><input class="eIDgrps" type="checkbox" value="'+one+'"/> '+one+' ('+grpL[one].numCategoryValues+')</label>';
     }  
-    $('#HEATgrp').html(htmlCheck);
-    //--------------------------------------------------------------------------
-    //EMBED
-    htmlCheck= "";
-    for(const one of grps){
-      if (one == "||" || one.startsWith(">")) continue;
-      htmlCheck += '<label><input class="EMBEDgrps" type="checkbox" value="'+one+'"/> '+one+' ('+grpL[one].numCategoryValues+')</label>';
-    }  
-    $('#EMBEDgrp').html(htmlCheck);
+    //HEAT, EMBED
+    $('#HEATgrp').html(htmlCheck.replace(/eID/g,'HEAT'));
+    $('#EMBEDgrp').html(htmlCheck.replace(/eID/g,'EMBED'));
+    $('#SANKgrp').html(htmlCheck.replace(/eID/g,'SANK'));
+    
     //obtain the minimal expression value
     /*
     $.ajax({
@@ -801,6 +820,7 @@ function sync(){
   EMBEDref();
   IMGref();
   DENSref();
+  SANKref();
 }
 function ABBRref(){
 }
@@ -979,34 +999,7 @@ function DENSref(){
   addCustomCombine("DENSsplit");
 }
 function EMBEDref(){
-  var genes = window.store.getState().universe.varData.colIndex.rindex;
-  genes = genes.concat(window.biogen);
-  genes = [...new Set(genes)];
-  var optG = [], NcheckG=[];
-  //remove checkbox which are not in the gene list
-  $(".EMBEDgenes").each(function(){
-    optG.push($(this).val());
-    if(!genes.includes($(this).val())){
-      $('#EMBEDck'+$(this).val()).remove();
-    }else if($(this).prop("checked") == false){
-      NcheckG.push($(this).val());
-    }
-  })
-  //add options which are missing from gene list
-  if(genes.length>0){
-    var htmlCheck = $('#EMBEDgene').html();
-    for(const g of genes){
-      if(!optG.includes(g)){
-        htmlCheck += '<label id="EMBEDck'+g+'"><input class="EMBEDgenes" type="checkbox" value="'+g+'" checked/>'+g+'</label>';// '+g+'
-      }
-    }
-    $('#EMBEDgene').html(htmlCheck);
-  }
-  $(".EMBEDgenes").each(function(){
-    if(NcheckG.includes($(this).val())){
-      $(this).prop("checked",false);
-    }
-  })
+  showGene('EMBED');
 }
 function DUALref(){
   var genes = window.store.getState().universe.varData.colIndex.rindex;
@@ -1049,6 +1042,10 @@ function DUALref(){
     $('.DUALgenes').prop("disabled",false);
   }
   
+}
+function SANKref(){
+  showGene('SANK');
+  showGeneSet('SANK');
 }
 function DEGref(){
   var cName=[],cVal=Object.keys(window.bioCombineCell);
@@ -2308,6 +2305,78 @@ function DUALplot(){
       document.getElementById("DUALspin").style.visibility="hidden";
     }
   })
+}
+function SANKplot(){
+  $('#SANKnote').text("");
+  var cells=[], x = document.getElementsByClassName('SANKcell');
+  for(i=0;i<x.length;i++){
+    if(x[i].checked){
+      if(!!window.store.getState().differential[x[i].value]){
+        if(cells.length==0){
+          cells = window.store.getState().differential[x[i].value];
+        }else{
+          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
+          tmp.set(cells);
+          tmp.set(window.store.getState().differential[x[i].value],cells.length);
+          cells = tmp;
+        }
+      }
+    }
+  }
+  if(cells.length==0){
+    $('#SANKnote').text("Please use selection tools to put cells into groups");
+    return;
+  }
+  var genes =getGenes('SANK');
+  var geneSets = getGeneSet('SANK');
+  var grp = [];
+  $(".SANKgrps").each(function(){
+  if($(this).prop("checked")){
+    grp.push($(this).val());
+  }})
+  
+  if(genes.length==0&&Object.keys(geneSets).length==0){
+    $('#SANKnote').text("Please select at least a gene or a gene set to plot");
+    return;
+  }
+  if(grp.length==0){
+    $('#SANKnote').text("Please select at least a group to plot");
+    return;
+  }
+  
+  var D = {'method':'SANK',
+            'cells':cells,
+            'genes':genes,
+            'geneGrp':geneSets,
+            'grp':grp,
+            'abb':window.bioAbbr,
+            'figOpt':window.figOpt};
+  $(".SANKbt").prop('disabled',true);
+  document.getElementById("SANKspin").style.visibility="visible";
+  $.ajax({
+    type:"POST",
+    url: "/VIP",
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(res){
+      $(".SANKbt").prop("disabled",false);
+      document.getElementById("SANKspin").style.visibility="hidden";
+      if(res.startsWith('ERROR')){
+        $('#SANKnote').text(res);
+        $('#SANKresize').text("");
+        return;
+      }
+      $('#SANKresize').html(res);
+
+    },
+    error: function(request,status,error){
+      $('#SANKnote').text(request.status+request.responseText);
+      $(".SANKbt").prop("disabled",false);
+      document.getElementById("SANKspin").style.visibility="hidden";
+
+    }
+  })
+
 }
 //save and load
 function checkSave(eID){
