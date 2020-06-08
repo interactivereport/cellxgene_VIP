@@ -88,9 +88,10 @@ def VIP():
 ## buld the cellxgene and install -----------
 conda remove PyYAML
 conda install fsspec=0.6.3
-pip install tensorflow
-pip install diffxpy
+pip install tensorflow==2.2.0
+pip install diffxpy==0.7.4
 pip install git+https://github.com/theislab/scanpy.git@groupby_plots
+pip install plotly==4.8.1
 # pip install 'scanpy==1.4.6'   # works for v1.4.6 too
 
 cd cellxgene
