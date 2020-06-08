@@ -1,9 +1,7 @@
 <html>
   <head>
-    <script type="text/javascript" src="static/jquery.min.js"></script>
     <!-- for datatables -->
     <link rel="stylesheet" type="text/css" href="static/DataTables/datatables.min.css">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
 
       .splitter {
@@ -157,7 +155,7 @@
       <button class="tablinks" onclick="save()">Save Session</button>
       <button class="tablinks" onclick="inputClick()">Load Session</button>
       <button class="tablinks" onclick="ABBRall()">Check All Annotations</button>
-      <button class="tablinks" onclick="sync();">Sync <i class="fa fa-refresh"></i></button>
+      <button class="tablinks" onclick="sync();">Sync></button>
     </div>
 	</div>
 	<div id="separator" ></div>
@@ -539,16 +537,7 @@
 //Fxyd3,Lgals7,Acta2,Krt5,Cd79a,Rac2,Coro1a
 var heatCell = 10000;
 function checkLoading(){
-    if(!window.store || !window.store.getState().categoricalSelection){
-      return false;
-    }
-    var cateN = 0;
-    for(const one of window.store.getState().universe.schema.annotations.obs.columns){
-      if(one.type=='categorical'){
-        cateN++;
-      }
-    }
-    if(cateN!=Object.keys(window.store.getState().categoricalSelection).length){
+    if(!window.store || !window.store.getState()["@@undoable/filterState"].prevAction.type || !window.store.getState()["@@undoable/filterState"].prevAction.type.includes('initial data load complete")) {
       return false;
     }
     return true;
@@ -564,7 +553,6 @@ function enableButton(){
         one.disabled=false;
       }
       var ginit = window.store.getState().categoricalSelection[">Description"].categoryValues[0].split("|")[1].split(";");
-console.log(ginit);
       if (ginit != null) {
         window.store.dispatch({type: "set layout choice", layoutChoice: ginit[0].split("by")[1].trim()});
         window.store.dispatch({type: "color by categorical metadata", colorAccessor: ginit[1].split("by")[1].trim()});

@@ -15,6 +15,7 @@ cd cellxgene;git checkout 735eb11eb78b5e6c35ba84438970d0ce369604e1;cd ..
 ## update the client-side source code of cellxgene for VIP
 echo -e "\nwindow.store = store;" >> cellxgene/client/src/reducers/index.js
 read -d '' insertL << EOF
+<script src="static/jquery.min.js"></script>
 <link href='static/jspanel/dist/jspanel.css' rel='stylesheet'>
 <script src='static/jspanel/dist/jspanel.js'></script>
 <script src='static/jspanel/dist/extensions/modal/jspanel.modal.js'></script>

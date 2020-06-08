@@ -3,6 +3,7 @@
 cd cellxgene; git checkout 735eb11eb78b5e6c35ba84438970d0ce369604e1 client/index_template.html client/src/components/leftSidebar/topLeftLogoAndTitle.js client/src/components/leftSidebar/index.js; cd ..
 
 read -d '' insertL << EOF
+<script src="static/jquery.min.js"></script>
 <link href='static/jspanel/dist/jspanel.css' rel='stylesheet'>
 <script src='static/jspanel/dist/jspanel.js'></script>
 <script src='static/jspanel/dist/extensions/modal/jspanel.modal.js'></script>
