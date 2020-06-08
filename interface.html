@@ -560,7 +560,16 @@
 //Fxyd3,Lgals7,Acta2,Krt5,Cd79a,Rac2,Coro1a
 var heatCell = 10000;
 function checkLoading(){
-    if(!window.store || !window.store.getState()["@@undoable/filterState"].prevAction.type || !window.store.getState()["@@undoable/filterState"].prevAction.type.includes('initial data load complete")) {
+    if(!window.store || !window.store.getState().categoricalSelection){
+      return false;
+    }
+    var cateN = 0;
+    for(const one of window.store.getState().universe.schema.annotations.obs.columns){
+      if(one.type=='categorical'){
+        cateN++;
+      }
+    }
+    if(cateN!=Object.keys(window.store.getState().categoricalSelection).length){
       return false;
     }
     return true;
@@ -575,8 +584,8 @@ function enableButton(){
       for(const one of document.getElementsByClassName('tablinks')){
         one.disabled=false;
       }
-      var ginit = window.store.getState().categoricalSelection[">Description"].categoryValues[0].split("|")[1].split(";");
-      if (ginit != null) {
+      if (window.store.getState().categoricalSelection[">Description"]) {
+        var ginit = window.store.getState().categoricalSelection[">Description"].categoryValues[0].split("|")[1].split(";");
         window.store.dispatch({type: "set layout choice", layoutChoice: ginit[0].split("by")[1].trim()});
         window.store.dispatch({type: "color by categorical metadata", colorAccessor: ginit[1].split("by")[1].trim()});
         window.store.dispatch({type: "show centroid labels for category", showLabels: true});
