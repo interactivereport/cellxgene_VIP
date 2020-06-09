@@ -50,6 +50,20 @@ def setFigureOpt(opt):
   sc.set_figure_params(dpi_save=int(opt['dpi']),fontsize= float(opt['fontsize']),vector_friendly=(opt['vectorFriendly']=='true'),transparent=(opt['transparent']=='true'),color_map=opt['colorMap'])
   rcParams.update({'savefig.format':opt['img']})
 
+def getObs(data):
+  selC = list(data['cells'].values())
+  cNames = ["cell%d" %i for i in selC]
+  ## obtain the category annotation
+  with app.get_data_adaptor() as scD:
+    obs = scD.data.obs.loc[selC,['name_0']+data['grp']].astype('str')
+  obs.index = cNames
+  ## update the annotation Abbreviation
+  combUpdate = cleanAbbr(data)
+  if 'abb' in data.keys():
+    for i in data['grp']:
+      obs[i] = obs[i].map(data['abb'][i])
+  return combUpdate, obs
+
 def subData(data):
   selC = list(data['cells'].values())
   cNames = ["cell%d" %i for i in selC]
@@ -111,14 +125,15 @@ def subData(data):
     
 
   ## obtain the category annotation
-  with app.get_data_adaptor() as scD:
-    obs = scD.data.obs.loc[selC,['name_0']+data['grp']].astype('str')
-  obs.index = cNames
-  ## update the annotation Abbreviation
-  combUpdate = cleanAbbr(data)
-  if 'abb' in data.keys():
-    for i in data['grp']:
-      obs[i] = obs[i].map(data['abb'][i])
+  combUpdate, obs = getObs(data)
+#  with app.get_data_adaptor() as scD:
+#    obs = scD.data.obs.loc[selC,['name_0']+data['grp']].astype('str')
+#  obs.index = cNames
+#  ## update the annotation Abbreviation
+#  combUpdate = cleanAbbr(data)
+#  if 'abb' in data.keys():
+#    for i in data['grp']:
+#      obs[i] = obs[i].map(data['abb'][i])
   
   ## create a custom annotation category and remove cells which are not in the selected annotation
   if combUpdate and len(data['grp'])>1:
@@ -620,7 +635,7 @@ def TRACK(data):
   h = adata.n_vars/2
 
   ## a bug in scanpy reported: https://github.com/theislab/scanpy/issues/1265, if resolved the following code is not needed
-  if data['grpLoc'][len(data['grpLoc'])-1][1] < (len(data['genes'])-1):
+  if len(data['grpLoc'])>0 and data['grpLoc'][len(data['grpLoc'])-1][1] < (len(data['genes'])-1):
     data['grpLoc'] += [(data['grpLoc'][len(data['grpLoc'])-1][1]+1,len(data['genes'])-1)]
     data['grpID'] += ['others']
   ##############
@@ -765,13 +780,13 @@ def DENS(data):
   return iostreamFig(fig)
 
 def SANK(data):
-  adata = createData(data)
-  #with open("/share/cellxgene/adata.pkl",'wb') as f:
-  #  pickle.dump(adata,f)
-    
-  D = pd.concat([adata.obs,
-                 adata.to_df().apply(lambda x:pd.cut(x,10,labels=False).apply(lambda y:x.name+"_"+str(y)))],
-                axis=1,sort=False)
+  if len(data['genes'])==0:
+    tmp, D = getObs(data)
+  else:
+    adata = createData(data)
+    D = pd.concat([adata.obs,
+                   adata.to_df().apply(lambda x:pd.cut(x,10,labels=False).apply(lambda y:x.name+"_"+str(y)))],
+                  axis=1,sort=False)
   D = D.astype('category')
   if 'name_0' in D.columns:
     del D['name_0']

@@ -584,12 +584,13 @@ function enableButton(){
       for(const one of document.getElementsByClassName('tablinks')){
         one.disabled=false;
       }
-
       if (window.store.getState().categoricalSelection[">Description"] !== undefined) {
-        var ginit = window.store.getState().categoricalSelection[">Description"].categoryValues[0].split("|")[1].split(";");
-        window.store.dispatch({type: "set layout choice", layoutChoice: ginit[0].split("by")[1].trim()});
-        window.store.dispatch({type: "color by categorical metadata", colorAccessor: ginit[1].split("by")[1].trim()});
-        window.store.dispatch({type: "show centroid labels for category", showLabels: true});
+        if(window.store.getState().categoricalSelection[">Description"].categoryValues[0].split("|").length>1){
+          var ginit = window.store.getState().categoricalSelection[">Description"].categoryValues[0].split("|")[1].split(";");
+          window.store.dispatch({type: "set layout choice", layoutChoice: ginit[0].split("by")[1].trim()});
+          window.store.dispatch({type: "color by categorical metadata", colorAccessor: ginit[1].split("by")[1].trim()});
+          window.store.dispatch({type: "show centroid labels for category", showLabels: true});
+        }
       }
       
       init();
