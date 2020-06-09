@@ -1993,8 +1993,8 @@ function DOTplot(){
 }
 function TRAKplot(){
   $('#TRAKnote').text("");
-  var genes =getGenes('DOT');
-  var geneSets = getGeneSet('DOT');
+  var genes =getGenes('TRAK');
+  var geneSets = getGeneSet('TRAK');
   if(genes.length==0&&Object.keys(geneSets).length==0){
     $('#TRAKnote').text("Please select at least a gene or a gene set to plot");
     return;
@@ -2085,13 +2085,7 @@ function DENSplot(){
     return;
   }
   
-  var genes = [];
-  var i, x = document.getElementsByClassName('DENSgenes');
-  for(i=0;i<x.length;i++){
-    if(x[i].checked){
-      genes.push(x[i].value);
-    }
-  }
+  var genes = getGenes('DENS');
   if(genes.length<1){
     $('#DENSerror').text("It needs at least a gene");
     return;
@@ -2176,13 +2170,7 @@ function EMBEDplot(){
     return;
   }
   
-  var genes = [];
-  var i, x = document.getElementsByClassName('EMBEDgenes');
-  for(i=0;i<x.length;i++){
-    if(x[i].checked){
-      genes.push(x[i].value);
-    }
-  }
+  var genes = getGenes('EMBED');
   if(genes.length==0){
     $('#EMBEDnote').text("Please select a gene to plot");
     return;
