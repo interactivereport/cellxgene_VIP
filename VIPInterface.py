@@ -846,7 +846,7 @@ def SANK(data):
     title = 'Sankey diagram',
     font = dict(size=10),
     height= 700,
-    width = 200*D.shape[1],
+    width = 250*D.shape[1],
     updatemenus= [
             dict(
                 y=1,
