@@ -138,7 +138,7 @@
 	<div id="panel-left">
     <div class="tab">
       <button class="tablinks" onclick="selFun(event, 'ADDG')">Add Genes</button>
-      <button class="tablinks" onclick="selFun(event, 'SGV');if($('#SGVgene').val() == null) $('#SGVnote').text('Please add genes either from the VIP menu or the main window');">Violin</button>
+      <button class="tablinks" onclick="selFun(event, 'SGV');$('#SGVnote').text('');if($('#SGVgene').val() == null) $('#SGVnote').text('Please add genes either from the VIP menu or the main window');">Violin</button>
       <button class="tablinks" onclick="selFun(event, 'PGV')">Stacked Violin</button>
       <button class="tablinks" onclick="selFun(event, 'HEAT')">Heatmap</button>
       <button class="tablinks" onclick="selFun(event, 'EMBED')">UMAP/tSNE</button>
@@ -592,7 +592,6 @@ function enableButton(){
           window.store.dispatch({type: "show centroid labels for category", showLabels: true});
         }
       }
-      
       init();
     }
 }
@@ -811,9 +810,11 @@ function init(){
     $('#DOTcutoff').prop('min',0);  
 
     const unsubscribe = window.store.subscribe(() => {
-      actionType = window.store.getState()["@@undoable/filterState"].prevAction.type;
-      if (actionType.includes("user defined gene success") || actionType.includes("store current cell selection as differential set")) {
-        sync();
+      if (window.store.getState()["@@undoable/filterState"].prevAction) {
+        actionType = window.store.getState()["@@undoable/filterState"].prevAction.type;
+        if (actionType.includes("user defined gene success") || actionType.includes("store current cell selection as differential set")) {
+          sync();
+        }
       }
     });
     
@@ -890,6 +891,7 @@ function SGVref(){
     }
   }
   addCustomCombine("SGVgrp");
+  if($('#SGVgene').val()) $('#SGVnote').text('');
 }
 function showGeneSet(aID){
   var gSets = Object.keys(window.bioGeneGrp);

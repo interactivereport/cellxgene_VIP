@@ -55,6 +55,13 @@ read -d '' insertL << EOF
                    setInnerHTML(panel.content, this.responseText);
             }
         },
+        onwindowresize: function(event, panel) {
+            var jptop = parseInt(this.currentData.top);
+            var jpleft = parseInt(this.currentData.left);
+            if (jptop<-10 || window.innerHeight-jptop<10 || window.innerWidth-jpleft<10 || jpleft+parseInt(this.currentData.width)<10) {
+                this.reposition("left-top 160 6");
+            }
+        },
         onunsmallified: function (panel, status) {
             this.reposition('center-top -370 180');
             this.resize({ width: 740, height: function() { return Math.min(480, window.innerHeight*0.6);} });
@@ -67,7 +74,7 @@ read -d '' insertL << EOF
     plotPanel.headerbar.style.background = "#D4DBDE";
 </script>
 EOF
-insertL=$(sed -e 's/[&\\/]/\\&/g; s/$/\\/' -e '$s/\\$//' <<<"$insertL")
+insertL=$(sed -e 's/[&\\/]/\\&/g; s/|/\\|/g; s/$/\\/;' -e '$s/\\$//' <<<"$insertL")
 sed -i "s|<div id=\"root\"></div>|$insertL\n&|" "cellxgene/client/index_template.html"
 
 sed -i "s|globals.datasetTitleMaxCharacterCount|50|; s|width: \"190px\"|width: \"300px\"|; s|{aboutURL ? <a href={aboutURL}|{myURL ? <a href={myURL}|; s|return|var myURL=displayTitle.split('_')[0].startsWith('GSE') \? 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc='\+displayTitle.split('_')[0]:aboutURL;\n    \n    return|" "cellxgene/client/src/components/leftSidebar/topLeftLogoAndTitle.js"
