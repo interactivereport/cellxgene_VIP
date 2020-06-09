@@ -782,9 +782,10 @@ def DENS(data):
 def SANK(data):
   if len(data['genes'])==0:
     tmp, D = getObs(data)
+    D = D.apply(lambda x:x.apply(lambda y:x.name+":"+y))
   else:
     adata = createData(data)
-    D = pd.concat([adata.obs,
+    D = pd.concat([adata.obs.apply(lambda x:x.apply(lambda y:x.name+":"+y)),
                    adata.to_df().apply(lambda x:pd.cut(x,10,labels=False).apply(lambda y:x.name+"_"+str(y)))],
                   axis=1,sort=False)
   D = D.astype('category')
