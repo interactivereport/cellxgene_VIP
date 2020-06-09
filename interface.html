@@ -659,7 +659,12 @@ function ZoomOut(strDiv){
   $("#"+strDiv).width(Math.max(10,r)+'%');
 }
 function showImg(eID,data){
-  document.getElementById(eID).innerHTML = '<img id="'+eID.replace('fig','img')+'" src="data:image/'+window.figOpt['img'].replace('svg','svg+xml')+';base64,'+data+'" width=100% height="auto"/>';
+  if (['SGVfig','HEATfig'].includes(eID)) {
+    document.getElementById(eID).innerHTML = '<img id="'+eID.replace('fig','img')+'" src="data:image/'+window.figOpt['img'].replace('svg','svg+xml')+';base64,'+data+'" width="auto" height="100%"/>';
+  } else {
+    document.getElementById(eID).innerHTML = '<img id="'+eID.replace('fig','img')+'" src="data:image/'+window.figOpt['img'].replace('svg','svg+xml')+';base64,'+data+'" width="100%" height="auto"/>';
+  } 
+  
 }
 function saveImg(pngID){
   var gh = document.getElementById(pngID).src;
