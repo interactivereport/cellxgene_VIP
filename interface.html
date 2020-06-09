@@ -156,7 +156,7 @@
       <button class="tablinks" onclick="save()">Save Session</button>
       <button class="tablinks" onclick="inputClick()">Load Session</button>
       <button class="tablinks" onclick="ABBRall()">Check All Annotations</button>
-      <button class="tablinks" onclick="sync();">Sync></button>
+      <button class="tablinks" onclick="sync();">Sync</button>
     </div>
 	</div>
 	<div id="separator" ></div>
@@ -452,12 +452,12 @@
     </div><!--DUAL-->
 
     <div  id="SANK" class="tabcontent">
-      <h3>Sankey Diagrams on selected cells for selected annotations</h3>
+      <h3>Sankey Diagrams on selected cells for selected annotations and/or genes</h3>
       <p>Choose cell set(s):
         <label><input class="SANKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="SANKcellN1" style="color:red">0</span>)</label>
         <label><input class="SANKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="SANKcellN2" style="color:red">0</span>)</label>
       </p>
-      <p>Choose two genes:</p><p id="SANKgene"></p>
+      <p>Choose genes:</p><p id="SANKgene"></p>
       <p>Choose user-defined gene sets:</p><p id="SANKgeneGrp"></p>
       <p>Choose annotation:</p><p id="SANKgrp"></p>
 
@@ -569,7 +569,7 @@ function checkLoading(){
         cateN++;
       }
     }
-    if(cateN!=Object.keys(window.store.getState().categoricalSelection).length){
+    if(cateN!=Object.keys(window.store.getState().categoricalSelection).filter(function(e) { return !window.store.getState().categoricalSelection[e].isTruncated }).length) {
       return false;
     }
     return true;
@@ -584,7 +584,8 @@ function enableButton(){
       for(const one of document.getElementsByClassName('tablinks')){
         one.disabled=false;
       }
-      if (window.store.getState().categoricalSelection[">Description"]) {
+
+      if (window.store.getState().categoricalSelection[">Description"] !== undefined) {
         var ginit = window.store.getState().categoricalSelection[">Description"].categoryValues[0].split("|")[1].split(";");
         window.store.dispatch({type: "set layout choice", layoutChoice: ginit[0].split("by")[1].trim()});
         window.store.dispatch({type: "color by categorical metadata", colorAccessor: ginit[1].split("by")[1].trim()});
@@ -723,7 +724,7 @@ function init(){
     var htmlCheck= "";
     for(i=0;i<grps.length;i++){
       var one = grps[i];
-      if (one == "||" || one.startsWith(">")) continue;
+      if (one.startsWith(">")) continue;
       htmlCheck += '<label><input class="ABBRgrps" type="checkbox" value="'+grps[i]+'" onclick="ABBRlist()"/> '+grps[i]+' ('+grpL[grps[i]].numCategoryValues+')</label>';
     }  
     $('#ABBRgrp').html(htmlCheck);
@@ -754,7 +755,7 @@ function init(){
     var densG = document.getElementById("DENSgrp");
     var embed = document.getElementById("EMBEDsplit");
     for(const one of grps){
-      if (one == "||" || one.startsWith(">")) continue; 
+      if (one.startsWith(">")) continue; 
       sgv.add(createOpt(one));
       pgv.add(createOpt(one));
       heat.add(createOpt(one));
@@ -776,6 +777,7 @@ function init(){
     //--------------------------------------------------------------------------
     htmlCheck= "";
     for(const one of grps){
+      if (one.startsWith(">")) continue; 
       htmlCheck += '<label><input class="eIDgrps" type="checkbox" value="'+one+'"/> '+one+' ('+grpL[one].numCategoryValues+')</label>';
     }  
     //HEAT, EMBED
@@ -2344,12 +2346,8 @@ function SANKplot(){
     grp.push($(this).val());
   }})
   
-  if(genes.length==0&&Object.keys(geneSets).length==0){
-    $('#SANKnote').text("Please select at least a gene or a gene set to plot");
-    return;
-  }
-  if(grp.length==0){
-    $('#SANKnote').text("Please select at least a group to plot");
+  if (genes.length + grp.length < 2) {
+    $('#SANKnote').text("Please select at least two features (gene or annotation) to plot");
     return;
   }
   
