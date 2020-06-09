@@ -43,6 +43,10 @@ read -d '' insertL << EOF
                    setInnerHTML(panel.content, this.responseText);
             }
         },
+        onwindowresize: function(event, panel) {
+            panel.reposition('center-top -370 180');
+            panel.resize({ width: 740, height: function() { return Math.min(480, window.innerHeight*0.6);} });
+        },
         onunsmallified: function (panel, status) {
             this.reposition('center-top -370 180');
             this.resize({ width: 740, height: function() { return Math.min(480, window.innerHeight*0.6);} });
