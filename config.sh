@@ -39,7 +39,7 @@ read -d '' insertL << EOF
     var plotPanel = jsPanel.create({
         panelSize: '190 0',
         position: 'left-top 160 6',
-        dragit: { containment: [-10, -600, -400-window.innerHeight, -600] }, // set dragging range of VIP window
+        dragit: { containment: [-10, -2000, -4000, -2000] }, // set dragging range of VIP window
         boxShadow: 1,
         border: "solid #D4DBDE thin",
         contentOverflow: 'scroll scroll', // adding scrolling bars
