@@ -126,15 +126,7 @@ def subData(data):
 
   ## obtain the category annotation
   combUpdate, obs = getObs(data)
-#  with app.get_data_adaptor() as scD:
-#    obs = scD.data.obs.loc[selC,['name_0']+data['grp']].astype('str')
-#  obs.index = cNames
-#  ## update the annotation Abbreviation
-#  combUpdate = cleanAbbr(data)
-#  if 'abb' in data.keys():
-#    for i in data['grp']:
-#      obs[i] = obs[i].map(data['abb'][i])
-  
+
   ## create a custom annotation category and remove cells which are not in the selected annotation
   if combUpdate and len(data['grp'])>1:
     newGrp = 'Custom_combine'
@@ -780,6 +772,7 @@ def DENS(data):
   return iostreamFig(fig)
 
 def SANK(data):
+  updateGene(data)
   if len(data['genes'])==0:
     tmp, D = getObs(data)
     D = D.apply(lambda x:x.apply(lambda y:x.name+":"+y))
@@ -825,7 +818,6 @@ def SANK(data):
     domain=dict(x=[0,1],y=[0,1]),
     orientation='h',
     valueformat = ".0f",
-    valuesuffix = "TWh",
     node = dict(
       pad = 10,
       thickness = 15,
@@ -842,28 +834,24 @@ def SANK(data):
       value = v
     )
   )
+  ## if the image is requested
+  if 'imgSave' in data.keys():
+    layout = dict(
+      title = 'Sankey diagram',
+      font = dict(size=int(data['figOpt']['fontsize'])+10),
+      height= int(data['imgH']),
+      width = int(data['imgW'])*D.shape[1]
+    )
+    fig = go.Figure(data=[go.Sankey(data_trace)],layout=layout)
+    img = plotIO.to_image(fig,data['imgSave'])
+    return base64.encodebytes(img).decode('utf-8')
+    
   layout = dict(
     title = 'Sankey diagram',
-    font = dict(size=10),
-    height= 700,
-    width = 250*D.shape[1],
+    font = dict(size=int(data['figOpt']['fontsize'])),
+    height= int(data['imgH']),
+    width = int(data['imgW'])*D.shape[1],
     updatemenus= [
-            dict(
-                y=1,
-                buttons=[
-                    dict(
-                        label='Light',
-                        method='relayout',
-                        args=['paper_bgcolor', 'white']
-                    ),
-                    dict(
-                        label='Dark',
-                        method='relayout',
-                        args=['paper_bgcolor', 'black']
-                    )
-                ]
-            
-            ),
             dict(
                 y=0.9,
                 buttons=[
@@ -925,12 +913,12 @@ def SANK(data):
                     dict(
                         label='Horizontal',
                         method='restyle',
-                        args=['orientation', 'h']
+                        args=['orientation','h']#{,'height':700,'width':250*D.shape[1]}
                     ),
                     dict(
                         label='Vertical',
                         method='restyle',
-                        args=['orientation', 'v']
+                        args=['orientation','v']#{'orientation': 'v','height':250*D.shape[1],'width':700}
                     )
                 ]
             
@@ -938,10 +926,7 @@ def SANK(data):
         ]    
   )
   fig = go.Figure(data=[go.Sankey(data_trace)],layout=layout)
-  #with open("/share/cellxgene/sankey.pkl",'wb') as f:
-  #  pickle.dump(fig,f)
   div = plotIO.to_html(fig)
-  #ppr.pprint(div)
   return div#[div.find('<div>'):(div.find('</div>')+6)]
   
 
