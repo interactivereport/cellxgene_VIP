@@ -462,11 +462,10 @@
       <p>Choose annotation:</p><p id="SANKgrp"></p>
       <p>Please specify the diagram <u>width per category</u>: <input id="SANKw" type="number" step="10" value="250"/> and the <u>diagram height</u>: <input id="SANKh" type="number" step="10" value="700"/></p>
       
-      <p><button class="SANKbt"  onclick="SANKplot()"><b>Plot</b></button></p>
+      <p><button class="SANKbt"  onclick="SANKplot()"><b>Plot</b> </button><button class="SANKbt" style="float:right;" onclick="SANKimgSave()">Save as SVG</button></p>
       <p id="SANKnote" style="color:red;"></p>
       <div id="SANKspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div style="text-align: right;"><button onclick="SANKimgSave()">Save SVG</button></div>
-      <div id="SANKresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"></div>
+      <div id="SANKresize" style="height: 'auto'; width: 'auto'; padding: 0.5em;"></div>
       
     </div><!--SANK-->
     

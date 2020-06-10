@@ -779,7 +779,7 @@ def SANK(data):
   else:
     adata = createData(data)
     D = pd.concat([adata.obs.apply(lambda x:x.apply(lambda y:x.name+":"+y)),
-                   adata.to_df().apply(lambda x:pd.cut(x,10,labels=False).apply(lambda y:x.name+"_"+str(y)))],
+                   adata.to_df().apply(lambda x:pd.cut(x,10,labels=False).apply(lambda y:x.name+":"+str(y)))],
                   axis=1,sort=False)
   D = D.astype('category')
   if 'name_0' in D.columns:
@@ -837,8 +837,7 @@ def SANK(data):
   ## if the image is requested
   if 'imgSave' in data.keys():
     layout = dict(
-      title = 'Sankey diagram',
-      font = dict(size=int(data['figOpt']['fontsize'])+10),
+      font = dict(size=int(data['figOpt']['fontsize'])),
       height= int(data['imgH']),
       width = int(data['imgW'])*D.shape[1]
     )
@@ -847,7 +846,6 @@ def SANK(data):
     return base64.encodebytes(img).decode('utf-8')
     
   layout = dict(
-    title = 'Sankey diagram',
     font = dict(size=int(data['figOpt']['fontsize'])),
     height= int(data['imgH']),
     width = int(data['imgW'])*D.shape[1],
