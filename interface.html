@@ -720,7 +720,7 @@ function init(){
     $("#panel-right").prop('style')['width'] = "80%";
     //--------------------------------------------------------------------------
     //ABBRinit
-    var grps = Object.keys(window.store.getState().categoricalSelection);
+    var grps = Object.keys(window.store.getState().categoricalSelection).sort();
     var grpL = window.store.getState().categoricalSelection;
     var htmlCheck= "";
     for(i=0;i<grps.length;i++){
