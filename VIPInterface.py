@@ -801,10 +801,10 @@ def SANK(data):
   sIDs =[]
   dIDs =[]
   v=[]
-  Dnames = list(D.columns)
+  Dnames = data['sankOrder']#list(D.columns)
   #maxGrp = 0
   #ppr.pprint(Dnames)
-  for i in range(D.shape[1]-1):
+  for i in range(len(Dnames)-1):
     oneName = Dnames[i:i+2]
     #maxGrp = max(maxGrp,len(D[oneName[0]].unique()))
     summaryOne = D.groupby(oneName).size().reset_index(name='Count')
