@@ -18,6 +18,9 @@ import math
 from io import BytesIO
 import sys
 import time
+import os
+import subprocess
+strExePath = os.path.dirname(os.path.abspath(__file__))
 
 import pprint
 ppr = pprint.PrettyPrinter(depth=6)
@@ -502,6 +505,8 @@ def GD(data):
 
 def DEG(data):
   adata = None;
+  genes = data['genes']
+  data['genes'] = []
   comGrp = 'cellGrp'
   if 'combine' in data.keys():
     adata = createData(data)
@@ -533,12 +538,19 @@ def DEG(data):
   res = de.test.two_sample(adata,comGrp,test=data['DEmethod'],noise_model=nm)
   deg = res.summary()
   deg = deg.sort_values(by=['qval']).loc[:,['gene','log2fc','pval','qval']]
+  ## plot in R
+  strF = strExePath + ('/../common/web/DEG%f.csv' % time.time())
+  deg.to_csv(strF,index=False)
+  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img']],capture_output=True)#
+  img = res.stdout.decode('utf-8')
+  os.remove(strF)
+  #####
   deg = deg.iloc[range(int(data['topN'])),]
   deg.loc[:,'log2fc'] = deg.loc[:,'log2fc'].apply(lambda x: '%.2f'%x)
   deg.loc[:,'pval'] = deg.loc[:,'pval'].apply(lambda x: '%.4E'%x)
   deg.loc[:,'qval'] = deg.loc[:,'qval'].apply(lambda x: '%.4E'%x)
   
-  return json.dumps(deg.values.tolist())
+  return json.dumps([deg.values.tolist(),img])
 
 def DOT(data):
   updateGene(data)
@@ -1006,6 +1018,9 @@ def version():
   ## -------------------------
   ## 1.0.10: Jun 8, 2020
   ## 1. Add Sankey diagram
+  ## -----------------------
+  ## 1.0.11: June 14, 2020
+  ## 1. volcano plot added for DEG
   
   
   

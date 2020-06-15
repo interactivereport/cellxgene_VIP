@@ -502,12 +502,20 @@
         <option value='rank'>Wilcoxon rank sum</option>
         <option value='wald'>Wald test</option>
       </select></p>
+      <p>Select genes to be marked in the volcano plot:</p>
+      <p id="DEGgene"></p>
       
       <p><button class="DEGbt" onclick="DEGfind()"><b>Find</b></button> <label id='DEGinfo'></label></p>
       <p id="DEGnote" style="color:red;"></p>
       <div id="DEGspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div id="DEGresize" style="height: 'auto'">
-        <table id="DEGtable" class="display"></table>
+      <table id="DEGtable" class="display"></table>
+      <div style="text-align: center;">
+        <button onclick="ZoomIn('DEGresize')">Zoom In</button>
+        <button onclick="ZoomOut('DEGresize')">Zoom Out</button>
+        <button class="DEGpngBT" onclick="saveImg('DEGimg')" disabled>Save</button>
+      </div>
+      <div id="DEGresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6">
+        <p id="DEGfig"></p>
       </div>
     </div><!--DEG-->
     
@@ -939,11 +947,12 @@ function showGeneSet(aID){
   })
   
 }
-function showGene(aID,addInfo=""){
+function showGene(aID, addInfo='', ckDefault='checked'){
+  //console.log(aID+":"+ckDefault+":"+addInfo);
   var genes = window.store.getState().universe.varData.colIndex.rindex;
   genes = genes.concat(window.biogen);
   genes = [...new Set(genes)];
-  var optG = [], NcheckG=[];
+  var optG = [], NcheckG=[],checkG=[];
   //remove checkbox which are not in the gene list
   $("."+aID+"genes").each(function(){
     optG.push($(this).val());
@@ -951,6 +960,8 @@ function showGene(aID,addInfo=""){
       $('#'+aID+'ck'+$(this).val()).remove();
     }else if($(this).prop("checked") == false){
       NcheckG.push($(this).val());
+    }else if($(this).prop("checked")){
+      checkG.push($(this).val());
     }
   })
   //add options which are missing from gene list
@@ -958,7 +969,7 @@ function showGene(aID,addInfo=""){
     var htmlCheck = $('#'+aID+'gene').html();
     for(const g of genes){
       if(!optG.includes(g)){
-        htmlCheck += '<label id="'+aID+'ck'+g+'"><input class="'+aID+'genes" type="checkbox" value="'+g+'" checked '+addInfo+'/>'+g+'</label>';// '+g+'
+        htmlCheck += '<label id="'+aID+'ck'+g+'"><input class="'+aID+'genes" type="checkbox" value="'+g+'" '+ckDefault+' '+addInfo+'/>'+g+'</label>';// '+g+'
       }
     }
     $('#'+aID+'gene').html(htmlCheck);
@@ -966,6 +977,8 @@ function showGene(aID,addInfo=""){
   $("."+aID+"genes").each(function(){
     if(NcheckG.includes($(this).val())){
       $(this).prop("checked",false);
+    }else if(checkG.includes($(this).val())){
+      $(this).prop("checked",true);
     }
   })
 }
@@ -1117,6 +1130,8 @@ function SANKorderHide(){
   document.getElementById("SANKorderBTs").style.display="inline";
 }
 function DEGref(){
+  showGene('DEG',"","");
+  
   var cName=[],cVal=Object.keys(window.bioCombineCell);
   for(const one of Object.values(window.bioCombineCell)){
     cName.push(one.cName);
@@ -1889,10 +1904,12 @@ function DEGselCells(){
   //return selC;
 }
 function DEGfind(){
+  var genes = getGenes('DEG');
   var D = {'method':'DEG',
            'topN':$("#DEGtop").val(),
            'DEmethod':$("#DEGmethod").val(),
-           'genes':[]}
+           'genes':genes,
+           'figOpt':window.figOpt}
   const [combGrp,combName] = DEGselCells();
   var cells = {};
   if(combName.length!=2){
@@ -1916,26 +1933,30 @@ function DEGfind(){
 
   document.getElementById("DEGspin").style.visibility="visible";
   $(".DEGbt").prop('disabled',true);
+  $(".DEGpngBT").prop('disabled',true);
   $.ajax({
     type:"POST",
     url: "/VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
-    success: function(data){
+    success: function(res){
       document.getElementById("DEGspin").style.visibility="hidden";
       $(".DEGbt").prop("disabled",false);
+      $(".DEGpngBT").prop('disabled',false);
       $('#DEGtable').empty();
-      if(data.startsWith('ERROR')){
-        $('#DEGnote').text(data);
+      
+      if(res.startsWith('ERROR')){
+        $('#DEGnote').text(res);
         return;
       }
+      resD = JSON.parse(res);
       var table = $('#DEGtable').DataTable({
         destroy: true,
         dom:'Blfrtip',
         lengthMenu:[[10,50,100,200,-1],[10,50,100,200,"All"]],
         order:[[3,"asc"]],
         buttons:['csv'],
-        data:JSON.parse(data),
+        data:resD[0],
         columns:[
           {title: "Gene"},
           {title: "Log Fold Change"},
@@ -1943,6 +1964,7 @@ function DEGfind(){
           {title: "padj"}
         ]
       });
+      showImg('DEGfig',resD[1]);
       
       $('#DEGnote').text("");
       $('#DEGtable tbody').on('click',"tr",function(){
