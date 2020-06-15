@@ -555,16 +555,17 @@ def DOT(data):
       col = np.array(sns.color_palette("husl",len(grp)).as_hex())
   adata.uns[data['grp'][0]+'_colors'] = col
   
+  print(data['mean_only_expressed'])
+  
   if '1.4.7' in sc.__version__:
-    dp = sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],expression_cutoff=float(data['cutoff']),
+    dp = sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],expression_cutoff=float(data['cutoff']),mean_only_expressed=(data['mean_only_expressed'] == "True"),
                        var_group_positions=data['grpLoc'],var_group_labels=data['grpID'],
                        return_fig=True)#
     dp = dp.add_totals(size=1.2).legend(show_size_legend=True).style(cmap='Blues', dot_edge_color='black', dot_edge_lw=1, size_exponent=1.5)
     dp.show()
     fig = dp.get_axes()['mainplot_ax'].figure
   else:
-    sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],figsize=(w,h),show=False,expression_cutoff=float(data['cutoff']),
-                  var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
+    sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],figsize=(w,h),show=False,expression_cutoff=float(data['cutoff']),mean_only_expressed=(data['mean_only_expressed'] == "True"), var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
     fig = plt.gcf()
 
   return iostreamFig(fig)
