@@ -72,5 +72,4 @@ sed -i "s|logoRelatedPadding = 50|logoRelatedPadding = 60|" "cellxgene/client/sr
 strPath="$(python -c 'import site; print(site.getsitepackages())')"
 strPath=${strPath//"['"/}
 strPath=${strPath//"']"/}
-
 cd cellxgene/client; make build; cp build/index.html $strPath/server/common/web/templates/; cd ../..
