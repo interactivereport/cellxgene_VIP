@@ -584,7 +584,7 @@
 
 <script type="text/javascript">
 //Fxyd3,Lgals7,Acta2,Krt5,Cd79a,Rac2,Coro1a
-var heatCell = 10000;
+var heATcELL = 10000;
 function checkLoading(){
     if(!window.store || !window.store.getState().categoricalSelection){
       return false;
@@ -595,12 +595,12 @@ function checkLoading(){
         cateN++;
       }
     }
-    if(cateN!=Object.keys(window.store.getState().categoricalSelection).filter(function(e) { return !window.store.getState().categoricalSelection[e].isTruncated }).length) {
-      return false;
-    }
-//    if(cateN!=Object.keys(window.store.getState().categoricalSelection).length) {
+//    if(cateN!=Object.keys(window.store.getState().categoricalSelection).filter(function(e) { return !window.store.getState().categoricalSelection[e].isTruncated }).length) {
 //      return false;
 //    }
+    if(cateN!=Object.keys(window.store.getState().categoricalSelection).length) {
+      return false;
+    }
     return true;
 }
 function enableButton(){
