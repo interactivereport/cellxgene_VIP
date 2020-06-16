@@ -84,11 +84,14 @@ def subData(data):
         if len(data['genes'])>0:
           fullG = list(scD.data.var['name_0'])
           selG = [fullG.index(i) for i in data['genes']]
-          X = scD.data.X[selC][:,selG]
+          X = scD.data.X[:,selG]
           gNames = data['genes']
         else:
-          X = scD.data.X[selC]
+          X = scD.data.X
           gNames = list(scD.data.var["name_0"])
+      if data['figOpt']['scale'] == 'true':
+        X = sc.pp.scale(X,zero_center=(True if data['figOpt']['scaleZero']=='true' else False),max_value=float(data['figOpt']['scaleMax']))
+      X = X[selC]
     if fSparse:
       expr = X
     else:
@@ -509,6 +512,7 @@ def DEG(data):
   data['genes'] = []
   comGrp = 'cellGrp'
   if 'combine' in data.keys():
+    data['figOpt']['scale'] = 'false'
     adata = createData(data)
     comGrp = data['grp'][0]
     adata = adata[adata.obs[comGrp].isin(data['comGrp'])]
@@ -517,6 +521,7 @@ def DEG(data):
       oneD = {'cells':data['cells'][one],
               'genes':[],
               'grp':[],
+              'figOpt':{'scale':'false'},
               'url':data['url']}
       D = createData(oneD)
       D.obs[comGrp] = one
