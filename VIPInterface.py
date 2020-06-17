@@ -40,7 +40,7 @@ def route(data,appConfig=None):
   else:
     data = json.loads(str(data,encoding='utf-8'))
     data["url"] = f'http://{appConfig.server__host}:{appConfig.server__port}/{api_version}'
-  
+  ppr.pprint(data['figOpt']) 
   if 'figOpt' in data.keys():
     setFigureOpt(data['figOpt'])
   try:
@@ -50,7 +50,7 @@ def route(data,appConfig=None):
   #return distributeTask(data["method"])(data)
 
 def setFigureOpt(opt):
-  sc.set_figure_params(dpi_save=int(opt['dpi']),fontsize= float(opt['fontsize']),vector_friendly=(opt['vectorFriendly']=='true'),transparent=(opt['transparent']=='true'),color_map=opt['colorMap'])
+  sc.set_figure_params(dpi_save=int(opt['dpi']),fontsize= float(opt['fontsize']),vector_friendly=(opt['vectorFriendly'] == 'Yes'),transparent=(opt['transparent'] == 'Yes'),color_map=opt['colorMap'])
   rcParams.update({'savefig.format':opt['img']})
 
 def getObs(data):
@@ -89,8 +89,8 @@ def subData(data):
         else:
           X = scD.data.X
           gNames = list(scD.data.var["name_0"])
-      if data['figOpt']['scale'] == 'true':
-        X = sc.pp.scale(X,zero_center=(True if data['figOpt']['scaleZero']=='true' else False),max_value=float(data['figOpt']['scaleMax']))
+      if data['figOpt']['scale'] == 'Yes':
+        X = sc.pp.scale(X,zero_center=(data['figOpt']['scaleZero'] == 'Yes'),max_value=float(data['figOpt']['scaleMax']))
       X = X[selC]
     if fSparse:
       expr = X
@@ -572,17 +572,15 @@ def DOT(data):
       col = np.array(sns.color_palette("husl",len(grp)).as_hex())
   adata.uns[data['grp'][0]+'_colors'] = col
   
-  print(data['mean_only_expressed'])
-  
   if '1.4.7' in sc.__version__:
-    dp = sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],expression_cutoff=float(data['cutoff']),mean_only_expressed=(data['mean_only_expressed'] == "True"),
+    dp = sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],expression_cutoff=float(data['cutoff']),mean_only_expressed=(data['mean_only_expressed'] == 'Yes'),
                        var_group_positions=data['grpLoc'],var_group_labels=data['grpID'],
                        return_fig=True)#
     dp = dp.add_totals(size=1.2).legend(show_size_legend=True).style(cmap='Blues', dot_edge_color='black', dot_edge_lw=1, size_exponent=1.5)
     dp.show()
     fig = dp.get_axes()['mainplot_ax'].figure
   else:
-    sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],figsize=(w,h),show=False,expression_cutoff=float(data['cutoff']),mean_only_expressed=(data['mean_only_expressed'] == "True"), var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
+    sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],figsize=(w,h),show=False,expression_cutoff=float(data['cutoff']),mean_only_expressed=(data['mean_only_expressed'] == 'Yes'), var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
     fig = plt.gcf()
 
   return iostreamFig(fig)
