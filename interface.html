@@ -202,280 +202,292 @@
     </div><!--ADDG-->
     
     <div id="GD" class=tabcontent>
-      <h3>Genes detected in selected cells </h3>
-      <p>In group 1 (<span id="GDcellN1" style="color:red;">0</span>) cells and group 2 (<span id="GDcellN2" style="color:red;">0</span>) cells</p>
-      <p>Expression threshold:
-      <input id="GDcutoff" type="number" step="0.1" value="1"/></p>
-      <p><button class="GDbt" onclick="GDplot()"><b>Plot</b></button></p>
+      <div id="GDinput">
+        <h3>Genes detected in selected cells </h3>
+        <p>In group 1 (<span id="GDcellN1" style="color:red;">0</span>) cells and group 2 (<span id="GDcellN2" style="color:red;">0</span>) cells</p>
+        <p>Expression threshold:
+        <input id="GDcutoff" type="number" step="0.1" value="1"/></p>
+      </div>
+      <button class="GDbt" onclick="GDplot()"><b>Plot</b></button>
+      <button onclick="ZoomIn('GDresize')">Zoom In</button>
+      <button onclick="ZoomOut('GDresize')">Zoom Out</button>
+      <button class="GDpngBT" onclick="saveImg('GDimg')" disabled>Save</button>
+      <button onclick="hideShow($('#GDinput'),$(this));">Hide Input</button>
       <p id="GDnote" style="color:red;"></p>
       <div id="GDspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div style="text-align: center;">
-        <button onclick="ZoomIn('GDresize')">Zoom In</button>
-        <button onclick="ZoomOut('GDresize')">Zoom Out</button>
-        <button class="GDpngBT" onclick="saveImg('GDimg')" disabled>Save</button>
-      </div>
       <div id="GDresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6">
         <p id="GDfig"></p></div>
     </div><!--GD-->
     
     <div id="MARK" class="tabcontent">
-      <h3>Marker genes of annotation categories in selected cells</h3>
-      <p>Choose cell set(s):
-        <label><input class="MARKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="MARKcellN1" style="color:red">0</span>)</label>
-        <label><input class="MARKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="MARKcellN2" style="color:red">0</span>)</label>
-      </p>
-      <p>Select an annotation: 
-      <select id="MARKgrp"></select></p>
-      <p>By method: 
-      <select id="MARKmethod">
-        <option value="logreg">logreg</option>
-        <option value="t-test">t-test</option>
-        <option value="wilcoxon">wilcoxon</option>
-        <option value="t-test_overestim_var">t-test_overestim_var</option>
-      </select> with the number of genes per group: <input id="MARKn" type="number" step="1" value="10" min="3"/></p>
+      <div id="MARKinput">
+        <h3>Marker genes of annotation categories in selected cells</h3>
+        <p>Choose cell set(s):
+          <label><input class="MARKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="MARKcellN1" style="color:red">0</span>)</label>
+          <label><input class="MARKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="MARKcellN2" style="color:red">0</span>)</label>
+        </p>
+        <p>Select an annotation: 
+        <select id="MARKgrp"></select></p>
+        <p>By method: 
+        <select id="MARKmethod">
+          <option value="logreg">logreg</option>
+          <option value="t-test">t-test</option>
+          <option value="wilcoxon">wilcoxon</option>
+          <option value="t-test_overestim_var">t-test_overestim_var</option>
+        </select> with the number of genes per group: <input id="MARKn" type="number" step="1" value="10" min="3"/></p>
+      </div>
       <button class="MARKbt" onclick="MARKplot()"><b>Find/Plot</b></button>
+      <button onclick="ZoomIn('MARKresize')">Zoom In</button>
+      <button onclick="ZoomOut('MARKresize')">Zoom Out</button>
+      <button class="MARKpngBT" onclick="saveImg('MARKimg')" disabled>Save</button>
+      <button onclick="hideShow($('#MARKinput'),$(this));">Hide Input</button>
       <p id="MARKnote" style="color:red;"></p>
       <div id="MARKspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       
       <table id="MARKtable" class="display"></table>
-      <div style="text-align: center;">
-        <button onclick="ZoomIn('MARKresize')">Zoom In</button>
-        <button onclick="ZoomOut('MARKresize')">Zoom Out</button>
-        <button class="MARKpngBT" onclick="saveImg('MARKimg')" disabled>Save</button>
-      </div>
       <div id="MARKresize" style="height: 'auto'">
         <p id="MARKfig"></p>
       </div>
     </div><!--MARK-->
     
     <div id="SGV" class="tabcontent">
-      <h3>Violin plot of a gene on selected cells</h3>
-      <p>Choose cell set(s):
-        <label><input class="SGVcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="SGVcellN1" style="color:red">0</span>)</label>
-        <label><input class="SGVcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="SGVcellN2" style="color:red">0</span>)</label>
-      </p>
-      <p>Choose a gene:
-      <select id="SGVgene"></select> with expression cutoff: <input id="SGVcutoff" type="number" step="0.1" value="1"/></p>
-      <p>Group by:
-      <select id="SGVgrp"></select></p>
+      <div id="SGVinput">
+        <h3>Violin plot of a gene on selected cells</h3>
+        <p>Choose cell set(s):
+          <label><input class="SGVcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="SGVcellN1" style="color:red">0</span>)</label>
+          <label><input class="SGVcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="SGVcellN2" style="color:red">0</span>)</label>
+        </p>
+        <p>Choose a gene:
+        <select id="SGVgene"></select> with expression cutoff: <input id="SGVcutoff" type="number" step="0.1" value="1"/></p>
+        <p>Group by:
+        <select id="SGVgrp"></select></p>
+      </div>
       <button class="SGVbt" onclick="SGVplot()"><b>Plot</b></button>
+      <button onclick="ZoomIn('SGVresize')">Zoom In</button>
+      <button onclick="ZoomOut('SGVresize')">Zoom Out</button>
+      <button class="SGVpngBT" onclick="saveImg('SGVimg')" disabled>Save</button>
+      <button onclick="hideShow($('#SGVinput'),$(this));">Hide Input</button>
       <p id="SGVnote" style="color:red;"></p>
       <div id="SGVspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div style="text-align: center;">
-        <button onclick="ZoomIn('SGVresize')">Zoom In</button>
-        <button onclick="ZoomOut('SGVresize')">Zoom Out</button>
-        <button class="SGVpngBT" onclick="saveImg('SGVimg')" disabled>Save</button>
-      </div>
       <div id="SGVresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="SGVfig"></p></div>
     </div><!--SGV-->
     
     <div id="PGV" class="tabcontent">
-      <h3>Stacked violin plot of genes on selected cells</h3>
-      <p>Choose cell set(s):
-        <label><input class="PGVcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="PGVcellN1" style="color:red">0</span>)</label>
-        <label><input class="PGVcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="PGVcellN2" style="color:red">0</span>)</label>
-      </p>
-      <p>Choose genes: with expression cutoff: <input id="PGVcutoff" type="number" step="0.1" value="1"/></p>
-      <p id="PGVgene"></p>
-      <p>Select user-defined gene sets:</p><p id="PGVgeneGrp"></p>
-      <p>Group by:
-      <select id="PGVgrp"></select> as
-      <select id="PGVgrpXY">
-        <option value="Rows">Rows</option>
-        <option value="Columns">Columns</option>
-      </select>
-      </p>
-      <p><button class="PGVbt"  onclick="PGVplot()"><b>Plot</b></button></p>
+      <div id="PGVinput">
+        <h3>Stacked violin plot of genes on selected cells</h3>
+        <p>Choose cell set(s):
+          <label><input class="PGVcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="PGVcellN1" style="color:red">0</span>)</label>
+          <label><input class="PGVcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="PGVcellN2" style="color:red">0</span>)</label>
+        </p>
+        <p>Choose genes with expression cutoff: <input id="PGVcutoff" type="number" step="0.1" value="1"/> <input type="checkbox" checked onclick="$('.PGVgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p id="PGVgene"></p>
+        <p>Select user-defined gene sets:</p><p id="PGVgeneGrp"></p>
+        <p>Group by:
+        <select id="PGVgrp"></select> as
+        <select id="PGVgrpXY">
+          <option value="Rows">Rows</option>
+          <option value="Columns">Columns</option>
+        </select>
+        </p>
+      </div>
+      <button class="PGVbt"  onclick="PGVplot()"><b>Plot</b></button>
+      <button onclick="ZoomIn('PGVresize')">Zoom In</button>
+      <button onclick="ZoomOut('PGVresize')">Zoom Out</button>
+      <button class="PGVpngBT" onclick="saveImg('PGVimg')" disabled>Save</button>
+      <button onclick="hideShow($('#PGVinput'),$(this));">Hide Input</button>
       <p id="PGVnote" style="color:red;"></p>
       <div id="PGVspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div style="text-align: center;">
-        <button onclick="ZoomIn('PGVresize')">Zoom In</button>
-        <button onclick="ZoomOut('PGVresize')">Zoom Out</button>
-        <button class="PGVpngBT" onclick="saveImg('PGVimg')" disabled>Save</button>
-      </div>
       <div id="PGVresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="PGVfig"></p></div>
     </div><!--PGV-->
     
     <div id="HEAT" class="tabcontent">
-      <h3>Heatmap on selected cells and genes</h3>
-      <p>Choose cell set(s):
-        <label><input class="HEATcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="HEATcellN1" style="color:red">0</span>)</label>
-        <label><input class="HEATcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="HEATcellN2" style="color:red">0</span>)</label>
-      </p>
-      <p>Choose genes:</p>
-      <p id="HEATgene"></p>
-      <p>Clustering by:
-      <select id="HEATorder"></select></p>
-      <p>Choose annotation:</p>
-      <p id="HEATgrp"></p>
-      <p>Select plotting scale:
-      <select id="HEATnorm">
-        <option value="X">Expression</option>
-        <option value="zscore">Expression Z-score</option>
-      </select></p>
-      <p><button class="HEATbt"  onclick="HEATplot()"><b>Plot</b></button></p>
+      <div id="HEATinput">
+        <h3>Heatmap on selected cells and genes</h3>
+        <p>Choose cell set(s):
+          <label><input class="HEATcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="HEATcellN1" style="color:red">0</span>)</label>
+          <label><input class="HEATcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="HEATcellN2" style="color:red">0</span>)</label>
+        </p>
+        <p>Choose genes: <input type="checkbox" checked onclick="$('.HEATgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p id="HEATgene"></p>
+        <p>Clustering by:
+        <select id="HEATorder"></select></p>
+        <p>Choose annotation:</p>
+        <p id="HEATgrp"></p>
+        <p>Select plotting scale:
+        <select id="HEATnorm">
+          <option value="X">Expression</option>
+          <option value="zscore">Expression Z-score</option>
+        </select></p>
+      </div>
+      <button class="HEATbt"  onclick="HEATplot()"><b>Plot</b></button>
+      <button onclick="ZoomIn('HEATresize')">Zoom In</button>
+      <button onclick="ZoomOut('HEATresize')">Zoom Out</button>
+      <button class="HEATpngBT" onclick="saveImg('HEATimg')" disabled>Save</button>
+      <button class="HEATsaveBT" onclick="HEATdata()" disabled>Download Expression Data</button>
+      <button onclick="hideShow($('#HEATinput'),$(this));">Hide Input</button>
       <p id="HEATnote" style="color:red;"></p>
       <div id="HEATspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div style="text-align: center;">
-        <button onclick="ZoomIn('HEATresize')">Zoom In</button>
-        <button onclick="ZoomOut('HEATresize')">Zoom Out</button>
-        <button class="HEATpngBT" onclick="saveImg('HEATimg')" disabled>Save</button>
-        <button class="HEATsaveBT" onclick="HEATdata()" disabled>Download Expression Data</button>
-      </div>
       <div id="HEATresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="HEATfig"></p></div>
       <div id="HEATdata" style="visibility: hidden;"></div>
     
     </div><!--HEAT-->
     
     <div id="DOT" class="tabcontent">
-      <h3>Dot plot shows per group, the fraction of cells expressing a gene (dot size) and the mean expression of the gene in those cell (color scale)</h3>
-      <p>Choose cell set(s):
-        <label><input class="DOTcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DOTcellN1" style="color:red">0</span>)</label>
-        <label><input class="DOTcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DOTcellN2" style="color:red">0</span>)</label>
-      </p>
-      <p>Choose genes with expression cutoff: <input id="DOTcutoff" type="number" step="0.1" value="1"/></p>
-      <p id="DOTgene"></p>
-      <p>Expression is averaged only over cells expressing a given gene above the cutoff: <input type="radio" name="mean_only_expressed" value="Yes">Yes<input type="radio" name="mean_only_expressed" value="No" checked>No</p>
-
-      <p>Select user-defined gene sets:</p><p id="DOTgeneGrp"></p>
-      <p>Group by: <select id="DOTgrp"></select></p>
-      <p id="DOTnote" style="color:red;"></p>
-      <p><button onclick="DOTplot()"><b>Plot</b></button></p>
-      <div id="DOTspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div style="text-align: center;">
-        <button onclick="ZoomIn('DOTresize')">Zoom In</button>
-        <button onclick="ZoomOut('DOTresize')">Zoom Out</button>
-        <button class="DOTpngBT" onclick="saveImg('DOTimg')" disabled>Save</button>
+      <div id="DOTinput">
+        <h3>Dot plot shows per group, the fraction of cells expressing a gene (dot size) and the mean expression of the gene in those cell (color scale)</h3>
+        <p>Choose cell set(s):
+          <label><input class="DOTcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DOTcellN1" style="color:red">0</span>)</label>
+          <label><input class="DOTcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DOTcellN2" style="color:red">0</span>)</label>
+        </p>
+        <p>Choose genes with expression cutoff: <input id="DOTcutoff" type="number" step="0.1" value="1"/><input type="checkbox" checked onclick="$('.DOTgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p id="DOTgene"></p>
+        <p>Expression is averaged only over cells expressing a given gene above the cutoff: <input type="radio" name="mean_only_expressed" value="Yes">Yes<input type="radio" name="mean_only_expressed" value="No" checked>No</p>
+  
+        <p>Select user-defined gene sets:</p><p id="DOTgeneGrp"></p>
+        <p>Group by: <select id="DOTgrp"></select></p>
+        <p id="DOTnote" style="color:red;"></p>
       </div>
+      <button onclick="DOTplot()"><b>Plot</b></button>
+      <button onclick="ZoomIn('DOTresize')">Zoom In</button>
+      <button onclick="ZoomOut('DOTresize')">Zoom Out</button>
+      <button class="DOTpngBT" onclick="saveImg('DOTimg')" disabled>Save</button>
+      <button onclick="hideShow($('#DOTinput'),$(this));">Hide Input</button>
+      <div id="DOTspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="DOTresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="DOTfig"></p></div>
     
     </div><!--DOT-->
     
     <div id="EMBED" class="tabcontent">
-      <h3>Embedding plots on selected genes and annotations</h3>
-      <p>Choose cell set(s):
-        <label><input class="EMBEDcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="EMBEDcellN1" style="color:red">0</span>)</label>
-        <label><input class="EMBEDcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="EMBEDcellN2" style="color:red">0</span>)</label>
-      </p>
-      <p>Choose annotation groups:</p>
-      <p id="EMBEDgrp"></p>
-      <p>Choose genes:</p>
-      <p id="EMBEDgene"></p>
-      <p>Select the annotation group where the gene expression will split: 
-      <select id="EMBEDsplit">
-        <option value="NONE">NONE</option>
-      </select>
-      </p>
-      <p>Select the embedding layout:
-      <select id="EMBEDlayout">
-      </select> the number of plots per row:
-      <input id="EMBEDslot" type="number" value="4" min="2"/>
-      </p>
-      
-      <p><button class="EMBEDbt"  onclick="EMBEDplot()"><b>Plot</b></button></p>
+      <div id="EMBEDinput">
+        <h3>Embedding plots on selected genes and annotations</h3>
+        <p>Choose cell set(s):
+          <label><input class="EMBEDcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="EMBEDcellN1" style="color:red">0</span>)</label>
+          <label><input class="EMBEDcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="EMBEDcellN2" style="color:red">0</span>)</label>
+        </p>
+        <p>Choose annotation groups:</p>
+        <p id="EMBEDgrp"></p>
+        <p>Choose genes: <input type="checkbox" checked onclick="$('.EMBEDgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p id="EMBEDgene"></p>
+        <p>Select the annotation group where the gene expression will split: 
+        <select id="EMBEDsplit">
+          <option value="NONE">NONE</option>
+        </select>
+        </p>
+        <p>Select the embedding layout:
+        <select id="EMBEDlayout">
+        </select> the number of plots per row:
+        <input id="EMBEDslot" type="number" value="4" min="2"/>
+        </p>
+      </div> 
+      <button class="EMBEDbt"  onclick="EMBEDplot()"><b>Plot</b></button>
+      <button onclick="ZoomIn('EMBEDresize')">Zoom In</button>
+      <button onclick="ZoomOut('EMBEDresize')">Zoom Out</button>
+      <button class="EMBEDpngBT" onclick="saveImg('EMBEDimg')" disabled>Save</button>
+      <button onclick="hideShow($('#EMBEDinput'),$(this));">Hide Input</button>
       <p id="EMBEDnote" style="color:red;"></p>
       <div id="EMBEDspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div style="text-align: center;">
-        <button onclick="ZoomIn('EMBEDresize')">Zoom In</button>
-        <button onclick="ZoomOut('EMBEDresize')">Zoom Out</button>
-        <button class="EMBEDpngBT" onclick="saveImg('EMBEDimg')" disabled>Save</button>
-      </div>
       <div id="EMBEDresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="EMBEDfig"></p></div>
     
     </div><!--EMBED-->
     
     <div  id="TRAK" class="tabcontent">
-      <h3>Track plot shows the gene expression represented by height</h3>
-      <p>Choose cell set(s):
-        <label><input class="TRAKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="TRAKcellN1" style="color:red">0</span>)</label>
-        <label><input class="TRAKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="TRAKcellN2" style="color:red">0</span>)</label>
-      </p>
-      <p>Choose genes:</p>
-      <p id="TRAKgene"></p>
-      <p>Select user-defined gene sets: </p><p id="TRAKgeneGrp"></p>
-      <p>Group by: <select id="TRAKgrp"></select></p>
-      <p id="TRAKnote" style="color:red;"></p>
-      <p><button onclick="TRAKplot()"><b>Plot</b></button></p>
-      <div id="TRAKspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div style="text-align: center;">
-        <button onclick="ZoomIn('TRAKresize')">Zoom In</button>
-        <button onclick="ZoomOut('TRAKresize')">Zoom Out</button>
-        <button class="TRAKpngBT" onclick="saveImg('TRAKimg')" disabled>Save</button>
+      <div id="TRAKinput">
+        <h3>Track plot shows the gene expression represented by height</h3>
+        <p>Choose cell set(s):
+          <label><input class="TRAKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="TRAKcellN1" style="color:red">0</span>)</label>
+          <label><input class="TRAKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="TRAKcellN2" style="color:red">0</span>)</label>
+        </p>
+        <p>Choose genes: <input type="checkbox" checked onclick="$('.TRAKgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p id="TRAKgene"></p>
+        <p>Select user-defined gene sets: </p><p id="TRAKgeneGrp"></p>
+        <p>Group by: <select id="TRAKgrp"></select></p>
       </div>
+      <button onclick="TRAKplot()"><b>Plot</b></button>
+      <button onclick="ZoomIn('TRAKresize')">Zoom In</button>
+      <button onclick="ZoomOut('TRAKresize')">Zoom Out</button>
+      <button class="TRAKpngBT" onclick="saveImg('TRAKimg')" disabled>Save</button>
+      <button onclick="hideShow($('#TRAKinput'),$(this));">Hide Input</button>
+      <p id="TRAKnote" style="color:red;"></p>
+      <div id="TRAKspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="TRAKresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="TRAKfig"></p></div>
     
     </div><!--TRAK-->
 
     <div  id="DENS" class="tabcontent">
-      <h3>Density plots of selected genes</h3>
-      <p>Choose cell set(s):
-        <label><input class="DENScell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DENScellN1" style="color:red">0</span>)</label>
-        <label><input class="DENScell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DENScellN2" style="color:red">0</span>)</label>
-      </p>
-      <p>Choose genes:</p>
-      <p id="DENSgene"></p>
-      <p>Split by:
-      <select id="DENSsplit"></select></p>
-      <p>Color by:
-      <select id="DENSgrp"></select></p>
-      <p>Bandwidth: <input id="DENSprec" type="number" step="0.1" value="0.5" min="0.1"/> controls how tightly the curve is fit to the data, much like the bin size in a histogram.</p>
-      <p id="DENSerror" style="color:red;"></p>
-      <p><button onclick="DENSplot()"><b>Plot</b></button></p>
-      <div id="DENSspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div style="text-align: center;">
-        <button onclick="ZoomIn('DENSresize')">Zoom In</button>
-        <button onclick="ZoomOut('DENSresize')">Zoom Out</button>
-        <button class="DENSpngBT" onclick="saveImg('DENSimg')" disabled>Save</button>
+      <div id="DENSinput">
+        <h3>Density plots of selected genes</h3>
+        <p>Choose cell set(s):
+          <label><input class="DENScell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DENScellN1" style="color:red">0</span>)</label>
+          <label><input class="DENScell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DENScellN2" style="color:red">0</span>)</label>
+        </p>
+        <p>Choose genes: <input type="checkbox" checked onclick="$('.DENSgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p id="DENSgene"></p>
+        <p>Split by:
+        <select id="DENSsplit"></select></p>
+        <p>Color by:
+        <select id="DENSgrp"></select></p>
+        <p>Bandwidth: <input id="DENSprec" type="number" step="0.1" value="0.5" min="0.1"/> controls how tightly the curve is fit to the data, much like the bin size in a histogram.</p>
       </div>
+      <button onclick="DENSplot()"><b>Plot</b></button>
+      <button onclick="ZoomIn('DENSresize')">Zoom In</button>
+      <button onclick="ZoomOut('DENSresize')">Zoom Out</button>
+      <button class="DENSpngBT" onclick="saveImg('DENSimg')" disabled>Save</button>
+      <button onclick="hideShow($('#DENSinput'),$(this));">Hide Input</button>
+      <p id="DENSerror" style="color:red;"></p>
+      <div id="DENSspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="DENSresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="DENSfig"></p></div>
     
     </div><!--DENS-->
       
     <div  id="DUAL" class="tabcontent">
-      <h3>Embedding plot of two genes in selected cells</h3>
-      <p>Choose cell set(s):
-        <label><input class="DUALcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DUALcellN1" style="color:red">0</span>)</label>
-        <label><input class="DUALcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DUALcellN2" style="color:red">0</span>)</label>
-      </p>
-      <p>Choose two genes:</p>
-      <p id="DUALgene"></p>
-      <p>Please specify the gene expression cutoff: <input id="DUALcutoff" type="number" step="0.1" value="1"/></p>
-      <p>Select the embedding layout:
-      <select id="DUALlayout">
-      </select>
-      </p>
-      
-      <p><button class="DUALbt"  onclick="DUALplot()"><b>Plot</b></button></p>
+      <div id="DUALinput">
+        <h3>Embedding plot of two genes in selected cells</h3>
+        <p>Choose cell set(s):
+          <label><input class="DUALcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DUALcellN1" style="color:red">0</span>)</label>
+          <label><input class="DUALcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DUALcellN2" style="color:red">0</span>)</label>
+        </p>
+        <p>Choose two genes: <input type="checkbox" onclick="$('.DUALgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p id="DUALgene"></p>
+        <p>Please specify the gene expression cutoff: <input id="DUALcutoff" type="number" step="0.1" value="1"/></p>
+        <p>Select the embedding layout:
+        <select id="DUALlayout">
+        </select>
+        </p>
+      </div>
+      <button class="DUALbt"  onclick="DUALplot()"><b>Plot</b></button>
+      <button onclick="ZoomIn('DUALresize')">Zoom In</button>
+      <button onclick="ZoomOut('DUALresize')">Zoom Out</button>
+      <button class="DUALpngBT" onclick="saveImg('DUALimg')" disabled>Save</button>
+      <button onclick="hideShow($('#DUALinput'),$(this));">Hide Input</button>
       <p id="DUALnote" style="color:red;"></p>
       <div id="DUALspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div style="text-align: center;">
-        <button onclick="ZoomIn('DUALresize')">Zoom In</button>
-        <button onclick="ZoomOut('DUALresize')">Zoom Out</button>
-        <button class="DUALpngBT" onclick="saveImg('DUALimg')" disabled>Save</button>
-      </div>
       <div id="DUALresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="DUALfig"></p></div>
       
     </div><!--DUAL-->
 
     <div  id="SANK" class="tabcontent">
-      <h3>Sankey Diagrams on selected cells for selected annotations and/or genes</h3>
-      <p>Choose cell set(s):
-        <label><input class="SANKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="SANKcellN1" style="color:red">0</span>)</label>
-        <label><input class="SANKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="SANKcellN2" style="color:red">0</span>)</label>
-      </p>
-      <p>Choose genes:</p><p id="SANKgene"></p>
-      <!-- <p>Choose user-defined gene sets:</p><p id="SANKgeneGrp"></p> -->
-      <p>Choose annotation:</p><p id="SANKgrp"></p>
-      <p>Change the order by dragging items up and down:
-      <button id="SANKorderBTs" onclick="SANKorderShow()" style="padding:2px;border-radius:45%"><b>&#43;</b></button>
-      <button id="SANKorderBTh" onclick="SANKorderHide()" style="padding:2px;border-radius:40%"><b>&#8722;</b></button>
-      </p>
-      <div id='SANKorderGrp'>
-        <ul id="SANKdynList" class="sortable-list"></ul>
+      <div id="SANKinput">
+        <h3>Sankey Diagrams on selected cells for selected annotations and/or genes</h3>
+        <p>Choose cell set(s):
+          <label><input class="SANKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="SANKcellN1" style="color:red">0</span>)</label>
+          <label><input class="SANKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="SANKcellN2" style="color:red">0</span>)</label>
+        </p>
+        <p>Choose genes: <input type="checkbox" checked onclick="$('.SANKgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p id="SANKgene"></p>
+        <!-- <p>Choose user-defined gene sets:</p><p id="SANKgeneGrp"></p> -->
+        <p>Choose annotation:</p><p id="SANKgrp"></p>
+        <p>Change the order by dragging items up and down:
+        <button id="SANKorderBTs" onclick="SANKorderShow()" style="padding:2px;border-radius:45%"><b>&#43;</b></button>
+        <button id="SANKorderBTh" onclick="SANKorderHide()" style="padding:2px;border-radius:40%"><b>&#8722;</b></button>
+        </p>
+        <div id='SANKorderGrp'>
+          <ul id="SANKdynList" class="sortable-list"></ul>
+        </div>
+        <p>Please specify the diagram <u>width per category</u>: <input id="SANKw" type="number" step="10" value="250"/> and the <u>diagram height</u>: <input id="SANKh" type="number" step="10" value="700"/></p>
       </div>
-      <p>Please specify the diagram <u>width per category</u>: <input id="SANKw" type="number" step="10" value="250"/> and the <u>diagram height</u>: <input id="SANKh" type="number" step="10" value="700"/></p>
-      
-      <p><button class="SANKbt"  onclick="SANKplot()"><b>Plot</b> </button><button class="SANKbt" style="float:right;" onclick="SANKimgSave()">Save as SVG</button></p>
+      <button class="SANKbt"  onclick="SANKplot()"><b>Plot</b> </button>
+      <button onclick="hideShow($('#SANKinput'),$(this));">Hide Input</button>
+      <button class="SANKbt" style="float:right;" onclick="SANKimgSave()">Save as SVG</button></p>
       <p id="SANKnote" style="color:red;"></p>
       <div id="SANKspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="SANKresize" style="height: 'auto'; width: 'auto'; padding: 0.5em;"></div>
@@ -483,37 +495,39 @@
     </div><!--SANK-->
     
     <div id="DEG" class="tabcontent">
-      <h3>Find differentially expressed genes</h3>
-      <p>Group 1 (<span id="DEGcellN1" style="color:red;">0</span>) cells and group 2 (<span id="DEGcellN2" style="color:red;">0</span>) cells</p>
-      <p>Differentially expressed genes will be detected between the two cell gorups defined above, unless two categories of the 'Custom_combine' annotation are selected, 
-      which enables DE analysis between those two:</p>
-      <p id="DEGgrp"></p>
-      <p>Select the number of top DEG: 
-      <select id="DEGtop">
-        <option value=100>100</option>
-        <option value=500>500</option>
-        <option value=1000>1000</option>
-        <option value=2000>2000</option>
-        <option value=5000>5000</option>
-      </select></p>
-      <p>Select the method: 
-      <select id="DEGmethod">
-        <option value='t-test'>Welch’s t-test</option>
-        <option value='rank'>Wilcoxon rank sum</option>
-        <option value='wald'>Wald test</option>
-      </select></p>
-      <p>Select genes to be marked in the volcano plot:</p>
-      <p id="DEGgene"></p>
+      <div id="DEGinput">
+        <h3>Find differentially expressed genes</h3>
+        <p>Group 1 (<span id="DEGcellN1" style="color:red;">0</span>) cells and group 2 (<span id="DEGcellN2" style="color:red;">0</span>) cells</p>
+        <p>Differentially expressed genes will be detected between the two cell gorups defined above, unless two categories of the 'Custom_combine' annotation are selected, 
+        which enables DE analysis between those two:</p>
+        <p id="DEGgrp"></p>
+        <p>Select the number of top DEG: 
+        <select id="DEGtop">
+          <option value=100>100</option>
+          <option value=500>500</option>
+          <option value=1000>1000</option>
+          <option value=2000>2000</option>
+          <option value=5000>5000</option>
+        </select></p>
+        <p>Select the method: 
+        <select id="DEGmethod">
+          <option value='t-test'>Welch’s t-test</option>
+          <option value='rank'>Wilcoxon rank sum</option>
+          <option value='wald'>Wald test</option>
+        </select></p>
+        <p>Select genes to be marked in the volcano plot: <input type="checkbox" onclick="$('.DEGgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p id="DEGgene"></p>
+      </div>
       
-      <p><button class="DEGbt" onclick="DEGfind()"><b>Find</b></button> <label id='DEGinfo'></label></p>
+      <button class="DEGbt" onclick="DEGfind()"><b>Find</b></button>
+      <button class="DEGpngBT" onclick="saveImg('DEGimg')" disabled>Save</button>
+      <button onclick="hideShow($('#DEGinput'),$(this));">Hide Input</button>
       <p id="DEGnote" style="color:red;"></p>
+      <label id='DEGinfo'></label>
       <div id="DEGspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <table id="DEGtable" class="display"></table>
-      <div style="text-align: center;">
-        <button onclick="ZoomIn('DEGresize')">Zoom In</button>
-        <button onclick="ZoomOut('DEGresize')">Zoom Out</button>
-        <button class="DEGpngBT" onclick="saveImg('DEGimg')" disabled>Save</button>
-      </div>
+      <button onclick="ZoomIn('DEGresize')">Zoom In</button>
+      <button onclick="ZoomOut('DEGresize')">Zoom Out</button>
       <div id="DEGresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6">
         <p id="DEGfig"></p>
       </div>
@@ -521,13 +535,13 @@
     
     <div id="IMG" class="tabcontent">
       <div><p>Scale data to unit variance for plotting: 
-        <input type="radio" name="IMGscale" value="Yes" onclick="IMGset()" checked>Yes
+        <input type="radio" name="IMGscale" value="Yes" onclick="IMGset()">Yes
         <input type="radio" name="IMGscale" value="No" onclick="IMGset()">No
         </p>
         <div id="IMGscaleShow">
           <Blockquote>
-            <input id="IMGscaleZero" type="checkbox" onclick="IMGset()"/> Zero Center<br>
-            Max Value: <input id="IMGscaleMax" type="number" step="0.1" onchange="IMGset()"/>
+            <input id="IMGscaleZero" type="checkbox" onclick="IMGset()"/> Zero Center
+            <input id="IMGclipValue" type="checkbox" onclick="IMGset()"/> Clip to this Value: <input id="IMGscaleMax" type="number" step="0.1" onchange="IMGset()"/> after scaling
           </Blockquote>
         </div>
       </div>
@@ -690,7 +704,7 @@ function ZoomOut(strDiv){
 }
 function showImg(eID,data){
   if (['SGVfig','HEATfig'].includes(eID)) {
-    document.getElementById(eID).innerHTML = '<img id="'+eID.replace('fig','img')+'" src="data:image/'+window.figOpt['img'].replace('svg','svg+xml')+';base64,'+data+'" width="auto" height="100%"/>';
+    document.getElementById(eID).innerHTML = '<img id="'+eID.replace('fig','img')+'" src="data:image/'+window.figOpt['img'].replace('svg','svg+xml')+';base64,'+data+'" width="100%" height="100%"/>';
   } else {
     document.getElementById(eID).innerHTML = '<img id="'+eID.replace('fig','img')+'" src="data:image/'+window.figOpt['img'].replace('svg','svg+xml')+';base64,'+data+'" width="100%" height="auto"/>';
   } 
@@ -777,7 +791,7 @@ function init(){
     window.bioCombineCell={};
     window.biogen=[];
     window.bioGeneGrp={};
-    window.figOpt={scale:'Yes',scaleZero:'Yes',scaleMax:10,dpi:150,img:'png',fontsize:11,vectorFriendly:'Yes',transparent:'No',colorMap:'viridis'};
+    window.figOpt={scale:'No',scaleZero:'Yes',clipValue:'Yes',scaleMax:10,dpi:150,img:'png',fontsize:11,vectorFriendly:'Yes',transparent:'No',colorMap:'viridis'};
     //--------------------------------------------------------------------------
     //add dropdown annotation categories
     var sgv = document.getElementById("SGVgrp");
@@ -1194,10 +1208,13 @@ function DEGref(){
 function IMGref(){
   if(window.figOpt['scale'] == "Yes"){
     $('#IMGscaleShow').show();
+    $("input[name='IMGscale'][value='Yes']").prop('checked', true);
     $('#IMGscaleZero').prop('checked',window.figOpt['scaleZero']==="Yes");
+    $('#IMGclipValue').prop('checked',window.figOpt['clipValue']==="Yes");
     $('#IMGscaleMax').val(window.figOpt['scaleMax']);
   }else{
     $('#IMGscaleShow').hide();
+    $("input[name='IMGscale'][value='No']").prop('checked', true);
   }
 
   $('#IMGdpi').val(window.figOpt['dpi']);
@@ -1426,12 +1443,17 @@ function ADDGsetDel(grpName){
   delete window.bioGeneGrp[grpName];
   ADDGref();
 }
+function hideShow(section, button) {
+  section.toggle();
+  button.text(button.text()=='Hide Input'?'Show Input':'Hide Input');
+}
 // plot function 
 function IMGset(){
   window.figOpt['scale'] = $("input[name='IMGscale']:checked").val();
   if(window.figOpt['scale'] == "Yes"){
     $('#IMGscaleShow').show();
     window.figOpt['scaleZero'] = $('#IMGscaleZero').prop('checked')?"Yes":"No";
+    window.figOpt['clipValue'] = $('#IMGclipValue').prop('checked')?"Yes":"No";
     window.figOpt['scaleMax'] = $('#IMGscaleMax').val();
   }else{
     $('#IMGscaleShow').hide();
@@ -2567,7 +2589,9 @@ function IMGsave(){
   return(window.figOpt);
 }
 function IMGload(content){
-  window.figOpt = content;
+  Object.keys(content).forEach(function(k) {
+    window.figOpt[k] = content[k];
+  });
 }
 
 function GDsave(){

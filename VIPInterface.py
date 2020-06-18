@@ -90,7 +90,7 @@ def subData(data):
           X = scD.data.X
           gNames = list(scD.data.var["name_0"])
       if data['figOpt']['scale'] == 'Yes':
-        X = sc.pp.scale(X,zero_center=(data['figOpt']['scaleZero'] == 'Yes'),max_value=float(data['figOpt']['scaleMax']))
+        X = sc.pp.scale(X,zero_center=(data['figOpt']['scaleZero'] == 'Yes'),max_value=(float(data['figOpt']['scaleMax']) if data['figOpt']['clipValue']=='Yes' else None))
       X = X[selC]
     if fSparse:
       expr = X
