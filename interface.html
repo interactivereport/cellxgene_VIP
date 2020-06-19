@@ -632,6 +632,7 @@ function enableButton(){
           window.store.dispatch({type: "set layout choice", layoutChoice: ginit[0].split("by")[1].trim()});
           window.store.dispatch({type: "color by categorical metadata", colorAccessor: ginit[1].split("by")[1].trim()});
           window.store.dispatch({type: "show centroid labels for category", showLabels: true});
+          window.store.dispatch({type: "store current cell selection as differential set 1", data:Int32Array.from({length:window.store.getState().universe.nObs},(v,k)=>k)});
         }
       }
       init();
@@ -791,7 +792,11 @@ function init(){
     window.bioCombineCell={};
     window.biogen=[];
     window.bioGeneGrp={};
-    window.figOpt={scale:'No',scaleZero:'Yes',clipValue:'Yes',scaleMax:10,dpi:150,img:'png',fontsize:11,vectorFriendly:'Yes',transparent:'No',colorMap:'viridis'};
+    window.figOpt={scale:'No',scaleZero:'No',clipValue:'Yes',scaleMax:10,dpi:150,img:'png',fontsize:11,vectorFriendly:'Yes',transparent:'No',colorMap:'viridis'};
+    if (grpL[">Description"] !== undefined && !grpL[">Description"].categoryValues[0].split(";")[1].includes("scale")) {
+      window.figOpt['scale'] = "Yes";
+    }
+
     //--------------------------------------------------------------------------
     //add dropdown annotation categories
     var sgv = document.getElementById("SGVgrp");
@@ -1206,12 +1211,12 @@ function DEGref(){
  
 }
 function IMGref(){
+  $('#IMGscaleZero').prop('checked',(window.figOpt['scaleZero']=="Yes"));
+  $('#IMGclipValue').prop('checked',(window.figOpt['clipValue']=="Yes"));
+  $('#IMGscaleMax').val(window.figOpt['scaleMax']);
   if(window.figOpt['scale'] == "Yes"){
     $('#IMGscaleShow').show();
     $("input[name='IMGscale'][value='Yes']").prop('checked', true);
-    $('#IMGscaleZero').prop('checked',window.figOpt['scaleZero']==="Yes");
-    $('#IMGclipValue').prop('checked',window.figOpt['clipValue']==="Yes");
-    $('#IMGscaleMax').val(window.figOpt['scaleMax']);
   }else{
     $('#IMGscaleShow').hide();
     $("input[name='IMGscale'][value='No']").prop('checked', true);
