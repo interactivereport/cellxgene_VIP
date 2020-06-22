@@ -349,7 +349,7 @@ def PGV(data):
     return Msg('No cells in the condition!')
   a = list(set(list(adata.obs[data['grp'][0]])))
   ncharA = max([len(x) for x in a])
-  w = ncharA/8+len(data['genes'])/2+0.5
+  w = ncharA/8+len(data['genes'])/2+1.5
   h = len(a)+0.5
   swapAx = False
   ##
@@ -359,8 +359,8 @@ def PGV(data):
     h = a
     swapAx = True
   if '1.4.7' in sc.__version__:
-    vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=(w,h),swap_axes=swapAx,
-                              var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
+    vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=(w,h),swap_axes=swapAx,var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
+    # vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=(w,h),swap_axes=swapAx,var_group_positions=data['grpLoc'],var_group_labels=data['grpID'],yticklabels=True)  # need further testing "yticklabels"
     vp.add_totals().style(yticklabels=True).show()
     fig = plt.gcf()
   else:
