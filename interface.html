@@ -1140,7 +1140,7 @@ function SANKorderUpdate(){
   
   for(const one of $("#SANKdynList").sortable('toArray')){
     if(!selSank.includes(one)){
-      $("#"+one).remove();
+      $(document.getElementById(one)).remove();
     }
   }
   selSank = [...new Set($("#SANKdynList").sortable('toArray').concat(selSank))];
