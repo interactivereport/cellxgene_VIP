@@ -632,9 +632,9 @@ function enableButton(){
           window.store.dispatch({type: "set layout choice", layoutChoice: ginit[0].split("by")[1].trim()});
           window.store.dispatch({type: "color by categorical metadata", colorAccessor: ginit[1].split("by")[1].trim()});
           window.store.dispatch({type: "show centroid labels for category", showLabels: true});
-          window.store.dispatch({type: "store current cell selection as differential set 1", data:Int32Array.from({length:window.store.getState().universe.nObs},(v,k)=>k)});
         }
       }
+      window.store.dispatch({type: "store current cell selection as differential set 1", data:Int32Array.from({length:window.store.getState().universe.nObs},(v,k)=>k)});
       init();
     }
     //var d = new Date();
@@ -2472,13 +2472,12 @@ function SANKcheck(){
     grp.push($(this).val());
   }})
   
-  if (genes.length + grp.length < 2) {
+  var selSank = $("#SANKdynList").sortable('toArray');
+  selSank=selSank.map(function(one){return one.replace("SANKli","");})
+  if (selSank.length < 2) {
     $('#SANKnote').text("Please select at least two features (gene or annotation) to plot");
     return;
   }
-  
-  var selSank = $("#SANKdynList").sortable('toArray');
-  selSank=selSank.map(function(one){return one.replace("SANKli","");})
   var D = {'method':'SANK',
             'cells':cells,
             'genes':genes,
@@ -2493,6 +2492,7 @@ function SANKcheck(){
 }
 function SANKplot(){
   D = SANKcheck();
+  if (!D) return;
   $(".SANKbt").prop('disabled',true);
   document.getElementById("SANKspin").style.visibility="visible";
   $.ajax({
@@ -2521,6 +2521,7 @@ function SANKplot(){
 }
 function SANKimgSave(){
   var D = SANKcheck();
+  if (!D) return;
   D['imgSave'] = 'svg';
   $(".SANKbt").prop('disabled',true);
   document.getElementById("SANKspin").style.visibility="visible";
