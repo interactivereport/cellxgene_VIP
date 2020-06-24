@@ -544,7 +544,7 @@ def DEG(data):
   deg = res.summary()
   deg = deg.sort_values(by=['qval']).loc[:,['gene','log2fc','pval','qval']]
   ## plot in R
-  strF = strExePath + ('/tmp/DEG%f.csv' % time.time())
+  strF = ('/tmp/DEG%f.csv' % time.time())
   deg.to_csv(strF,index=False)
   res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img']],capture_output=True)#
   img = res.stdout.decode('utf-8')
