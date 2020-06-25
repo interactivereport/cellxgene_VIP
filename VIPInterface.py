@@ -1,5 +1,6 @@
 import requests
 import json
+import traceback
 import server.app.decode_fbs as decode_fbs
 import scanpy as sc
 import pandas as pd
@@ -46,7 +47,7 @@ def route(data,appConfig=None):
   try:
     return distributeTask(data["method"])(data)
   except Exception as e:
-    return 'ERROR @server: {}, {}'.format(type(e),str(e))
+    return 'ERROR @server: '+traceback.format_exc() # 'ERROR @server: {}, {}'.format(type(e),str(e))
   #return distributeTask(data["method"])(data)
 
 def setFigureOpt(opt):
