@@ -487,7 +487,8 @@
       </div>
       <button class="SANKbt"  onclick="SANKplot()"><b>Plot</b> </button>
       <button onclick="hideShow($('#SANKinput'),$(this));">Hide Input</button>
-      <button class="SANKbt" style="float:right;" onclick="SANKimgSave()">Save as SVG</button></p>
+      <button class="SANKbt" style="float:right;" onclick="for (let item of document.getElementsByClassName('node-label-guide')) {item.setAttribute('style', 'display:none');}; var a = document.createElement('a'); a.href = 'data:application/octet-stream;base64,' + btoa(document.getElementsByClassName('main-svg')[0].outerHTML); a.download = 'Sankey.svg'; a.click();">Save as SVG</button></p>
+
       <p id="SANKnote" style="color:red;"></p>
       <div id="SANKspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="SANKresize" style="height: 'auto'; width: 'auto'; padding: 0.5em;"></div>
