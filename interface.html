@@ -140,7 +140,7 @@
   </head>
 <body>
 <div class="splitter">
-	<div id="panel-left">
+  <div id="panel-left">
     <div class="tab">
       <button class="tablinks" onclick="selFun(event, 'ADDG')"><b>Add Genes</b></button>
       <button class="tablinks" onclick="selFun(event, 'SGV');$('#SGVnote').text('');if($('#SGVgene').val() == null) $('#SGVnote').text('Please add genes either from the VIP menu or the main window');">Violin</button>
@@ -163,9 +163,9 @@
       <button class="tablinks" onclick="ABBRall()">Check All Annotations</button>
       <button class="tablinks" onclick="sync();">Sync</button>
     </div>
-	</div>
-	<div id="separator" ></div>
-	<div id="panel-right" >
+  </div>
+  <div id="separator" ></div>
+  <div id="panel-right" >
     	  
     <input id="loadfile" type="file" onchange="load()" style="display:none"/>
     <div id="ABBR" class="tabcontent"> <!-- Abbreviation -->
@@ -477,6 +477,7 @@
         <p>Choose genes: <input type="checkbox" checked onclick="$('.SANKgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
         <p id="SANKgene"></p>
         <!-- <p>Choose user-defined gene sets:</p><p id="SANKgeneGrp"></p> -->
+        <p>Number of equally divided gene expression ranges: <input id="sankBin" type="number" step="1" value="5"/></p>
         <p>Choose annotation:</p><p id="SANKgrp"></p>
         <p>Change the order by dragging items up and down:
         <button id="SANKorderBTs" onclick="SANKorderShow()" style="padding:2px;border-radius:45%"><b>&#43;</b></button>
@@ -593,7 +594,7 @@
 
     </div><!--IMG-->
 	  
-	</div>
+  </div>
 </div>
 
 <!-- <button class="block" onclick="sync()">Refresh</button> -->
@@ -2513,6 +2514,7 @@ function SANKcheck(){
             //'geneGrp':geneSets,
             'grp':grp,
             'sankOrder':selSank,
+            'sankBin':$("#sankBin").val(),
             'imgW':$("#SANKw").val(),
             'imgH':$("#SANKh").val(),
             'abb':window.bioAbbr,
