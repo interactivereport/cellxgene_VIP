@@ -239,6 +239,7 @@ def distributeTask(aTask):
   return {
     'SGV':SGV,
     'PGV':PGV,
+    'VIOdata':VIOdata,
     'HEATplot':pHeatmap,
     'HEATdata':HeatData,
     'GD':GD,
@@ -304,7 +305,7 @@ def SGV(data):
   adata = createData(data)
   adata = geneFiltering(adata,data['cutoff'],1)
   if len(adata)==0:
-    return Msg('No cells in the condition!')
+    raise ValueError('No cells in the condition!')
     
   a = list(set(list(adata.obs[data['grp'][0]])))
   ncharA = max([len(x) for x in a])
@@ -316,6 +317,13 @@ def SGV(data):
   sc.pl.violin(adata,data['genes'],groupby=data['grp'][0],ax=fig.gca(),show=False)
   fig.autofmt_xdate(bottom=0.2,rotation=ro,ha='right')
   return iostreamFig(fig)
+
+def VIOdata(data):
+  adata = createData(data)
+  adata = geneFiltering(adata,data['cutoff'],1)
+  if len(adata)==0:
+    raise ValueError('No cells in the condition!')
+  return pd.concat([adata.to_df(),adata.obs], axis=1, sort=False).to_csv()
 
 def unique(seq):
     seen = set()
@@ -337,15 +345,10 @@ def updateGene(data):
 def PGV(data):
   # figure width and heights depends on number of unique categories
   # characters of category names, gene number
-  #sT = time.time()
   updateGene(data)
 
   adata = createData(data)
-  #ppr.pprint('PGV data reading cost %f seconds' % (time.time()-sT) )
-  #sT = time.time()
   adata = geneFiltering(adata,data['cutoff'],1)
-  #ppr.pprint('PGV filtering cost %f seconds' % (time.time()-sT) )
-  #sT = time.time()
   if len(adata)==0:
     return Msg('No cells in the condition!')
   a = list(set(list(adata.obs[data['grp'][0]])))
@@ -368,9 +371,8 @@ def PGV(data):
     fig = plt.figure(figsize=[w,h])
     axes = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],show=False,ax=fig.gca(),swap_axes=swapAx,
                                 var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
-  #ppr.pprint('PGV plotting cost %f seconds' % (time.time()-sT) )
   return iostreamFig(fig)
-  
+
 def pHeatmap(data):
   # figure width is depends on the number of categories was choose to show
   # and the character length of each category term

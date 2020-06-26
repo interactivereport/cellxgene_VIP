@@ -262,7 +262,8 @@
         <p>Group by:
         <select id="SGVgrp"></select></p>
       </div>
-      <button class="SGVbt" onclick="SGVplot()"><b>Plot</b></button>
+      <button class="SGVbt" onclick="SGVplot('plot')"><b>Plot</b></button>
+      <button class="SGVsaveBT" onclick="SGVplot('data')">Get Data</button>
       <button onclick="ZoomIn('SGVresize')">Zoom In</button>
       <button onclick="ZoomOut('SGVresize')">Zoom Out</button>
       <button class="SGVpngBT" onclick="saveImg('SGVimg')" disabled>Save</button>
@@ -290,7 +291,8 @@
         </select>
         </p>
       </div>
-      <button class="PGVbt"  onclick="PGVplot()"><b>Plot</b></button>
+      <button class="PGVbt"  onclick="PGVplot('plot')"><b>Plot</b></button>
+      <button class="PGVsaveBT" onclick="PGVplot('data')">Get Data</button>
       <button onclick="ZoomIn('PGVresize')">Zoom In</button>
       <button onclick="ZoomOut('PGVresize')">Zoom Out</button>
       <button class="PGVpngBT" onclick="saveImg('PGVimg')" disabled>Save</button>
@@ -320,10 +322,10 @@
         </select></p>
       </div>
       <button class="HEATbt"  onclick="HEATplot()"><b>Plot</b></button>
+      <button class="HEATsaveBT" onclick="HEATdata()" disabled>Get Data</button>
       <button onclick="ZoomIn('HEATresize')">Zoom In</button>
       <button onclick="ZoomOut('HEATresize')">Zoom Out</button>
       <button class="HEATpngBT" onclick="saveImg('HEATimg')" disabled>Save</button>
-      <button class="HEATsaveBT" onclick="HEATdata()" disabled>Download Expression Data</button>
       <button onclick="hideShow($('#HEATinput'),$(this));">Hide Input</button>
       <p id="HEATnote" style="color:red;"></p>
       <div id="HEATspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
@@ -1624,7 +1626,7 @@ function MARKplot(){
   })
 
 }
-function SGVplot(){
+function SGVplot(acc){
   $('#SGVnote').text("");
   if($("#SGVgene option:selected").val()=="NA"){
     $('#SGVnote').text("Please select a gene to plot");
@@ -1677,9 +1679,12 @@ function SGVplot(){
             'cutoff':$("#SGVcutoff").val(),
             'combine':combGrp,
             'figOpt':window.figOpt};
+  if(acc=='data') D['method']='VIOdata';
   $(".SGVbt").prop("disabled",true);
+  $(".SGVsaveBT").prop('disabled',true);
   $(".SGVpngBT").prop('disabled',true);
   document.getElementById("SGVspin").style.visibility="visible";
+  
   $.ajax({
     type:"POST",
     url: "/VIP",
@@ -1687,13 +1692,22 @@ function SGVplot(){
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
       $(".SGVbt").prop("disabled",false);
+      $(".SGVsaveBT").prop('disabled',false);
       document.getElementById("SGVspin").style.visibility="hidden";
       if(res.startsWith('ERROR')){
         $('#SGVnote').text(res);
         document.getElementById("SGVfig").innerHTML = '';
         return;
       }
-      showImg('SGVfig',res);
+      if(acc=='data'){
+        var hiddenE = document.createElement('a');
+        hiddenE.href="data:attachment/text,"+encodeURIComponent(res);
+        hiddenE.target='_blank';
+        hiddenE.download='cellxgene.'+window.store.getState().config.displayNames.dataset+'.violinData.csv';
+        hiddenE.click();
+      }else{
+        showImg('SGVfig',res);
+      }
       //document.getElementById("SGVfig").innerHTML = '<img id="SGVpng" src="data:image/png;base64,'+res+'" width=100% height="auto"/>';// height="450" width="450"
       $(".SGVpngBT").prop('disabled',false);
     },
@@ -1727,7 +1741,7 @@ function getGenes(aID){
   });
   return(genes);
 }
-function PGVplot(){
+function PGVplot(acc){
   $('#PGVnote').text("");
   var genes =getGenes('PGV');
   var geneSets = getGeneSet('PGV');
@@ -1781,8 +1795,12 @@ function PGVplot(){
             'cutoff':$("#PGVcutoff").val(),
             'combine':combGrp,
             'figOpt':window.figOpt};
+  if(acc=='data') D['method']='VIOdata';
   $(".PGVbt").prop('disabled',true);
+  $(".PGVsaveBT").prop('disabled',true);
+  $(".PGVpngBT").prop('disabled',true);
   document.getElementById("PGVspin").style.visibility="visible";
+
   $.ajax({
     type:"POST",
     url: "/VIP",
@@ -1790,14 +1808,22 @@ function PGVplot(){
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
       $(".PGVbt").prop("disabled",false);
+      $(".PGVsaveBT").prop("disabled",false);
       document.getElementById("PGVspin").style.visibility="hidden";
       if(res.startsWith('ERROR')){
         $('#PGVnote').text(res);
         document.getElementById("PGVfig").innerHTML = '';
         return;
       }
-      
-      showImg('PGVfig',res);
+      if(acc=='data'){
+        var hiddenE = document.createElement('a');
+        hiddenE.href="data:attachment/text,"+encodeURIComponent(res);
+        hiddenE.target='_blank';
+        hiddenE.download='cellxgene.'+window.store.getState().config.displayNames.dataset+'.violinData.csv';
+        hiddenE.click();
+      }else{
+        showImg('PGVfig',res);
+      }
       //document.getElementById("PGVfig").innerHTML = '<img id="PGVpng" src="data:image/png;base64,'+res+'" width=100% height="auto"/>';// height="450" width="450"
       $(".PGVpngBT").prop('disabled',false);
     },
@@ -1809,6 +1835,9 @@ function PGVplot(){
 
     }
   })
+}
+function violinData(){
+  
 }
 function HEATcheck(){
   $('#HEATnote').text("");
@@ -1904,7 +1933,6 @@ function HEATplot(){
   });
 }
 function HEATdata(){
-  console.log("HEATsave");
   D = HEATcheck();
   if(D==undefined) return;
   D['method'] = 'HEATdata';
