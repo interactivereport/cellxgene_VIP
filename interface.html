@@ -150,6 +150,7 @@
       <button class="tablinks" onclick="selFun(event, 'DOT')">Dot Plot</button>
       <button class="tablinks" onclick="selFun(event, 'TRAK')">Track Plot</button>
       <button class="tablinks" onclick="selFun(event, 'DENS')">Density Plot</button>
+      <button class="tablinks" onclick="selFun(event, 'DENS2D')">2D Density</button>
       <button class="tablinks" onclick="selFun(event, 'DUAL')">Dual Genes</button>
       <button class="tablinks" onclick="selFun(event, 'SANK')">Sankey Diagram</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
@@ -440,6 +441,29 @@
       <div id="DENSresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="DENSfig"></p></div>
     
     </div><!--DENS-->
+
+    <div  id="DENS2D" class="tabcontent">
+      <div id="DENS2Dinput">
+        <h3>Embedding plot of two genes in selected cells</h3>
+        <p>Choose cell set(s):
+          <label><input class="DENS2Dcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DENS2DcellN1" style="color:red">0</span>)</label>
+          <label><input class="DENS2Dcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DENS2DcellN2" style="color:red">0</span>)</label>
+        </p>
+        <p>Choose two genes:</p>
+        <p id="DENS2Dgene"></p>
+        <p>Please specify the gene expression cutoff: <input id="DENS2Dcutoff" type="number" step="0.1" value="1"/></p>
+        Figure Option color suggest: 'inferno'
+      </div>
+      <button class="DENS2Dbt"  onclick="DENS2Dplot()"><b>Plot</b></button>
+      <button onclick="ZoomIn('DENS2Dresize')">Zoom In</button>
+      <button onclick="ZoomOut('DENS2Dresize')">Zoom Out</button>
+      <button class="DENS2DpngBT" onclick="saveImg('DENS2Dimg')" disabled>Save</button>
+      <button onclick="hideShow($('#DENS2Dinput'),$(this));">Hide Input</button>
+      <p id="DENS2Dnote" style="color:red;"></p>
+      <div id="DENS2Dspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+      <div id="DENS2Dresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="DENS2Dfig"></p></div>
+      
+    </div><!--DENS2D-->
       
     <div  id="DUAL" class="tabcontent">
       <div id="DUALinput">
@@ -448,7 +472,7 @@
           <label><input class="DUALcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DUALcellN1" style="color:red">0</span>)</label>
           <label><input class="DUALcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DUALcellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose two genes: <input type="checkbox" onclick="$('.DUALgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p>Choose two genes:</p>
         <p id="DUALgene"></p>
         <p>Please specify the gene expression cutoff: <input id="DUALcutoff" type="number" step="0.1" value="1"/></p>
         <p>Select the embedding layout:
@@ -600,7 +624,6 @@
 <!-- <button class="block" onclick="sync()">Refresh</button> -->
 
 <script type="text/javascript">
-//Fxyd3,Lgals7,Acta2,Krt5,Cd79a,Rac2,Coro1a
 var heatCell = 10000;
 function checkLoading(){
     if(!window.store || !window.store.getState().categoricalSelection){
@@ -742,6 +765,7 @@ function cellNupdate(){
   $('#TRAKcellN1').text(n1);
   $('#DUALcellN1').text(n1);
   $('#DENScellN1').text(n1);
+  $('#DENS2DcellN1').text(n1);
   $('#SANKcellN1').text(n1);
 
   $('#MARKcellN2').text(n2);
@@ -755,6 +779,7 @@ function cellNupdate(){
   $('#TRAKcellN2').text(n2);
   $('#DUALcellN2').text(n2);
   $('#DENScellN2').text(n2);
+  $('#DENS2DcellN2').text(n2);
   $('#SANKcellN2').text(n2);
 }
 
@@ -899,6 +924,7 @@ function sync(){
   EMBEDref();
   IMGref();
   DENSref();
+  DENS2Dref();
   SANKref();
 }
 function ABBRref(){
@@ -1082,6 +1108,48 @@ function DENSref(){
   })
   addCustomCombine("DENSgrp");
   addCustomCombine("DENSsplit");
+}
+function DENS2Dref(){
+  var genes = window.store.getState().universe.varData.colIndex.rindex;
+  genes = genes.concat(window.biogen);
+  genes = [...new Set(genes)];
+  var optG = [], checkG=[];
+  //remove checkbox which are not in the gene list
+  $(".DENS2Dgenes").each(function(){
+    optG.push($(this).val());
+    if(!genes.includes($(this).val())){
+      $('#DENS2Dck'+$(this).val()).remove();
+    }else if($(this).prop("checked")){
+      checkG.push($(this).val());
+    }
+  })
+  //add options which are missing from gene list
+  if(genes.length>0){
+    var htmlCheck = $('#DENS2Dgene').html();
+    for(const g of genes){
+      if(!optG.includes(g)){
+        htmlCheck += '<label id="DENS2Dck'+g+'"><input class="DENS2Dgenes" type="checkbox" value="'+g+'" onclick="DENS2Dref()"/>'+g+'</label>';// '+g+'
+      }
+    }
+    $('#DENS2Dgene').html(htmlCheck);
+  }
+  var iEnabled=0;
+  $(".DENS2Dgenes").each(function(){
+    if(checkG.includes($(this).val())){
+      $(this).prop("checked",true);
+      iEnabled++;
+    }
+  })
+  if(iEnabled>1){
+    $(".DENS2Dgenes").each(function(){
+      if($(this).prop("checked")==false){
+        $(this).prop("disabled",true);
+      }
+    })
+  }else{
+    $('.DENS2Dgenes').prop("disabled",false);
+  }
+  
 }
 function EMBEDref(){
   showGene('EMBED');
@@ -2310,6 +2378,76 @@ function DENSplot(){
     }
   })
             
+}
+function DENS2Dplot(){
+  $('#DENS2Dnote').text("");
+  var cells=[], x = document.getElementsByClassName('DENS2Dcell');
+  for(i=0;i<x.length;i++){
+    if(x[i].checked){
+      if(!!window.store.getState().differential[x[i].value]){
+        if(cells.length==0){
+          cells = window.store.getState().differential[x[i].value];
+        }else{
+          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
+          tmp.set(cells);
+          tmp.set(window.store.getState().differential[x[i].value],cells.length);
+          cells = tmp;
+        }
+      }
+    }
+  }
+  if(cells.length==0){
+    $('#DENS2Dnote').text("Please use selection tools to put cells into groups");
+    return;
+  }
+  
+  var genes = [];
+  $(".DENS2Dgenes").each(function(){
+    if($(this).prop("checked")){
+      genes.push($(this).val());
+    }
+  })
+  if(genes.length!=2){
+    $('#DENS2Dnote').text("Please select two genes to plot");
+    return;
+  }
+
+  document.getElementById("DENS2Dspin").style.visibility="visible";
+  $(".DENS2Dbt").prop('disabled',true);
+  $(".DENS2DpngBT").prop('disabled',true);
+
+  var D = {'method':"DENS2D",
+            'cells':cells,
+            'genes':genes,
+            'grp':[],
+            //'layout':$("#DUALlayout").val(),
+            'cutoff':$("#DENS2Dcutoff").val(),
+            'figOpt':window.figOpt};
+  $.ajax({
+    type:"POST",
+    url: "/VIP",
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(res){
+      $(".DENS2Dbt").prop("disabled",false);
+      document.getElementById("DENS2Dspin").style.visibility="hidden";
+      if(res.startsWith('ERROR')){
+        $('#DENS2Dnote').text(res);
+        document.getElementById("DENS2Dfig").innerHTML = '';
+        return;
+      }
+
+      showImg('DENS2Dfig',res);
+      $(".DENS2DpngBT").prop('disabled',false);
+    },
+    error: function(request,status,error){
+      $('#DENS2Dnote').text(request.status+request.responseText);
+      document.getElementById("DENS2Dfig").innerHTML = '';// height="450" width="450"
+      $(".DENS2Dbt").prop("disabled",false);
+      document.getElementById("DENS2Dspin").style.visibility="hidden";
+    }
+  })
+  
 }
 function EMBEDplot(){
   $('#EMBEDnote').text("");

@@ -41,7 +41,7 @@ def route(data,appConfig=None):
   else:
     data = json.loads(str(data,encoding='utf-8'))
     data["url"] = f'http://{appConfig.server__host}:{appConfig.server__port}/{api_version}'
-  ppr.pprint(data['figOpt']) 
+  #ppr.pprint(data['figOpt']) 
   if 'figOpt' in data.keys():
     setFigureOpt(data['figOpt'])
   try:
@@ -251,6 +251,7 @@ def distributeTask(aTask):
     'MARK': MARK,
     'MINX':MINX,
     'DENS':DENS,
+    'DENS2D':DENS2D,
     'SANK':SANK
   }.get(aTask,errorTask)
 
@@ -948,7 +949,20 @@ def SANK(data):
   fig = go.Figure(data=[go.Sankey(data_trace)],layout=layout)
   div = plotIO.to_html(fig)
   return div#[div.find('<div>'):(div.find('</div>')+6)]
+
+def DENS2D(data):
+  adata = createData(data)
   
+  ## plot in R
+  strF = ('/tmp/DEG%f.csv' % time.time())
+  adata.to_df().to_csv(strF)
+  res = subprocess.run([strExePath+'/Density2D.R',strF,data['figOpt']['img'],data['cutoff'],data['figOpt']['colorMap']],capture_output=True)#
+  if 'Error' in res.stderr.decode('utf-8'):
+    raise ValueError(res.stderr.decode('utf-8'))
+  img = res.stdout.decode('utf-8')
+  os.remove(strF)
+  
+  return img
 
 def version():
   print("1.0.8")
