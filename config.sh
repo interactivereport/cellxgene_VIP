@@ -124,3 +124,4 @@ cp -R jspanel $strweb
 cp cellxgene/server/test/decode_fbs.py $strPath/server/app/.
 cp VIPInterface.py $strPath/server/app/.
 cp volcano.R $strPath/server/app/.
+cp Density2D.R $strPath/server/app/.

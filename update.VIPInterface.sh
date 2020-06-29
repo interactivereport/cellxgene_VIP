@@ -13,4 +13,5 @@ if [ -n "$1" ]; then
 	cp jquery-ui.min.js $strweb
 	cp color_map.png $strweb
 	cp volcano.R $strPath/server/app/.
+	cp Density2D.R $strPath/server/app/. 
 fi
