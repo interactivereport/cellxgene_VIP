@@ -17,6 +17,8 @@ strCSV = args[1]
 strFun <- args[2]
 minExpr <- as.numeric(args[3])
 colMap <- switch(args[4],"B",magma="A",inferno="B",plasma="C",viridis="D")
+fontsize <- as.numeric(args[5])
+dpi <- as.numeric(args[6])
 
 expr <- read.csv(strCSV,row.names=1,as.is=T,check.names=F)
 #minExpr <- apply(expr,2,min)
@@ -30,15 +32,18 @@ p <- ggplot(D, aes_string(x = colnames(D)[1], y = colnames(D)[2], color = 'densi
   geom_point(size = 0.4) + theme_classic() + ggtitle(paste("Density on",nrow(expr),"cells")) +
   geom_vline(xintercept = 0, color = "red", linetype = 2) + 
   geom_hline(yintercept = 0, color = "red", linetype = 2) + 
-  theme(axis.text = element_text(face = "bold",size = 12)) +
+  theme(axis.text = element_text(face = "bold"),
+        text=element_text(size=fontsize)) +
   viridis::scale_color_viridis(option = colMap) +  
   scale_shape_identity() 
 
-dpi <- 1
-if(sum(strFun%in%c('png','jpeg','tiff'))>0) dpi <- 150
 strImg <- gsub("csv$",strFun,strCSV)
 f <- get(strFun)
-f(strImg, width=3*dpi, height=3*dpi)
+if(sum(strFun%in%c('png','jpeg','tiff'))>0){
+  f(strImg, width=6.5, height=6.5,units='in',res=dpi)
+}else{
+  f(strImg, width=6.5, height=6.5)
+}
 print(p)
 a <- dev.off()
 fig = base64enc::dataURI(file = strImg)
