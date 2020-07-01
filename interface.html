@@ -281,11 +281,22 @@
           <label><input class="PGVcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="PGVcellN1" style="color:red">0</span>)</label>
           <label><input class="PGVcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="PGVcellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose genes with expression cutoff: <input id="PGVcutoff" type="number" step="0.1" value="1"/> <input type="checkbox" checked onclick="$('.PGVgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p>Choose genes with expression cutoff: <input id="PGVcutoff" type="number" step="0.1" value="1"/> <input type="checkbox" checked onclick="$('.PGVgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="PGVgene"></p>
         <p>Select user-defined gene sets:</p><p id="PGVgeneGrp"></p>
-        <p>Group by:
-        <select id="PGVgrp"></select> as
+        <div id="PVGgeneGrpCollapsing">
+          <p>Collapsing the above gene sets:
+            <input type="radio" name="PGVgeneGrpColl" value="Yes" onclick="$('#PGVgeneGrpCollShow').show()">Yes
+            <input type="radio" name="PGVgeneGrpColl" value="No" onclick="$('#PGVgeneGrpCollShow').hide()" checked>No
+          </p>
+          <div id='PGVgeneGrpCollShow'><p>By:
+            <input type="radio" name="PGVgeneGrpCollCal" value="mean" checked>Average
+            <input type="radio" name="PGVgeneGrpCollCal" value="median">Median</p>
+          </div>
+       </div>   
+          
+          
+        <p>Group by:<select id="PGVgrp"></select> as
         <select id="PGVgrpXY">
           <option value="Rows">Rows</option>
           <option value="Columns">Columns</option>
@@ -342,11 +353,22 @@
           <label><input class="DOTcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DOTcellN1" style="color:red">0</span>)</label>
           <label><input class="DOTcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DOTcellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose genes with expression cutoff: <input id="DOTcutoff" type="number" step="0.1" value="1"/><input type="checkbox" checked onclick="$('.DOTgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p>Choose genes with expression cutoff: <input id="DOTcutoff" type="number" step="0.1" value="1"/><input type="checkbox" checked onclick="$('.DOTgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="DOTgene"></p>
         <p>Expression is averaged only over cells expressing a given gene above the cutoff: <input type="radio" name="mean_only_expressed" value="Yes">Yes<input type="radio" name="mean_only_expressed" value="No" checked>No</p>
   
         <p>Select user-defined gene sets:</p><p id="DOTgeneGrp"></p>
+        <div id="DOTgeneGrpCollapsing">
+          <p>Collapsing the above gene sets:
+            <input type="radio" name="DOTgeneGrpColl" value="Yes" onclick="$('#DOTgeneGrpCollShow').show()">Yes
+            <input type="radio" name="DOTgeneGrpColl" value="No" onclick="$('#DOTgeneGrpCollShow').hide()" checked>No
+          </p>
+          <div id='DOTgeneGrpCollShow'><p>By:
+            <input type="radio" name="DOTgeneGrpCollCal" value="mean" checked>Average
+            <input type="radio" name="DOTgeneGrpCollCal" value="median">Median</p>
+          </div>
+        </div>
+
         <p>Group by: <select id="DOTgrp"></select></p>
         <p id="DOTnote" style="color:red;"></p>
       </div>
@@ -400,9 +422,20 @@
           <label><input class="TRAKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="TRAKcellN1" style="color:red">0</span>)</label>
           <label><input class="TRAKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="TRAKcellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose genes: <input type="checkbox" checked onclick="$('.TRAKgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p>Choose genes: <input type="checkbox" checked onclick="$('.TRAKgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="TRAKgene"></p>
         <p>Select user-defined gene sets: </p><p id="TRAKgeneGrp"></p>
+        <div id="TRAKgeneGrpCollapsing">
+          <p>Collapsing the above gene sets:
+            <input type="radio" name="TRAKgeneGrpColl" value="Yes" onclick="$('#TRAKgeneGrpCollShow').show()">Yes
+            <input type="radio" name="TRAKgeneGrpColl" value="No" onclick="$('#TRAKgeneGrpCollShow').hide()" checked>No
+          </p>
+          <div id='TRAKgeneGrpCollShow'><p>By:
+            <input type="radio" name="TRAKgeneGrpCollCal" value="mean" checked>Average
+            <input type="radio" name="TRAKgeneGrpCollCal" value="median">Median</p>
+          </div>
+        </div>
+
         <p>Group by: <select id="TRAKgrp"></select></p>
       </div>
       <button onclick="TRAKplot()"><b>Plot</b></button>
@@ -1043,10 +1076,23 @@ function showGene(aID, addInfo='', ckDefault='checked'){
     }
   })
 }
+function showGeneGrpCollSet(aID){
+  if(Object.keys(window.bioGeneGrp).length>0){
+    $('#'+aID+'geneGrpCollapsing').show();
+  }else{
+    $('#'+aID+'geneGrpCollapsing').hide();
+  }
+  if($("input[name='"+aID+"geneGrpColl']:checked").val() == 'Yes'){
+    $('#'+aID+'geneGrpCollShow').show();
+  }else{
+    $('#'+aID+'geneGrpCollShow').hide();
+  }  
+}
 function PGVref(){
   showGene('PGV');
   showGeneSet('PGV');
   addCustomCombine("PGVgrp");
+  showGeneGrpCollSet("PGV");
 }
 function HEATref(){
   showGene('HEAT');
@@ -1070,11 +1116,13 @@ function DOTref(){
   showGene('DOT');
   showGeneSet('DOT');
   addCustomCombine("DOTgrp");
+  showGeneGrpCollSet("DOT");
 }
 function TRAKref(){
   showGene('TRAK');
   showGeneSet('TRAK');
   addCustomCombine("TRAKgrp");
+  showGeneGrpCollSet("TRAK");
 }
 function DENSref(){
   var genes = window.store.getState().universe.varData.colIndex.rindex;
@@ -1300,6 +1348,25 @@ function IMGref(){
   $('#IMGtransparent').val(window.figOpt['transparent']);
   $('#IMGcolor').val(window.figOpt['colorMap']);
 }
+function IMGset(){
+  window.figOpt['scale'] = $("input[name='IMGscale']:checked").val();
+  if(window.figOpt['scale'] == "Yes"){
+    $('#IMGscaleShow').show();
+    window.figOpt['scaleZero'] = $('#IMGscaleZero').prop('checked')?"Yes":"No";
+    window.figOpt['clipValue'] = $('#IMGclipValue').prop('checked')?"Yes":"No";
+    window.figOpt['scaleMax'] = $('#IMGscaleMax').val();
+  }else{
+    $('#IMGscaleShow').hide();
+  }
+
+  window.figOpt['dpi'] = $('#IMGdpi').val();
+  window.figOpt['img'] = $('#IMGimg').val();
+  window.figOpt['fontsize'] = Math.max($('#IMGfontsize').val(),$('#IMGfontsize').prop('min'));
+  window.figOpt['vectorFriendly'] = $("input[name='IMGvector']:checked").val();
+  window.figOpt['transparent'] = $("input[name='IMGtransparent']:checked").val();
+  window.figOpt['colorMap'] = $('#IMGcolor').val();
+  //IMGref();
+}
 // process annotation
 function ABBRlist(){
   var grps = {},nrows=0,i;
@@ -1524,25 +1591,6 @@ function hideShow(section, button) {
   button.text(button.text()=='Hide Input'?'Show Input':'Hide Input');
 }
 // plot function 
-function IMGset(){
-  window.figOpt['scale'] = $("input[name='IMGscale']:checked").val();
-  if(window.figOpt['scale'] == "Yes"){
-    $('#IMGscaleShow').show();
-    window.figOpt['scaleZero'] = $('#IMGscaleZero').prop('checked')?"Yes":"No";
-    window.figOpt['clipValue'] = $('#IMGclipValue').prop('checked')?"Yes":"No";
-    window.figOpt['scaleMax'] = $('#IMGscaleMax').val();
-  }else{
-    $('#IMGscaleShow').hide();
-  }
-
-  window.figOpt['dpi'] = $('#IMGdpi').val();
-  window.figOpt['img'] = $('#IMGimg').val();
-  window.figOpt['fontsize'] = Math.max($('#IMGfontsize').val(),$('#IMGfontsize').prop('min'));
-  window.figOpt['vectorFriendly'] = $("input[name='IMGvector']:checked").val();
-  window.figOpt['transparent'] = $("input[name='IMGtransparent']:checked").val();
-  window.figOpt['colorMap'] = $('#IMGcolor').val();
-  //IMGref();
-}
 function GDplot(){
   if(!window.store.getState().differential.celllist1 && !window.store.getState().differential.celllist2){
     $('#GDnote').text("Please select cells into group 1 or/and group 2");
@@ -1853,10 +1901,15 @@ function PGVplot(acc){
     grp = Object.keys(window.bioCombine);
     combGrp = window.bioCombine;
   }
+  var geneGrpColl = $("input[name='PGVgeneGrpColl']:checked").val()
+  if( geneGrpColl== 'Yes'){
+    geneGrpColl = $("input[name='PGVgeneGrpCollCal']:checked").val()
+  }
   var D = {'method':'PGV',
             'cells':cells,
             'genes':genes,
             'geneGrp':geneSets,
+            'geneGrpColl':geneGrpColl,
             'grp':grp,
             'by':$("#PGVgrpXY").val(),
             'abb':window.bioAbbr,
@@ -2183,6 +2236,10 @@ function DOTplot(){
     grp = Object.keys(window.bioCombine);
     combGrp = window.bioCombine;
   }
+  var geneGrpColl = $("input[name='DOTgeneGrpColl']:checked").val()
+  if( geneGrpColl== 'Yes'){
+    geneGrpColl = $("input[name='DOTgeneGrpCollCal']:checked").val()
+  }
   var D = {'method':'DOT',
             'cells':cells,
             'genes':genes,
@@ -2190,6 +2247,7 @@ function DOTplot(){
             'abb':window.bioAbbr,
             'combine':combGrp,
             'geneGrp':geneSets,
+            'geneGrpColl':geneGrpColl,
             'cutoff':$("#DOTcutoff").val(),
             'mean_only_expressed':$("input[name='mean_only_expressed']:checked").val(),
             'figOpt':window.figOpt};
@@ -2256,6 +2314,11 @@ function TRAKplot(){
     grp = Object.keys(window.bioCombine);
     combGrp = window.bioCombine;
   }
+  var geneGrpColl = $("input[name='TRAKgeneGrpColl']:checked").val()
+  if( geneGrpColl== 'Yes'){
+    geneGrpColl = $("input[name='TRAKgeneGrpCollCal']:checked").val()
+  }
+
   var D = {'method':'TRAK',
             'cells':cells,
             'genes':genes,
@@ -2263,6 +2326,7 @@ function TRAKplot(){
             'abb':window.bioAbbr,
             'combine':combGrp,
             'geneGrp':geneSets,
+            'geneGrpColl':geneGrpColl,
             'figOpt':window.figOpt};
   $(".TRAKbt").prop('disabled',true);
   document.getElementById("TRAKspin").style.visibility="visible";

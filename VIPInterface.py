@@ -67,6 +67,25 @@ def getObs(data):
     for i in data['grp']:
       obs[i] = obs[i].map(data['abb'][i])
   return combUpdate, obs
+  
+def collapseGeneSet(data,expr,gNames,fSparse):
+  Y = expr
+  if 'geneGrpColl' in data.keys() and not data['geneGrpColl']=='No' and 'geneGrp' in data.keys() and len(data['geneGrp'])>0:
+    data['grpLoc'] = []
+    data['grpID'] = []
+    if fSparse:
+      Y = pd.DataFrame.sparse.from_spmatrix(Y,columns=gNames)
+    for aN in data['geneGrp'].keys():
+      if data['geneGrpColl']=='mean':
+        Y = pd.concat([Y,Y[data['geneGrp'][aN]].mean(axis=1).rename(aN)],axis=1,sort=False)
+      if data['geneGrpColl']=='median':
+        Y = pd.concat([Y,Y[data['geneGrp'][aN]].median(axis=1).rename(aN)],axis=1,sort=False)
+      for gene in data['geneGrp'][aN]:
+        if gene in data['genes']:
+          data['genes'].remove(gene)
+      data['genes'] += [aN] 
+    gNames = list(Y.columns)
+  return Y,gNames
 
 def subData(data):
   selC = list(data['cells'].values())
@@ -119,6 +138,8 @@ def subData(data):
             expr = X
           else:
             expr = pd.DataFrame(X,columns=gNames,index=cNames) 
+  expr,gNames = collapseGeneSet(data,expr,gNames,fSparse)
+  
   ## obtain the embedding
   strEmbed = 'umap'
   #embed = pd.DataFrame([[0 for x in range(len(cNames))] for i in range(2)],
@@ -339,6 +360,7 @@ def updateGene(data):
       grpLoc += [(len(allG),len(allG)+len(data['geneGrp'][aN])-1)]
       allG += data['geneGrp'][aN]
       grpID += [aN]
+        
   data['genes'] = unique(allG+data['genes'])
   data['grpLoc'] = grpLoc
   data['grpID'] = grpID
@@ -347,7 +369,6 @@ def PGV(data):
   # figure width and heights depends on number of unique categories
   # characters of category names, gene number
   updateGene(data)
-
   adata = createData(data)
   adata = geneFiltering(adata,data['cutoff'],1)
   if len(adata)==0:
@@ -363,7 +384,7 @@ def PGV(data):
     w = h
     h = a
     swapAx = True
-  if '1.4.7.dev140+ge9cbc5f' in sc.__version__:
+  if '1.4.7' in sc.__version__:#.dev140+ge9cbc5f
     vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=(w,h),swap_axes=swapAx,var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
     # vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=(w,h),swap_axes=swapAx,var_group_positions=data['grpLoc'],var_group_labels=data['grpID'],yticklabels=True)  # need further testing "yticklabels"
     vp.add_totals().style(yticklabels=True).show()
@@ -551,7 +572,7 @@ def DEG(data):
   ## plot in R
   strF = ('/tmp/DEG%f.csv' % time.time())
   deg.to_csv(strF,index=False)
-  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img']],capture_output=True)#
+  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],data['figOpt']['fontsize'],data['figOpt']['dpi']],capture_output=True)#
   img = res.stdout.decode('utf-8')
   os.remove(strF)
   #####
@@ -577,15 +598,16 @@ def DOT(data):
       col = np.array(sns.color_palette("husl",len(grp)).as_hex())
   adata.uns[data['grp'][0]+'_colors'] = col
   
-  if '1.4.7.dev140+ge9cbc5f' in sc.__version__:
+  #ppr.pprint(sc.__version__)
+  if '1.4.7' in sc.__version__:#.dev140+ge9cbc5f
     dp = sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],expression_cutoff=float(data['cutoff']),mean_only_expressed=(data['mean_only_expressed'] == 'Yes'),
                        var_group_positions=data['grpLoc'],var_group_labels=data['grpID'],
                        return_fig=True)#
-    dp = dp.add_totals(size=1.2).legend(show_size_legend=True).style(cmap='Blues', dot_edge_color='black', dot_edge_lw=1, size_exponent=1.5)
+    dp = dp.add_totals(size=1.2).legend(show_size_legend=True,width=4).style(cmap='Blues', dot_edge_color='black', dot_edge_lw=1, size_exponent=1.5)
     dp.show()
     fig = dp.get_axes()['mainplot_ax'].figure
   else:
-    sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],figsize=(w,h),show=False,expression_cutoff=float(data['cutoff']),mean_only_expressed=(data['mean_only_expressed'] == 'Yes'), var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
+    sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],show=False,expression_cutoff=float(data['cutoff']),mean_only_expressed=(data['mean_only_expressed'] == 'Yes'), var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
     fig = plt.gcf()
 
   return iostreamFig(fig)
@@ -756,7 +778,7 @@ def DENS(data):
   legendCol = math.ceil(len(colGrp)/(len(split)*11))
   fig = plt.figure(figsize=(len(genes)*subSize,len(split)*(subSize-1)))
   plt.xlabel("Expression",labelpad=20,fontsize=defaultFontsize+1)
-  plt.ylabel(sGrp,labelpad=50,fontsize=defaultFontsize+1)
+  #plt.ylabel(sGrp,labelpad=50,fontsize=defaultFontsize+1)
   plt.xticks([])
   plt.yticks([])
   plt.box(on=None)
@@ -956,7 +978,7 @@ def DENS2D(data):
   ## plot in R
   strF = ('/tmp/DEG%f.csv' % time.time())
   adata.to_df().to_csv(strF)
-  res = subprocess.run([strExePath+'/Density2D.R',strF,data['figOpt']['img'],data['cutoff'],data['figOpt']['colorMap']],capture_output=True)#
+  res = subprocess.run([strExePath+'/Density2D.R',strF,data['figOpt']['img'],data['cutoff'],data['figOpt']['colorMap'],data['figOpt']['fontsize'],data['figOpt']['dpi']],capture_output=True)#
   if 'Error' in res.stderr.decode('utf-8'):
     raise ValueError(res.stderr.decode('utf-8'))
   img = res.stdout.decode('utf-8')
