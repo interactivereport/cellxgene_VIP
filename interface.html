@@ -458,7 +458,7 @@
           <label><input class="DENScell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DENScellN1" style="color:red">0</span>)</label>
           <label><input class="DENScell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DENScellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose genes: <input type="checkbox" checked onclick="$('.DENSgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p>Choose genes: <input type="checkbox" checked onclick="$('.DENSgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="DENSgene"></p>
         <p>Split by:
         <select id="DENSsplit"></select></p>
@@ -487,6 +487,7 @@
         <p>Choose two genes:</p>
         <p id="DENS2Dgene"></p>
         <p>Please specify the gene expression cutoff: <input id="DENS2Dcutoff" type="number" step="0.1" value="1"/></p>
+        <p>Please specify the minimal bandwidth: <input id="DENS2Dbandwidth" type="number" step="0.1" value="0.5"/></p>
       </div>
       <button class="DENS2Dbt"  onclick="DENS2Dplot()"><b>Plot</b></button>
       <button onclick="ZoomIn('DENS2Dresize')">Zoom In</button>
@@ -883,6 +884,8 @@ function init(){
       densG.add(createOpt(one));
       embed.add(createOpt(one));
     }
+    densS.add(createOpt('None'));
+    densG.add(createOpt('None'));
     //--------------------------------------------------------------------------
     //add layout
     var embedLay = document.getElementById("EMBEDlayout");
@@ -979,13 +982,18 @@ function GDref(){
 }
 function addCustomCombine(element) {
   var x = document.getElementById(element);
-  var grps = Object.keys(window.store.getState().categoricalSelection).filter(function(e) { return !(e.startsWith('>') || e.startsWith('|')) });
+//  var grps = Object.keys(window.store.getState().categoricalSelection).filter(function(e) { return !(e.startsWith('>') || e.startsWith('|')) });
+  $("#"+element+" option[value='Custom_combine']").remove();
   var grpKeys = Object.keys(window.bioCombine);
-  if(grpKeys.length>0 && grps.length==x.length){
+  if(grpKeys.length>0){
     x.add(createOpt("Custom_combine"));
-  }else if(grpKeys.length==0 && grps.length<x.length){
-    x.remove(grps.length);
   }
+//  if(grpKeys.length>0 && grps.length==x.length){
+//    x.add(createOpt("Custom_combine"));
+//  }else if(grpKeys.length==0){// && grps.length<x.length
+//    $("#"+element+" option[value='Custom_combine']").remove();
+    //x.remove(grps.length);
+//  }
 }
 function MARKref(){
   addCustomCombine("MARKgrp");
@@ -2392,6 +2400,10 @@ function DENSplot(){
     return;
   }
   
+  if($("#DENSsplit").val()==$("#DENSgrp").val()){
+    $('#DENSerror').text("Please choose different annotations for Split and Color!");
+    return;
+  }
   var category = [$("#DENSsplit").val(),$("#DENSgrp").val()];
   var combGrp = [];
   var grp= [];
@@ -2399,10 +2411,10 @@ function DENSplot(){
     grp = Object.keys(window.bioCombine);
     combGrp = window.bioCombine;
   }
-  if($("#DENSsplit").val()!="Custom_combine"){
+  if($("#DENSsplit").val()!="Custom_combine" && $("#DENSsplit").val()!='None'){
     grp.push($("#DENSsplit").val())
   }
-  if($("#DENSgrp").val()!="Custom_combine"){
+  if($("#DENSgrp").val()!="Custom_combine" && $("#DENSgrp").val()!='None'){
     grp.push($("#DENSgrp").val())
   }
 
@@ -2488,6 +2500,7 @@ function DENS2Dplot(){
             'grp':[],
             //'layout':$("#DUALlayout").val(),
             'cutoff':$("#DENS2Dcutoff").val(),
+            'bandwidth':$("#DENS2Dbandwidth").val(),
             'figOpt':window.figOpt};
   $.ajax({
     type:"POST",

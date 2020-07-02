@@ -572,7 +572,7 @@ def DEG(data):
   ## plot in R
   strF = ('/tmp/DEG%f.csv' % time.time())
   deg.to_csv(strF,index=False)
-  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],data['figOpt']['fontsize'],data['figOpt']['dpi']],capture_output=True)#
+  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi'])],capture_output=True)#
   img = res.stdout.decode('utf-8')
   os.remove(strF)
   #####
@@ -764,6 +764,7 @@ def DENS(data):
   adata = createData(data)
   #ppr.pprint("read data cost: %f seconds" % (time.time()-sT))
   #sT = time.time()
+  adata.obs['None'] = 'all'
   bw=float(data['bw'])
   sGrp = data['category'][0]
   cGrp = data['category'][1]
@@ -977,8 +978,8 @@ def DENS2D(data):
   
   ## plot in R
   strF = ('/tmp/DEG%f.csv' % time.time())
-  adata.to_df().to_csv(strF)
-  res = subprocess.run([strExePath+'/Density2D.R',strF,data['figOpt']['img'],data['cutoff'],data['figOpt']['colorMap'],data['figOpt']['fontsize'],data['figOpt']['dpi']],capture_output=True)#
+  adata.to_df().to_csv(strF)#
+  res = subprocess.run([strExePath+'/Density2D.R',strF,data['figOpt']['img'],str(data['cutoff']),str(data['bandwidth']),data['figOpt']['colorMap'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi'])],capture_output=True)#
   if 'Error' in res.stderr.decode('utf-8'):
     raise ValueError(res.stderr.decode('utf-8'))
   img = res.stdout.decode('utf-8')
