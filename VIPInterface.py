@@ -68,13 +68,13 @@ def getObs(data):
       obs[i] = obs[i].map(data['abb'][i])
   return combUpdate, obs
   
-def collapseGeneSet(data,expr,gNames,fSparse):
+def collapseGeneSet(data,expr,gNames,cNames,fSparse):
   Y = expr
   if 'geneGrpColl' in data.keys() and not data['geneGrpColl']=='No' and 'geneGrp' in data.keys() and len(data['geneGrp'])>0:
     data['grpLoc'] = []
     data['grpID'] = []
     if fSparse:
-      Y = pd.DataFrame.sparse.from_spmatrix(Y,columns=gNames)
+      Y = pd.DataFrame.sparse.from_spmatrix(Y,columns=gNames,index=cNames)
     for aN in data['geneGrp'].keys():
       if data['geneGrpColl']=='mean':
         Y = pd.concat([Y,Y[data['geneGrp'][aN]].mean(axis=1).rename(aN)],axis=1,sort=False)
@@ -138,7 +138,7 @@ def subData(data):
             expr = X
           else:
             expr = pd.DataFrame(X,columns=gNames,index=cNames) 
-  expr,gNames = collapseGeneSet(data,expr,gNames,fSparse)
+  expr,gNames = collapseGeneSet(data,expr,gNames,cNames,fSparse)
   
   ## obtain the embedding
   strEmbed = 'umap'
