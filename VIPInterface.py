@@ -385,9 +385,10 @@ def PGV(data):
     h = a
     swapAx = True
   if 'groupby_plots' in data['figOpt']['scanpybranch']: #.dev140+ge9cbc5f
-    vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=(w,h),swap_axes=swapAx,var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
-    # vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=(w,h),swap_axes=swapAx,var_group_positions=data['grpLoc'],var_group_labels=data['grpID'],yticklabels=True)  # need further testing "yticklabels"
-    vp.add_totals().style(yticklabels=True).show()
+    #vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=(w,h),swap_axes=swapAx,var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
+    vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=(w,h),swap_axes=swapAx,var_group_positions=data['grpLoc'],var_group_labels=data['grpID'],yticklabels=True)  # need further testing "yticklabels"
+    vp.add_totals().show()
+    #vp.add_totals().style(yticklabels=True).show()
     fig = plt.gcf()
   else:
     fig = plt.figure(figsize=[w,h])

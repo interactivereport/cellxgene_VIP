@@ -930,11 +930,11 @@ function init(){
         $('#DOTcutoff').prop('min',res);
       }
     })*/
-    $('#SGVcutoff').prop('min',0);
-    $('#PGVcutoff').prop('min',0);  
-    $('#GDcutoff').prop('min',0);
-    $('#DUALcutoff').prop('min',0);
-    $('#DOTcutoff').prop('min',0);  
+    $('#SGVcutoff').prop('min',-5);
+    $('#PGVcutoff').prop('min',-5);  
+    $('#GDcutoff').prop('min',-5);
+    $('#DUALcutoff').prop('min',-5);
+    $('#DOTcutoff').prop('min',-5);  
 
     const unsubscribe = window.store.subscribe(() => {
       if (window.store.getState()["@@undoable/filterState"].prevAction) {
