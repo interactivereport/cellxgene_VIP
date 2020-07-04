@@ -385,10 +385,9 @@ def PGV(data):
     h = a
     swapAx = True
   if 'groupby_plots' in data['figOpt']['scanpybranch']: #.dev140+ge9cbc5f
-    #vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=(w,h),swap_axes=swapAx,var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
-    vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=(w,h),swap_axes=swapAx,var_group_positions=data['grpLoc'],var_group_labels=data['grpID'],yticklabels=True)  # need further testing "yticklabels"
+    vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=(w,h),swap_axes=swapAx,var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
+    #vp.add_totals().style().show()
     vp.add_totals().show()
-    #vp.add_totals().style(yticklabels=True).show()
     fig = plt.gcf()
   else:
     fig = plt.figure(figsize=[w,h])
@@ -604,7 +603,7 @@ def DOT(data):
     dp = sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],expression_cutoff=float(data['cutoff']),mean_only_expressed=(data['mean_only_expressed'] == 'Yes'),
                        var_group_positions=data['grpLoc'],var_group_labels=data['grpID'],
                        return_fig=True)#
-    dp = dp.add_totals(size=1.2).legend(show_size_legend=True,width=float(data['legendW'])).style(cmap='Blues', dot_edge_color='black', dot_edge_lw=1, size_exponent=1.5)
+    dp = dp.add_totals(size=1.2).legend(show_size_legend=True,width=float(data['legendW'])).style(cmap='Reds', dot_edge_color='black', dot_edge_lw=1, size_exponent=1.5)
     dp.show()
     fig = dp.get_axes()['mainplot_ax'].figure
   else:
