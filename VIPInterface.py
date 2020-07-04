@@ -384,7 +384,7 @@ def PGV(data):
     w = h
     h = a
     swapAx = True
-  if '1.4.7' in sc.__version__:#.dev140+ge9cbc5f
+  if 'groupby_plots' in data['figOpt']['scanpybranch']: #.dev140+ge9cbc5f
     vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=(w,h),swap_axes=swapAx,var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
     # vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=(w,h),swap_axes=swapAx,var_group_positions=data['grpLoc'],var_group_labels=data['grpID'],yticklabels=True)  # need further testing "yticklabels"
     vp.add_totals().style(yticklabels=True).show()
@@ -599,7 +599,7 @@ def DOT(data):
   adata.uns[data['grp'][0]+'_colors'] = col
   
   #ppr.pprint(sc.__version__)
-  if '1.4.7' in sc.__version__:#.dev140+ge9cbc5f
+  if 'groupby_plots' in data['figOpt']['scanpybranch']:#.dev140+ge9cbc5f
     dp = sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],expression_cutoff=float(data['cutoff']),mean_only_expressed=(data['mean_only_expressed'] == 'Yes'),
                        var_group_positions=data['grpLoc'],var_group_labels=data['grpID'],
                        return_fig=True)#

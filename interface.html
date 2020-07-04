@@ -629,6 +629,10 @@
         <input type="radio" name="IMGtransparent" value="Yes" onclick="IMGset()">Yes
         <input type="radio" name="IMGtransparent" value="No" onclick="IMGset()" checked>No
       </p>  
+      <p>Scanpy branch:
+        <input type="radio" name="IMGscanpybranch" value="master" onclick="IMGset()">master
+        <input type="radio" name="IMGscanpybranch" value="groupby_plots" onclick="IMGset()" checked>groupby_plots
+      </p>  
       <p>Colormap of UMAP/tSNE, 2D Density (top 4):
       <select id="IMGcolor" onchange="IMGset()">
         <option value='viridis'>viridis</option>
@@ -856,7 +860,7 @@ function init(){
     window.bioCombineCell={};
     window.biogen=[];
     window.bioGeneGrp={};
-    window.figOpt={scale:'No',scaleZero:'No',clipValue:'Yes',scaleMax:20,dpi:150,img:'png',fontsize:11,vectorFriendly:'Yes',transparent:'No',colorMap:'viridis'};
+    window.figOpt={scale:'No',scaleZero:'No',clipValue:'Yes',scaleMax:20,dpi:150,img:'png',fontsize:11,vectorFriendly:'Yes',transparent:'No',scanpybranch:'groupby_plots',colorMap:'viridis'};
     if (grpL[">Description"] !== undefined && !grpL[">Description"].categoryValues[0].split(";")[1].includes("scale")) {
       window.figOpt['scale'] = "Yes";
     }
@@ -1356,6 +1360,7 @@ function IMGref(){
   $('#IMGfontsize').val(window.figOpt['fontsize']);
   $('#IMGvector').val(window.figOpt['vectorFriendly']);
   $('#IMGtransparent').val(window.figOpt['transparent']);
+  $('#IMGscanpybranch').val(window.figOpt['scanpybranch']);
   $('#IMGcolor').val(window.figOpt['colorMap']);
 }
 function IMGset(){
@@ -1374,6 +1379,7 @@ function IMGset(){
   window.figOpt['fontsize'] = Math.max($('#IMGfontsize').val(),$('#IMGfontsize').prop('min'));
   window.figOpt['vectorFriendly'] = $("input[name='IMGvector']:checked").val();
   window.figOpt['transparent'] = $("input[name='IMGtransparent']:checked").val();
+  window.figOpt['scanpybranch'] = $("input[name='IMGscanpybranch']:checked").val();
   window.figOpt['colorMap'] = $('#IMGcolor').val();
   //IMGref();
 }
