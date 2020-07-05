@@ -371,6 +371,40 @@
         
         <p>Group by: <select id="DOTgrp"></select></p>
         <p>Adjust the legend width: <input id="DOTlegendW" type="number" step="0.1" value="1.5"/></p>
+        <p>Color: <input id="DOTcolor_r" type="checkbox">Reverse
+        <select id="DOTcolor">
+          <option value='Purples'>Purples</option>
+          <option value='Blues'>Blues</option>
+          <option value='Greens'>Greens</option>
+          <option value='Oranges'>Oranges</option>
+          <option value='Reds' selected>Reds</option>
+          <option value='YlOrBr'>YlOrBr</option>
+          <option value='YlOrRd'>YlOrRd</option>
+          <option value='OrRd'>OrRd</option>
+          <option value='PuRd'>PuRd</option>
+          <option value='RdPu'>RdPu</option>
+          <option value='BuPu'>BuPu</option>
+          <option value='PuBu'>PuBu</option>
+          <option value='PuBuGn'>PuBuGn</option>
+          <option value='BuGn'>BuGn</option>
+          <option value='GnBu'>GnBu</option>
+          <option value='YlGnBu'>YlGnBu</option>
+          <option value='YlGn'>YlGn</option>
+          <option value='Spectral'>Spectral</option>
+          <option value='PiYG'>PiYG</option>
+          <option value='PRGn'>PRGn</option>
+          <option value='BrBG'>BrBG</option>
+          <option value='PuOr'>PuOr</option>
+          <option value='RdGY'>RdGY</option>
+          <option value='RdBu'>RdBu</option>
+          <option value='RdYlBu'>RdYlBu</option>
+          <option value='RdYlGn'>RdYlGn</option>
+        </select> <button onclick="hideShow($('#DOTcolorhelp'),$(this),'Color Help');">Show Color Help</button></p>  
+		<div id="DOTcolorhelp" style="display:none;">
+          <table border=0>
+            <tr valign="top"><td><img src="static/color_brewer_sequential.png" width="300"></td><td><img src="static/color_brewer_diverging.png" width="300"></td></tr>
+          </table>
+		</div>
         
         <p id="DOTnote" style="color:red;"></p>
       </div>
@@ -1602,9 +1636,10 @@ function ADDGsetDel(grpName){
   delete window.bioGeneGrp[grpName];
   ADDGref();
 }
-function hideShow(section, button) {
+function hideShow(section, button, label) {
   section.toggle();
-  button.text(button.text()=='Hide Input'?'Show Input':'Hide Input');
+  if (label == null) label = 'Input'
+  button.text(button.text()=='Hide '+label?'Show '+label:'Hide '+label);
 }
 // plot function 
 function GDplot(){
@@ -2256,6 +2291,10 @@ function DOTplot(){
   if( geneGrpColl== 'Yes'){
     geneGrpColl = $("input[name='DOTgeneGrpCollCal']:checked").val()
   }
+
+  var color = $("#DOTcolor").val();
+  if ($("#DOTcolor_r")[0].checked) color += '_r';
+  
   var D = {'method':'DOT',
             'cells':cells,
             'genes':genes,
@@ -2267,6 +2306,7 @@ function DOTplot(){
             'cutoff':$("#DOTcutoff").val(),
             'mean_only_expressed':$("input[name='mean_only_expressed']:checked").val(),
             'legendW':$('#DOTlegendW').val(),
+            'color':color,
             'figOpt':window.figOpt};
   $(".DOTbt").prop('disabled',true);
   document.getElementById("DOTspin").style.visibility="visible";

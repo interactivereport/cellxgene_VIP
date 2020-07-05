@@ -116,7 +116,7 @@ echo $strweb
 cp interface.html $strweb
 cp jquery.min.js $strweb
 cp jquery-ui.min.js $strweb
-cp color_map.png $strweb
+cp color_*.png $strweb
 
 cp -R DataTables $strweb
 cp -R jspanel $strweb

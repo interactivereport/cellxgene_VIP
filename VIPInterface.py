@@ -603,7 +603,7 @@ def DOT(data):
     dp = sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],expression_cutoff=float(data['cutoff']),mean_only_expressed=(data['mean_only_expressed'] == 'Yes'),
                        var_group_positions=data['grpLoc'],var_group_labels=data['grpID'],
                        return_fig=True)#
-    dp = dp.add_totals(size=1.2).legend(show_size_legend=True,width=float(data['legendW'])).style(cmap='Reds', dot_edge_color='black', dot_edge_lw=1, size_exponent=1.5)
+    dp = dp.add_totals(size=1.2).legend(show_size_legend=True,width=float(data['legendW'])).style(cmap=data['color'], dot_edge_color='black', dot_edge_lw=1, size_exponent=1.5)
     dp.show()
     fig = dp.get_axes()['mainplot_ax'].figure
   else:
