@@ -140,7 +140,7 @@
   </head>
 <body>
 <div class="splitter">
-	<div id="panel-left">
+  <div id="panel-left">
     <div class="tab">
       <button class="tablinks" onclick="selFun(event, 'ADDG')"><b>Add Genes</b></button>
       <button class="tablinks" onclick="selFun(event, 'SGV');$('#SGVnote').text('');if($('#SGVgene').val() == null) $('#SGVnote').text('Please add genes either from the VIP menu or the main window');">Violin</button>
@@ -150,6 +150,7 @@
       <button class="tablinks" onclick="selFun(event, 'DOT')">Dot Plot</button>
       <button class="tablinks" onclick="selFun(event, 'TRAK')">Track Plot</button>
       <button class="tablinks" onclick="selFun(event, 'DENS')">Density Plot</button>
+      <button class="tablinks" onclick="selFun(event, 'DENS2D')">2D Density</button>
       <button class="tablinks" onclick="selFun(event, 'DUAL')">Dual Genes</button>
       <button class="tablinks" onclick="selFun(event, 'SANK')">Sankey Diagram</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
@@ -163,9 +164,9 @@
       <button class="tablinks" onclick="ABBRall()">Check All Annotations</button>
       <button class="tablinks" onclick="sync();">Sync</button>
     </div>
-	</div>
-	<div id="separator" ></div>
-	<div id="panel-right" >
+  </div>
+  <div id="separator" ></div>
+  <div id="panel-right" >
     	  
     <input id="loadfile" type="file" onchange="load()" style="display:none"/>
     <div id="ABBR" class="tabcontent"> <!-- Abbreviation -->
@@ -262,7 +263,8 @@
         <p>Group by:
         <select id="SGVgrp"></select></p>
       </div>
-      <button class="SGVbt" onclick="SGVplot()"><b>Plot</b></button>
+      <button class="SGVbt" onclick="SGVplot('plot')"><b>Plot</b></button>
+      <button class="SGVsaveBT" onclick="SGVplot('data')">Get Data</button>
       <button onclick="ZoomIn('SGVresize')">Zoom In</button>
       <button onclick="ZoomOut('SGVresize')">Zoom Out</button>
       <button class="SGVpngBT" onclick="saveImg('SGVimg')" disabled>Save</button>
@@ -279,18 +281,30 @@
           <label><input class="PGVcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="PGVcellN1" style="color:red">0</span>)</label>
           <label><input class="PGVcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="PGVcellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose genes with expression cutoff: <input id="PGVcutoff" type="number" step="0.1" value="1"/> <input type="checkbox" checked onclick="$('.PGVgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p>Choose genes with expression cutoff: <input id="PGVcutoff" type="number" step="0.1" value="1"/> <input type="checkbox" checked onclick="$('.PGVgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="PGVgene"></p>
         <p>Select user-defined gene sets:</p><p id="PGVgeneGrp"></p>
-        <p>Group by:
-        <select id="PGVgrp"></select> as
+        <div id="PVGgeneGrpCollapsing">
+          <p>Collapsing the above gene sets:
+            <input type="radio" name="PGVgeneGrpColl" value="Yes" onclick="$('#PGVgeneGrpCollShow').show()">Yes
+            <input type="radio" name="PGVgeneGrpColl" value="No" onclick="$('#PGVgeneGrpCollShow').hide()" checked>No
+          </p>
+          <div id='PGVgeneGrpCollShow'><p>By:
+            <input type="radio" name="PGVgeneGrpCollCal" value="mean" checked>Average
+            <input type="radio" name="PGVgeneGrpCollCal" value="median">Median</p>
+          </div>
+       </div>   
+          
+          
+        <p>Group by:<select id="PGVgrp"></select> as
         <select id="PGVgrpXY">
           <option value="Rows">Rows</option>
           <option value="Columns">Columns</option>
         </select>
         </p>
       </div>
-      <button class="PGVbt"  onclick="PGVplot()"><b>Plot</b></button>
+      <button class="PGVbt"  onclick="PGVplot('plot')"><b>Plot</b></button>
+      <button class="PGVsaveBT" onclick="PGVplot('data')">Get Data</button>
       <button onclick="ZoomIn('PGVresize')">Zoom In</button>
       <button onclick="ZoomOut('PGVresize')">Zoom Out</button>
       <button class="PGVpngBT" onclick="saveImg('PGVimg')" disabled>Save</button>
@@ -320,10 +334,10 @@
         </select></p>
       </div>
       <button class="HEATbt"  onclick="HEATplot()"><b>Plot</b></button>
+      <button class="HEATsaveBT" onclick="HEATdata()" disabled>Get Data</button>
       <button onclick="ZoomIn('HEATresize')">Zoom In</button>
       <button onclick="ZoomOut('HEATresize')">Zoom Out</button>
       <button class="HEATpngBT" onclick="saveImg('HEATimg')" disabled>Save</button>
-      <button class="HEATsaveBT" onclick="HEATdata()" disabled>Download Expression Data</button>
       <button onclick="hideShow($('#HEATinput'),$(this));">Hide Input</button>
       <p id="HEATnote" style="color:red;"></p>
       <div id="HEATspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
@@ -339,12 +353,59 @@
           <label><input class="DOTcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DOTcellN1" style="color:red">0</span>)</label>
           <label><input class="DOTcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DOTcellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose genes with expression cutoff: <input id="DOTcutoff" type="number" step="0.1" value="1"/><input type="checkbox" checked onclick="$('.DOTgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p>Choose genes with expression cutoff: <input id="DOTcutoff" type="number" step="0.1" value="1"/><input type="checkbox" checked onclick="$('.DOTgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="DOTgene"></p>
         <p>Expression is averaged only over cells expressing a given gene above the cutoff: <input type="radio" name="mean_only_expressed" value="Yes">Yes<input type="radio" name="mean_only_expressed" value="No" checked>No</p>
   
         <p>Select user-defined gene sets:</p><p id="DOTgeneGrp"></p>
+        <div id="DOTgeneGrpCollapsing">
+          <p>Collapsing the above gene sets:
+            <input type="radio" name="DOTgeneGrpColl" value="Yes" onclick="$('#DOTgeneGrpCollShow').show()">Yes
+            <input type="radio" name="DOTgeneGrpColl" value="No" onclick="$('#DOTgeneGrpCollShow').hide()" checked>No
+          </p>
+          <div id='DOTgeneGrpCollShow'><p>By:
+            <input type="radio" name="DOTgeneGrpCollCal" value="mean" checked>Average
+            <input type="radio" name="DOTgeneGrpCollCal" value="median">Median</p>
+          </div>
+        </div>
+        
         <p>Group by: <select id="DOTgrp"></select></p>
+        <p>Adjust the legend width: <input id="DOTlegendW" type="number" step="0.1" value="1.5"/></p>
+        <p>Color: <input id="DOTcolor_r" type="checkbox">Reverse
+        <select id="DOTcolor">
+          <option value='Purples'>Purples</option>
+          <option value='Blues'>Blues</option>
+          <option value='Greens'>Greens</option>
+          <option value='Oranges'>Oranges</option>
+          <option value='Reds' selected>Reds</option>
+          <option value='YlOrBr'>YlOrBr</option>
+          <option value='YlOrRd'>YlOrRd</option>
+          <option value='OrRd'>OrRd</option>
+          <option value='PuRd'>PuRd</option>
+          <option value='RdPu'>RdPu</option>
+          <option value='BuPu'>BuPu</option>
+          <option value='PuBu'>PuBu</option>
+          <option value='PuBuGn'>PuBuGn</option>
+          <option value='BuGn'>BuGn</option>
+          <option value='GnBu'>GnBu</option>
+          <option value='YlGnBu'>YlGnBu</option>
+          <option value='YlGn'>YlGn</option>
+          <option value='Spectral'>Spectral</option>
+          <option value='PiYG'>PiYG</option>
+          <option value='PRGn'>PRGn</option>
+          <option value='BrBG'>BrBG</option>
+          <option value='PuOr'>PuOr</option>
+          <option value='RdGy'>RdGy</option>
+          <option value='RdBu'>RdBu</option>
+          <option value='RdYlBu'>RdYlBu</option>
+          <option value='RdYlGn'>RdYlGn</option>
+        </select> <button onclick="hideShow($('#DOTcolorhelp'),$(this),'Color Help');">Show Color Help</button></p>  
+		<div id="DOTcolorhelp" style="display:none;">
+          <table border=0>
+            <tr valign="top"><td><img src="static/color_brewer_sequential.png" width="300"></td><td><img src="static/color_brewer_diverging.png" width="300"></td></tr>
+          </table>
+		</div>
+        
         <p id="DOTnote" style="color:red;"></p>
       </div>
       <button onclick="DOTplot()"><b>Plot</b></button>
@@ -397,9 +458,20 @@
           <label><input class="TRAKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="TRAKcellN1" style="color:red">0</span>)</label>
           <label><input class="TRAKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="TRAKcellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose genes: <input type="checkbox" checked onclick="$('.TRAKgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p>Choose genes: <input type="checkbox" checked onclick="$('.TRAKgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="TRAKgene"></p>
         <p>Select user-defined gene sets: </p><p id="TRAKgeneGrp"></p>
+        <div id="TRAKgeneGrpCollapsing">
+          <p>Collapsing the above gene sets:
+            <input type="radio" name="TRAKgeneGrpColl" value="Yes" onclick="$('#TRAKgeneGrpCollShow').show()">Yes
+            <input type="radio" name="TRAKgeneGrpColl" value="No" onclick="$('#TRAKgeneGrpCollShow').hide()" checked>No
+          </p>
+          <div id='TRAKgeneGrpCollShow'><p>By:
+            <input type="radio" name="TRAKgeneGrpCollCal" value="mean" checked>Average
+            <input type="radio" name="TRAKgeneGrpCollCal" value="median">Median</p>
+          </div>
+        </div>
+
         <p>Group by: <select id="TRAKgrp"></select></p>
       </div>
       <button onclick="TRAKplot()"><b>Plot</b></button>
@@ -420,7 +492,7 @@
           <label><input class="DENScell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DENScellN1" style="color:red">0</span>)</label>
           <label><input class="DENScell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DENScellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose genes: <input type="checkbox" checked onclick="$('.DENSgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p>Choose genes: <input type="checkbox" checked onclick="$('.DENSgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="DENSgene"></p>
         <p>Split by:
         <select id="DENSsplit"></select></p>
@@ -438,6 +510,29 @@
       <div id="DENSresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="DENSfig"></p></div>
     
     </div><!--DENS-->
+
+    <div  id="DENS2D" class="tabcontent">
+      <div id="DENS2Dinput">
+        <h3>Embedding plot of two genes in selected cells</h3>
+        <p>Choose cell set(s):
+          <label><input class="DENS2Dcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DENS2DcellN1" style="color:red">0</span>)</label>
+          <label><input class="DENS2Dcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DENS2DcellN2" style="color:red">0</span>)</label>
+        </p>
+        <p>Choose two genes:</p>
+        <p id="DENS2Dgene"></p>
+        <p>Please specify the gene expression cutoff: <input id="DENS2Dcutoff" type="number" step="0.1" value="1"/></p>
+        <p>Please specify the minimal bandwidth: <input id="DENS2Dbandwidth" type="number" step="0.1" value="0.5"/></p>
+      </div>
+      <button class="DENS2Dbt"  onclick="DENS2Dplot()"><b>Plot</b></button>
+      <button onclick="ZoomIn('DENS2Dresize')">Zoom In</button>
+      <button onclick="ZoomOut('DENS2Dresize')">Zoom Out</button>
+      <button class="DENS2DpngBT" onclick="saveImg('DENS2Dimg')" disabled>Save</button>
+      <button onclick="hideShow($('#DENS2Dinput'),$(this));">Hide Input</button>
+      <p id="DENS2Dnote" style="color:red;"></p>
+      <div id="DENS2Dspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+      <div id="DENS2Dresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="DENS2Dfig"></p></div>
+      
+    </div><!--DENS2D-->
       
     <div  id="DUAL" class="tabcontent">
       <div id="DUALinput">
@@ -446,7 +541,7 @@
           <label><input class="DUALcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DUALcellN1" style="color:red">0</span>)</label>
           <label><input class="DUALcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DUALcellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose two genes: <input type="checkbox" onclick="$('.DUALgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p>Choose two genes:</p>
         <p id="DUALgene"></p>
         <p>Please specify the gene expression cutoff: <input id="DUALcutoff" type="number" step="0.1" value="1"/></p>
         <p>Select the embedding layout:
@@ -475,6 +570,7 @@
         <p>Choose genes: <input type="checkbox" checked onclick="$('.SANKgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
         <p id="SANKgene"></p>
         <!-- <p>Choose user-defined gene sets:</p><p id="SANKgeneGrp"></p> -->
+        <p>Number of equally divided gene expression ranges: <input id="sankBin" type="number" step="1" value="5"/></p>
         <p>Choose annotation:</p><p id="SANKgrp"></p>
         <p>Change the order by dragging items up and down:
         <button id="SANKorderBTs" onclick="SANKorderShow()" style="padding:2px;border-radius:45%"><b>&#43;</b></button>
@@ -567,7 +663,11 @@
         <input type="radio" name="IMGtransparent" value="Yes" onclick="IMGset()">Yes
         <input type="radio" name="IMGtransparent" value="No" onclick="IMGset()" checked>No
       </p>  
-      <p>UMAP/tSNE color map:
+      <p>Scanpy branch:
+        <input type="radio" name="IMGscanpybranch" value="master" onclick="IMGset()">master
+        <input type="radio" name="IMGscanpybranch" value="groupby_plots" onclick="IMGset()" checked>groupby_plots
+      </p>  
+      <p>Colormap of UMAP/tSNE, 2D Density (top 4):
       <select id="IMGcolor" onchange="IMGset()">
         <option value='viridis'>viridis</option>
         <option value='plasma'>plasma</option>
@@ -591,13 +691,12 @@
 
     </div><!--IMG-->
 	  
-	</div>
+  </div>
 </div>
 
 <!-- <button class="block" onclick="sync()">Refresh</button> -->
 
 <script type="text/javascript">
-//Fxyd3,Lgals7,Acta2,Krt5,Cd79a,Rac2,Coro1a
 var heatCell = 10000;
 function checkLoading(){
     if(!window.store || !window.store.getState().categoricalSelection){
@@ -739,6 +838,7 @@ function cellNupdate(){
   $('#TRAKcellN1').text(n1);
   $('#DUALcellN1').text(n1);
   $('#DENScellN1').text(n1);
+  $('#DENS2DcellN1').text(n1);
   $('#SANKcellN1').text(n1);
 
   $('#MARKcellN2').text(n2);
@@ -752,6 +852,7 @@ function cellNupdate(){
   $('#TRAKcellN2').text(n2);
   $('#DUALcellN2').text(n2);
   $('#DENScellN2').text(n2);
+  $('#DENS2DcellN2').text(n2);
   $('#SANKcellN2').text(n2);
 }
 
@@ -793,7 +894,7 @@ function init(){
     window.bioCombineCell={};
     window.biogen=[];
     window.bioGeneGrp={};
-    window.figOpt={scale:'No',scaleZero:'No',clipValue:'Yes',scaleMax:20,dpi:150,img:'png',fontsize:11,vectorFriendly:'Yes',transparent:'No',colorMap:'viridis'};
+    window.figOpt={scale:'No',scaleZero:'No',clipValue:'Yes',scaleMax:20,dpi:150,img:'png',fontsize:11,vectorFriendly:'Yes',transparent:'No',scanpybranch:'groupby_plots',colorMap:'viridis'};
     if (grpL[">Description"] !== undefined && !grpL[">Description"].categoryValues[0].split(";")[1].includes("scale")) {
       window.figOpt['scale'] = "Yes";
     }
@@ -821,6 +922,8 @@ function init(){
       densG.add(createOpt(one));
       embed.add(createOpt(one));
     }
+    densS.add(createOpt('None'));
+    densG.add(createOpt('None'));
     //--------------------------------------------------------------------------
     //add layout
     var embedLay = document.getElementById("EMBEDlayout");
@@ -861,11 +964,11 @@ function init(){
         $('#DOTcutoff').prop('min',res);
       }
     })*/
-    $('#SGVcutoff').prop('min',0);
-    $('#PGVcutoff').prop('min',0);  
-    $('#GDcutoff').prop('min',0);
-    $('#DUALcutoff').prop('min',0);
-    $('#DOTcutoff').prop('min',0);  
+    $('#SGVcutoff').prop('min',-5);
+    $('#PGVcutoff').prop('min',-5);  
+    $('#GDcutoff').prop('min',-5);
+    $('#DUALcutoff').prop('min',-5);
+    $('#DOTcutoff').prop('min',-5);  
 
     const unsubscribe = window.store.subscribe(() => {
       if (window.store.getState()["@@undoable/filterState"].prevAction) {
@@ -896,6 +999,7 @@ function sync(){
   EMBEDref();
   IMGref();
   DENSref();
+  DENS2Dref();
   SANKref();
 }
 function ABBRref(){
@@ -916,13 +1020,18 @@ function GDref(){
 }
 function addCustomCombine(element) {
   var x = document.getElementById(element);
-  var grps = Object.keys(window.store.getState().categoricalSelection).filter(function(e) { return !(e.startsWith('>') || e.startsWith('|')) });
+//  var grps = Object.keys(window.store.getState().categoricalSelection).filter(function(e) { return !(e.startsWith('>') || e.startsWith('|')) });
+  $("#"+element+" option[value='Custom_combine']").remove();
   var grpKeys = Object.keys(window.bioCombine);
-  if(grpKeys.length>0 && grps.length==x.length){
+  if(grpKeys.length>0){
     x.add(createOpt("Custom_combine"));
-  }else if(grpKeys.length==0 && grps.length<x.length){
-    x.remove(grps.length);
   }
+//  if(grpKeys.length>0 && grps.length==x.length){
+//    x.add(createOpt("Custom_combine"));
+//  }else if(grpKeys.length==0){// && grps.length<x.length
+//    $("#"+element+" option[value='Custom_combine']").remove();
+    //x.remove(grps.length);
+//  }
 }
 function MARKref(){
   addCustomCombine("MARKgrp");
@@ -1015,10 +1124,23 @@ function showGene(aID, addInfo='', ckDefault='checked'){
     }
   })
 }
+function showGeneGrpCollSet(aID){
+  if(Object.keys(window.bioGeneGrp).length>0){
+    $('#'+aID+'geneGrpCollapsing').show();
+  }else{
+    $('#'+aID+'geneGrpCollapsing').hide();
+  }
+  if($("input[name='"+aID+"geneGrpColl']:checked").val() == 'Yes'){
+    $('#'+aID+'geneGrpCollShow').show();
+  }else{
+    $('#'+aID+'geneGrpCollShow').hide();
+  }  
+}
 function PGVref(){
   showGene('PGV');
   showGeneSet('PGV');
   addCustomCombine("PGVgrp");
+  showGeneGrpCollSet("PGV");
 }
 function HEATref(){
   showGene('HEAT');
@@ -1042,11 +1164,13 @@ function DOTref(){
   showGene('DOT');
   showGeneSet('DOT');
   addCustomCombine("DOTgrp");
+  showGeneGrpCollSet("DOT");
 }
 function TRAKref(){
   showGene('TRAK');
   showGeneSet('TRAK');
   addCustomCombine("TRAKgrp");
+  showGeneGrpCollSet("TRAK");
 }
 function DENSref(){
   var genes = window.store.getState().universe.varData.colIndex.rindex;
@@ -1079,6 +1203,48 @@ function DENSref(){
   })
   addCustomCombine("DENSgrp");
   addCustomCombine("DENSsplit");
+}
+function DENS2Dref(){
+  var genes = window.store.getState().universe.varData.colIndex.rindex;
+  genes = genes.concat(window.biogen);
+  genes = [...new Set(genes)];
+  var optG = [], checkG=[];
+  //remove checkbox which are not in the gene list
+  $(".DENS2Dgenes").each(function(){
+    optG.push($(this).val());
+    if(!genes.includes($(this).val())){
+      $('#DENS2Dck'+$(this).val()).remove();
+    }else if($(this).prop("checked")){
+      checkG.push($(this).val());
+    }
+  })
+  //add options which are missing from gene list
+  if(genes.length>0){
+    var htmlCheck = $('#DENS2Dgene').html();
+    for(const g of genes){
+      if(!optG.includes(g)){
+        htmlCheck += '<label id="DENS2Dck'+g+'"><input class="DENS2Dgenes" type="checkbox" value="'+g+'" onclick="DENS2Dref()"/>'+g+'</label>';// '+g+'
+      }
+    }
+    $('#DENS2Dgene').html(htmlCheck);
+  }
+  var iEnabled=0;
+  $(".DENS2Dgenes").each(function(){
+    if(checkG.includes($(this).val())){
+      $(this).prop("checked",true);
+      iEnabled++;
+    }
+  })
+  if(iEnabled>1){
+    $(".DENS2Dgenes").each(function(){
+      if($(this).prop("checked")==false){
+        $(this).prop("disabled",true);
+      }
+    })
+  }else{
+    $('.DENS2Dgenes').prop("disabled",false);
+  }
+  
 }
 function EMBEDref(){
   showGene('EMBED');
@@ -1228,7 +1394,28 @@ function IMGref(){
   $('#IMGfontsize').val(window.figOpt['fontsize']);
   $('#IMGvector').val(window.figOpt['vectorFriendly']);
   $('#IMGtransparent').val(window.figOpt['transparent']);
+  $('#IMGscanpybranch').val(window.figOpt['scanpybranch']);
   $('#IMGcolor').val(window.figOpt['colorMap']);
+}
+function IMGset(){
+  window.figOpt['scale'] = $("input[name='IMGscale']:checked").val();
+  if(window.figOpt['scale'] == "Yes"){
+    $('#IMGscaleShow').show();
+    window.figOpt['scaleZero'] = $('#IMGscaleZero').prop('checked')?"Yes":"No";
+    window.figOpt['clipValue'] = $('#IMGclipValue').prop('checked')?"Yes":"No";
+    window.figOpt['scaleMax'] = $('#IMGscaleMax').val();
+  }else{
+    $('#IMGscaleShow').hide();
+  }
+
+  window.figOpt['dpi'] = $('#IMGdpi').val();
+  window.figOpt['img'] = $('#IMGimg').val();
+  window.figOpt['fontsize'] = Math.max($('#IMGfontsize').val(),$('#IMGfontsize').prop('min'));
+  window.figOpt['vectorFriendly'] = $("input[name='IMGvector']:checked").val();
+  window.figOpt['transparent'] = $("input[name='IMGtransparent']:checked").val();
+  window.figOpt['scanpybranch'] = $("input[name='IMGscanpybranch']:checked").val();
+  window.figOpt['colorMap'] = $('#IMGcolor').val();
+  //IMGref();
 }
 // process annotation
 function ABBRlist(){
@@ -1449,30 +1636,12 @@ function ADDGsetDel(grpName){
   delete window.bioGeneGrp[grpName];
   ADDGref();
 }
-function hideShow(section, button) {
+function hideShow(section, button, label) {
   section.toggle();
-  button.text(button.text()=='Hide Input'?'Show Input':'Hide Input');
+  if (label == null) label = 'Input'
+  button.text(button.text()=='Hide '+label?'Show '+label:'Hide '+label);
 }
 // plot function 
-function IMGset(){
-  window.figOpt['scale'] = $("input[name='IMGscale']:checked").val();
-  if(window.figOpt['scale'] == "Yes"){
-    $('#IMGscaleShow').show();
-    window.figOpt['scaleZero'] = $('#IMGscaleZero').prop('checked')?"Yes":"No";
-    window.figOpt['clipValue'] = $('#IMGclipValue').prop('checked')?"Yes":"No";
-    window.figOpt['scaleMax'] = $('#IMGscaleMax').val();
-  }else{
-    $('#IMGscaleShow').hide();
-  }
-
-  window.figOpt['dpi'] = $('#IMGdpi').val();
-  window.figOpt['img'] = $('#IMGimg').val();
-  window.figOpt['fontsize'] = Math.max($('#IMGfontsize').val(),$('#IMGfontsize').prop('min'));
-  window.figOpt['vectorFriendly'] = $("input[name='IMGvector']:checked").val();
-  window.figOpt['transparent'] = $("input[name='IMGtransparent']:checked").val();
-  window.figOpt['colorMap'] = $('#IMGcolor').val();
-  //IMGref();
-}
 function GDplot(){
   if(!window.store.getState().differential.celllist1 && !window.store.getState().differential.celllist2){
     $('#GDnote').text("Please select cells into group 1 or/and group 2");
@@ -1624,7 +1793,7 @@ function MARKplot(){
   })
 
 }
-function SGVplot(){
+function SGVplot(acc){
   $('#SGVnote').text("");
   if($("#SGVgene option:selected").val()=="NA"){
     $('#SGVnote').text("Please select a gene to plot");
@@ -1677,9 +1846,12 @@ function SGVplot(){
             'cutoff':$("#SGVcutoff").val(),
             'combine':combGrp,
             'figOpt':window.figOpt};
+  if(acc=='data') D['method']='VIOdata';
   $(".SGVbt").prop("disabled",true);
+  $(".SGVsaveBT").prop('disabled',true);
   $(".SGVpngBT").prop('disabled',true);
   document.getElementById("SGVspin").style.visibility="visible";
+  
   $.ajax({
     type:"POST",
     url: "/VIP",
@@ -1687,13 +1859,22 @@ function SGVplot(){
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
       $(".SGVbt").prop("disabled",false);
+      $(".SGVsaveBT").prop('disabled',false);
       document.getElementById("SGVspin").style.visibility="hidden";
       if(res.startsWith('ERROR')){
         $('#SGVnote').text(res);
         document.getElementById("SGVfig").innerHTML = '';
         return;
       }
-      showImg('SGVfig',res);
+      if(acc=='data'){
+        var hiddenE = document.createElement('a');
+        hiddenE.href="data:attachment/text,"+encodeURIComponent(res);
+        hiddenE.target='_blank';
+        hiddenE.download='cellxgene.'+window.store.getState().config.displayNames.dataset+'.violinData.csv';
+        hiddenE.click();
+      }else{
+        showImg('SGVfig',res);
+      }
       //document.getElementById("SGVfig").innerHTML = '<img id="SGVpng" src="data:image/png;base64,'+res+'" width=100% height="auto"/>';// height="450" width="450"
       $(".SGVpngBT").prop('disabled',false);
     },
@@ -1727,7 +1908,7 @@ function getGenes(aID){
   });
   return(genes);
 }
-function PGVplot(){
+function PGVplot(acc){
   $('#PGVnote').text("");
   var genes =getGenes('PGV');
   var geneSets = getGeneSet('PGV');
@@ -1771,18 +1952,27 @@ function PGVplot(){
     grp = Object.keys(window.bioCombine);
     combGrp = window.bioCombine;
   }
+  var geneGrpColl = $("input[name='PGVgeneGrpColl']:checked").val()
+  if( geneGrpColl== 'Yes'){
+    geneGrpColl = $("input[name='PGVgeneGrpCollCal']:checked").val()
+  }
   var D = {'method':'PGV',
             'cells':cells,
             'genes':genes,
             'geneGrp':geneSets,
+            'geneGrpColl':geneGrpColl,
             'grp':grp,
             'by':$("#PGVgrpXY").val(),
             'abb':window.bioAbbr,
             'cutoff':$("#PGVcutoff").val(),
             'combine':combGrp,
             'figOpt':window.figOpt};
+  if(acc=='data') D['method']='VIOdata';
   $(".PGVbt").prop('disabled',true);
+  $(".PGVsaveBT").prop('disabled',true);
+  $(".PGVpngBT").prop('disabled',true);
   document.getElementById("PGVspin").style.visibility="visible";
+
   $.ajax({
     type:"POST",
     url: "/VIP",
@@ -1790,14 +1980,22 @@ function PGVplot(){
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
       $(".PGVbt").prop("disabled",false);
+      $(".PGVsaveBT").prop("disabled",false);
       document.getElementById("PGVspin").style.visibility="hidden";
       if(res.startsWith('ERROR')){
         $('#PGVnote').text(res);
         document.getElementById("PGVfig").innerHTML = '';
         return;
       }
-      
-      showImg('PGVfig',res);
+      if(acc=='data'){
+        var hiddenE = document.createElement('a');
+        hiddenE.href="data:attachment/text,"+encodeURIComponent(res);
+        hiddenE.target='_blank';
+        hiddenE.download='cellxgene.'+window.store.getState().config.displayNames.dataset+'.violinData.csv';
+        hiddenE.click();
+      }else{
+        showImg('PGVfig',res);
+      }
       //document.getElementById("PGVfig").innerHTML = '<img id="PGVpng" src="data:image/png;base64,'+res+'" width=100% height="auto"/>';// height="450" width="450"
       $(".PGVpngBT").prop('disabled',false);
     },
@@ -1809,6 +2007,9 @@ function PGVplot(){
 
     }
   })
+}
+function violinData(){
+  
 }
 function HEATcheck(){
   $('#HEATnote').text("");
@@ -1904,7 +2105,6 @@ function HEATplot(){
   });
 }
 function HEATdata(){
-  console.log("HEATsave");
   D = HEATcheck();
   if(D==undefined) return;
   D['method'] = 'HEATdata';
@@ -2087,6 +2287,14 @@ function DOTplot(){
     grp = Object.keys(window.bioCombine);
     combGrp = window.bioCombine;
   }
+  var geneGrpColl = $("input[name='DOTgeneGrpColl']:checked").val()
+  if( geneGrpColl== 'Yes'){
+    geneGrpColl = $("input[name='DOTgeneGrpCollCal']:checked").val()
+  }
+
+  var color = $("#DOTcolor").val();
+  if ($("#DOTcolor_r")[0].checked) color += '_r';
+  
   var D = {'method':'DOT',
             'cells':cells,
             'genes':genes,
@@ -2094,8 +2302,11 @@ function DOTplot(){
             'abb':window.bioAbbr,
             'combine':combGrp,
             'geneGrp':geneSets,
+            'geneGrpColl':geneGrpColl,
             'cutoff':$("#DOTcutoff").val(),
             'mean_only_expressed':$("input[name='mean_only_expressed']:checked").val(),
+            'legendW':$('#DOTlegendW').val(),
+            'color':color,
             'figOpt':window.figOpt};
   $(".DOTbt").prop('disabled',true);
   document.getElementById("DOTspin").style.visibility="visible";
@@ -2160,6 +2371,11 @@ function TRAKplot(){
     grp = Object.keys(window.bioCombine);
     combGrp = window.bioCombine;
   }
+  var geneGrpColl = $("input[name='TRAKgeneGrpColl']:checked").val()
+  if( geneGrpColl== 'Yes'){
+    geneGrpColl = $("input[name='TRAKgeneGrpCollCal']:checked").val()
+  }
+
   var D = {'method':'TRAK',
             'cells':cells,
             'genes':genes,
@@ -2167,6 +2383,7 @@ function TRAKplot(){
             'abb':window.bioAbbr,
             'combine':combGrp,
             'geneGrp':geneSets,
+            'geneGrpColl':geneGrpColl,
             'figOpt':window.figOpt};
   $(".TRAKbt").prop('disabled',true);
   document.getElementById("TRAKspin").style.visibility="visible";
@@ -2229,6 +2446,10 @@ function DENSplot(){
     return;
   }
   
+  if($("#DENSsplit").val()==$("#DENSgrp").val()){
+    $('#DENSerror').text("Please choose different annotations for Split and Color!");
+    return;
+  }
   var category = [$("#DENSsplit").val(),$("#DENSgrp").val()];
   var combGrp = [];
   var grp= [];
@@ -2236,10 +2457,10 @@ function DENSplot(){
     grp = Object.keys(window.bioCombine);
     combGrp = window.bioCombine;
   }
-  if($("#DENSsplit").val()!="Custom_combine"){
+  if($("#DENSsplit").val()!="Custom_combine" && $("#DENSsplit").val()!='None'){
     grp.push($("#DENSsplit").val())
   }
-  if($("#DENSgrp").val()!="Custom_combine"){
+  if($("#DENSgrp").val()!="Custom_combine" && $("#DENSgrp").val()!='None'){
     grp.push($("#DENSgrp").val())
   }
 
@@ -2281,6 +2502,77 @@ function DENSplot(){
     }
   })
             
+}
+function DENS2Dplot(){
+  $('#DENS2Dnote').text("");
+  var cells=[], x = document.getElementsByClassName('DENS2Dcell');
+  for(i=0;i<x.length;i++){
+    if(x[i].checked){
+      if(!!window.store.getState().differential[x[i].value]){
+        if(cells.length==0){
+          cells = window.store.getState().differential[x[i].value];
+        }else{
+          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
+          tmp.set(cells);
+          tmp.set(window.store.getState().differential[x[i].value],cells.length);
+          cells = tmp;
+        }
+      }
+    }
+  }
+  if(cells.length==0){
+    $('#DENS2Dnote').text("Please use selection tools to put cells into groups");
+    return;
+  }
+  
+  var genes = [];
+  $(".DENS2Dgenes").each(function(){
+    if($(this).prop("checked")){
+      genes.push($(this).val());
+    }
+  })
+  if(genes.length!=2){
+    $('#DENS2Dnote').text("Please select two genes to plot");
+    return;
+  }
+
+  document.getElementById("DENS2Dspin").style.visibility="visible";
+  $(".DENS2Dbt").prop('disabled',true);
+  $(".DENS2DpngBT").prop('disabled',true);
+
+  var D = {'method':"DENS2D",
+            'cells':cells,
+            'genes':genes,
+            'grp':[],
+            //'layout':$("#DUALlayout").val(),
+            'cutoff':$("#DENS2Dcutoff").val(),
+            'bandwidth':$("#DENS2Dbandwidth").val(),
+            'figOpt':window.figOpt};
+  $.ajax({
+    type:"POST",
+    url: "/VIP",
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(res){
+      $(".DENS2Dbt").prop("disabled",false);
+      document.getElementById("DENS2Dspin").style.visibility="hidden";
+      if(res.startsWith('ERROR')){
+        $('#DENS2Dnote').text(res);
+        document.getElementById("DENS2Dfig").innerHTML = '';
+        return;
+      }
+
+      showImg('DENS2Dfig',res);
+      $(".DENS2DpngBT").prop('disabled',false);
+    },
+    error: function(request,status,error){
+      $('#DENS2Dnote').text(request.status+request.responseText);
+      document.getElementById("DENS2Dfig").innerHTML = '';// height="450" width="450"
+      $(".DENS2Dbt").prop("disabled",false);
+      document.getElementById("DENS2Dspin").style.visibility="hidden";
+    }
+  })
+  
 }
 function EMBEDplot(){
   $('#EMBEDnote').text("");
@@ -2485,6 +2777,7 @@ function SANKcheck(){
             //'geneGrp':geneSets,
             'grp':grp,
             'sankOrder':selSank,
+            'sankBin':$("#sankBin").val(),
             'imgW':$("#SANKw").val(),
             'imgH':$("#SANKh").val(),
             'abb':window.bioAbbr,
