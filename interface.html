@@ -162,7 +162,7 @@
       <button class="tablinks" onclick="save()">Save Session</button>
       <button class="tablinks" onclick="inputClick()">Load Session</button>
       <button class="tablinks" onclick="ABBRall()">Check All Annotations</button>
-      <button class="tablinks" onclick="sync();">Sync</button>
+      <button class="tablinks" onclick="selFun(event, 'SYNC');">Sync</button>
     </div>
   </div>
   <div id="separator" ></div>
@@ -690,6 +690,10 @@
       </table>
 
     </div><!--IMG-->
+
+    <div id="SYNC" class="tabcontent">
+      <p id="SYNCnote"></p>
+    </div><!--SYNC-->
 	  
   </div>
 </div>
@@ -972,9 +976,16 @@ function init(){
 
     const unsubscribe = window.store.subscribe(() => {
       if (window.store.getState()["@@undoable/filterState"].prevAction) {
-        actionType = window.store.getState()["@@undoable/filterState"].prevAction.type;
-        if (actionType.includes("user defined gene success") || actionType.includes("store current cell selection as differential set")) {
+        var action = window.store.getState()["@@undoable/filterState"].prevAction;
+        if (action.type.includes("user defined gene success") || action.type.includes("store current cell selection as differential set")) {
           sync();
+        }
+        if (action.type.includes("continuous metadata histogram")) {
+// console.log(action.type);
+          $('#SYNCnote').text(JSON.stringify(window.store.getState().continuousSelection));
+
+//          document.getElementById("histogram_"+action.selection).querySelectorAll("div")[1].querySelectorAll("span")[0].innerText = action.range[0].toFixed(2);
+//          document.getElementById("histogram_"+action.selection).querySelectorAll("div")[1].querySelectorAll("span")[1].innerText = action.range[1].toFixed(2);
         }
       }
     });
