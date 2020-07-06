@@ -11,6 +11,7 @@ cp interface.html $strPath/server/common/web/static/.
 if [ -n "$1" ]; then
 	echo "usually update once"
 	cp jquery-ui.min.js $strweb
-	cp color_map.png $strweb
+	cp color_*.png $strweb
 	cp volcano.R $strPath/server/app/.
+	cp Density2D.R $strPath/server/app/. 
 fi
