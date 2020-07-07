@@ -120,6 +120,7 @@ cp color_*.png $strweb
 
 cp -R DataTables $strweb
 cp -R jspanel $strweb
+cp -R ace $strweb
 
 cp cellxgene/server/test/decode_fbs.py $strPath/server/app/.
 cp VIPInterface.py $strPath/server/app/.

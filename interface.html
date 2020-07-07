@@ -136,6 +136,7 @@
         width: 60px;
       }
       input,textarea,select{ font-size: 14px; }
+      .ace_editor p,.ace_editor div,.ace_editor input,.ace_editor label,.ace_editor span,.ace_editor text {font-family: 'Monaco', 'Menlo', 'Droid Sans Mono', 'Courier New', monospace !important;}
     </style>
   </head>
 <body>
@@ -156,6 +157,7 @@
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'DEG')">DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
+      <button class="tablinks" onclick="selFun(event, 'CLI')">Command Line Interface</button>
       <hr size="1" noshade>
       <button class="tablinks" onclick="selFun(event, 'IMG')">Figure Option</button>
       <button class="tablinks" onclick="selFun(event, 'ABBR')">Comb. & Abbr.</button>
@@ -695,6 +697,14 @@
       <p id="SYNCnote"></p>
     </div><!--SYNC-->
 	  
+    <div id="CLI" class="tabcontent">
+      <button class="CLIbt"  onclick="CLIplot()"><b>Run</b> </button>
+      <button onclick="hideShow($('#CLIinput'),$(this));">Hide Input</button>
+      <div id="CLIinput" style="height:480px;"></div></div>
+      <p id="CLInote" style="color:red;"></p>
+      <div id="CLIspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+    </div><!--CLI-->
+	  
   </div>
 </div>
 
@@ -702,6 +712,7 @@
 
 <script type="text/javascript">
 var heatCell = 10000;
+var editor;
 function checkLoading(){
     if(!window.store || !window.store.getState().categoricalSelection){
       return false;
@@ -991,6 +1002,12 @@ function init(){
     });
     
     window.bioInit=true;
+
+    editor = ace.edit("CLIinput");
+    editor.setTheme("ace/theme/iplastic");
+    editor.getSession().setMode("ace/mode/python");
+    editor.getSession().setUseWrapMode(true);
+    editor.setFontSize("14px");
   }
   return true;
 }
@@ -2858,6 +2875,35 @@ function SANKimgSave(){
   })
   
 }
+function CLIplot(){
+  console.log(editor.getSession().getValue());
+/*
+  $(".CLIbt").prop('disabled',true);
+  document.getElementById("CLIspin").style.visibility="visible";
+  $.ajax({
+    type:"POST",
+    url: "/VIP",
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(res){
+      $(".CLIbt").prop("disabled",false);
+      document.getElementById("CLIspin").style.visibility="hidden";
+      if(res.startsWith('ERROR')){
+        $('#CLInote').text(res);
+        $('#CLIresize').text("");
+        return;
+      }
+      $('#CLIresize').html(res);
+
+    },
+    error: function(request,status,error){
+      $('#CLInote').text(request.status+request.responseText);
+      $(".CLIbt").prop("disabled",false);
+      document.getElementById("CLIspin").style.visibility="hidden";
+    }
+  })
+*/
+}
 //save and load
 function checkSave(eID){
   var notCK = [];
@@ -3104,5 +3150,6 @@ function load(){
 
 </script>
 <script type="text/javascript" src="static/DataTables/datatables.min.js"></script>
+<script type="text/javascript" src="static/ace/ace.js"></script>
 </body>
 </html>

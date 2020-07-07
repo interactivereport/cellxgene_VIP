@@ -12,6 +12,7 @@ if [ -n "$1" ]; then
 	echo "usually update once"
 	cp jquery-ui.min.js $strweb
 	cp color_*.png $strweb
+	cp -R ace $strweb
 	cp volcano.R $strPath/server/app/.
 	cp Density2D.R $strPath/server/app/. 
 fi
