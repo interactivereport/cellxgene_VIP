@@ -1,8 +1,11 @@
 <html>
   <head>
+    <!-- <script src="static/d3.min.js" charset="UTF-8">></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="UTF-8"></script>
     <!-- for datatables -->
     <link rel="stylesheet" type="text/css" href="static/DataTables/datatables.min.css">
     <script src="static/jquery-ui.min.js"></script>
+    
     <style>
       #sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
       #sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; cursor:move; }
@@ -37,6 +40,34 @@
       }
       #separator, #panel-left, #panel-right {
           vertical-align: top; 
+      }
+      #vis {
+          margin: 100px;
+          position: relative;
+      }
+      .axis path,
+      .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+      }
+      .fly-in {
+        font-size: 8px;
+  
+      }
+      .axis .tick line {
+        stroke: #ccc;
+        /*opacity: 0.5;*/
+        pointer-events: none;
+      }
+      /*.axis .minor  line{*/
+          /*stroke: red;*/
+      /*}*/
+      .highlight {
+        font-weight: bold ;
+      }
+      svg {
+        overflow: visible;
       }
 
       .block {
@@ -154,6 +185,7 @@
       <button class="tablinks" onclick="selFun(event, 'DENS2D')">2D Density</button>
       <button class="tablinks" onclick="selFun(event, 'DUAL')">Dual Genes</button>
       <button class="tablinks" onclick="selFun(event, 'SANK')">Sankey Diagram</button>
+      <button class="tablinks" onclick="selFun(event, 'STACBAR')">Stacked Barplot</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'DEG')">DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
@@ -569,7 +601,7 @@
           <label><input class="SANKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="SANKcellN1" style="color:red">0</span>)</label>
           <label><input class="SANKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="SANKcellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose genes: <input type="checkbox" checked onclick="$('.SANKgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p>Choose genes: <input type="checkbox" checked onclick="$('.SANKgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="SANKgene"></p>
         <!-- <p>Choose user-defined gene sets:</p><p id="SANKgeneGrp"></p> -->
         <p>Number of equally divided gene expression ranges: <input id="sankBin" type="number" step="1" value="5"/></p>
@@ -585,7 +617,7 @@
       </div>
       <button class="SANKbt"  onclick="SANKplot()"><b>Plot</b> </button>
       <button onclick="hideShow($('#SANKinput'),$(this));">Hide Input</button>
-      <button class="SANKbt" style="float:right;" onclick="for (let item of document.getElementsByClassName('node-label-guide')) {item.setAttribute('style', 'display:none');}; var a = document.createElement('a'); a.href = 'data:application/octet-stream;base64,' + btoa(document.getElementsByClassName('main-svg')[0].outerHTML); a.download = 'Sankey.svg'; a.click();">Save as SVG</button></p>
+      <button class="SANKbt" style="float:right;" onclick="for (let item of document.getElementsByClassName('node-label-guide')) {item.setAttribute('style', 'display:none');}; var a = document.createElement('a'); a.href = 'data:application/octet-stream;base64,' + btoa(document.getElementsByClassName('main-svg')[0].outerHTML); a.download = 'Sankey.svg'; a.click();">Save as SVG</button>
 
       <p id="SANKnote" style="color:red;"></p>
       <div id="SANKspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
@@ -614,7 +646,7 @@
           <option value='rank'>Wilcoxon rank sum</option>
           <option value='wald'>Wald test</option>
         </select></p>
-        <p>Select genes to be marked in the volcano plot: <input type="checkbox" onclick="$('.DEGgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p>Select genes to be marked in the volcano plot: <input type="checkbox" onclick="$('.DEGgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="DEGgene"></p>
       </div>
       
@@ -631,6 +663,39 @@
         <p id="DEGfig"></p>
       </div>
     </div><!--DEG-->
+    
+    <div id='STACBAR' class='tabcontent'>
+<!--       
+      <script src="static/select.js"></script>
+      <script src="static/plot-transform.js"></script>
+      <script src="static/endAll.js"></script> -->
+      <script src="https://gitcdn.xyz/repo/cool-Blue/d3-lib/master/inputs/select/select.js" charset="UTF-8"></script>
+      <script src="https://gitcdn.xyz/repo/cool-Blue/d3-lib/master/plot/plot-transform-2.0.0/plot-transform.js" charset="UTF-8"></script>
+      <script src="https://gitcdn.xyz/repo/cool-Blue/d3-lib/master/transitions/end-all/endAll.js" charset="UTF-8"></script>
+      
+      <div id="STACBARinput">
+        <h3>Starked Dynamic Barplot of cell numbers on selected cells for selected annotation and/or genes</h3>
+        <p>Choose cell set(s):
+          <label><input class="STACBARcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="STACBARcellN1" style="color:red">0</span>)</label>
+          <label><input class="STACBARcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="STACBARcellN2" style="color:red">0</span>)</label>
+        </p>
+        <p>Choose two from the following:</p>
+        <p>Genes:<p id="STACBARgene"></p>
+        <div id='STACBARgeneSel'>
+          <p>Number of equally divided gene expression ranges: <input id="STACBARbin" type="number" step="1" value="5"/></p>
+        </div>
+        <p>Annotations:</p><p id="STACBARgrp"></p>
+        <p>Color by <select id="STACBARcol"></select></p>
+
+      </div>
+      
+      
+      <button class="STACBARbt"  onclick="STACBARplot()"><b>Plot</b> </button>
+      <button onclick="hideShow($('#STACBARinput'),$(this));">Hide Input</button>
+      <p id="STACBARnote" style="color:red;"></p>
+      <div id="STACBARspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+      <div id='STACBARresize' style="height: 'auto'; width: 'auto'; padding: 0.5em;"></div>
+    </div><!--STACBAR -->
     
     <div id="IMG" class="tabcontent">
       <div><p>Scale data to unit variance for plotting: 
@@ -700,12 +765,12 @@
     <div id="CLI" class="tabcontent">
       <button class="CLIbt"  onclick="CLIplot()"><b>Run</b> </button>
       <button onclick="hideShow($('#CLIinput'),$(this));">Hide Input</button>
-      <div id="CLIinput" style="height:480px;"></div></div>
+      <div id="CLIinput" style="height:480px;"></div>
       <p id="CLInote" style="color:red;"></p>
       <div id="CLIspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
     </div><!--CLI-->
-	  
   </div>
+	  
 </div>
 
 <!-- <button class="block" onclick="sync()">Refresh</button> -->
@@ -855,6 +920,7 @@ function cellNupdate(){
   $('#DENScellN1').text(n1);
   $('#DENS2DcellN1').text(n1);
   $('#SANKcellN1').text(n1);
+  $('#STACBARcellN1').text(n1);
 
   $('#MARKcellN2').text(n2);
   $('#SGVcellN2').text(n2);
@@ -869,6 +935,7 @@ function cellNupdate(){
   $('#DENScellN2').text(n2);
   $('#DENS2DcellN2').text(n2);
   $('#SANKcellN2').text(n2);
+  $('#STACBARcellN2').text(n2);
 }
 
 //Page Initial functions
@@ -925,6 +992,7 @@ function init(){
     var densS = document.getElementById("DENSsplit");
     var densG = document.getElementById("DENSgrp");
     var embed = document.getElementById("EMBEDsplit");
+
     for(const one of grps){
       if (one.startsWith(">")) continue; 
       sgv.add(createOpt(one));
@@ -953,10 +1021,12 @@ function init(){
       if (one.startsWith(">")) continue; 
       htmlCheck += '<label><input class="eIDgrps" type="checkbox" value="'+one+'"/> '+one+' ('+grpL[one].numCategoryValues+')</label>';
     }  
-    //HEAT, EMBED
+    //HEAT, EMBED, SANK, STACBAR
     $('#HEATgrp').html(htmlCheck.replace(/eID/g,'HEAT'));
     $('#EMBEDgrp').html(htmlCheck.replace(/eID/g,'EMBED'));
     $('#SANKgrp').html(htmlCheck.replace(/eID/g,'SANK').replace(/value/g,'onchange="SANKorderUpdate()" value'));
+    $('#STACBARgrp').html(htmlCheck.replace(/eID/g,'STACBAR').replace(/value/g,'onchange="STACBARref()" value'));
+    
     
     //SANK
     $("#SANKorderGrp").hide();
@@ -1029,6 +1099,7 @@ function sync(){
   DENSref();
   DENS2Dref();
   SANKref();
+  STACBARref();
 }
 function ABBRref(){
 }
@@ -1309,11 +1380,7 @@ function DUALref(){
     }
   })
   if(iEnabled>1){
-    $(".DUALgenes").each(function(){
-      if($(this).prop("checked")==false){
-        $(this).prop("disabled",true);
-      }
-    })
+    $(".DUALgenes:checkbox:not(:checked)").prop("disabled",true);
   }else{
     $('.DUALgenes').prop("disabled",false);
   }
@@ -1355,6 +1422,36 @@ function SANKorderHide(){
   $("#SANKorderGrp").hide();
 	document.getElementById("SANKorderBTh").style.display="none";
   document.getElementById("SANKorderBTs").style.display="inline";
+}
+function STACBARref(){
+  showGene('STACBAR','onchange="STACBARref()"','');
+  var iEnabled=0;
+  $("#STACBARcol").empty();
+  var colSel = document.getElementById("STACBARcol");
+  $(".STACBARgenes").each(function(){
+    if($(this).prop("checked")){
+      iEnabled++;
+      colSel.add(createOpt($(this).val()));
+    }
+  })
+  $("#STACBARgeneSel").hide();
+  if(iEnabled>0){
+    $("#STACBARgeneSel").show();
+  }
+  $(".STACBARgrps").each(function(){
+    if($(this).prop("checked")){
+      iEnabled++;
+      colSel.add(createOpt($(this).val()));
+    }
+  })
+  if(iEnabled>1){
+    $(".STACBARgenes:checkbox:not(:checked)").prop("disabled",true);
+    $(".STACBARgrps:checkbox:not(:checked)").prop("disabled",true);
+  }else{
+    $(".STACBARgenes").prop("disabled",false);
+    $(".STACBARgrps").prop("disabled",false);
+  }
+
 }
 function DEGref(){
   showGene('DEG',"","");
@@ -2875,6 +2972,75 @@ function SANKimgSave(){
   })
   
 }
+function STACBARplot(){
+  $('#STACBARnote').text("");
+  var cells=[], x = document.getElementsByClassName('STACBARcell');
+  for(i=0;i<x.length;i++){
+    if(x[i].checked){
+      if(!!window.store.getState().differential[x[i].value]){
+        if(cells.length==0){
+          cells = window.store.getState().differential[x[i].value];
+        }else{
+          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
+          tmp.set(cells);
+          tmp.set(window.store.getState().differential[x[i].value],cells.length);
+          cells = tmp;
+        }
+      }
+    }
+  }
+  if(cells.length==0){
+    $('#STACBARnote').text("Please use selection tools to put cells into groups");
+    return;
+  }
+  var genes =getGenes('STACBAR');
+  //var geneSets = getGeneSet('SANK');
+  var grp = [];
+  $(".STACBARgrps:checkbox:checked").each(function(){
+    grp.push($(this).val());
+  })
+  if((genes.length+grp.length)<2){
+    $('#STACBARnote').text("Please select at least two features (genes and/or annotations) to plot");
+    return;
+  }
+
+  var D = {'method':'STACBAR',
+            'cells':cells,
+            'genes':genes,
+            'grp':grp,
+            'colorBy':$("#STACBARcol").val(),
+            'Nbin':$("#STACBARbin").val(),
+            'abb':window.bioAbbr,
+            'figOpt':window.figOpt};
+
+  $(".STACBARbt").prop('disabled',true);
+  document.getElementById("STACBARspin").style.visibility="visible";
+  $("#STACBARresize").html("");
+  $.ajax({
+    type:"POST",
+    url: "/VIP",
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(res){
+      $(".STACBARbt").prop("disabled",false);
+      document.getElementById("STACBARspin").style.visibility="hidden";
+      if(res.startsWith('ERROR')){
+        $('#STACBARnote').text(res);
+        $('#STACBARresize').text("");
+        return;
+      }
+      res = JSON.parse(res);
+      stackBar('STACBARresize',res);
+    },
+    error: function(request,status,error){
+      $('#STACBARnote').text(request.status+request.responseText);
+      $(".STACBARbt").prop("disabled",false);
+      document.getElementById("STACBARspin").style.visibility="hidden";
+
+    }
+  })
+  
+}
 function CLIplot(){
   console.log(editor.getSession().getValue());
 /*
@@ -3146,6 +3312,588 @@ function load(){
   };
   reader.readAsText($("#loadfile")[0].files[0]);
   
+}
+
+function stackBar(aID,dataSet1){
+
+  var width       = 760,
+      height      = 300,
+      padding     = {left: 5, right: 200, top: 0, bottom: 30},
+      xRangeWidth = width - padding.left - padding.right,
+      yRangeHeight = height - padding.top - padding.bottom;
+  
+  var vis = d3.select("#"+aID).append("div").attr({
+          margin: "auto",
+          id: "vis"
+      }),
+      svg = vis
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height)
+      .append("g")
+      .attr("transform", "translate(" + [padding.left, padding.top] + ")");
+/*
+  dataSet1 = [
+          {
+              name: "PC",
+              sales: [{year: 2005, profit: 3000, label: "A"},
+                  {year: 2006, profit: 1300, label: "B"},
+                  {year: 2007, profit: 3700, label: "C"},
+                  {year: 2008, profit: 4900, label: "D"},
+                  {year: 2009, profit: 700, label: "E"}]
+          },
+          {
+              name: "SmartPhone",
+              sales: [{year: 2005, profit: 2000, label: "A"},
+                  {year: 2006, profit: 4000, label: "B"},
+                  {year: 2007, profit: 1810, label: "C"},
+                  {year: 2008, profit: 6540, label: "D"},
+                  {year: 2009, profit: 2820, label: "E"}]
+          },
+          {
+              name: "Software",
+              sales: [{year: 2005, profit: 1100, label: "A"},
+                  {year: 2006, profit: 1700, label: "B"},
+                  {year: 2007, profit: 1680, label: "C"},
+                  {year: 2008, profit: 4000, label: "D"},
+                  {year: 2009, profit: 4900, label: "E"}]
+          }
+      ];
+*/
+  var offsetSelect = d3.ui.select({
+          base: vis,
+          before: "svg",
+          style: {position: "absolute", left: width - padding.right + 15 + "px", top: yRangeHeight + "px"},
+          onchange: function() {
+            console.log('offsetSelect change');
+              update(dataSet1);
+          },
+          data: ["wiggle", "zero", "expand", "silhouette"]
+      }),
+      orderSelect  = d3.ui.select({
+          base: vis,
+          before: "svg",
+          style: {position: "absolute", left: width - padding.right + 15 + "px", top: yRangeHeight - 20 + "px"},
+          onchange: function() {
+            console.log('orderSelect change');
+              update(dataSet1)
+          },
+          data: ["inside-out", "default", "reverse"]
+      }),
+      stack        = d3.layout.stack()
+          .values(function(d) { return d.sales; })
+          .x(function(d) { return d.year; })
+          .y(function(d) { return d.profit; })
+          .out(function out(d, y0, y) {
+            //console.log(d);
+            //if(isNaN(y0)){
+            // y0=0;  
+            //}
+            d.p0 = y0;
+            d.y = y;
+          }
+      );
+  // x Axis
+  var xPadding = {inner: 0.1, outer: 0.3},
+      xScale   = d3.scale.ordinal()
+          .rangeBands([0, xRangeWidth], xPadding.inner, xPadding.outer),
+      xAxis    = d3.cbPlot.d3Axis()
+          .scale(xScale)
+          .orient("bottom"),
+      gX       = svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform","translate(0," + yRangeHeight + ")")
+          //.call(xAxis)
+          //.selectAll("text")
+          //.style("text-anchor", "end")
+          //.attr("dx", "-.8em")
+          //.attr("dy", ".15em")
+          //.attr("transform", "rotate(90)");
+  // y Axis
+  var yAxisScale = d3.scale.linear()
+          .range([yRangeHeight, 0]),
+      yAxis      = d3.cbPlot.d3Axis()
+          .scale(yAxisScale)
+          .orient("left")
+          .tickSubdivide(2),
+      gY         = svg.append("g")
+          .attr("class", "y axis")
+          .style({"pointer-events": "none", "font-size": "12px"}),
+      yAxisTransition = 1000;
+  
+  var yPlotScale = d3.scale.linear()
+      .range([0, yRangeHeight]);
+  
+  var color = d3.scale.category10();
+  
+  function update(dataSet) {
+      // create an array of normalised layers and
+      // add the normalised values onto the data
+      var normData     = stack.offset("expand")(dataSet)
+              .map(stack.values())
+              .map(function(s) {
+                  return s.map(function(p) {return p.yNorm = p.y})
+              });
+      console.log('test1');
+      var stackedData  = stack.offset(offsetSelect.value())
+              .order(orderSelect.value())(dataSet);
+      console.log(stackedData);
+      console.log("test2");
+      var maxY         = d3.max(stackedData, function(d) {
+              return d3.max(d.sales, function(s) {
+                  return s.profit + s.p0
+              })
+          }),
+          years        = stackedData[0].sales.map(stack.x()),
+          yearlyTotals = years.reduce(function(t, y) {
+              return (t[y] = d3.sum(stackedData, function(o) {
+                  return o.sales.filter(function(s) {
+                      return s.year == y
+                  })[0].profit
+              }), t)
+          }, {});
+      //console.log(stackedData);
+      xScale.domain(years);
+      yAxisScale.reset = function(){
+          this.domain([0, offsetSelect.value() == "expand" ? 1 : maxY])
+              .range([yRangeHeight, 0])
+              .ticks(10)
+      };
+      yAxisScale.reset();
+      yPlotScale.domain(yAxisScale.domain());
+  
+      // plotArea
+      // (svg) -> (g.plotArea)[stackedData]
+      // apply a transform to map screen space to cartesian space
+      // this removes all confusion and mess when plotting data!
+      var plotArea = svg.selectAll(".plotArea")
+          .data([stackedData]);
+      plotArea.enter().insert("g", ".axis")
+          .attr(d3.cbPlot.transplot(yRangeHeight))
+          .attr("class", "plotArea");
+  
+      /*
+       plotArea.series
+  
+       (g.plotArea)[stackedData]      xF transPlot
+       ?data d
+        \
+         `+-> (g.plotArea.series)[stackedData[0]]
+        :
+        :
+        \
+         `+-> (g.plotArea.series)[stackedData[m]]
+      */
+      plotArea.series = plotArea.selectAll(".series")
+          .data(ID);
+      plotArea.series.enter()
+          .append("g")
+          .attr("class", "series");
+      plotArea.series.style("fill", function(d, i) {
+          return color(i);
+      });
+      plotArea.series.exit().remove();
+      Object.defineProperties(plotArea.series, d3._CB_selection_destructure);
+  
+      /*
+       plotArea.series.components
+  
+       (g.series)[stackedData[0]]
+       ?data d3.entries(d)
+        \
+         `+-> (g.name)[stackedData[0].name]
+          +-> (g.sales)[stackedData[0].sales]
+       :
+       :
+       (g.series)[stackedData[m]]
+       ?data d3.entries(d)
+        \
+         `+-> (g.name)[stackedData[m].name]
+          +-> (g.sales)[stackedData[m].sales]
+      */
+      plotArea.series.components = plotArea.series.selectAll(".components")
+          .data(function(d) {
+              return d3.entries(d);
+          });
+      plotArea.series.components.enter().append("g")
+          .attr("class", function(d){return d.key})
+          .classed("components", true);
+      plotArea.series.components.exit().remove();
+      /*
+       plotArea.series.components.values
+  
+       (g.series)[stackedData[0]]
+        \
+         `+-> (g.sales)[stackedData[0].sales]
+        :
+        :
+       (g.series)[stackedData[m]]
+        \
+         `+-> (g.sales)[stackedData[m].sales]
+      */
+  
+      plotArea.series.components.values = plotArea.series.components.filter(function(d){
+          return d.key == "sales"
+      });
+      Object.defineProperties(plotArea.series.components.values, d3._CB_selection_destructure);
+      /*
+       plotArea.series.components.labels
+  
+       (g.series)[stackedData[0]]
+       \
+        `+-> (g.name)[stackedData[0].name]      xF transPlot
+       :
+       :
+       (g.series)[stackedData[m]]
+       \
+        `+-> (g.name)[stackedData[m].name]      xF transPlot
+  
+       */
+  
+      plotArea.series.components.labels = plotArea.series.components.filter(function(d){
+          return d.key == "name"
+      })
+          // reverse the plotArea transform (it is it's own inverse)
+          .attr(d3.cbPlot.transplot(yRangeHeight));
+      Object.defineProperties(plotArea.series.components.labels, d3._CB_selection_destructure);
+  
+      var s         = xScale.rangeBand(),
+          w         = s - xPadding.inner,
+          drag = d3.behavior.drag()
+              .on("dragstart", mouseOver),
+  
+          /*
+           plotArea.series.components.values.points
+  
+           (g.sales)[stackedData[0].sales]    * on mouseover; * on mouseout; * bH drag
+           ?data d.value
+           \
+            `+-> (rect.point)[stackedData[0].sales.value[0]
+             :
+             +-> (rect.point)[stackedData[0].sales.value[n]
+  
+           :
+           :
+  
+           (g.sales)[stackedData[m].sales]    * on mouseover; * on mouseout; * bH drag
+           ?data d.value
+            \
+             `+-> (rect.point)[stackedData[m].sales.value[0]
+              :
+              +-> (rect.point)[stackedData[m].sales.value[n]
+  
+           */
+          points = plotArea.series.components.values.points = plotArea.series.components.values.selectAll("rect")
+              .data(function(d){
+                  return d.value
+              });
+      points.enter()
+          .append("rect")
+          .attr({width: w, class: "point"})
+          .on("mouseover", mouseOver)
+          .on("mouseout", mouseOut)
+          .call(drag);
+      points.transition()
+          .attr("x", function(d) {
+              return xScale(d.year);
+          })
+          .attr("y", function(d) {
+              return yPlotScale(d.p0);
+          })
+          .attr("height", function(d) {
+              return yPlotScale(d.y);
+          })
+          .attr("stroke", "white");
+  
+      points.exit().remove();
+      Object.defineProperties(plotArea.series.components.values.points, d3._CB_selection_destructure);
+  
+      gX.transition().call(xAxis);
+      gY.transition().call(yAxis);
+  
+      function mouseOver(pointData, pointIndex, groupIndex) {
+          console.log(["in", pointIndex].join("\t"));
+          var selectedYear = pointData.year,
+              // wrap the node in a selection with the proper parent
+              plotData = plotArea.series.components.values.data,
+              seriesData = plotData[groupIndex],
+              currentYear = d3.transpose(plotData)[pointIndex],
+              point         = plotArea.series.components.values.points.nodes[groupIndex][pointIndex];
+          // if the plot is not normalised, fly-in the axis on the selected year
+          if(offsetSelect.value() != "expand") {
+              yAxisScale.reset();
+              // get the zero offset for the fly-in axis
+              var pMin        = d3.min(currentYear, function(s) {
+                      return s.p0
+                  }),
+                  refP0 = seriesData[pointIndex].p0,
+                  selectedGroupHeight = d3.sum(currentYear, function(d) {return d.y}),
+                  // set the range and domain height for the selected year
+                  localDomain = [0, selectedGroupHeight].map(function(d){return d + pMin - refP0}),
+                  localRange  = [0, selectedGroupHeight].map(function(d) {return yAxisScale(d + pMin)});
+              console.log(yAxisScale(pMin));
+              yAxisScale
+                  .domain(localDomain)
+                  .range(localRange);
+              // apply the changes to the y axis and manage the ticks
+              gY.transition("axis")
+                  .duration(yAxisTransition)
+                  .call(yAxis.ticks(+(Math.abs(localRange[0] - localRange[1]) / 15).toFixed()))
+                  .attr("transform", "translate(" + point.attr("x") + ",0)")
+                  .style({"font-size": "8px"})
+                  .call(function(t) {d3.select(t.node()).classed("fly-in", true)});
+              // align the selected series across all years
+              points.transition("points")
+                  .attr("y", alignY(seriesData[pointIndex].p0, groupIndex))
+                  .call(endAll, toolTip)
+          } else window.setTimeout(toolTip, 0);  // if not expand
+  
+          // manage the highlighting
+          //  points highlighting
+          plotArea.series.transition("fade")
+              .attr("opacity", function(d, i) {
+                  return i == groupIndex ? 1 : 0.5;
+              });
+          //  x axis highlighting
+          d3.selectAll(".x.axis .tick")
+              .filter(function(d) {
+                  return d == selectedYear
+              })
+              .classed("highlight", true);
+  
+          // move the selected element to the front
+          d3.select(this.parentNode)
+              .moveToFront();
+          gX.moveToFront();
+  
+  
+          legendText(groupIndex);
+  
+          // Tooltip
+          function toolTip() {
+              plotArea.series
+                  .append("g")
+                  .attr("class", "tooltip")
+                  .attr("transform", "translate(" + [point.attr("x"), point.attr("y")] + ")")
+                  .append("text")
+                  .attr(d3.cbPlot.transflip())
+                  .text(d3.format(">8.0%")(pointData.yNorm))
+                  .attr({x: "1em", y: -point.attr("height") / 2, dy: ".35em", opacity: 0})
+                  .transition("tooltip").attr("opacity", 1)
+                  .style({fill: "black", "pointer-events": "none"})
+          }
+      }
+      function mouseOut(d, nodeIndex, groupIndex) {
+          //console.log(["out", nodeIndex].join("\t"));
+          var year = d.year;
+          d3.selectAll(".x.axis .tick")
+              .filter(function(d) {
+                  return d == year
+              })
+              .classed("highlight", false);
+          plotArea.series.transition("fade")
+              .attr({opacity: 1});
+          var g = plotArea.series.components.labels.nodes[groupIndex][0].select("text");
+          g.classed("highlight", false);
+          g.text(g.text().split(":")[0])
+          yAxisScale.reset();
+          gY.selectAll(".minor").remove();
+          gY.transition("axis").call(yAxis)
+              .attr("transform", "translate(0,0)")
+              .style({"font-size": "12px"})
+              .call(function(t) {d3.select(t.node()).classed("fly-in", false)});
+          plotArea.series.selectAll(".tooltip")
+              .transition("tooltip")
+              .attr({opacity: 0})
+              .remove();
+          points.transition("points").attr("y", function(d) {
+              return yPlotScale(d.p0);
+          })
+      };
+  
+      /*
+       plotArea.series.components.labels
+  
+       (g.name)[stackedData[0].name]
+       ?data
+       \
+        `+-> (g.label)[stackedData[0].name.value      xF transPlot
+  
+       :
+       :
+  
+       (g.name)[stackedData[m].name]
+       ?data
+       \
+        `+-> (g.label)[stackedData[m].name.value      xF transPlot
+  
+       */
+  
+      // Add the legend inside the series containers
+      // The series legend is wrapped in another g so that the
+      // plot transform can be reversed. Otherwise the text would be mirrored
+      var labHeight = 40,
+          labRadius = 10;
+  
+      /*
+       plotArea.series.components.labels.circles
+  
+       (g.name)[stackedData[0].name]      xF transPlot
+       ?data [d.value]
+       \
+        `+-> (circle)[stackedData[0].name.value]
+  
+       :
+       :
+  
+       (g.name)[stackedData[m].name]      xF transPlot
+       ?data [d.value]
+       \
+        `+-> (circle)[stackedData[0].name.value]
+  
+       */
+      // add the marker and the legend text to the normalised container
+      // push the stackedData (name) down to them
+      var labelCircle = plotArea.series.components.labels.selectAll("circle")
+              .data(function(d){return [d.value]}),
+          // take a moment to get the series order delivered by stack
+          orders      = stackedData.map(function(d) { // simplify the form
+              return {name: d.name, base: d.sales[0].p0}
+          }).sort(function(a, b) {        // get a copy, sorted by p0
+              return a.base - b.base
+          }).map(function(d) {            // convert to index permutations
+              return stackedData.map(function(p) {
+                  return p.name
+              }).indexOf(d.name)
+          }).reverse();                   // convert to screen y ordinate
+      labelCircle.enter().append("circle")
+          .on("mouseover", function(pointData, pointIndex, groupIndex) {
+              var node = this,
+                  typicalP0 = d3.median(plotArea.series.components.values.data[groupIndex],
+                  function(d){return d.p0});
+              plotArea.series.components.values.points.transition("points")
+                  .attr("y", alignY(typicalP0, groupIndex));
+              plotArea.series.transition("fade")
+                  .attr("opacity", function(d) {
+                      return d === d3.select(node.parentNode.parentNode).datum() ? 1 : 0.5;
+                  });
+              legendText(groupIndex);
+          })
+          .on("mouseout", function(pointData, pointIndex, groupIndex) {
+              plotArea.series.transition("fade")
+                  .attr({opacity: 1});
+              plotArea.series.components.values.points.transition("points").attr("y", function(d) {
+                  return yPlotScale(d.p0);
+              })
+          });
+      labelCircle.attr("cx", xRangeWidth + 20)
+          .attr("cy", function(d, i, j) {
+              return labHeight * orders[j];
+          })
+          .attr("r", labRadius);
+  
+      /*
+  
+       plotArea.series.components.labels.text
+  
+       (g.name)[stackedData[0].name]      xF transPlot
+       ?data [d.value]
+       \
+       `+-> (text)[stackedData[0].name.value]
+  
+       :
+       :
+  
+       (g.name)[stackedData[m].name]      xF transPlot
+       ?data [d.value]
+       \
+       `+-> (text)[stackedData[0].name.value]
+  
+       */
+      var labelText = plotArea.series.components.labels.selectAll("text")
+          .data(function(d){return [d.value]});
+      labelText.enter().append("text");
+      labelText.attr("x", xRangeWidth + 40)
+          .attr("y", function(d, i, j) {
+              return labHeight * orders[j];
+          })
+          .attr("dy", labRadius / 2)
+          .text(function(d) {
+              return d;
+          });
+  
+      function legendText(groupIndex){
+          // Legend text
+          // add the value for the moused over item to the legend text and
+          // highlight it
+          var labelText = plotArea.series.components.labels.nodes[groupIndex][0].select("text"),
+              seriesData = plotArea.series.components.values.data[groupIndex],
+              fmt           = [">8,.0f", ">8.0%"][(offsetSelect.value() == "expand") * 1];
+          labelText.classed("highlight", true);
+          labelText.text(labelText.datum().value + ": " + d3.format(fmt)(
+                  offsetSelect.value() != "expand" ?
+                  d3.sum(seriesData, stack.y()) :
+                  d3.sum(seriesData, function(s) {
+                      var totalSales = d3.sum(d3.values(yearlyTotals));
+                      return s.y * yearlyTotals[s.year] / totalSales
+                  })
+              ));
+      }
+      function alignY(p0, series) {
+          var offsets = plotArea.series.components.values.data[series].map(function(d) {
+              return p0 - d.p0;
+          });
+          return function(d, i) {
+              return yPlotScale(d.p0 + offsets[i]);
+          }
+      }
+  
+      function aID(d) {
+          return [d];
+      }
+      function ID(d) {
+          return d;
+      }
+  }
+  
+  d3.selection.prototype.moveToFront = function() {
+      return this.each(function() {
+          this.parentNode.appendChild(this);
+      });
+  };
+  d3._CB_selection_destructure = {
+      "nodes": {
+          get: function() {
+              return this.map(function(g) {
+                  return g.map(function(n) {
+                      return d3.select(n)
+                  })
+              })
+          }
+      },
+      data: {
+          get: function() {
+              return this.map(function(g) {
+                  return d3.select(g[0]).datum().value
+              })
+          }
+      }
+  };
+  
+  console.log('test3');
+  update(dataSet1);
+/*
+  window.setTimeout(function(){
+      update(dataSet1.map(function(d) {
+          return {
+              name: d.name, sales: d.sales.map(function(y) {
+                  return {year: y.year, profit: y.profit / 2}
+              })
+          }
+      })
+      )
+  },1000)
+*/
 }
 
 </script>

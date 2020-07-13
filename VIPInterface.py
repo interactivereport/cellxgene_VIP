@@ -273,7 +273,8 @@ def distributeTask(aTask):
     'MINX':MINX,
     'DENS':DENS,
     'DENS2D':DENS2D,
-    'SANK':SANK
+    'SANK':SANK,
+    'STACBAR':STACBAR
   }.get(aTask,errorTask)
 
 def iostreamFig(fig):
@@ -987,6 +988,36 @@ def DENS2D(data):
   
   return img
 
+def toInt(x):
+  if len(x)==0:
+    return 0
+  return int(x)
+  
+def STACBAR(data):
+  if len(data['genes'])==0:
+    tmp, D = getObs(data)
+    D = D.apply(lambda x:x.apply(lambda y:x.name+":"+y))
+  else:
+    adata = createData(data)
+    D = pd.concat([adata.obs.apply(lambda x:x.apply(lambda y:x.name+":"+y)),
+                   adata.to_df().apply(lambda x:pd.cut(x,int(data['Nbin'])).apply(lambda y:x.name+":"+'%.1f_%.1f'%(y.left,y.right)))],
+                  axis=1,sort=False)
+  D = D.astype('str').astype('category')
+  if 'name_0' in D.columns:
+    del D['name_0']
+  cellN = D.groupby(list(D.columns)).size().reset_index(name="Count")
+  
+  strCol = data['colorBy']
+  tmp = list(D.columns)
+  tmp.remove(strCol)
+  strX = tmp[0]
+  returnD = [{'name':i,
+              'sales':[{'year':j,#.replace(strX+':',''),
+                        'profit':toInt(cellN[(cellN[strCol]==i) & (cellN[strX]==j)]['Count'])}
+                        for j in cellN[strX].unique()]}
+              for i in cellN[strCol].unique()]
+  return json.dumps(returnD)
+  
 def version():
   print("1.0.8")
   ## 1.0.2: April 27, 2020
