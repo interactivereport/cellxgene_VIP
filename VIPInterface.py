@@ -679,7 +679,7 @@ def TRACK(data):
   ax = sc.pl.tracksplot(adata,data['genes'],groupby=data['grp'][0],figsize=(w,h),
                         var_group_positions=data['grpLoc'],var_group_labels=data['grpID'],
                         show=False)
-  fig=ax[0].figure
+  fig=ax['track_axes'][0].figure
   return iostreamFig(fig)
 
 def cut(x,cutoff,anno):
