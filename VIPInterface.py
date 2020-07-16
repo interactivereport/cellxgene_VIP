@@ -40,7 +40,7 @@ def route(data,appConfig=None):
     data["url"] = f'http://127.0.0.1:8888/{api_version}'
   else:
     data = json.loads(str(data,encoding='utf-8'))
-    data["url"] = f'http://{appConfig.server__host}:{appConfig.server__port}/{api_version}'
+    data["url"] = f'http://localhost:{appConfig.server__port}/{api_version}'#{appConfig.server__host}
   #ppr.pprint(data['figOpt']) 
   if 'figOpt' in data.keys():
     setFigureOpt(data['figOpt'])
@@ -187,54 +187,6 @@ def cleanAbbr(data):
         else:
           data['abb'][cate] = {key:"Other" for key in data['abb'][cate].keys()}
   return updated
-
-def ajaxData(strData):
-  with open(strData,'rb') as f:
-    data=pickle.load(f)
-
-  url = data['url']#'http://127.0.0.1:8888/api/v0.2'
-  genes = data['genes']#['BTK','SALL1']
-  #import random
-  #cix = random.sample(range(40000),10000)
-  cells = data['cells']#{str(x):cix[x] for x in range(len(cix))}
-  layout= data['layouts']#['umap_harmony','umap_liger']
-  grps = data['grps']#['cell_type','diagnosis']
-  
-  ## 
-  headers = {'content-type':'application/json'}
-  #### obtain the expression -------------
-  res = requests.get('%s/annotations/var' % url,params={'annotation-name':'name_0'})
-  gNames = decode_fbs.decode_matrix_FBS(res.content)['columns'][0]
-  fil = json.dumps({'filter':{'var':{'annotation_value':[{'name':'name_0','values':genes}]}}})
-  res = requests.put('%s/data/var' % url,fil,headers=headers)    
-  expr = decode_fbs.decode_matrix_FBS(res.content)  
-  cNames = ["cell%d" % x for x in cells.values()]
-  expr = pd.DataFrame([[expr['columns'][i][x] for x in cells.values()] for i in range(len(expr['columns']))],
-                          index=[gNames[x] for x in expr['col_idx']],columns=cNames).T
-  
-  #### obtain the layout -------------
-  layX = {}
-  if len(layout)>0:
-    for one in layout:
-      res = requests.get('%s/layout/obs' % url,params={'layout-name':one})
-      embed= decode_fbs.decode_matrix_FBS(res.content)
-      embed = pd.DataFrame([[embed['columns'][i][x] for x in cells.values()] for i in range(len(embed['columns']))],
-                            index=embed['col_idx'],columns=cNames).T
-      layX['X_%s'%one]=embed.to_numpy()
-  
-  ## obtain the meta ---------
-  obsL = [cNames]
-  for one in grps:
-    res = requests.get('%s/annotations/obs' % url,params={'annotation-name':one})
-    grp = decode_fbs.decode_matrix_FBS(res.content)
-    subGrp = [str(grp['columns'][0][i]) for i in cells.values()]
-    obsL += [subGrp]
-  obs = pd.DataFrame(obsL,index=['name_0']+grps,columns=cNames).T
-  obs = obs.astype('category')
-  
-  adata = sc.AnnData(expr,obs,obsm=layX)
-  return adata
-
 
 def createData(data,seperate=False):
   return subData(data)
@@ -421,11 +373,11 @@ def PGV(data):
   updateGene(data)
   adata = createData(data)
   adata = geneFiltering(adata,data['cutoff'],1)
-  if len(adata)==0:
+  if adata.shape[0]==0 or adata.shape[1]==0:
     return Msg('No cells in the condition!')
   a = list(set(list(adata.obs[data['grp'][0]])))
   ncharA = max([len(x) for x in a])
-  w = ncharA/8+len(data['genes'])/2+1.5
+  w = max([3,ncharA/8])+len(data['genes'])/2+1.5
   h = len(a)+0.5
   swapAx = False
   ##
@@ -1068,7 +1020,56 @@ def STACBAR(data):
                         for j in cellN[strX].unique()]}
               for i in cellN[strCol].unique()]
   return json.dumps(returnD)
+
+def ajaxData(strData):
+  with open(strData,'rb') as f:
+    data=pickle.load(f)
+  url = 'http://localhost:8888/api/v0.2'#data['url']#
+  genes = data['genes']#['BTK','SALL1']
+  #import random
+  #cix = random.sample(range(40000),10000)
+  cells = data['cells']#{str(x):cix[x] for x in range(len(cix))}
+  layout= data['layouts']#['umap_harmony','umap_liger']
+  grps = data['grps']#['cell_type','diagnosis']
   
+  ## 
+  headers = {'content-type':'application/json'}
+  #### obtain the expression -------------
+  res = requests.get('%s/annotations/var' % url,params={'annotation-name':'name_0'})
+  gNames = decode_fbs.decode_matrix_FBS(res.content)['columns'][0]
+  if len(genes)==0:
+    genes=gNames
+  fil = json.dumps({'filter':{'var':{'annotation_value':[{'name':'name_0','values':genes}]}}})
+  res = requests.put('%s/data/var' % url,fil,headers=headers)    
+  expr = decode_fbs.decode_matrix_FBS(res.content)  
+  cNames = ["cell%d" % x for x in cells.values()]
+  expr = pd.DataFrame([[expr['columns'][i][x] for x in cells.values()] for i in range(len(expr['columns']))],
+                          index=[gNames[x] for x in expr['col_idx']],columns=cNames).T
+  
+  #### obtain the layout -------------
+  layX = {}
+  if len(layout)>0:
+    for one in layout:
+      res = requests.get('%s/layout/obs' % url,params={'layout-name':one})
+      embed= decode_fbs.decode_matrix_FBS(res.content)
+      embed = pd.DataFrame([[embed['columns'][i][x] for x in cells.values()] for i in range(len(embed['columns']))],
+                            index=embed['col_idx'],columns=cNames).T
+      layX['X_%s'%one]=embed.to_numpy()
+  
+  ## obtain the meta ---------
+  obsL = [cNames]
+  for one in grps:
+    res = requests.get('%s/annotations/obs' % url,params={'annotation-name':one})
+    grp = decode_fbs.decode_matrix_FBS(res.content)
+    subGrp = [str(grp['columns'][0][i]) for i in cells.values()]
+    obsL += [subGrp]
+  obs = pd.DataFrame(obsL,index=['name_0']+grps,columns=cNames).T
+  obs = obs.astype('category')
+  
+  adata = sc.AnnData(expr,obs,obsm=layX)
+  return adata
+
+
 def CLI(data):
   strPath = ('/tmp/CLI%f' % time.time())
   script = data['script']
