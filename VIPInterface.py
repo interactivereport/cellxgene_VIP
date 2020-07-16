@@ -188,6 +188,54 @@ def cleanAbbr(data):
           data['abb'][cate] = {key:"Other" for key in data['abb'][cate].keys()}
   return updated
 
+def ajaxData(strData):
+  with open(strData,'rb') as f:
+    data=pickle.load(f)
+
+  url = data['url']#'http://127.0.0.1:8888/api/v0.2'
+  genes = data['genes']#['BTK','SALL1']
+  #import random
+  #cix = random.sample(range(40000),10000)
+  cells = data['cells']#{str(x):cix[x] for x in range(len(cix))}
+  layout= data['layouts']#['umap_harmony','umap_liger']
+  grps = data['grps']#['cell_type','diagnosis']
+  
+  ## 
+  headers = {'content-type':'application/json'}
+  #### obtain the expression -------------
+  res = requests.get('%s/annotations/var' % url,params={'annotation-name':'name_0'})
+  gNames = decode_fbs.decode_matrix_FBS(res.content)['columns'][0]
+  fil = json.dumps({'filter':{'var':{'annotation_value':[{'name':'name_0','values':genes}]}}})
+  res = requests.put('%s/data/var' % url,fil,headers=headers)    
+  expr = decode_fbs.decode_matrix_FBS(res.content)  
+  cNames = ["cell%d" % x for x in cells.values()]
+  expr = pd.DataFrame([[expr['columns'][i][x] for x in cells.values()] for i in range(len(expr['columns']))],
+                          index=[gNames[x] for x in expr['col_idx']],columns=cNames).T
+  
+  #### obtain the layout -------------
+  layX = {}
+  if len(layout)>0:
+    for one in layout:
+      res = requests.get('%s/layout/obs' % url,params={'layout-name':one})
+      embed= decode_fbs.decode_matrix_FBS(res.content)
+      embed = pd.DataFrame([[embed['columns'][i][x] for x in cells.values()] for i in range(len(embed['columns']))],
+                            index=embed['col_idx'],columns=cNames).T
+      layX['X_%s'%one]=embed.to_numpy()
+  
+  ## obtain the meta ---------
+  obsL = [cNames]
+  for one in grps:
+    res = requests.get('%s/annotations/obs' % url,params={'annotation-name':one})
+    grp = decode_fbs.decode_matrix_FBS(res.content)
+    subGrp = [str(grp['columns'][0][i]) for i in cells.values()]
+    obsL += [subGrp]
+  obs = pd.DataFrame(obsL,index=['name_0']+grps,columns=cNames).T
+  obs = obs.astype('category')
+  
+  adata = sc.AnnData(expr,obs,obsm=layX)
+  return adata
+
+
 def createData(data,seperate=False):
   return subData(data)
   #print("CreateData")
@@ -274,7 +322,8 @@ def distributeTask(aTask):
     'DENS':DENS,
     'DENS2D':DENS2D,
     'SANK':SANK,
-    'STACBAR':STACBAR
+    'STACBAR':STACBAR,
+    'CLI':CLI
   }.get(aTask,errorTask)
 
 def iostreamFig(fig):
@@ -671,14 +720,16 @@ def TRACK(data):
   h = adata.n_vars/2
 
   ## a bug in scanpy reported: https://github.com/theislab/scanpy/issues/1265, if resolved the following code is not needed
-  if len(data['grpLoc'])>0 and data['grpLoc'][len(data['grpLoc'])-1][1] < (len(data['genes'])-1):
-    data['grpLoc'] += [(data['grpLoc'][len(data['grpLoc'])-1][1]+1,len(data['genes'])-1)]
-    data['grpID'] += ['others']
+  #if len(data['grpLoc'])>0 and data['grpLoc'][len(data['grpLoc'])-1][1] < (len(data['genes'])-1):
+  #  data['grpLoc'] += [(data['grpLoc'][len(data['grpLoc'])-1][1]+1,len(data['genes'])-1)]
+  #  data['grpID'] += ['others']
   ##############
+  ppr.pprint(data['genes'])
   
   ax = sc.pl.tracksplot(adata,data['genes'],groupby=data['grp'][0],figsize=(w,h),
                         var_group_positions=data['grpLoc'],var_group_labels=data['grpID'],
                         show=False)
+  ppr.pprint("test")
   fig=ax['track_axes'][0].figure
   return iostreamFig(fig)
 
@@ -1017,6 +1068,32 @@ def STACBAR(data):
                         for j in cellN[strX].unique()]}
               for i in cellN[strCol].unique()]
   return json.dumps(returnD)
+  
+def CLI(data):
+  strPath = ('/tmp/CLI%f' % time.time())
+  script = data['script']
+  del data['script']
+
+  strData = strPath + '.pkl'
+  with open(strData,'wb') as f:
+    pickle.dump(data,f)
+  
+  strScript = strPath + '.py'
+  #addedScript=['import os','os.chdir("%s")'%strExePath,'import VIPInterface as vip','adata=vip.ajaxData("%s")'%strData]
+  with open(strScript,'w') as f:
+    f.writelines(['import os\n','os.chdir("%s")\n'%strExePath,'import VIPInterface as vip\n','adata=vip.ajaxData("%s")\nimport matplotlib\n%%matplotlib inline\n\n'%strData])
+    f.write(script)
+  
+  res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --to html --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
+  if 'Error' in res.stderr.decode('utf-8'):
+    raise ValueError(res.stderr.decode('utf-8'))
+  html = res.stdout.decode('utf-8')
+  h,s,e = html.partition('<div class="cell border-box-sizing code_cell rendered">')
+  h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">')
+  html = h+s+e
+  os.remove(strData)
+  os.remove(strScript)
+  return html
   
 def version():
   print("1.0.8")

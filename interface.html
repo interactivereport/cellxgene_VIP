@@ -461,7 +461,7 @@
         </p>
         <p>Choose annotation groups:</p>
         <p id="EMBEDgrp"></p>
-        <p>Choose genes: <input type="checkbox" checked onclick="$('.EMBEDgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p>Choose genes: <input type="checkbox" checked onclick="$('.EMBEDgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="EMBEDgene"></p>
         <p>Select the annotation group where the gene expression will split: 
         <select id="EMBEDsplit">
@@ -763,11 +763,22 @@
     </div><!--SYNC-->
 	  
     <div id="CLI" class="tabcontent">
+      <div id="CLIinput">
+        <p>Choose cell set(s):
+          <label><input class="CLIcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="CLIcellN1" style="color:red">0</span>)</label>
+          <label><input class="CLIcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="CLIcellN2" style="color:red">0</span>)</label>
+        </p>
+        <p>Choose genes: <input type="checkbox" checked onclick="$('.CLIgenes').prop('checked', this.checked);">Uncheck / Check All</p>
+        <p id="CLIgene"></p>
+        <p>Choose annotation:</p><p id="CLIgrp"></p>
+        <p>Choose layout:</p><p id="CLIlayout"></p>
+        <div id="CLIscript" style="height:380px;"></div>
+      </div> 
       <button class="CLIbt"  onclick="CLIplot()"><b>Run</b> </button>
       <button onclick="hideShow($('#CLIinput'),$(this));">Hide Input</button>
-      <div id="CLIinput" style="height:480px;"></div>
       <p id="CLInote" style="color:red;"></p>
       <div id="CLIspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+      <div id="CLIresize" style="height: 'auto'; width: 'auto'; padding: 0.5em;"></div>
     </div><!--CLI-->
   </div>
 	  
@@ -921,6 +932,7 @@ function cellNupdate(){
   $('#DENS2DcellN1').text(n1);
   $('#SANKcellN1').text(n1);
   $('#STACBARcellN1').text(n1);
+  $('#CLIcellN1').text(n1);
 
   $('#MARKcellN2').text(n2);
   $('#SGVcellN2').text(n2);
@@ -936,6 +948,7 @@ function cellNupdate(){
   $('#DENS2DcellN2').text(n2);
   $('#SANKcellN2').text(n2);
   $('#STACBARcellN2').text(n2);
+  $('#CLIcellN2').text(n2);
 }
 
 //Page Initial functions
@@ -1008,22 +1021,27 @@ function init(){
     densS.add(createOpt('None'));
     densG.add(createOpt('None'));
     //--------------------------------------------------------------------------
-    //add layout
+    //add layout to EMBED, DUAL, and CLI checkbox
     var embedLay = document.getElementById("EMBEDlayout");
     var dualLay = document.getElementById("DUALlayout");
+    htmlCheck="";
     for(const ix of Object.keys(window.store.getState().universe.schema.layout.obs)){
-      embedLay.add(createOpt(window.store.getState().universe.schema.layout.obs[ix].name));
-      dualLay.add(createOpt(window.store.getState().universe.schema.layout.obs[ix].name));
+      var one = window.store.getState().universe.schema.layout.obs[ix].name
+      embedLay.add(createOpt(one));
+      dualLay.add(createOpt(one));
+      htmlCheck += '<label><input class="eIDlayouts" type="checkbox" value="'+one+'"/> '+one+' </label>';
     }
+    $('#CLIlayout').html(htmlCheck.replace(/eID/g,'CLI'));
     //--------------------------------------------------------------------------
     htmlCheck= "";
     for(const one of grps){
       if (one.startsWith(">")) continue; 
       htmlCheck += '<label><input class="eIDgrps" type="checkbox" value="'+one+'"/> '+one+' ('+grpL[one].numCategoryValues+')</label>';
     }  
-    //HEAT, EMBED, SANK, STACBAR
+    //HEAT, EMBED, SANK, STACBAR, CLI
     $('#HEATgrp').html(htmlCheck.replace(/eID/g,'HEAT'));
     $('#EMBEDgrp').html(htmlCheck.replace(/eID/g,'EMBED'));
+    $('#CLIgrp').html(htmlCheck.replace(/eID/g,'CLI'));
     $('#SANKgrp').html(htmlCheck.replace(/eID/g,'SANK').replace(/value/g,'onchange="SANKorderUpdate()" value'));
     $('#STACBARgrp').html(htmlCheck.replace(/eID/g,'STACBAR').replace(/value/g,'onchange="STACBARref()" value'));
     
@@ -1073,11 +1091,12 @@ function init(){
     
     window.bioInit=true;
 
-    editor = ace.edit("CLIinput");
+    editor = ace.edit("CLIscript");
     editor.setTheme("ace/theme/iplastic");
     editor.getSession().setMode("ace/mode/python");
     editor.getSession().setUseWrapMode(true);
     editor.setFontSize("14px");
+    editor.getSession().setValue("#adata: an AnnData object is available\n");
   }
   return true;
 }
@@ -1100,6 +1119,7 @@ function sync(){
   DENS2Dref();
   SANKref();
   STACBARref();
+  CLIref();
 }
 function ABBRref(){
 }
@@ -1541,6 +1561,9 @@ function IMGset(){
   window.figOpt['scanpybranch'] = $("input[name='IMGscanpybranch']:checked").val();
   window.figOpt['colorMap'] = $('#IMGcolor').val();
   //IMGref();
+}
+function CLIref(){
+  showGene('CLI');
 }
 // process annotation
 function ABBRlist(){
@@ -3042,7 +3065,85 @@ function STACBARplot(){
   
 }
 function CLIplot(){
-  console.log(editor.getSession().getValue());
+  $('#CLInote').text("");
+  var cells=[], x = document.getElementsByClassName('CLIcell');
+  for(i=0;i<x.length;i++){
+    if(x[i].checked){
+      if(!!window.store.getState().differential[x[i].value]){
+        if(cells.length==0){
+          cells = window.store.getState().differential[x[i].value];
+        }else{
+          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
+          tmp.set(cells);
+          tmp.set(window.store.getState().differential[x[i].value],cells.length);
+          cells = tmp;
+        }
+      }
+    }
+  }
+  if(cells.length==0){
+    $('#CLInote').text("Please use selection tools to put cells into groups");
+    return;
+  }
+  
+  var genes = getGenes('CLI');
+  if(genes.length==0){
+    $('#CLInote').text("Please select a gene to start");
+    return;
+  }
+  
+  var grps = [];
+  $(".CLIgrps:checkbox:checked").each(function(){
+    grps.push($(this).val());
+  })
+  if(grps.length==0){
+    $('#CLInote').text("Please select groups to start");
+    return;
+  }
+
+  var layouts = [];
+  $(".CLIlayouts:checkbox:checked").each(function(){
+    layouts.push($(this).val());
+  })  
+  if(layouts.length==0){
+    $('#CLInote').text("Please select layouts to start");
+    return;
+  }
+  
+  document.getElementById("CLIspin").style.visibility="visible";
+  $(".CLIbt").prop('disabled',true);
+  
+  var D = {'method':"CLI",
+            'cells':cells,
+            'genes':genes,
+            'grps':grps,
+            'layouts':layouts,
+            'script':editor.getSession().getValue()};
+   $.ajax({
+    type:"POST",
+    url: "/VIP",
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(res){
+      $(".CLIbt").prop("disabled",false);
+      document.getElementById("CLIspin").style.visibility="hidden";
+      if(res.startsWith('ERROR')){
+        $('#CLInote').text(res);
+        $("#CLIresize").html("");
+        return;
+      }
+
+      $("#CLIresize").html(res);
+      
+    },
+    error: function(request,status,error){
+      $('#CLInote').text(request.status+request.responseText);
+      $("#CLIresize").html("");
+      $(".CLIbt").prop("disabled",false);
+      document.getElementById("CLIspin").style.visibility="hidden";
+    }
+  })
+ 
 /*
   $(".CLIbt").prop('disabled',true);
   document.getElementById("CLIspin").style.visibility="visible";
