@@ -1096,7 +1096,7 @@ function init(){
     editor.getSession().setMode("ace/mode/python");
     editor.getSession().setUseWrapMode(true);
     editor.setFontSize("14px");
-    editor.getSession().setValue("#adata: an AnnData object is available\n");
+    editor.getSession().setValue("#adata: an AnnData object is available\n#The following as an example\nimport scanpy as sc\nfrom matplotlib import pyplot as plt\nsc.tl.rank_genes_groups(adata,groupby='cell_type',groups=['OPC','Astrocytes'],method='logreg')\nmarker_genes=['AQP4', 'FCRL5', 'CUX2', 'ADGRL4', 'KIT','VCAN', 'EYA4','CLDN5']\nfig,axs = plt.subplots(1,3,figsize=(15,5))\nsc.pl.rank_genes_groups_violin(adata,groups='OPC',n_genes=8,ax=axs[0],show=False)\nsc.pl.stacked_violin(adata,marker_genes,groupby='cell_type',row_palette='muted',rotation=90,ax=axs[1],show=False)\nsc.pl.embedding(adata,'umap_harmony',color='cell_type',title='',frameon=False,ax=axs[2],show=False)\nfig.tight_layout()");
   }
   return true;
 }
@@ -1564,6 +1564,8 @@ function IMGset(){
 }
 function CLIref(){
   showGene('CLI');
+  $(".CLIgrps:checkbox[value='cell_type']").prop("checked","true");
+  $(".CLIlayouts:checkbox[value='umap_harmony']").prop("checked","true");
 }
 // process annotation
 function ABBRlist(){
@@ -3088,8 +3090,9 @@ function CLIplot(){
   
   var genes = getGenes('CLI');
   if(genes.length==0){
-    $('#CLInote').text("Please select a gene to start");
-    return;
+    if(!confirm("No genes is sepecified. Are you sure you want to continue with all genes (might be very slow or out of memory)?")){
+      return;
+    }
   }
   
   var grps = [];
@@ -3116,9 +3119,10 @@ function CLIplot(){
   var D = {'method':"CLI",
             'cells':cells,
             'genes':genes,
-            'grps':grps,
-            'layouts':layouts,
-            'script':editor.getSession().getValue()};
+            'grp':grps,
+            'layout':layouts,
+            'script':editor.getSession().getValue(),
+            'figOpt':window.figOpt};
    $.ajax({
     type:"POST",
     url: "/VIP",

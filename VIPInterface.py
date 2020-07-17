@@ -141,16 +141,26 @@ def subData(data):
   expr,gNames = collapseGeneSet(data,expr,gNames,cNames,fSparse)
   
   ## obtain the embedding
-  strEmbed = 'umap'
-  #embed = pd.DataFrame([[0 for x in range(len(cNames))] for i in range(2)],
-  #                      index=['%s1'%strEmbed,'%s2'%strEmbed],columns=cNames).T
-  embed = pd.DataFrame([],index=cNames)
-  if 'layout' in data.keys():## tsne or umap
-    strEmbed = data['layout']
-    with app.get_data_adaptor() as scD:
-      embed = pd.DataFrame(scD.data.obsm['X_%s'%strEmbed][selC][:,[0,1]],columns=['%s1'%strEmbed,'%s2'%strEmbed],index=cNames)
+  if False:
     strEmbed = 'umap'
-    
+    #embed = pd.DataFrame([[0 for x in range(len(cNames))] for i in range(2)],
+    #                      index=['%s1'%strEmbed,'%s2'%strEmbed],columns=cNames).T
+    embed = pd.DataFrame([],index=cNames)
+    if 'layout' in data.keys():## tsne or umap
+      strEmbed = data['layout']
+      with app.get_data_adaptor() as scD:
+        embed = pd.DataFrame(scD.data.obsm['X_%s'%strEmbed][selC][:,[0,1]],columns=['%s1'%strEmbed,'%s2'%strEmbed],index=cNames)
+      strEmbed = 'umap'
+
+  embed = {}
+  if 'layout' in data.keys():
+    layout = data['layout']
+    if isinstance(layout,str):
+      layout = [layout]
+    if len(layout)>0:
+      for one in layout:
+        with app.get_data_adaptor() as scD:
+          embed['X_%s'%one] = pd.DataFrame(scD.data.obsm['X_%s'%one][selC][:,[0,1]],columns=['%s1'%one,'%s2'%one],index=cNames)
 
   ## obtain the category annotation
   combUpdate, obs = getObs(data)
@@ -164,7 +174,8 @@ def subData(data):
         obs[newGrp] += ":"+obs[i]
     selC = ~obs[newGrp].str.contains("Other").to_numpy()
     expr = expr[selC]
-    embed = embed[selC]
+    for i in embed.keys():
+      embed[i] = embed[i][selC]
     obs = obs[selC]
     data['grp'] = [newGrp]
     
@@ -172,7 +183,9 @@ def subData(data):
   ## empty selection
   if expr.shape[0]==0 or expr.shape[1]==0:
     return []
-  return sc.AnnData(expr,obs,var=pd.DataFrame([],index=gNames),obsm={'X_%s'%strEmbed:embed.to_numpy()})
+    
+  return sc.AnnData(expr,obs,var=pd.DataFrame([],index=gNames),obsm={layout:embed[layout].to_numpy() for layout in embed.keys()})
+  #return sc.AnnData(expr,obs,var=pd.DataFrame([],index=gNames),obsm={'X_%s'%strEmbed:embed.to_numpy()})
 
 def cleanAbbr(data):
   updated = False
@@ -609,7 +622,7 @@ def DOT(data):
     dp.show()
     fig = dp.get_axes()['mainplot_ax'].figure
   else:
-    sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],show=False,expression_cutoff=float(data['cutoff']),mean_only_expressed=(data['mean_only_expressed'] == 'Yes'), var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
+    sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],show=False,expression_cutoff=float(data['cutoff']),mean_only_expressed=(data['mean_only_expressed'] == 'Yes'),var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
     fig = plt.gcf()
 
   return iostreamFig(fig)
@@ -633,7 +646,7 @@ def EMBED(data):
   fig = plt.figure(figsize=(ncol*subSize,subSize*nrow))
   gs = fig.add_gridspec(nrow,ncol,wspace=0.2)
   for i in range(ngrp):
-      ax = sc.pl.umap(adata=adata,color=data['grp'][i],ax=fig.add_subplot(gs[i,0]),show=False)#,wspace=0.25
+      ax = sc.pl.embedding(adata,data['layout'],color=data['grp'][i],ax=fig.add_subplot(gs[i,0]),show=False)#,wspace=0.25
       if grpCol[data['grp'][i]]>1:
           ax.legend(ncol=grpCol[data['grp'][i]],loc=6,bbox_to_anchor=(1,0.5),frameon=False)
       ax.set_xlabel('%s1'%data['layout'])
@@ -647,8 +660,8 @@ def EMBED(data):
       for j in range(len(splitName)):
         x = ngrp + i*nsplitRow+int(j/ncol)
         y = j % ncol
-        ax = sc.pl.umap(adata,ax=fig.add_subplot(gs[x,y]),show=False)#color=data['genes'][i],wspace=0.25,
-        ax = sc.pl.umap(adata[adata.obs[data['splitGrp']]==splitName[j]],color=data['genes'][i],
+        ax = sc.pl.embedding(adata,data['layout'],ax=fig.add_subplot(gs[x,y]),show=False)#color=data['genes'][i],wspace=0.25,
+        ax = sc.pl.embedding(adata[adata.obs[data['splitGrp']]==splitName[j]],data['layout'],color=data['genes'][i],
                 vmin=vMin[data['genes'][i]],vmax=vMax[data['genes'][i]],ax=ax,show=False,
                 size=dotSize,title='{} in {}'.format(data['genes'][i],splitName[j]))
         ax.set_xlabel('%s1'%data['layout'])
@@ -657,7 +670,7 @@ def EMBED(data):
     for i in range(ngene):
         x = int(i/ncol)+ngrp
         y = i % ncol
-        ax = sc.pl.umap(adata,color=data['genes'][i],ax=fig.add_subplot(gs[x,y]),show=False)
+        ax = sc.pl.embedding(adata,data['layout'],color=data['genes'][i],ax=fig.add_subplot(gs[x,y]),show=False)
         ax.set_xlabel('%s1'%data['layout'])
         ax.set_ylabel('%s2'%data['layout'])
 
@@ -719,7 +732,7 @@ def DUAL(data):
   adata.uns["Expressed_colors"]=[pCol[i] for i in adata.obs['Expressed'].cat.categories]
   
   rcParams['figure.figsize'] = 4.5, 4
-  fig = sc.pl.umap(adata,color='Expressed',return_fig=True,show=False,legend_fontsize="small")
+  fig = sc.pl.embedding(adata,data['layout'],color='Expressed',return_fig=True,show=False,legend_fontsize="small")
   plt.xlabel('%s1'%data['layout'])
   plt.ylabel('%s2'%data['layout'])
   rcParams['figure.figsize'] = 4, 4
@@ -1029,8 +1042,8 @@ def ajaxData(strData):
   #import random
   #cix = random.sample(range(40000),10000)
   cells = data['cells']#{str(x):cix[x] for x in range(len(cix))}
-  layout= data['layouts']#['umap_harmony','umap_liger']
-  grps = data['grps']#['cell_type','diagnosis']
+  layout= data['layout']#['umap_harmony','umap_liger']
+  grps = data['grp']#['cell_type','diagnosis']
   
   ## 
   headers = {'content-type':'application/json'}
@@ -1069,20 +1082,21 @@ def ajaxData(strData):
   adata = sc.AnnData(expr,obs,obsm=layX)
   return adata
 
-
 def CLI(data):
   strPath = ('/tmp/CLI%f' % time.time())
   script = data['script']
   del data['script']
+  
+  adata = createData(data)
 
   strData = strPath + '.pkl'
   with open(strData,'wb') as f:
-    pickle.dump(data,f)
+    pickle.dump(adata,f)
   
   strScript = strPath + '.py'
   #addedScript=['import os','os.chdir("%s")'%strExePath,'import VIPInterface as vip','adata=vip.ajaxData("%s")'%strData]
   with open(strScript,'w') as f:
-    f.writelines(['import os\n','os.chdir("%s")\n'%strExePath,'import VIPInterface as vip\n','adata=vip.ajaxData("%s")\nimport matplotlib\n%%matplotlib inline\n\n'%strData])
+    f.writelines(['import pickle\n','with open("%s","rb") as f:\n'%strData,'  adata=pickle.load(f)\n\n'])
     f.write(script)
   
   res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --to html --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
