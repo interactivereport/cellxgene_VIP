@@ -196,6 +196,7 @@
       <button class="tablinks" onclick="save()">Save Session</button>
       <button class="tablinks" onclick="inputClick()">Load Session</button>
       <button class="tablinks" onclick="ABBRall()">Check All Annotations</button>
+      <button class="tablinks" onclick="selFun(event, 'BRUSH');">Brush</button>
       <button class="tablinks" onclick="selFun(event, 'SYNC');">Sync</button>
     </div>
   </div>
@@ -757,6 +758,11 @@
       </table>
 
     </div><!--IMG-->
+    
+    <div id="BRUSH" class="tabcontent">
+      <h3>Set the histogram selection</h3>
+      <div id="BRUSHset"></div>
+    </div><!--BRUSH-->
 
     <div id="SYNC" class="tabcontent">
       <p id="SYNCnote"></p>
@@ -1073,6 +1079,19 @@ function init(){
     $('#DUALcutoff').prop('min',-5);
     $('#DOTcutoff').prop('min',-5);  
 
+    //add text on select brush on histogram
+    var html = "<table><tr><td>Histogram Name</td><td>Minimal</td><td>Maximal</td><tr>";
+    $("div[id^=histogram]").each(function(){
+      var aID = $(this).prop('id').replace("histogram_","");
+      html += "<tr><td>" +aID+"</td>";
+      html += "<td><input type='number' id='input_"+aID+"_left' step=0.01 style='width: 11ch'></td>";
+      html += "<td><input type='number' id='input_"+aID+"_right' step=0.01 style='width: 11ch'></td><tr>";
+    });
+    
+    $("#BRUSHset").html(html);
+    
+    
+    $("div[id^=histogram]").each(function(){initBrush($(this).prop('id'));});
     const unsubscribe = window.store.subscribe(() => {
       if (window.store.getState()["@@undoable/filterState"].prevAction) {
         var action = window.store.getState()["@@undoable/filterState"].prevAction;
@@ -1080,11 +1099,8 @@ function init(){
           sync();
         }
         if (action.type.includes("continuous metadata histogram")) {
-// console.log(action.type);
           $('#SYNCnote').text(JSON.stringify(window.store.getState().continuousSelection));
-
-//          document.getElementById("histogram_"+action.selection).querySelectorAll("div")[1].querySelectorAll("span")[0].innerText = action.range[0].toFixed(2);
-//          document.getElementById("histogram_"+action.selection).querySelectorAll("div")[1].querySelectorAll("span")[1].innerText = action.range[1].toFixed(2);
+          $("div[id^=histogram]").each(function(){showBrush($(this).prop('id'));});
         }
       }
     });
@@ -1099,6 +1115,28 @@ function init(){
     editor.getSession().setValue("#adata: an AnnData object is available\n#The following as an example\nimport scanpy as sc\nfrom matplotlib import pyplot as plt\nsc.tl.rank_genes_groups(adata,groupby='cell_type',groups=['OPC','Astrocytes'],method='logreg')\nmarker_genes=['AQP4', 'FCRL5', 'CUX2', 'ADGRL4', 'KIT','VCAN', 'EYA4','CLDN5']\nfig,axs = plt.subplots(1,3,figsize=(15,5))\nsc.pl.rank_genes_groups_violin(adata,groups='OPC',n_genes=8,ax=axs[0],show=False)\nsc.pl.stacked_violin(adata,marker_genes,groupby='cell_type',row_palette='muted',rotation=90,ax=axs[1],show=False)\nsc.pl.embedding(adata,'umap_harmony',color='cell_type',title='',frameon=False,ax=axs[2],show=False)\nfig.tight_layout()");
   }
   return true;
+}
+function initBrush(aID){
+  for(const i of ["left","right"]){
+    var one = d3.select("#"+aID+" g.brush").append("text").attr("id",aID+"_"+i).attr("y",$("#"+aID+" rect.selection").prop("y").baseVal.value).attr("fill","#000");
+    if(i=="left") one.attr("text-anchor", "end");
+  }
+}
+function showBrush(aID){
+  var val = window.store.getState().continuousSelection[aID.replace('histogram','obsAnno')];
+  if(val===undefined){
+    val = ["",""];
+  }else{
+    var valMax = Math.max(...val);
+    var decimals = (valMax<10) ? 2 : (valMax<100) ? 1:0;
+    val = [val[0].toFixed(decimals),val[1].toFixed(decimals)];
+  }
+  var pos = ['left','right']
+  for(i in [0,1]){
+    var one = d3.select("#"+aID+"_"+pos[i]).attr("x",$("#"+aID+" rect.selection").prop("x").baseVal.value).text(val[i]);
+    if(i==1) one.attr("x",$("#"+aID+" rect.selection").prop("x").baseVal.value+$("#"+aID+" rect.selection").prop("width").baseVal.value);
+    $("#"+aID.replace('histogram','input')+"_"+pos[i]).val(val[i]);
+  }
 }
 //Page sync functions
 function sync(){
@@ -1566,6 +1604,10 @@ function CLIref(){
   showGene('CLI');
   $(".CLIgrps:checkbox[value='cell_type']").prop("checked","true");
   $(".CLIlayouts:checkbox[value='umap_harmony']").prop("checked","true");
+}
+
+function SYNCtest(){
+  
 }
 // process annotation
 function ABBRlist(){

@@ -100,7 +100,7 @@ pip install diffxpy==0.7.4
 pip install git+https://github.com/theislab/scanpy.git@groupby_plots
 pip install plotly==4.8.1
 pip install jupytext
-pip install nbconvert
+pip install nbconverto
 # conda install -c plotly plotly-orca
 # pip install 'scanpy==1.4.6'   # works for v1.4.6 too
 
