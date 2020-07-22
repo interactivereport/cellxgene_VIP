@@ -15,4 +15,7 @@ if [ -n "$1" ]; then
 	cp -R ace $strweb
 	cp volcano.R $strPath/server/app/.
 	cp Density2D.R $strPath/server/app/. 
+	pip install plotly==4.8.1
+	pip install jupytext
+	pip install nbconvert
 fi
