@@ -1,7 +1,5 @@
 <html>
   <head>
-    <!-- <script src="static/d3.min.js" charset="UTF-8">></script> -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="UTF-8"></script>
     <!-- for datatables -->
     <link rel="stylesheet" type="text/css" href="static/DataTables/datatables.min.css">
     <script src="static/jquery-ui.min.js"></script>
@@ -666,14 +664,6 @@
     </div><!--DEG-->
     
     <div id='STACBAR' class='tabcontent'>
-<!--       
-      <script src="static/select.js"></script>
-      <script src="static/plot-transform.js"></script>
-      <script src="static/endAll.js"></script> -->
-      <script src="https://gitcdn.xyz/repo/cool-Blue/d3-lib/master/inputs/select/select.js" charset="UTF-8"></script>
-      <script src="https://gitcdn.xyz/repo/cool-Blue/d3-lib/master/plot/plot-transform-2.0.0/plot-transform.js" charset="UTF-8"></script>
-      <script src="https://gitcdn.xyz/repo/cool-Blue/d3-lib/master/transitions/end-all/endAll.js" charset="UTF-8"></script>
-      
       <div id="STACBARinput">
         <h3>Starked Dynamic Barplot of cell numbers on selected cells for selected annotation and/or genes</h3>
         <p>Choose cell set(s):
@@ -3097,7 +3087,7 @@ function STACBARplot(){
         return;
       }
       res = JSON.parse(res);
-      stackBar('STACBARresize',res);
+      stackedBar('STACBARresize',res);
     },
     error: function(request,status,error){
       $('#STACBARnote').text(request.status+request.responseText);
@@ -3461,7 +3451,7 @@ function load(){
   
 }
 
-function stackBar(aID,dataSet1){
+function stackedBar(aID,dataSet1){
 
   var width       = 760,
       height      = 300,
@@ -3754,6 +3744,8 @@ function stackBar(aID,dataSet1){
   
       points.exit().remove();
       Object.defineProperties(plotArea.series.components.values.points, d3._CB_selection_destructure);
+
+	svg.selectAll(".x.axis .tick text").style("text-anchor", "end").attr("dx","-0.9em").attr("transform", "rotate(-65)");
   
       gX.transition().call(xAxis);
       gY.transition().call(yAxis);
@@ -4046,5 +4038,8 @@ function stackBar(aID,dataSet1){
 </script>
 <script type="text/javascript" src="static/DataTables/datatables.min.js"></script>
 <script type="text/javascript" src="static/ace/ace.js"></script>
+<script type="text/javascript" src="static/stackedbar/select.js"></script>
+<script type="text/javascript" src="static/stackedbar/endAll.js"></script>
+<script type="text/javascript" src="static/stackedbar/plot-transform.js"></script>
 </body>
 </html>

@@ -13,6 +13,7 @@ if [ -n "$1" ]; then
 	cp jquery-ui.min.js $strweb
 	cp color_*.png $strweb
 	cp -R ace $strweb
+	cp -R stackedbar $strweb
 	cp volcano.R $strPath/server/app/.
 	cp Density2D.R $strPath/server/app/. 
 	pip install plotly==4.8.1

@@ -4,6 +4,7 @@ cd cellxgene; git checkout 735eb11eb78b5e6c35ba84438970d0ce369604e1 client/index
 
 read -d '' insertL << EOF
 <script src="static/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="UTF-8"></script>
 <link href='static/jspanel/dist/jspanel.css' rel='stylesheet'>
 <script src='static/jspanel/dist/jspanel.js'></script>
 <script src='static/jspanel/dist/extensions/modal/jspanel.modal.js'></script>

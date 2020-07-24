@@ -15,6 +15,7 @@ cd cellxgene;git checkout 735eb11eb78b5e6c35ba84438970d0ce369604e1;cd ..
 ## update the client-side source code of cellxgene for VIP
 echo -e "\nwindow.store = store;" >> cellxgene/client/src/reducers/index.js
 read -d '' insertL << EOF
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="UTF-8"></script>
 <script src="static/jquery.min.js"></script>
 <link href='static/jspanel/dist/jspanel.css' rel='stylesheet'>
 <script src='static/jspanel/dist/jspanel.js'></script>
@@ -123,6 +124,7 @@ cp color_*.png $strweb
 cp -R DataTables $strweb
 cp -R jspanel $strweb
 cp -R ace $strweb
+cp -R stackedbar $strweb
 
 cp cellxgene/server/test/decode_fbs.py $strPath/server/app/.
 cp VIPInterface.py $strPath/server/app/.
