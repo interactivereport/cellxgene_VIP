@@ -7,6 +7,7 @@ echo $strPath
 
 cp VIPInterface.py $strPath/server/app/.
 cp interface.html $strPath/server/common/web/static/.
+cp stackedbar/script.js $strPath/server/common/web/static/stackedbar/.
 
 if [ -n "$1" ]; then
 	echo "usually update once"

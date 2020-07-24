@@ -1012,11 +1012,11 @@ def toInt(x):
 def STACBAR(data):
   if len(data['genes'])==0:
     tmp, D = getObs(data)
-    D = D.apply(lambda x:x.apply(lambda y:x.name+":"+y))
+    D = D.apply(lambda x:x.apply(lambda y:y))
   else:
     adata = createData(data)
-    D = pd.concat([adata.obs.apply(lambda x:x.apply(lambda y:x.name+":"+y)),
-                   adata.to_df().apply(lambda x:pd.cut(x,int(data['Nbin'])).apply(lambda y:x.name+":"+'%.1f_%.1f'%(y.left,y.right)))],
+    D = pd.concat([adata.obs.apply(lambda x:x.apply(lambda y:y)),
+                   adata.to_df().apply(lambda x:pd.cut(x,int(data['Nbin'])).apply(lambda y:'%.1f_%.1f'%(y.left,y.right)))],
                   axis=1,sort=False)
   D = D.astype('str').astype('category')
   if 'name_0' in D.columns:

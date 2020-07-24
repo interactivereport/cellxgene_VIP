@@ -51,7 +51,7 @@
                     minorTickValues.push(d);
                 }).remove()
             });
-            console.log(minorTickValues.map(f).join(""))
+//            console.log(minorTickValues.map(f).join(""))
             selection.call(axis);
             // use each and reselect to allow for transition objects as well as selections
             selection.each(function() {
