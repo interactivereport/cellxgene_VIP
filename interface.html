@@ -3456,6 +3456,7 @@ function load(){
   reader.readAsText($("#loadfile")[0].files[0]);
   
 }
+// ignore global definition for stackedBar legend circle
 function GetStyle(CLASSname)
 {
     var styleSheets = document.styleSheets;
@@ -3475,7 +3476,6 @@ function GetStyle(CLASSname)
         }       
     }
 }
-// ignore global definition for stackedBar legend circle
 GetStyle('circle').style = {};
 </script>
 
