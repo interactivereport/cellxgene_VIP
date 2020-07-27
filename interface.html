@@ -39,8 +39,8 @@
       #separator, #panel-left, #panel-right {
           vertical-align: top; 
       }
-      #vis {
-          margin: 100px;
+      #STACBARplot {
+          margin: 40px;
           position: relative;
       }
       .axis path,
@@ -665,7 +665,7 @@
     
     <div id='STACBAR' class='tabcontent'>
       <div id="STACBARinput">
-        <h3>Starked Dynamic Barplot of cell numbers on selected cells for selected annotation and/or genes</h3>
+        <h3>Interactive Stacked Barplot of cell numbers on selected cells by two annotations and/or genes</h3>
         <p>Choose cell set(s):
           <label><input class="STACBARcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="STACBARcellN1" style="color:red">0</span>)</label>
           <label><input class="STACBARcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="STACBARcellN2" style="color:red">0</span>)</label>
@@ -677,12 +677,17 @@
         </div>
         <p>Annotations:</p><p id="STACBARgrp"></p>
         <p>Color by <select id="STACBARcol"></select></p>
-
+		<p>Figure width: <input id="STACBARwidth" type="number" step="50" value="800"/> , height: <input id="STACBARheight" type="number" step="40" value="480"/></p>
+        <p>x-Axis font size: <input id="STACBARxfontsize" type="number" step="2" value="16"/> , 
+        label rotate: <input id="STACBARxlabelrotate" type="number" step="5" value="-60"/> ,
+		label shift: <input id="STACBARxlabelshift" type="number" step="2" value="-24"/></p>
       </div>
       
       
       <button class="STACBARbt"  onclick="STACBARplot()"><b>Plot</b> </button>
       <button onclick="hideShow($('#STACBARinput'),$(this));">Hide Input</button>
+      <button class="STARBARbt" style="float:right;" onclick="var a = document.createElement('a'); a.href = 'data:application/octet-stream;base64,' + btoa(document.getElementById('STACBARsvg').outerHTML); a.download = 'Stackedbar.svg'; a.click();">Save as SVG</button>
+
       <p id="STACBARnote" style="color:red;"></p>
       <div id="STACBARspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id='STACBARresize' style="height: 'auto'; width: 'auto'; padding: 0.5em;"></div>

@@ -1,34 +1,37 @@
 function stackedBar(aID,dataSet1){
-	var width       = 760,
-	    height      = 300,
-	    padding     = {left: 50, right: 200, top: 20, bottom: 30},
+	var width       = $('#STACBARwidth').val(),
+	    height      = $('#STACBARheight').val(),
+        svgHeight   = Number(height)+100;
+	    padding     = {left: 50, right: 200, top:20, bottom: 20},
 	    xRangeWidth = width - padding.left - padding.right,
 	    yRangeHeight = height - padding.top - padding.bottom;
 	
 	var vis = d3.select("#"+aID).append("div").attr({
 	        margin: "auto",
-	        id: "vis"
+	        id: "STACBARplot"
 	    }),
 	    svg = vis
 	    .append("svg")
-	    .attr("width", width)
-	    .attr("height", height)
+	    .attr("id", "STACBARsvg")
+        .attr("xmlns", "http://www.w3.org/2000/svg")
+        .attr("width", width)
+        .attr("height", svgHeight)
 	    .append("g")
 	    .attr("transform", "translate(" + [padding.left, padding.top] + ")");
 	
 	var offsetSelect = d3.ui.select({
 	        base: vis,
 	        before: "svg",
-	        style: {position: "absolute", left: width - padding.right + 15 + "px", top: yRangeHeight + "px"},
+	        style: {position: "absolute", left: 0 + "px", top: -40 + "px"},
 	        onchange: function() {
 	            update(dataSet1)
 	        },
-	        data: ["wiggle", "zero", "expand", "silhouette"]
+	        data: ["zero", "expand", "silhouette"]
 	    }),
 	    orderSelect  = d3.ui.select({
 	        base: vis,
 	        before: "svg",
-	        style: {position: "absolute", left: width - padding.right + 15 + "px", top: yRangeHeight - 20 + "px"},
+	        style: {position: "absolute", left: 100 + "px", top: -40 + "px"},
 	        onchange: function() {
 	            update(dataSet1)
 	        },
@@ -175,7 +178,7 @@ function stackedBar(aID,dataSet1){
 	    points.exit().remove();
 	    Object.defineProperties(plotArea.series.components.values.points, d3._CB_selection_destructure);
 	
-		svg.selectAll(".x.axis .tick text").style("text-anchor", "end").attr("dx","-0.9em").attr("transform", "rotate(-65)");
+		svg.selectAll(".x.axis .tick text").style("text-anchor", "end").attr("dx",$('#STACBARxlabelshift').val()+"px").attr("transform", "rotate("+$('#STACBARxlabelrotate').val()+")").style("font-size",$('#STACBARxfontsize').val()+"px");;
 	
 	    gX.transition().call(xAxis);
 	    gY.transition().call(yAxis);
@@ -285,8 +288,8 @@ function stackedBar(aID,dataSet1){
 	    // Add the legend inside the series containers
 	    // The series legend is wrapped in another g so that the
 	    // plot transform can be reversed. Otherwise the text would be mirrored
-	    var labHeight = 40,
-	        labRadius = 10;
+	    var labHeight = 20,
+	        labRadius = 6;
 	
 	    // add the marker and the legend text to the normalised container
 	    // push the stackedData (name) down to them
@@ -322,7 +325,7 @@ function stackedBar(aID,dataSet1){
 	                return yPlotScale(d.p0);
 	            })
 	        });
-	    labelCircle.attr("cx", xRangeWidth + 20)
+	    labelCircle.attr("cx", xRangeWidth + 10)
 	        .attr("cy", function(d, i, j) {
 	            return labHeight * orders[j];
 	        })
@@ -331,7 +334,7 @@ function stackedBar(aID,dataSet1){
 	    var labelText = plotArea.series.components.labels.selectAll("text")
 	        .data(function(d){return [d.value]});
 	    labelText.enter().append("text");
-	    labelText.attr("x", xRangeWidth + 40)
+	    labelText.attr("x", xRangeWidth + 20)
 	        .attr("y", function(d, i, j) {
 	            return labHeight * orders[j];
 	        })
@@ -398,7 +401,10 @@ function stackedBar(aID,dataSet1){
 	    }
 	};
 	
+//    svg.append("style").text("path { fill: none; stroke: #000; shape-rendering: crispEdges; }")
 	update(dataSet1);
+	svg.selectAll(".axis path").style("fill","none").style("stroke","#000").style("shape-rendering","crispEdges");
+
 	window.setTimeout(function(){
 	    update(dataSet1.map(function(d) {
 	        return {
