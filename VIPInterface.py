@@ -27,6 +27,7 @@ import pprint
 ppr = pprint.PrettyPrinter(depth=6)
 
 import server.app.app as app
+import server.compute.diffexp_generic as diffDefault
 import pickle
 
 sys.setrecursionlimit(10000)
@@ -548,6 +549,7 @@ def GD(data):
   return iostreamFig(fig)
 
 def DEG(data):
+  
   adata = None;
   genes = data['genes']
   data['genes'] = []
@@ -556,8 +558,10 @@ def DEG(data):
     data['figOpt']['scale'] = 'false'
     adata = createData(data)
     comGrp = data['grp'][0]
+    mask = [adata.obs[comGrp].isin(data['comGrp'][i]) for i in [0,1]]
     adata = adata[adata.obs[comGrp].isin(data['comGrp'])]
   else:
+    mask = [pd.Series(range(data['cellN'])).isin(data['cells'][one].values()) for one in data['cells'].keys()]
     for one in data['cells'].keys():
       oneD = {'cells':data['cells'][one],
               'genes':[],
@@ -573,21 +577,27 @@ def DEG(data):
   #ppr.pprint(adata) 
   #with open("adata.pkl",'wb') as f:
   #  pickle.dump(adata,f)
-    
   if not 'AnnData' in str(type(adata)):
     raise ValueError('No data extracted by user selection')
-    
-  adata.obs.astype('category')
-  nm = None
-  if data['DEmethod']=='wald': 
-    nm = 'nb'
-  res = de.test.two_sample(adata,comGrp,test=data['DEmethod'],noise_model=nm)
-  deg = res.summary()
-  deg = deg.sort_values(by=['qval']).loc[:,['gene','log2fc','pval','qval']]
+  if data['DEmethod']=='t-test':
+    with app.get_data_adaptor() as scD:
+      res = diffDefault.diffexp_ttest(scD,mask[0].to_numpy(),mask[1].to_numpy(),scD.data.shape[0])
+      gNames = list(scD.data.var["name_0"])
+    deg = pd.DataFrame(res,columns=['gID','log2fc','pval','qval'])
+    gName = pd.Series([gNames[i] for i in deg['gID']],name='gene')
+    deg = pd.concat([deg,gName],axis=1).loc[:,['gene','log2fc','pval','qval']]
+  else:
+    adata.obs.astype('category')
+    nm = None
+    if data['DEmethod']=='wald': 
+      nm = 'nb'
+    res = de.test.two_sample(adata,comGrp,test=data['DEmethod'],noise_model=nm)
+    deg = res.summary()
+    deg = deg.sort_values(by=['qval']).loc[:,['gene','log2fc','pval','qval']]
   ## plot in R
   strF = ('/tmp/DEG%f.csv' % time.time())
   deg.to_csv(strF,index=False)
-  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi'])],capture_output=True)#
+  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC'])],capture_output=True)#
   img = res.stdout.decode('utf-8')
   os.remove(strF)
   #####

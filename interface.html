@@ -633,6 +633,7 @@
         <p id="DEGgrp"></p>
         <p>Select the number of top DEG: 
         <select id="DEGtop">
+          <option value=10>10</option>
           <option value=100>100</option>
           <option value=500>500</option>
           <option value=1000>1000</option>
@@ -645,8 +646,10 @@
           <option value='rank'>Wilcoxon rank sum</option>
           <option value='wald'>Wald test</option>
         </select></p>
-        <p>Select genes to be marked in the volcano plot: <input type="checkbox" onclick="$('.DEGgenes').prop('checked', this.checked);">Uncheck / Check All</p>
+        <p>Select genes to be marked in the volcano plot:
+        <input type="checkbox" onclick="$('.DEGgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="DEGgene"></p>
+        <p>Remove genes in volcano plot with the absolute log2(FC) larger than: <input id="DEGlogfcCut" type="number" step="1" value="10" min="0"/></p>
       </div>
       
       <button class="DEGbt" onclick="DEGfind()"><b>Find</b></button>
@@ -2354,6 +2357,7 @@ function DEGfind(){
            'topN':$("#DEGtop").val(),
            'DEmethod':$("#DEGmethod").val(),
            'genes':genes,
+           'logFC':$("#DEGlogfcCut").val(),
            'figOpt':window.figOpt}
   const [combGrp,combName] = DEGselCells();
   var cells = {};
@@ -2366,6 +2370,7 @@ function DEGfind(){
       cells['group2'] = window.store.getState().differential.celllist2;
     }
     D['cells'] = cells;
+    D['cellN'] = window.store.getState().universe.nObs;
     $('#DEGinfo').text("DEG between selected group 1 and group 2");
   }else{
     D['combine']=combGrp;

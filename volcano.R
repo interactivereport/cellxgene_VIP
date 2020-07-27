@@ -11,6 +11,7 @@ genes <- unlist(strsplit(args[2],";"))
 strFun <- args[3]
 fontsize <- as.numeric(args[4])
 dpi <- as.numeric(args[5])
+logFCcut <- as.numeric(args[6])
 mtable <- read.csv(strCSV,as.is=T,check.names=F)
 colnames(mtable) <- c('gene_name','logFC','pvalue','FDR')
 mtable$Top = ifelse(mtable$FDR >= 0.05, "Not Sig", ifelse(mtable$logFC>0, "Up", "Down"))
@@ -18,6 +19,11 @@ Up <- length(which(mtable$Top=="Up"))
 Down <- length(which(mtable$Top=="Down"))
 # only label top 20 genes
 genes <- unique(c(genes,mtable[1:20,"gene_name"]))
+## remove genes with absolute logFC larger than the logFCcutoff
+mtable <- mtable[abs(mtable$logFC)<logFCcut,]
+#mtable[mtable$logFC>logFCcut,'logFC'] <- logFCcut
+#mtable[mtable$logFC< -logFCcut,'logFC'] <- -logFCcut
+
 g <- ggplot(mtable, aes(x=logFC, y=-log10(FDR))) +
   #geom_point(aes(color = Top), size=0.5, alpha=0.6) +
   geom_point_rast(aes(color = Top), size=0.5, alpha=0.6,na.rm=TRUE)+
