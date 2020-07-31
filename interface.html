@@ -1078,7 +1078,7 @@ function init(){
     $('#DOTcutoff').prop('min',-5);  
 
     //add text on select brush on histogram
-    var html = "<table><tr><td>Histogram Name</td><td>Minimal</td><td>Maximal</td><tr>";
+    var html = "<table><tr><td>Name</td><td></td><td>Maximal</td><tr>";
     $("div[id^=histogram]").each(function(){
       var aID = $(this).prop('id').replace("histogram_","");
       html += "<tr><td>" +aID+"</td>";

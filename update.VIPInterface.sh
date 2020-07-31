@@ -6,8 +6,7 @@ strweb="${strPath}/server/common/web/static/."
 echo $strPath
 
 cp VIPInterface.py $strPath/server/app/.
-cp interface.html $strPath/server/common/web/static/.
-cp -R stackedbar $strPath/server/common/web/static/.
+cp interface.html $strweb
 
 if [ -n "$1" ]; then
 	echo "usually update once"
