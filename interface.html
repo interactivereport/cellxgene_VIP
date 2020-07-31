@@ -5,6 +5,7 @@
     <script src="static/jquery-ui.min.js"></script>
     
     <style>
+      button.link{background:none;border:none;}
       #sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
       #sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; cursor:move; }
       #sortable li span { position: absolute; margin-left: -1.3em; }
@@ -222,7 +223,7 @@
       <p>Please input a list of genes (comma, semicolon, space or tab delimited):</p>
       <p><textarea id="ADDGinput" rows="5" cols="70"></textarea></p>
       <p><button onclick="ADDGadd()"><b>Add</b></button></p>
-      <p>The following genes were added: <span id="ADDGsel"></span></p>
+      <p>The following genes were added (click to remove): <span id="ADDGsel"></span></p>
       <p>The following genes are not in the data: <span id="ADDGdel" style="color:red"></span></p>
       
       <h3>Add gene sets of interest for plotting</h3>
@@ -1160,8 +1161,12 @@ function sync(){
 function ABBRref(){
 }
 function ADDGref(){
-  var genes =  window.biogen;
-  $("#ADDGsel").text(genes.join(", "));
+  var html =  "";
+  for(const one of window.biogen){
+    html += '<button class="link" id="ADDG_'+one+'" onclick=\'ADDGdel("'+one+'")\'>'+one+'</button>';
+  }
+  $("#ADDGsel").html(html);
+  //$("#ADDGsel").text(window.biogen.join(", "));
   
   var html= "";
   var grpKeys = Object.keys(window.bioGeneGrp);
@@ -1169,7 +1174,6 @@ function ADDGref(){
     html += "<p><button onclick=\"ADDGsetDel('"+one+"')\"><b>Delete</b></button> <b>"+one+"</b>: " + window.bioGeneGrp[one]+"</p>";
   }
   $("#ADDGsets").html(html);
-
 }
 function GDref(){
 }
@@ -1767,6 +1771,11 @@ function ADDGadd(){
   $("#ADDGdel").text(notG.join(", "));
   $("#ADDGinput").val("");
   ADDGref();
+}
+function ADDGdel(gName){
+  const ix = window.biogen.indexOf(gName);
+  window.biogen.splice(ix,1);
+  $("#ADDG_"+gName).remove();
 }
 function ADDGsetAdd(){
   $("#ADDGsetError").text("");
