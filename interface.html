@@ -759,7 +759,7 @@
     </div><!--IMG-->
     
     <div id="BRUSH" class="tabcontent">
-      <h3>Set the histogram selection</h3>
+      <h3>Brushed Ranges</h3>
       <div id="BRUSHset"></div>
     </div><!--BRUSH-->
 
@@ -1079,12 +1079,12 @@ function init(){
     $('#DOTcutoff').prop('min',-5);  
 
     //add text on select brush on histogram
-    var html = "<table><tr><td>Name</td><td></td><td>Maximal</td><tr>";
+    var html = "<table><tr><td>Name</td><td>Low end value</td><td>High end value</td><tr>";
     $("div[id^=histogram]").each(function(){
       var aID = $(this).prop('id').replace("histogram_","");
       html += "<tr><td>" +aID+"</td>";
-      html += "<td><input type='number' id='input_"+aID+"_left' step=0.01 style='width: 11ch'></td>";
-      html += "<td><input type='number' id='input_"+aID+"_right' step=0.01 style='width: 11ch'></td><tr>";
+      html += "<td><input type='number' id='input_"+aID+"_left' step=0.01 style='width: 12ch;border: 0' readonly></td>";
+      html += "<td><input type='number' id='input_"+aID+"_right' step=0.01 style='width: 12ch;border: 0' readonly></td><tr>";
     });
     
     $("#BRUSHset").html(html);
@@ -1111,7 +1111,7 @@ function init(){
     editor.getSession().setMode("ace/mode/python");
     editor.getSession().setUseWrapMode(true);
     editor.setFontSize("14px");
-    editor.getSession().setValue("#adata: an AnnData object is available\n#The following as an example\nimport scanpy as sc\nfrom matplotlib import pyplot as plt\nsc.tl.rank_genes_groups(adata,groupby='cell_type',groups=['OPC','Astrocytes'],method='logreg')\nmarker_genes=['AQP4', 'FCRL5', 'CUX2', 'ADGRL4', 'KIT','VCAN', 'EYA4','CLDN5']\nfig,axs = plt.subplots(1,3,figsize=(15,5))\nsc.pl.rank_genes_groups_violin(adata,groups='OPC',n_genes=8,ax=axs[0],show=False)\nsc.pl.stacked_violin(adata,marker_genes,groupby='cell_type',row_palette='muted',rotation=90,ax=axs[1],show=False)\nsc.pl.embedding(adata,'umap_harmony',color='cell_type',title='',frameon=False,ax=axs[2],show=False)\nfig.tight_layout()");
+    editor.getSession().setValue("#adata: an AnnData object is available\n#The following as an example\n%config InlineBackend.figure_formats = ['svg']\nimport scanpy as sc\nfrom matplotlib import pyplot as plt\nsc.tl.rank_genes_groups(adata,groupby='cell_type',groups=['OPC','Astrocytes'],method='logreg')\nmarker_genes=['AQP4', 'FCRL5', 'CUX2', 'ADGRL4', 'KIT','VCAN', 'EYA4','CLDN5']\nfig,axs = plt.subplots(1,3,figsize=(15,5))\nsc.pl.rank_genes_groups_violin(adata,groups='OPC',n_genes=8,ax=axs[0],show=False)\nsc.pl.stacked_violin(adata,marker_genes,groupby='cell_type',row_palette='muted',rotation=90,ax=axs[1],show=False)\nsc.pl.embedding(adata,'umap_harmony',color='cell_type',title='',frameon=False,ax=axs[2],show=False)\nfig.tight_layout()");
   }
   return true;
 }

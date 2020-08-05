@@ -1109,7 +1109,7 @@ def CLI(data):
     f.writelines(['import pickle\n','with open("%s","rb") as f:\n'%strData,'  adata=pickle.load(f)\n\n'])
     f.write(script)
   
-  res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --to html --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
+  res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --ExecutePreprocessor.timeout=600 --to html --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
   if 'Error' in res.stderr.decode('utf-8'):
     raise ValueError(res.stderr.decode('utf-8'))
   html = res.stdout.decode('utf-8')
