@@ -161,12 +161,25 @@
           }
       }
       
-      tr:nth-child(even) {background-color: #f2f2f2;}
+      tr:nth-child(even) {background-color: #F1F1F1;}
       input[type=number]{
         width: 60px;
       }
       input,textarea,select{ font-size: 14px; }
       .ace_editor p,.ace_editor div,.ace_editor input,.ace_editor label,.ace_editor span,.ace_editor text {font-family: 'Monaco', 'Menlo', 'Droid Sans Mono', 'Courier New', monospace !important;}
+      table {
+        border-collapse: collapse;
+      }
+      
+      table, th, td {
+        border: 1px solid gray;
+        padding: 5px;
+      }
+      th {
+        background-color: #D4D8DE;
+        color: black;
+      }
+
     </style>
   </head>
 <body>
@@ -196,7 +209,7 @@
       <button class="tablinks" onclick="inputClick()">Load Session</button>
       <button class="tablinks" onclick="ABBRall()">Check All Annotations</button>
       <button class="tablinks" onclick="selFun(event, 'BRUSH');">Brush</button>
-      <button class="tablinks" onclick="selFun(event, 'SYNC');">Sync</button>
+      <button class="tablinks" onclick="sync();">Sync</button>
     </div>
   </div>
   <div id="separator" ></div>
@@ -1079,12 +1092,12 @@ function init(){
     $('#DOTcutoff').prop('min',-5);  
 
     //add text on select brush on histogram
-    var html = "<table><tr><td>Name</td><td>Low end value</td><td>High end value</td><tr>";
+    var html = "<table><tr><th>Name</th><th>Low end value</th><th>High end value</th><tr>";
     $("div[id^=histogram]").each(function(){
       var aID = $(this).prop('id').replace("histogram_","");
       html += "<tr><td>" +aID+"</td>";
       html += "<td><input type='number' id='input_"+aID+"_left' step=0.01 style='width: 12ch;border: 0' readonly></td>";
-      html += "<td><input type='number' id='input_"+aID+"_right' step=0.01 style='width: 12ch;border: 0' readonly></td><tr>";
+      html += "<td><input type='number' id='input_"+aID+"_right' step=0.01 style='width: 12ch;border: 0' readonly></td></tr>";
     });
     
     $("#BRUSHset").html(html);
@@ -1098,7 +1111,7 @@ function init(){
           sync();
         }
         if (action.type.includes("continuous metadata histogram")) {
-          $('#SYNCnote').text(JSON.stringify(window.store.getState().continuousSelection));
+//          $('#SYNCnote').text(JSON.stringify(window.store.getState().continuousSelection));
           $("div[id^=histogram]").each(function(){showBrush($(this).prop('id'));});
         }
       }
