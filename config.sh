@@ -98,6 +98,7 @@ conda remove PyYAML
 conda install fsspec=0.6.3
 pip install tensorflow==2.2.0
 pip install diffxpy==0.7.4
+pip install anndata==0.7.4
 git clone https://github.com/theislab/scanpy.git
 cd scanpy;git checkout 2ea9f836cec6e12a5cdd37bc4a229d4eadf59d37;cd ..
 pip install scanpy/
