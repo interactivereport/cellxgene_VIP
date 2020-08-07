@@ -170,11 +170,6 @@
       table {
         border-collapse: collapse;
       }
-      
-      table, th, td {
-        border: 1px solid gray;
-        padding: 5px;
-      }
       th {
         background-color: #D4D8DE;
         color: black;
@@ -1092,12 +1087,12 @@ function init(){
     $('#DOTcutoff').prop('min',-5);  
 
     //add text on select brush on histogram
-    var html = "<table><tr><th>Name</th><th>Low end value</th><th>High end value</th><tr>";
+    var html = "<table style='border: 1px solid gray; padding: 5px;'><tr><th style='border: 1px solid gray; padding: 5px;'>Name</th><th style='border: 1px solid gray; padding: 5px;'>Low end value</th><th style='border: 1px solid gray; padding: 5px;'>High end value</th><tr>";
     $("div[id^=histogram]").each(function(){
       var aID = $(this).prop('id').replace("histogram_","");
-      html += "<tr><td>" +aID+"</td>";
-      html += "<td><input type='number' id='input_"+aID+"_left' step=0.01 style='width: 12ch;border: 0' readonly></td>";
-      html += "<td><input type='number' id='input_"+aID+"_right' step=0.01 style='width: 12ch;border: 0' readonly></td></tr>";
+      html += "<tr><td style='border: 1px solid gray; padding: 5px;'>" +aID+"</td>";
+      html += "<td style='border: 1px solid gray; padding: 5px;'><input type='number' id='input_"+aID+"_left' step=0.01 style='width: 12ch;border: 0' readonly></td>";
+      html += "<td style='border: 1px solid gray; padding: 5px;'><input type='number' id='input_"+aID+"_right' step=0.01 style='width: 12ch;border: 0' readonly></td></tr>";
     });
     
     $("#BRUSHset").html(html);
@@ -1761,7 +1756,7 @@ function ABBRcombineUpdate(){
 }
 // process genes
 function ADDGadd(){
-  var addG = $("#ADDGinput").val().split(/\s+|\,|\;/);
+  var addG = $("#ADDGinput").val().trim().split(/\s+|\s*,\s*|\s*;\s*/);
   var genes =  window.biogen;
   var notG = [];
   var totalG = window.store.getState().universe.varAnnotations.__columns[0];
@@ -1807,7 +1802,7 @@ function ADDGsetAdd(){
     definedG = definedG.concat(window.bioGeneGrp[grpKeys[i]]);
   }
   
-  var gNames = $("#ADDGsetGene").val().trim().split(/\s+|\,|\;/);
+  var gNames = $("#ADDGsetGene").val().trim().split(/\s+|\s*,\s*|\s*;\s*/);
   var notG = [],geneNames=[];
   var totalG = window.store.getState().universe.varAnnotations.__columns[0];
   var totalGlower = totalG.map(function(s){return s.toLowerCase();});

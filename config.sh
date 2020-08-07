@@ -98,12 +98,15 @@ conda remove PyYAML
 conda install fsspec=0.6.3
 pip install tensorflow==2.2.0
 pip install diffxpy==0.7.4
-pip install git+https://github.com/theislab/scanpy.git@groupby_plots
+git clone https://github.com/theislab/scanpy.git
+cd scanpy;git checkout 2ea9f836cec6e12a5cdd37bc4a229d4eadf59d37;cd ..
+pip install scanpy/
+# pip install git+https://github.com/theislab/scanpy.git@split_show
+# pip install 'scanpy==1.4.6'   # works for v1.4.6 too
 pip install plotly==4.8.1
 pip install jupytext
 pip install nbconvert
 # conda install -c plotly plotly-orca
-# pip install 'scanpy==1.4.6'   # works for v1.4.6 too
 
 cd cellxgene
 make pydist
