@@ -231,7 +231,7 @@
       <p>Please input a list of genes (comma, semicolon, space or tab delimited):</p>
       <p><textarea id="ADDGinput" rows="5" cols="70"></textarea></p>
       <p><button onclick="ADDGadd()"><b>Add</b></button></p>
-      <p>The following genes were added (click to remove): <span id="ADDGsel"></span></p>
+      <p>The following genes were added (click on a gene name to remove): <span id="ADDGsel"></span></p>
       <p>The following genes are not in the data: <span id="ADDGdel" style="color:red"></span></p>
       
       <h3>Add gene sets of interest for plotting</h3>
@@ -1120,6 +1120,8 @@ function init(){
     editor.getSession().setUseWrapMode(true);
     editor.setFontSize("14px");
     editor.getSession().setValue("#adata: an AnnData object is available\n#The following as an example\n%config InlineBackend.figure_formats = ['svg']\nimport scanpy as sc\nfrom matplotlib import pyplot as plt\nsc.tl.rank_genes_groups(adata,groupby='cell_type',groups=['OPC','Astrocytes'],method='logreg')\nmarker_genes=['AQP4', 'FCRL5', 'CUX2', 'ADGRL4', 'KIT','VCAN', 'EYA4','CLDN5']\nfig,axs = plt.subplots(1,3,figsize=(15,5))\nsc.pl.rank_genes_groups_violin(adata,groups='OPC',n_genes=8,ax=axs[0],show=False)\nsc.pl.stacked_violin(adata,marker_genes,groupby='cell_type',row_palette='muted',rotation=90,ax=axs[1],show=False)\nsc.pl.embedding(adata,'umap_harmony',color='cell_type',title='',frameon=False,ax=axs[2],show=False)\nfig.tight_layout()");
+
+	document.getElementsByClassName('tablinks')[0].click();
   }
   return true;
 }
@@ -1171,7 +1173,7 @@ function ABBRref(){
 function ADDGref(){
   var html =  "";
   for(const one of window.biogen){
-    html += '<button class="link" id="ADDG_'+one+'" onclick=\'ADDGdel("'+one+'")\'>'+one+'</button>';
+    html += '<button class="link" style="cursor: crosshair;" id="ADDG_'+one+'" onclick=\'ADDGdel("'+one+'")\'>'+one+'</button>';
   }
   $("#ADDGsel").html(html);
   //$("#ADDGsel").text(window.biogen.join(", "));
