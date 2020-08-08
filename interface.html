@@ -246,7 +246,7 @@
     
     <div id="GD" class=tabcontent>
       <div id="GDinput">
-        <h3>Genes detected in selected cells </h3>
+        <h3>Genes detected in selected groups of cells </h3>
         <p>In group 1 (<span id="GDcellN1" style="color:red;">0</span>) cells and group 2 (<span id="GDcellN2" style="color:red;">0</span>) cells</p>
         <p>Expression threshold:
         <input id="GDcutoff" type="number" step="0.1" value="1"/></p>
@@ -264,7 +264,7 @@
     
     <div id="MARK" class="tabcontent">
       <div id="MARKinput">
-        <h3>Marker genes of annotation categories in selected cells</h3>
+        <h3>Marker genes of annotation categories on selected cells</h3>
         <p>Choose cell set(s):
           <label><input class="MARKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="MARKcellN1" style="color:red">0</span>)</label>
           <label><input class="MARKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="MARKcellN2" style="color:red">0</span>)</label>
@@ -335,16 +335,49 @@
             <input type="radio" name="PGVgeneGrpCollCal" value="mean" checked>Average
             <input type="radio" name="PGVgeneGrpCollCal" value="median">Median</p>
           </div>
-       </div>   
-          
-          
+        </div>   
         <p>Group by:<select id="PGVgrp"></select> as
         <select id="PGVgrpXY">
           <option value="Rows">Rows</option>
           <option value="Columns">Columns</option>
         </select>
         </p>
+        <p>Color: <input id="PGVcolor_r" type="checkbox">Reverse
+        <select id="PGVcolor">
+          <option value='Purples'>Purples</option>
+          <option value='Blues'>Blues</option>
+          <option value='Greens'>Greens</option>
+          <option value='Oranges'>Oranges</option>
+          <option value='Reds' selected>Reds</option>
+          <option value='YlOrBr'>YlOrBr</option>
+          <option value='YlOrRd'>YlOrRd</option>
+          <option value='OrRd'>OrRd</option>
+          <option value='PuRd'>PuRd</option>
+          <option value='RdPu'>RdPu</option>
+          <option value='BuPu'>BuPu</option>
+          <option value='PuBu'>PuBu</option>
+          <option value='PuBuGn'>PuBuGn</option>
+          <option value='BuGn'>BuGn</option>
+          <option value='GnBu'>GnBu</option>
+          <option value='YlGnBu'>YlGnBu</option>
+          <option value='YlGn'>YlGn</option>
+          <option value='Spectral'>Spectral</option>
+          <option value='PiYG'>PiYG</option>
+          <option value='PRGn'>PRGn</option>
+          <option value='BrBG'>BrBG</option>
+          <option value='PuOr'>PuOr</option>
+          <option value='RdGy'>RdGy</option>
+          <option value='RdBu'>RdBu</option>
+          <option value='RdYlBu'>RdYlBu</option>
+          <option value='RdYlGn'>RdYlGn</option>
+        </select> <button onclick="hideShow($('#PGVcolorhelp'),$(this),'Color Help');">Show Color Help</button></p>  
+		<div id="PGVcolorhelp" style="display:none;">
+          <table border=0>
+            <tr valign="top"><td><img src="static/color_brewer_sequential.png" width="300"></td><td><img src="static/color_brewer_diverging.png" width="300"></td></tr>
+          </table>
+		</div>
       </div>
+
       <button class="PGVbt"  onclick="PGVplot('plot')"><b>Plot</b></button>
       <button class="PGVsaveBT" onclick="PGVplot('data')">Get Data</button>
       <button onclick="ZoomIn('PGVresize')">Zoom In</button>
@@ -555,7 +588,7 @@
 
     <div  id="DENS2D" class="tabcontent">
       <div id="DENS2Dinput">
-        <h3>Embedding plot of two genes in selected cells</h3>
+        <h3>2D density plot to show expression relationship of two genes</h3>
         <p>Choose cell set(s):
           <label><input class="DENS2Dcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DENS2DcellN1" style="color:red">0</span>)</label>
           <label><input class="DENS2Dcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DENS2DcellN2" style="color:red">0</span>)</label>
@@ -578,7 +611,7 @@
       
     <div  id="DUAL" class="tabcontent">
       <div id="DUALinput">
-        <h3>Embedding plot of two genes in selected cells</h3>
+        <h3>Embedding plot of two genes on selected cells</h3>
         <p>Choose cell set(s):
           <label><input class="DUALcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DUALcellN1" style="color:red">0</span>)</label>
           <label><input class="DUALcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DUALcellN2" style="color:red">0</span>)</label>
@@ -604,7 +637,7 @@
 
     <div  id="SANK" class="tabcontent">
       <div id="SANKinput">
-        <h3>Sankey Diagrams on selected cells for selected annotations and/or genes</h3>
+        <h3>Interactive sankey diagram of annotations and/or genes on selected cells</h3>
         <p>Choose cell set(s):
           <label><input class="SANKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="SANKcellN1" style="color:red">0</span>)</label>
           <label><input class="SANKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="SANKcellN2" style="color:red">0</span>)</label>
@@ -677,7 +710,7 @@
     
     <div id='STACBAR' class='tabcontent'>
       <div id="STACBARinput">
-        <h3>Interactive Stacked Barplot of cell numbers on selected cells by two annotations and/or genes</h3>
+        <h3>Interactive stacked barplot of cell distribution of selected cells over two annotations and/or genes</h3>
         <p>Choose cell set(s):
           <label><input class="STACBARcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="STACBARcellN1" style="color:red">0</span>)</label>
           <label><input class="STACBARcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="STACBARcellN2" style="color:red">0</span>)</label>
@@ -738,9 +771,9 @@
         <input type="radio" name="IMGtransparent" value="Yes" onclick="IMGset()">Yes
         <input type="radio" name="IMGtransparent" value="No" onclick="IMGset()" checked>No
       </p>  
-      <p>Scanpy branch:
+      <p>Scanpy plot style:
         <input type="radio" name="IMGscanpybranch" value="master" onclick="IMGset()">master
-        <input type="radio" name="IMGscanpybranch" value="groupby_plots" onclick="IMGset()" checked>groupby_plots
+        <input type="radio" name="IMGscanpybranch" value="split_show" onclick="IMGset()" checked>split_show
       </p>  
       <p>Colormap of UMAP/tSNE, 2D Density (top 4):
       <select id="IMGcolor" onchange="IMGset()">
@@ -767,7 +800,7 @@
     </div><!--IMG-->
     
     <div id="BRUSH" class="tabcontent">
-      <h3>Brushed Ranges</h3>
+      <h3>Brushed ranges</h3>
       <div id="BRUSHset"></div>
     </div><!--BRUSH-->
 
@@ -1002,7 +1035,7 @@ function init(){
     window.bioCombineCell={};
     window.biogen=[];
     window.bioGeneGrp={};
-    window.figOpt={scale:'No',scaleZero:'No',clipValue:'Yes',scaleMax:20,dpi:150,img:'png',fontsize:11,vectorFriendly:'Yes',transparent:'No',scanpybranch:'groupby_plots',colorMap:'viridis'};
+    window.figOpt={scale:'No',scaleZero:'No',clipValue:'Yes',scaleMax:20,dpi:150,img:'png',fontsize:11,vectorFriendly:'Yes',transparent:'No',scanpybranch:'split_show',colorMap:'viridis'};
     if (grpL[">Description"] !== undefined && !grpL[">Description"].categoryValues[0].split(";")[1].includes("scale")) {
       window.figOpt['scale'] = "Yes";
     }
@@ -2165,12 +2198,15 @@ function PGVplot(acc){
   if( geneGrpColl== 'Yes'){
     geneGrpColl = $("input[name='PGVgeneGrpCollCal']:checked").val()
   }
+  var color = $("#PGVcolor").val();
+  if ($("#PGVcolor_r")[0].checked) color += '_r';
   var D = {'method':'PGV',
             'cells':cells,
             'genes':genes,
             'geneGrp':geneSets,
             'geneGrpColl':geneGrpColl,
             'grp':grp,
+            'color':color,
             'by':$("#PGVgrpXY").val(),
             'abb':window.bioAbbr,
             'cutoff':$("#PGVcutoff").val(),
