@@ -818,10 +818,11 @@
         <p id="CLIgene"></p>
         <p>Choose annotation:</p><p id="CLIgrp"></p>
         <p>Choose layout:</p><p id="CLIlayout"></p>
-        <div id="CLIscript" style="height:380px;"></div>
+        <div id="CLIscript" style="height:380px;" ></div>
       </div> 
       <button class="CLIbt"  onclick="CLIplot()"><b>Run</b> </button>
       <button onclick="hideShow($('#CLIinput'),$(this));">Hide Input</button>
+      <div id="CLIsvg"></div>
       <p id="CLInote" style="color:red;"></p>
       <div id="CLIspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="CLIresize" style="height: 'auto'; width: 'auto'; padding: 0.5em;"></div>
@@ -1155,6 +1156,13 @@ function init(){
     editor.getSession().setValue("#adata: an AnnData object is available\n#The following as an example\n%config InlineBackend.figure_formats = ['svg']\nimport scanpy as sc\nfrom matplotlib import pyplot as plt\nsc.tl.rank_genes_groups(adata,groupby='cell_type',groups=['OPC','Astrocytes'],method='logreg')\nmarker_genes=['AQP4', 'FCRL5', 'CUX2', 'ADGRL4', 'KIT','VCAN', 'EYA4','CLDN5']\nfig,axs = plt.subplots(1,3,figsize=(15,5))\nsc.pl.rank_genes_groups_violin(adata,groups='OPC',n_genes=8,ax=axs[0],show=False)\nsc.pl.stacked_violin(adata,marker_genes,groupby='cell_type',row_palette='muted',rotation=90,ax=axs[1],show=False)\nsc.pl.embedding(adata,'umap_harmony',color='cell_type',title='',frameon=False,ax=axs[2],show=False)\nfig.tight_layout()");
 
 	document.getElementsByClassName('tablinks')[0].click();
+
+    var observer = new ResizeObserver(function(entries) {
+      entries.forEach(function(entry) {
+        editor.resize();
+      });
+    });
+    observer.observe(document.getElementById('CLIscript'));
   }
   return true;
 }
@@ -3166,6 +3174,7 @@ console.log(res);
 }
 function CLIplot(){
   $('#CLInote').text("");
+  $('#CLIsvg').html("");
   var cells=[], x = document.getElementsByClassName('CLIcell');
   for(i=0;i<x.length;i++){
     if(x[i].checked){
@@ -3236,7 +3245,12 @@ function CLIplot(){
       }
 
       $("#CLIresize").html(res);
-      
+      var num = 0;
+      for (let item of document.getElementsByClassName('output_svg')) {
+        var onclickCode = "var a = document.createElement('a'); a.href = 'data:application/octet-stream;base64,' + btoa(document.getElementsByClassName('output_svg')["+num+"].getElementsByTagName('svg')[0].outerHTML); a.download = 'CLI.svg'; a.click();"
+	    item.innerHTML += '<p><button class="CLIbt" onclick="' + onclickCode + '">Save as SVG</button></p>';
+        num ++;
+      }
     },
     error: function(request,status,error){
       $('#CLInote').text(request.status+request.responseText);
