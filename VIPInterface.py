@@ -110,7 +110,7 @@ def subData(data):
         else:
           X = scD.data.X
           gNames = list(scD.data.var["name_0"])
-      if data['figOpt']['scale'] == 'Yes':
+      if 'figOpt' in data.keys() and data['figOpt']['scale'] == 'Yes':
         X = sc.pp.scale(X,zero_center=(data['figOpt']['scaleZero'] == 'Yes'),max_value=(float(data['figOpt']['scaleMax']) if data['figOpt']['clipValue']=='Yes' else None))
       X = X[selC]
     if fSparse:
@@ -1097,7 +1097,6 @@ def CLI(data):
   script = data['script']
   del data['script']
   
-  data['figOpt']['scale'] = 'No'
   adata = createData(data)
 
   strData = strPath + '.pkl'
