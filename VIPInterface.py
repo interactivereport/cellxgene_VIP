@@ -1097,6 +1097,7 @@ def CLI(data):
   script = data['script']
   del data['script']
   
+  data['figOpt']['scale'] = 'No'
   adata = createData(data)
 
   strData = strPath + '.pkl'

@@ -3229,8 +3229,7 @@ function CLIplot(){
             'genes':genes,
             'grp':grps,
             'layout':layouts,
-            'script':editor.getSession().getValue(),
-            'figOpt':window.figOpt};
+            'script':editor.getSession().getValue()};
    $.ajax({
     type:"POST",
     url: "/VIP",
@@ -3568,6 +3567,7 @@ warnings.filterwarnings('ignore')
 import scanpy as sc
 from matplotlib import pyplot as plt
 %config InlineBackend.figure_formats = ['svg']
+sc.pp.scale(adata)
 sc.tl.rank_genes_groups(adata,groupby='cell_type',groups=['OPC','Astrocytes'],method='t-test')
 marker_genes=['LHFPL3', 'PCDH15', 'DSCAM', 'TNR', 'NLGN1','AQP4', 'VCAN','CUX2']
 geneGrpPos = [(0,2), (3,4), (5,7)]
