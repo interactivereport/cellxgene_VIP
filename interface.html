@@ -3518,8 +3518,9 @@ function load(){
   reader.onload=function(ev){
     var content = JSON.parse(decodeURIComponent(ev.target.result));
     if(content[0]!='cellxgene.'+window.store.getState().config.displayNames.dataset){
-      alert("Saved information is NOT matching with the current data!");
-      return;
+      if(!confirm("Saved information is NOT matching with the current data! Continue?")){
+        return;
+      }
     }
     var i=1;
     ABBRload(content[i++]);
