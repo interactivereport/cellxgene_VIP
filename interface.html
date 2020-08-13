@@ -167,6 +167,7 @@
       }
       input,textarea,select{ font-size: 14px; }
       .ace_editor p,.ace_editor div,.ace_editor input,.ace_editor label,.ace_editor span,.ace_editor text {font-family: 'Monaco', 'Menlo', 'Droid Sans Mono', 'Courier New', monospace !important;}
+      pre span {font-size: 12px; font-family: 'Arial', monospace !important;} 
       table {
         border-collapse: collapse;
       }
@@ -3247,13 +3248,17 @@ function CLIplot(){
       var readIt = false;
       res.split(/(\r\n|\n|\r)/g).forEach(function(line) {
         if (line.includes('div.inner_cell') || line.includes('<body>')) readIt = true;
-        if (readIt) filteredRes += line;
+        if (readIt) {
+          line = line.replace('output_subarea','');
+          filteredRes += line;
+        }
         if (line.includes('\.highlight \.il { color: #666666 }')) {
           filteredRes += '</style>';
           readIt = false;
         }
         if (line.includes('<\/body>')) readIt = false;
       });
+// console.log(filteredRes);
       $("#CLIresize").html(filteredRes);
 
       var num = 0;
@@ -3270,33 +3275,6 @@ function CLIplot(){
       document.getElementById("CLIspin").style.visibility="hidden";
     }
   })
- 
-/*
-  $(".CLIbt").prop('disabled',true);
-  document.getElementById("CLIspin").style.visibility="visible";
-  $.ajax({
-    type:"POST",
-    url: "/VIP",
-    data:JSON.stringify(D),
-    contentType: 'application/json;charset=UTF-8',//
-    success: function(res){
-      $(".CLIbt").prop("disabled",false);
-      document.getElementById("CLIspin").style.visibility="hidden";
-      if(res.startsWith('ERROR')){
-        $('#CLInote').text(res);
-        $('#CLIresize').text("");
-        return;
-      }
-      $('#CLIresize').html(res);
-
-    },
-    error: function(request,status,error){
-      $('#CLInote').text(request.status+request.responseText);
-      $(".CLIbt").prop("disabled",false);
-      document.getElementById("CLIspin").style.visibility="hidden";
-    }
-  })
-*/
 }
 //save and load
 function checkSave(eID){
