@@ -110,7 +110,7 @@ def subData(data):
         else:
           X = scD.data.X
           gNames = list(scD.data.var["name_0"])
-      if data['figOpt']['scale'] == 'Yes':
+      if 'figOpt' in data.keys() and data['figOpt']['scale'] == 'Yes':
         X = sc.pp.scale(X,zero_center=(data['figOpt']['scaleZero'] == 'Yes'),max_value=(float(data['figOpt']['scaleMax']) if data['figOpt']['clipValue']=='Yes' else None))
       X = X[selC]
     if fSparse:
@@ -400,10 +400,10 @@ def PGV(data):
     w = h
     h = a
     swapAx = True
-  if 'groupby_plots' in data['figOpt']['scanpybranch']: #.dev140+ge9cbc5f
+  if 'split_show' in data['figOpt']['scanpybranch']: #.dev140+ge9cbc5f
     vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=(w,h),swap_axes=swapAx,var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
-    #vp.add_totals().style().show()
-    vp.add_totals().show()
+    vp.add_totals().style(yticklabels=True, cmap=data['color']).show()
+    #vp.add_totals().show()
     fig = plt.gcf()
   else:
     fig = plt.figure(figsize=[w,h])
@@ -624,7 +624,7 @@ def DOT(data):
   adata.uns[data['grp'][0]+'_colors'] = col
   
   #ppr.pprint(sc.__version__)
-  if 'groupby_plots' in data['figOpt']['scanpybranch']:#.dev140+ge9cbc5f
+  if 'split_show' in data['figOpt']['scanpybranch']:#.dev140+ge9cbc5f
     dp = sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],expression_cutoff=float(data['cutoff']),mean_only_expressed=(data['mean_only_expressed'] == 'Yes'),
                        var_group_positions=data['grpLoc'],var_group_labels=data['grpID'],
                        return_fig=True)#
@@ -632,7 +632,7 @@ def DOT(data):
     dp.show()
     fig = dp.get_axes()['mainplot_ax'].figure
   else:
-    sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],show=False,expression_cutoff=float(data['cutoff']),mean_only_expressed=(data['mean_only_expressed'] == 'Yes'),var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
+    sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],show=False,expression_cutoff=float(data['cutoff']),mean_only_expressed=(data['mean_only_expressed'] == 'Yes'),var_group_positions=data['grpLoc'],var_group_labels=data['grpID'], color_map=data['color'])
     fig = plt.gcf()
 
   return iostreamFig(fig)
@@ -1025,8 +1025,9 @@ def STACBAR(data):
     D = D.apply(lambda x:x.apply(lambda y:y))
   else:
     adata = createData(data)
+    
     D = pd.concat([adata.obs.apply(lambda x:x.apply(lambda y:y)),
-                   adata.to_df().apply(lambda x:pd.cut(x,int(data['Nbin'])).apply(lambda y:'%.1f_%.1f'%(y.left,y.right)))],
+                   adata.to_df().apply(lambda x:pd.cut(x,int(data['Nbin'])).apply(lambda y:'%s:%.1f_%.1f'%(x.name,y.left,y.right)))],
                   axis=1,sort=False)
   D = D.astype('str').astype('category')
   if 'name_0' in D.columns:

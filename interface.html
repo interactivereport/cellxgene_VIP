@@ -170,16 +170,10 @@
       table {
         border-collapse: collapse;
       }
-      
-      table, th, td {
-        border: 1px solid gray;
-        padding: 5px;
-      }
       th {
         background-color: #D4D8DE;
         color: black;
       }
-
     </style>
   </head>
 <body>
@@ -236,7 +230,7 @@
       <p>Please input a list of genes (comma, semicolon, space or tab delimited):</p>
       <p><textarea id="ADDGinput" rows="5" cols="70"></textarea></p>
       <p><button onclick="ADDGadd()"><b>Add</b></button></p>
-      <p>The following genes were added (click to remove): <span id="ADDGsel"></span></p>
+      <p>The following genes were added (click on a gene name to remove): <span id="ADDGsel"></span></p>
       <p>The following genes are not in the data: <span id="ADDGdel" style="color:red"></span></p>
       
       <h3>Add gene sets of interest for plotting</h3>
@@ -251,7 +245,7 @@
     
     <div id="GD" class=tabcontent>
       <div id="GDinput">
-        <h3>Genes detected in selected cells </h3>
+        <h3>Genes detected in selected groups of cells </h3>
         <p>In group 1 (<span id="GDcellN1" style="color:red;">0</span>) cells and group 2 (<span id="GDcellN2" style="color:red;">0</span>) cells</p>
         <p>Expression threshold:
         <input id="GDcutoff" type="number" step="0.1" value="1"/></p>
@@ -269,7 +263,7 @@
     
     <div id="MARK" class="tabcontent">
       <div id="MARKinput">
-        <h3>Marker genes of annotation categories in selected cells</h3>
+        <h3>Marker genes of annotation categories on selected cells</h3>
         <p>Choose cell set(s):
           <label><input class="MARKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="MARKcellN1" style="color:red">0</span>)</label>
           <label><input class="MARKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="MARKcellN2" style="color:red">0</span>)</label>
@@ -340,16 +334,49 @@
             <input type="radio" name="PGVgeneGrpCollCal" value="mean" checked>Average
             <input type="radio" name="PGVgeneGrpCollCal" value="median">Median</p>
           </div>
-       </div>   
-          
-          
+        </div>   
         <p>Group by:<select id="PGVgrp"></select> as
         <select id="PGVgrpXY">
           <option value="Rows">Rows</option>
           <option value="Columns">Columns</option>
         </select>
         </p>
+        <p>Color: <input id="PGVcolor_r" type="checkbox">Reverse
+        <select id="PGVcolor">
+          <option value='Purples'>Purples</option>
+          <option value='Blues'>Blues</option>
+          <option value='Greens'>Greens</option>
+          <option value='Oranges'>Oranges</option>
+          <option value='Reds' selected>Reds</option>
+          <option value='YlOrBr'>YlOrBr</option>
+          <option value='YlOrRd'>YlOrRd</option>
+          <option value='OrRd'>OrRd</option>
+          <option value='PuRd'>PuRd</option>
+          <option value='RdPu'>RdPu</option>
+          <option value='BuPu'>BuPu</option>
+          <option value='PuBu'>PuBu</option>
+          <option value='PuBuGn'>PuBuGn</option>
+          <option value='BuGn'>BuGn</option>
+          <option value='GnBu'>GnBu</option>
+          <option value='YlGnBu'>YlGnBu</option>
+          <option value='YlGn'>YlGn</option>
+          <option value='Spectral'>Spectral</option>
+          <option value='PiYG'>PiYG</option>
+          <option value='PRGn'>PRGn</option>
+          <option value='BrBG'>BrBG</option>
+          <option value='PuOr'>PuOr</option>
+          <option value='RdGy'>RdGy</option>
+          <option value='RdBu'>RdBu</option>
+          <option value='RdYlBu'>RdYlBu</option>
+          <option value='RdYlGn'>RdYlGn</option>
+        </select> <button onclick="hideShow($('#PGVcolorhelp'),$(this),'Color Help');">Show Color Help</button></p>  
+		<div id="PGVcolorhelp" style="display:none;">
+          <table border=0>
+            <tr valign="top"><td><img src="static/color_brewer_sequential.png" width="300"></td><td><img src="static/color_brewer_diverging.png" width="300"></td></tr>
+          </table>
+		</div>
       </div>
+
       <button class="PGVbt"  onclick="PGVplot('plot')"><b>Plot</b></button>
       <button class="PGVsaveBT" onclick="PGVplot('data')">Get Data</button>
       <button onclick="ZoomIn('PGVresize')">Zoom In</button>
@@ -560,7 +587,7 @@
 
     <div  id="DENS2D" class="tabcontent">
       <div id="DENS2Dinput">
-        <h3>Embedding plot of two genes in selected cells</h3>
+        <h3>2D density plot to show expression relationship of two genes</h3>
         <p>Choose cell set(s):
           <label><input class="DENS2Dcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DENS2DcellN1" style="color:red">0</span>)</label>
           <label><input class="DENS2Dcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DENS2DcellN2" style="color:red">0</span>)</label>
@@ -583,7 +610,7 @@
       
     <div  id="DUAL" class="tabcontent">
       <div id="DUALinput">
-        <h3>Embedding plot of two genes in selected cells</h3>
+        <h3>Embedding plot of two genes on selected cells</h3>
         <p>Choose cell set(s):
           <label><input class="DUALcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DUALcellN1" style="color:red">0</span>)</label>
           <label><input class="DUALcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DUALcellN2" style="color:red">0</span>)</label>
@@ -609,7 +636,7 @@
 
     <div  id="SANK" class="tabcontent">
       <div id="SANKinput">
-        <h3>Sankey Diagrams on selected cells for selected annotations and/or genes</h3>
+        <h3>Interactive sankey diagram of annotations and/or genes on selected cells</h3>
         <p>Choose cell set(s):
           <label><input class="SANKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="SANKcellN1" style="color:red">0</span>)</label>
           <label><input class="SANKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="SANKcellN2" style="color:red">0</span>)</label>
@@ -682,7 +709,7 @@
     
     <div id='STACBAR' class='tabcontent'>
       <div id="STACBARinput">
-        <h3>Interactive Stacked Barplot of cell numbers on selected cells by two annotations and/or genes</h3>
+        <h3>Interactive stacked barplot of cell distribution of selected cells over two annotations and/or genes</h3>
         <p>Choose cell set(s):
           <label><input class="STACBARcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="STACBARcellN1" style="color:red">0</span>)</label>
           <label><input class="STACBARcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="STACBARcellN2" style="color:red">0</span>)</label>
@@ -743,9 +770,9 @@
         <input type="radio" name="IMGtransparent" value="Yes" onclick="IMGset()">Yes
         <input type="radio" name="IMGtransparent" value="No" onclick="IMGset()" checked>No
       </p>  
-      <p>Scanpy branch:
+      <p>Scanpy plot style:
         <input type="radio" name="IMGscanpybranch" value="master" onclick="IMGset()">master
-        <input type="radio" name="IMGscanpybranch" value="groupby_plots" onclick="IMGset()" checked>groupby_plots
+        <input type="radio" name="IMGscanpybranch" value="split_show" onclick="IMGset()" checked>split_show
       </p>  
       <p>Colormap of UMAP/tSNE, 2D Density (top 4):
       <select id="IMGcolor" onchange="IMGset()">
@@ -772,7 +799,7 @@
     </div><!--IMG-->
     
     <div id="BRUSH" class="tabcontent">
-      <h3>Brushed Ranges</h3>
+      <h3>Brushed ranges</h3>
       <div id="BRUSHset"></div>
     </div><!--BRUSH-->
 
@@ -790,10 +817,11 @@
         <p id="CLIgene"></p>
         <p>Choose annotation:</p><p id="CLIgrp"></p>
         <p>Choose layout:</p><p id="CLIlayout"></p>
-        <div id="CLIscript" style="height:380px;"></div>
+        <div id="CLIscript" style="height:380px;" ></div>
       </div> 
       <button class="CLIbt"  onclick="CLIplot()"><b>Run</b> </button>
       <button onclick="hideShow($('#CLIinput'),$(this));">Hide Input</button>
+      <div id="CLIsvg"></div>
       <p id="CLInote" style="color:red;"></p>
       <div id="CLIspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="CLIresize" style="height: 'auto'; width: 'auto'; padding: 0.5em;"></div>
@@ -1007,7 +1035,7 @@ function init(){
     window.bioCombineCell={};
     window.biogen=[];
     window.bioGeneGrp={};
-    window.figOpt={scale:'No',scaleZero:'No',clipValue:'Yes',scaleMax:20,dpi:150,img:'png',fontsize:11,vectorFriendly:'Yes',transparent:'No',scanpybranch:'groupby_plots',colorMap:'viridis'};
+    window.figOpt={scale:'No',scaleZero:'No',clipValue:'Yes',scaleMax:20,dpi:150,img:'png',fontsize:11,vectorFriendly:'Yes',transparent:'No',scanpybranch:'split_show',colorMap:'viridis'};
     if (grpL[">Description"] !== undefined && !grpL[">Description"].categoryValues[0].split(";")[1].includes("scale")) {
       window.figOpt['scale'] = "Yes";
     }
@@ -1092,12 +1120,12 @@ function init(){
     $('#DOTcutoff').prop('min',-5);  
 
     //add text on select brush on histogram
-    var html = "<table><tr><th>Name</th><th>Low end value</th><th>High end value</th><tr>";
+    var html = "<table style='border: 1px solid gray; padding: 5px;'><tr><th style='border: 1px solid gray; padding: 5px;'>Name</th><th style='border: 1px solid gray; padding: 5px;'>Low end value</th><th style='border: 1px solid gray; padding: 5px;'>High end value</th><tr>";
     $("div[id^=histogram]").each(function(){
       var aID = $(this).prop('id').replace("histogram_","");
-      html += "<tr><td>" +aID+"</td>";
-      html += "<td><input type='number' id='input_"+aID+"_left' step=0.01 style='width: 12ch;border: 0' readonly></td>";
-      html += "<td><input type='number' id='input_"+aID+"_right' step=0.01 style='width: 12ch;border: 0' readonly></td></tr>";
+      html += "<tr><td style='border: 1px solid gray; padding: 5px;'>" +aID+"</td>";
+      html += "<td style='border: 1px solid gray; padding: 5px;'><input type='number' id='input_"+aID+"_left' step=0.01 style='width: 12ch;border: 0' readonly></td>";
+      html += "<td style='border: 1px solid gray; padding: 5px;'><input type='number' id='input_"+aID+"_right' step=0.01 style='width: 12ch;border: 0' readonly></td></tr>";
     });
     
     $("#BRUSHset").html(html);
@@ -1124,7 +1152,17 @@ function init(){
     editor.getSession().setMode("ace/mode/python");
     editor.getSession().setUseWrapMode(true);
     editor.setFontSize("14px");
-    editor.getSession().setValue("#adata: an AnnData object is available\n#The following as an example\n%config InlineBackend.figure_formats = ['svg']\nimport scanpy as sc\nfrom matplotlib import pyplot as plt\nsc.tl.rank_genes_groups(adata,groupby='cell_type',groups=['OPC','Astrocytes'],method='logreg')\nmarker_genes=['AQP4', 'FCRL5', 'CUX2', 'ADGRL4', 'KIT','VCAN', 'EYA4','CLDN5']\nfig,axs = plt.subplots(1,3,figsize=(15,5))\nsc.pl.rank_genes_groups_violin(adata,groups='OPC',n_genes=8,ax=axs[0],show=False)\nsc.pl.stacked_violin(adata,marker_genes,groupby='cell_type',row_palette='muted',rotation=90,ax=axs[1],show=False)\nsc.pl.embedding(adata,'umap_harmony',color='cell_type',title='',frameon=False,ax=axs[2],show=False)\nfig.tight_layout()");
+    editor.getSession().setValue($("#CLISampleCode").html());
+
+
+	document.getElementsByClassName('tablinks')[0].click();
+
+    var observer = new ResizeObserver(function(entries) {
+      entries.forEach(function(entry) {
+        editor.resize();
+      });
+    });
+    observer.observe(document.getElementById('CLIscript'));
   }
   return true;
 }
@@ -1176,7 +1214,7 @@ function ABBRref(){
 function ADDGref(){
   var html =  "";
   for(const one of window.biogen){
-    html += '<button class="link" id="ADDG_'+one+'" onclick=\'ADDGdel("'+one+'")\'>'+one+'</button>';
+    html += '<button class="link" style="cursor: crosshair;" id="ADDG_'+one+'" onclick=\'ADDGdel("'+one+'")\'>'+one+'</button>';
   }
   $("#ADDGsel").html(html);
   //$("#ADDGsel").text(window.biogen.join(", "));
@@ -1761,7 +1799,7 @@ function ABBRcombineUpdate(){
 }
 // process genes
 function ADDGadd(){
-  var addG = $("#ADDGinput").val().split(/\s+|\,|\;/);
+  var addG = $("#ADDGinput").val().trim().split(/\s+|\s*,\s*|\s*;\s*/);
   var genes =  window.biogen;
   var notG = [];
   var totalG = window.store.getState().universe.varAnnotations.__columns[0];
@@ -1807,7 +1845,7 @@ function ADDGsetAdd(){
     definedG = definedG.concat(window.bioGeneGrp[grpKeys[i]]);
   }
   
-  var gNames = $("#ADDGsetGene").val().trim().split(/\s+|\,|\;/);
+  var gNames = $("#ADDGsetGene").val().trim().split(/\s+|\s*,\s*|\s*;\s*/);
   var notG = [],geneNames=[];
   var totalG = window.store.getState().universe.varAnnotations.__columns[0];
   var totalGlower = totalG.map(function(s){return s.toLowerCase();});
@@ -2168,12 +2206,15 @@ function PGVplot(acc){
   if( geneGrpColl== 'Yes'){
     geneGrpColl = $("input[name='PGVgeneGrpCollCal']:checked").val()
   }
+  var color = $("#PGVcolor").val();
+  if ($("#PGVcolor_r")[0].checked) color += '_r';
   var D = {'method':'PGV',
             'cells':cells,
             'genes':genes,
             'geneGrp':geneSets,
             'geneGrpColl':geneGrpColl,
             'grp':grp,
+            'color':color,
             'by':$("#PGVgrpXY").val(),
             'abb':window.bioAbbr,
             'cutoff':$("#PGVcutoff").val(),
@@ -3133,6 +3174,7 @@ console.log(res);
 }
 function CLIplot(){
   $('#CLInote').text("");
+  $('#CLIsvg').html("");
   var cells=[], x = document.getElementsByClassName('CLIcell');
   for(i=0;i<x.length;i++){
     if(x[i].checked){
@@ -3186,8 +3228,7 @@ function CLIplot(){
             'genes':genes,
             'grp':grps,
             'layout':layouts,
-            'script':editor.getSession().getValue(),
-            'figOpt':window.figOpt};
+            'script':editor.getSession().getValue()};
    $.ajax({
     type:"POST",
     url: "/VIP",
@@ -3202,8 +3243,25 @@ function CLIplot(){
         return;
       }
 
-      $("#CLIresize").html(res);
-      
+      var filteredRes = '<style type="text/css"> pre { display: block; padding: 8.5px; margin: 0 0 9px; font-size: 12px; line-height: 1.42857143; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: 1px solid #ccc; border-radius: 2px; }';
+      var readIt = false;
+      res.split(/(\r\n|\n|\r)/g).forEach(function(line) {
+        if (line.includes('div.inner_cell') || line.includes('<body>')) readIt = true;
+        if (readIt) filteredRes += line;
+        if (line.includes('\.highlight \.il { color: #666666 }')) {
+          filteredRes += '</style>';
+          readIt = false;
+        }
+        if (line.includes('<\/body>')) readIt = false;
+      });
+      $("#CLIresize").html(filteredRes);
+
+      var num = 0;
+      for (let item of document.getElementsByClassName('output_svg')) {
+        var onclickCode = "var a = document.createElement('a'); a.href = 'data:application/octet-stream;base64,' + btoa(unescape(encodeURIComponent(document.getElementsByClassName('output_svg')["+num+"].getElementsByTagName('svg')[0].outerHTML))); a.download = 'CLI.svg'; a.click();"
+	    item.innerHTML += '<p><button class="CLIbt" onclick="' + onclickCode + '">Save as SVG</button></p>';
+        num ++;
+      }
     },
     error: function(request,status,error){
       $('#CLInote').text(request.status+request.responseText);
@@ -3460,8 +3518,9 @@ function load(){
   reader.onload=function(ev){
     var content = JSON.parse(decodeURIComponent(ev.target.result));
     if(content[0]!='cellxgene.'+window.store.getState().config.displayNames.dataset){
-      alert("Saved information is NOT matching with the current data!");
-      return;
+      if(!confirm("Saved information is NOT matching with the current data! Continue?")){
+        return;
+      }
     }
     var i=1;
     ABBRload(content[i++]);
@@ -3512,5 +3571,24 @@ GetStyle('circle').style = {};
 <script type="text/javascript" src="static/stackedbar/select.js"></script>
 <script type="text/javascript" src="static/stackedbar/endAll.js"></script>
 <script type="text/javascript" src="static/stackedbar/plot-transform.js"></script>
+<div id="CLISampleCode" style="display:none;">
+# Use lines starting with '#' to seperate code for readability as empty lines will create new Jupyter notebook cells
+# adata: an AnnData object is available
+import warnings
+warnings.filterwarnings('ignore')
+import scanpy as sc
+from matplotlib import pyplot as plt
+%config InlineBackend.figure_formats = ['svg']
+sc.pp.scale(adata, zero_center=False)
+sc.tl.rank_genes_groups(adata,groupby='cell_type',groups=['OPC','Astrocytes'],method='t-test')
+marker_genes=['LHFPL3', 'PCDH15', 'DSCAM', 'TNR', 'NLGN1','AQP4', 'VCAN','CUX2']
+geneGrpPos = [(0,2), (3,4), (5,7)]
+geneGrpName = ['set1', 'set2', 'set3']
+fig,axs = plt.subplots(1,3,figsize=(15,5))
+sc.pl.rank_genes_groups_violin(adata,groups='OPC',n_genes=8,ax=axs[0],show=False,strip=False)
+sc.pl.stacked_violin(adata,marker_genes,groupby='cell_type',var_group_positions=geneGrpPos,var_group_labels=geneGrpName,row_palette='muted',rotation=90,yticklabels=True,ax=axs[1],show=False)
+sc.pl.matrixplot(adata,marker_genes,groupby='cell_type',var_group_positions=geneGrpPos,var_group_labels=geneGrpName,ax=axs[2],show=False)
+fig.tight_layout()
+</div>
 </body>
 </html>
