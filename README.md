@@ -1,12 +1,9 @@
-# Cellxgene VIP: Visualization in Plugin scales interactive plots of scRNA-Seq data to millions of cells
+# cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells
 Development for Cellxgene VIP
 
-Since the first single cell RNA-seq (scRNA-seq) study was published in 2009 (Tang, et al., 2009), there are close to 1000 scRNA-seq studies have been publised to date. At least 25 studies reported 200k or more cells (Svensson, et al., 2019). The largest scRNA-seq study reported 2.5 million mouse cells (Rodriques, et al., 2019). We foresee scRNA-seq size of 500k or more cells would become the new norm. With that, it is getting more and more challenge to visualize and interactively explore such big datasets for both computational and wet-lab bench scientists. 
-
-Cellxgene (Chan Zuckerberg Initiative, [Accessed: 5 May 2020]) is the only web based open source interactive explorer which can handle millions of cells by leveraging modern web de-velopment techniques (Çakır, et al., 2020). However, after beta testing by biologists, we quickly realized that essential plotting /data downloading functions are missing from current Cellxgene release. 
-
-We present a new plugin Cellxgene VIP to address the urgent needs for such additional functions. Cellxgene VIP also provides easy to use server end installation of Cellxgene with customized local modifications. We made Cellxgene VIP open source tool and free of charge.
-
+Since the first single-cell RNA sequencing (scRNA-seq) study was debuted in 20091, over 1050 scRNA-seq studies have been published to date. At least 25 studies reported profiles in 200k or more cells2. The largest scRNA-seq study reported 2.5 million mouse cells3. It is foreseen that there will be a trend of increasing cell size of 500k or more in scRNA-seq studies. The sheer amount of data had brought a challenge in visualizing and interactively exploring such big data set for scientists, even computational savvy specialists.
+   Cellxgene4 is a leading open source scRNA-Seq data visualization tool recommended in a recent evaluation5, which can handle millions of cells by leveraging modern web techniques with user-friendly interactive features. However, lack of some essential plotting and analysis functions hinders its utility and limits scientists from taking advantage of ever accumulating scRNA-seq data in the public to its full potential. 
+   To fill the gap, we developed a plugin of cellxgene named Visualization in Plugin, in short VIP, to address the urgent needs for such essential functions for interactive visual exploration and generation of publication-ready figures. Notably, it greatly extended plotting functions to generate violin, stacked violin, stacked bar, heatmap, volcano, embedding, dot, track, density, 2D density, sankey and dual-gene plot in high-resolution by calling server-side scanpy’s6 plotting functions and general Python plotting libraries as illustrated in Figure 1 and Supplementary Tutorial.
 
 # installation instruction
 
