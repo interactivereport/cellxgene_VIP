@@ -98,15 +98,18 @@ conda remove PyYAML
 conda install fsspec=0.6.3
 pip install tensorflow==2.2.0
 pip install diffxpy==0.7.4
+
+pip install plotly==4.8.1
 pip install anndata==0.7.4
 git clone https://github.com/theislab/scanpy.git
 cd scanpy;git checkout 2ea9f836cec6e12a5cdd37bc4a229d4eadf59d37;cd ..
 pip install scanpy/
-# pip install git+https://github.com/theislab/scanpy.git@split_show
-# pip install 'scanpy==1.4.6'   # works for v1.4.6 too
-pip install plotly==4.8.1
 pip install jupytext
 pip install nbconvert
+
+# old versions
+# pip install git+https://github.com/theislab/scanpy.git@split_show
+# pip install 'scanpy==1.4.6'   # works for v1.4.6 too
 # conda install -c plotly plotly-orca
 
 cd cellxgene
@@ -122,15 +125,17 @@ strweb="${strPath}/server/common/web/static/."
 echo $strweb
 cp interface.html $strweb
 cp jquery.min.js $strweb
-cp jquery-ui.min.js $strweb
 cp color_*.png $strweb
 
 cp -R DataTables $strweb
 cp -R jspanel $strweb
-cp -R ace $strweb
-cp -R stackedbar $strweb
 
 cp cellxgene/server/test/decode_fbs.py $strPath/server/app/.
 cp VIPInterface.py $strPath/server/app/.
+
+cp jquery-ui.min.js $strweb
+cp color_*.png $strweb
+cp -R ace $strweb
+cp -R stackedbar $strweb
 cp volcano.R $strPath/server/app/.
 cp Density2D.R $strPath/server/app/.
