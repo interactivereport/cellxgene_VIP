@@ -555,14 +555,22 @@ def DEG(data):
   data['genes'] = []
   comGrp = 'cellGrp'
   if 'combine' in data.keys():
-    data['figOpt']['scale'] = 'false'
-    adata = createData(data)
-    comGrp = data['grp'][0]
-    mask = [adata.obs[comGrp].isin(data['comGrp'][i]) for i in [0,1]]
-    adata = adata[adata.obs[comGrp].isin(data['comGrp'])]
+    if data['DEmethod']=='default':
+      combUpdate, obs = getObs(data)
+      if combUpdate and len(data['grp'])>1:
+        obs[comGrp] = obs[data['grp'][0]]
+        for i in data['grp']:
+          if i!=data['grp'][0]:
+            obs[comGrp] += ":"+obs[i]
+      mask = [obs[comGrp].isin([data['comGrp'][i]]) for i in [0,1]]
+    else:
+      data['figOpt']['scale'] = 'false'
+      adata = createData(data)
+      comGrp = data['grp'][0]
+      adata = adata[adata.obs[comGrp].isin(data['comGrp'])]
   else:
-    mask = [pd.Series(range(data['cellN'])).isin(data['cells'][one].values()) for one in data['cells'].keys()]
-    for one in data['cells'].keys():
+    mask = [pd.Series(range(data['cellN'])).isin(data['cells'][one].values()) for one in data['comGrp']]
+    for one in data['comGrp']:
       oneD = {'cells':data['cells'][one],
               'genes':[],
               'grp':[],
@@ -574,12 +582,11 @@ def DEG(data):
         adata = D
       else:
         adata = adata.concatenate(D)
-  #ppr.pprint(adata) 
-  #with open("adata.pkl",'wb') as f:
-  #  pickle.dump(adata,f)
-  if not 'AnnData' in str(type(adata)):
-    raise ValueError('No data extracted by user selection')
+
+
   if data['DEmethod']=='default':
+    if sum(mask[0]==True)<10 or sum(mask[1]==True)<10:
+      raise ValueError('Less than 10 cells in a group!')
     with app.get_data_adaptor() as scD:
       res = diffDefault.diffexp_ttest(scD,mask[0].to_numpy(),mask[1].to_numpy(),scD.data.shape[0])
       gNames = list(scD.data.var["name_0"])
@@ -587,6 +594,8 @@ def DEG(data):
     gName = pd.Series([gNames[i] for i in deg['gID']],name='gene')
     deg = pd.concat([deg,gName],axis=1).loc[:,['gene','log2fc','pval','qval']]
   else:
+    if not 'AnnData' in str(type(adata)):
+      raise ValueError('No data extracted by user selection')
     adata.obs.astype('category')
     nm = None
     if data['DEmethod']=='wald': 
@@ -594,10 +603,11 @@ def DEG(data):
     res = de.test.two_sample(adata,comGrp,test=data['DEmethod'],noise_model=nm)
     deg = res.summary()
     deg = deg.sort_values(by=['qval']).loc[:,['gene','log2fc','pval','qval']]
+    deg['log2fc'] = -1 * deg['log2fc']
   ## plot in R
   strF = ('/tmp/DEG%f.csv' % time.time())
   deg.to_csv(strF,index=False)
-  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC'])],capture_output=True)#
+  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]],capture_output=True)#
   img = res.stdout.decode('utf-8')
   os.remove(strF)
   #####
