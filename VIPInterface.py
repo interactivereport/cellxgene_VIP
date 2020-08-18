@@ -610,6 +610,8 @@ def DEG(data):
 
 def DOT(data):
   updateGene(data)
+  # Dot plot, The dotplot visualization provides a compact way of showing per group, the fraction of cells expressing a gene (dot size) and the mean expression of the gene in those cell (color scale). The use of the dotplot is only meaningful when the counts matrix contains zeros representing no gene counts. dotplot visualization does not work for scaled or corrected matrices in which zero counts had been replaced by other values, see http://scanpy-tutorials.readthedocs.io/en/multiomics/visualizing-marker-genes.html
+  data['figOpt']['scale'] = 'false';
   adata = createData(data)
   if len(adata)==0:
     return Msg('No cells in the condition!')
