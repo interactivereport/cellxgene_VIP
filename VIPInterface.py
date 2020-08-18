@@ -579,7 +579,7 @@ def DEG(data):
   #  pickle.dump(adata,f)
   if not 'AnnData' in str(type(adata)):
     raise ValueError('No data extracted by user selection')
-  if data['DEmethod']=='t-test':
+  if data['DEmethod']=='default':
     with app.get_data_adaptor() as scD:
       res = diffDefault.diffexp_ttest(scD,mask[0].to_numpy(),mask[1].to_numpy(),scD.data.shape[0])
       gNames = list(scD.data.var["name_0"])
