@@ -684,6 +684,7 @@
         </select></p>
         <p>Select the method: 
         <select id="DEGmethod">
+          <option value='default'>Default</option>
           <option value='t-test'>Welch’s t-test</option>
           <option value='rank'>Wilcoxon rank sum</option>
           <option value='wald'>Wald test</option>
@@ -2435,15 +2436,15 @@ function DEGfind(){
     }
     D['cells'] = cells;
     D['cellN'] = window.store.getState().universe.nObs;
-    $('#DEGinfo').text("DEG between selected group 1 and group 2");
+    D['comGrp'] = Object.keys(cells);
   }else{
     D['combine']=combGrp;
     D['abb']=window.bioAbbr;
     D['grp'] = Object.keys(combGrp);
     D['cells'] = new Int32Array(Array(window.store.getState().universe.nObs).keys());
-    D['comGrp'] = combName;
-    $('#DEGinfo').text("DEG between "+combName.join(" and "));
+    D['comGrp'] = combName.sort();
   }
+  $('#DEGinfo').text("DEG: "+D['comGrp'].join(" vs "));
 
   document.getElementById("DEGspin").style.visibility="visible";
   $(".DEGbt").prop('disabled',true);
