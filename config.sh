@@ -7,6 +7,8 @@ if [[ $pythonV != *"Python 3.7"* && $pythonV != *"Python 3.8"* ]]; then
   exit 0
 fi
 
+conda install -c conda-forge nodejs
+
 ## obtain a clean version cellxgene a specific version by sha key
 rm -rf cellxgene
 git clone https://github.com/chanzuckerberg/cellxgene.git
@@ -104,6 +106,7 @@ pip install anndata==0.7.4
 git clone https://github.com/theislab/scanpy.git
 cd scanpy;git checkout 2ea9f836cec6e12a5cdd37bc4a229d4eadf59d37;cd ..
 pip install scanpy/
+pip install jupyter_client
 pip install jupytext
 pip install nbconvert
 
