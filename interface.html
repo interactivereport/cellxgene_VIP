@@ -481,7 +481,7 @@
           </table>
 		</div>
         
-        <p id="DOTnote" style="color:red;"></p>
+        <p id="DOTnote" style="color:red;">Note: Unscaled data is used as the visualiztion is hard to interpret for scaled or corrected matrices in which zero counts had been replaced by other values. Scaling control in the Figure Option does not apply to Dot plot</p>
       </div>
       <button onclick="DOTplot()"><b>Plot</b></button>
       <button onclick="ZoomIn('DOTresize')">Zoom In</button>
@@ -698,7 +698,7 @@
       <button class="DEGbt" onclick="DEGfind()"><b>Find</b></button>
       <button class="DEGpngBT" onclick="saveImg('DEGimg')" disabled>Save</button>
       <button onclick="hideShow($('#DEGinput'),$(this));">Hide Input</button>
-      <p id="DEGnote" style="color:red;"></p>
+      <p id="DEGnote" style="color:red;">Note: Unscaled data is used. Scaling control in the Figure Option does not apply to DEG.</p>
       <label id='DEGinfo'></label>
       <div id="DEGspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <table id="DEGtable" class="display"></table>
