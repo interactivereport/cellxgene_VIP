@@ -763,7 +763,7 @@
         <option value='svg'>SVG</option>
       </select></p>
       <p>Font size:
-      <input id="IMGfontsize" type="number" step="1" value="11" min="5" onchange="IMGset()"/></p>  
+      <input id="IMGfontsize" type="number" step="1" value="16" min="5" onchange="IMGset()"/></p>  
       <p>Vector friendly:
         <input type="radio" name="IMGvector" value="Yes" onclick="IMGset()" checked>Yes
         <input type="radio" name="IMGvector" value="No" onclick="IMGset()">No
@@ -1037,7 +1037,7 @@ function init(){
     window.bioCombineCell={};
     window.biogen=[];
     window.bioGeneGrp={};
-    window.figOpt={scale:'No',scaleZero:'No',clipValue:'Yes',scaleMax:20,dpi:150,img:'png',fontsize:11,vectorFriendly:'Yes',transparent:'No',scanpybranch:'split_show',colorMap:'viridis'};
+    window.figOpt={scale:'No',scaleZero:'No',clipValue:'Yes',scaleMax:20,dpi:150,img:'png',fontsize:16,vectorFriendly:'Yes',transparent:'No',scanpybranch:'split_show',colorMap:'viridis'};
     if (grpL[">Description"] !== undefined && !grpL[">Description"].categoryValues[0].split(";")[1].includes("scale")) {
       window.figOpt['scale'] = "Yes";
     }
