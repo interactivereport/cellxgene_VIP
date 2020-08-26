@@ -7,7 +7,7 @@ Cellxgene[4] is a leading open source scRNA-Seq data visualization tool recommen
 
 To fill the gap, we developed a plugin of cellxgene named Visualization in Plugin, in short VIP, to address the urgent needs of such essential functions for interactive visual exploration and generation of publication-ready figures. Notably, it enhanced plotting functions significantly to generate violin, stacked violin, stacked bar, heatmap, volcano, embedding, dot, track, density, 2D density, sankey and dual-gene plot in high-resolution by calling server-side scanpy’s[6] plotting functions and general plotting libraries as illustrated in Figure 1 and Supplementary Tutorial.
 
-![cellxgene_VIP](cellxgene_VIP.png?raw=true "cellxgene_VIP")
+![cellxgene_VIP](https://interactivereport.github.io/cellxgene_VIP/cellxgene_VIP.png?raw=true "cellxgene_VIP")
 **Figure 1 | cellxgene VIP serves as an ecosystem of plugins which provide essential functions for
 publication-ready, interactive visualization, as well as CLI for analytics.** (svg files were assembled by
 figureComposer[7])
