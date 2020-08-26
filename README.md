@@ -50,7 +50,7 @@ git clone https://github.com/interactivereport/cellxgene_VIP.git
 cd cellxgene_VIP
 ./config.sh
 ```
-## 3. Run cellxgene by specifiying the single cell h5ad file along with the host and the port, use ps to find used ports to spare
+## 3. Run cellxgene by specifiying the single cell h5ad file along with the host and the port, use "ps" to find used ports to spare
 ```bash
 ps -ef | grep cellxgene
 cellxgene launch --host <xxx> --port <xxx> --disable-annotations --verbose <h5ad file>
@@ -59,5 +59,5 @@ cellxgene launch --host <xxx> --port <xxx> --disable-annotations --verbose <h5ad
 *note: while spinning up the cellxgene from HPC, do **NOT** use qlogin. **ssh directly to the server**.*
 
 # Updating
-## update.index_template.sh if jsPanel is modified, seldom.
-## update.VIPInterface.sh if interface.html or VIPInterface.py is changed, often.
+## run "update.index_template.sh" if jsPanel is modified, seldom.
+## run "update.VIPInterface.sh" if interface.html or VIPInterface.py is changed, often.
