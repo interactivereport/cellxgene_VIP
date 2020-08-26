@@ -763,7 +763,7 @@
         <option value='svg'>SVG</option>
       </select></p>
       <p>Font size:
-      <input id="IMGfontsize" type="number" step="1" value="11" min="5" onchange="IMGset()"/></p>  
+      <input id="IMGfontsize" type="number" step="1" value="16" min="5" onchange="IMGset()"/></p>  
       <p>Vector friendly:
         <input type="radio" name="IMGvector" value="Yes" onclick="IMGset()" checked>Yes
         <input type="radio" name="IMGvector" value="No" onclick="IMGset()">No
@@ -1037,7 +1037,7 @@ function init(){
     window.bioCombineCell={};
     window.biogen=[];
     window.bioGeneGrp={};
-    window.figOpt={scale:'No',scaleZero:'No',clipValue:'Yes',scaleMax:20,dpi:150,img:'png',fontsize:11,vectorFriendly:'Yes',transparent:'No',scanpybranch:'split_show',colorMap:'viridis'};
+    window.figOpt={scale:'No',scaleZero:'No',clipValue:'Yes',scaleMax:20,dpi:150,img:'png',fontsize:16,vectorFriendly:'Yes',transparent:'No',scanpybranch:'split_show',colorMap:'viridis'};
     if (grpL[">Description"] !== undefined && !grpL[">Description"].categoryValues[0].split(";")[1].includes("scale")) {
       window.figOpt['scale'] = "Yes";
     }
@@ -1170,7 +1170,7 @@ function init(){
 }
 function initBrush(aID){
   for(const i of ["left","right"]){
-    var one = d3.select("#"+aID+" g.brush").append("text").attr("id",aID+"_"+i).attr("y",$("#"+aID+" rect.selection").prop("y").baseVal.value).attr("fill","#000");
+    var one = d3.select("[id='"+aID+"'] g.brush").append("text").attr("id",aID+"_"+i).attr("y",$('[id="'+aID+'"] rect.selection').prop("y").baseVal.value).attr("fill","#000");
     if(i=="left") one.attr("text-anchor", "end");
   }
 }
@@ -1185,9 +1185,9 @@ function showBrush(aID){
   }
   var pos = ['left','right']
   for(i in [0,1]){
-    var one = d3.select("#"+aID+"_"+pos[i]).attr("x",$("#"+aID+" rect.selection").prop("x").baseVal.value).text(val[i]);
-    if(i==1) one.attr("x",$("#"+aID+" rect.selection").prop("x").baseVal.value+$("#"+aID+" rect.selection").prop("width").baseVal.value);
-    $("#"+aID.replace('histogram','input')+"_"+pos[i]).val(val[i]);
+    var one = d3.select("[id='"+aID+"_"+pos[i]+"']").attr("x",$('[id="'+aID+'"] rect.selection').prop("x").baseVal.value).text(val[i]);
+    if(i==1) one.attr("x",$('[id="'+aID+'"] rect.selection').prop("x").baseVal.value+$('[id="'+aID+'"] rect.selection').prop("width").baseVal.value);
+    $('[id="'+aID.replace('histogram','input')+'_'+pos[i]+'"]').val(val[i]);
   }
 }
 //Page sync functions
