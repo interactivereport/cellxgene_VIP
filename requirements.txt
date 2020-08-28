@@ -1,0 +1,5 @@
+cellxgene>=0.15
+scanpy>=1.5.0
+diffxpy>=0.7.4
+anndata>=0.7.4
+plotly>=4.8.1
