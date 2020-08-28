@@ -32,6 +32,7 @@ whole or sliced single cell dataset.
 6.	Wolf, F.A., Angerer, P. & Theis, F.J. SCANPY: large-scale single-cell gene expression data analysis. Genome Biology 19, 15 (2018).
 7. Li, K. et al. figureComposer: A web-based interactive multi-panel bio-infographic designing tool. bioRxiv, 2020.2003.2004.976589 (2020).
 
+# Demo site: https://cellxgenevip-ms.bxgenomics.com/
 
 # installation instruction
 
