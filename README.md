@@ -51,7 +51,7 @@ git clone https://github.com/interactivereport/cellxgene_VIP.git
 cd cellxgene_VIP
 ./config.sh
 ```
-## 3. Run cellxgene by specifiying a h5ad file storing scRNA-seq data along with the host and a port, use "ps" to find used ports to spare, see https://chanzuckerberg.github.io/cellxgene/posts/launch for addtional options.
+## 3. Run cellxgene by specifiying a h5ad file storing scRNA-seq data along with a host and a port, use "ps" to find used ports to spare, see https://chanzuckerberg.github.io/cellxgene/posts/launch for details.
 ```bash
 ps -ef | grep cellxgene
 cellxgene launch --host <xxx> --port <xxx> --disable-annotations --verbose <h5ad file>
