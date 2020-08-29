@@ -34,7 +34,7 @@ whole or sliced single cell dataset.
 
 # Demo site: https://cellxgenevip-ms.bxgenomics.com/
 
-# installation instruction
+# Installation instruction
 
 ## 0. Install anaconda python 3.7 and nodejs if not available on server
     - Anaconda3-2020.02-Linux-x86_64.sh
@@ -51,7 +51,7 @@ git clone https://github.com/interactivereport/cellxgene_VIP.git
 cd cellxgene_VIP
 ./config.sh
 ```
-## 3. Run cellxgene by specifiying the single cell h5ad file along with the host and the port, use "ps" to find used ports to spare
+## 3. Run cellxgene by specifiying a h5ad file storing scRNA-seq data along with a host and a port, use "ps" to find used ports to spare, see https://chanzuckerberg.github.io/cellxgene/posts/launch for details.
 ```bash
 ps -ef | grep cellxgene
 cellxgene launch --host <xxx> --port <xxx> --disable-annotations --verbose <h5ad file>
