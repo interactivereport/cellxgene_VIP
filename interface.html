@@ -821,7 +821,9 @@
         <p>Choose layout:</p><p id="CLIlayout"></p>
         <div id="CLIscript" style="height:380px;" ></div>
       </div> 
-      <button class="CLIbt"  onclick="CLIplot()"><b>Run</b> </button>
+      <button class="CLIbt"  onclick="CLIplot()"><b>Run</b></button>
+      <button class="CLIbt"  onclick="editor.getSession().setValue('')">Clear</button>
+      <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode1').html().trim());">Vignette 1</button>
       <button onclick="hideShow($('#CLIinput'),$(this));">Hide Input</button>
       <div id="CLIsvg"></div>
       <p id="CLInote" style="color:red;"></p>
@@ -1154,7 +1156,7 @@ function init(){
     editor.getSession().setMode("ace/mode/python");
     editor.getSession().setUseWrapMode(true);
     editor.setFontSize("14px");
-    editor.getSession().setValue($("#CLISampleCode").html());
+    editor.getSession().setValue($("#CLIVignetteCode1").html().trim());
 
 
 	document.getElementsByClassName('tablinks')[0].click();
@@ -3550,7 +3552,7 @@ GetStyle('circle').style = {};
 <script type="text/javascript" src="static/stackedbar/select.js"></script>
 <script type="text/javascript" src="static/stackedbar/endAll.js"></script>
 <script type="text/javascript" src="static/stackedbar/plot-transform.js"></script>
-<div id="CLISampleCode" style="display:none;">
+<div id="CLIVignetteCode1" style="display:none;">
 # Use lines starting with '#' to seperate code for readability as empty lines will create new Jupyter notebook cells
 # adata: an AnnData object is available
 import warnings
