@@ -34,7 +34,7 @@ whole or sliced single cell dataset.
 
 # Demo site: https://cellxgenevip-ms.bxgenomics.com/
 
-# installation instruction
+# Installation instruction
 
 ## 0. Install anaconda python 3.7 and nodejs if not available on server
     - Anaconda3-2020.02-Linux-x86_64.sh
