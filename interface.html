@@ -764,7 +764,7 @@
         <option value='svg'>SVG</option>
       </select></p>
       <p>Font size:
-      <input id="IMGfontsize" type="number" step="1" value="16" min="5" onchange="IMGset()"/></p>  
+      <input id="IMGfontsize" type="number" step="1" value="11" min="5" onchange="IMGset()"/></p>  
       <p>Vector friendly:
         <input type="radio" name="IMGvector" value="Yes" onclick="IMGset()" checked>Yes
         <input type="radio" name="IMGvector" value="No" onclick="IMGset()">No
@@ -828,6 +828,7 @@
       <button class="CLIbt"  onclick="CLIplot()"><b>Run</b></button>
       <button class="CLIbt"  onclick="editor.getSession().setValue('')">Clear</button>
       <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode1').html().trim());">Vignette 1</button>
+<!--      <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode2').html().trim());">Vignette 2</button> -->
       <button onclick="hideShow($('#CLIinput'),$(this));">Hide Input</button>
       <div id="CLIsvg"></div>
       <p id="CLInote" style="color:red;"></p>
@@ -1043,7 +1044,7 @@ function init(){
     window.bioCombineCell={};
     window.biogen=[];
     window.bioGeneGrp={};
-    window.figOpt={scale:'No',scaleZero:'No',clipValue:'Yes',scaleMax:20,dpi:150,img:'png',fontsize:16,vectorFriendly:'Yes',transparent:'No',scanpybranch:'split_show',colorMap:'viridis'};
+    window.figOpt={scale:'No',scaleZero:'No',clipValue:'Yes',scaleMax:20,dpi:150,img:'png',fontsize:11,vectorFriendly:'Yes',transparent:'No',scanpybranch:'split_show',colorMap:'viridis'};
     if (grpL[">Description"] !== undefined && !grpL[">Description"].categoryValues[0].split(";")[1].includes("scale")) {
       window.figOpt['scale'] = "Yes";
     }
@@ -3572,6 +3573,35 @@ sc.pl.rank_genes_groups_violin(adata,groups='OPC',n_genes=8,ax=axs[0],show=False
 sc.pl.stacked_violin(adata,marker_genes,groupby='cell_type',var_group_positions=geneGrpPos,var_group_labels=geneGrpName,row_palette='muted',rotation=90,yticklabels=True,ax=axs[1],show=False)
 sc.pl.matrixplot(adata,marker_genes,groupby='cell_type',var_group_positions=geneGrpPos,var_group_labels=geneGrpName,ax=axs[2],show=False)
 fig.tight_layout()
+</div>
+
+<div id="CLIVignetteCode2" style="display:none;">
+%%R
+X[["percent.mt"]] <- PercentageFeatureSet(X, pattern = "^MT-")
+VlnPlot(X, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
+plot1 <- FeatureScatter(X, feature1 = "nCount_RNA", feature2 = "percent.mt")
+plot2 <- FeatureScatter(X, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
+print(plot1)
+print(plot2)
+
+%%R
+X <- subset(X, subset = nFeature_RNA > 200 & nFeature_RNA < 2500 & percent.mt < 5)
+X <- NormalizeData(X, normalization.method = "LogNormalize", scale.factor = 10000,verbose=F)
+X <- FindVariableFeatures(X, selection.method = "vst", nfeatures = 2000,verbose=F)
+top10 <- head(VariableFeatures(X,verbose=F), 10)
+plot1 <- VariableFeaturePlot(X)
+plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
+print(plot1)
+print(plot2)
+
+%%R
+all.genes <- rownames(X)
+X <- ScaleData(X, features = all.genes,verbose=F)
+X <- RunPCA(X, features = VariableFeatures(object = X))
+print(X[["pca"]], dims = 1:5, nfeatures = 5)
+DimPlot(X, reduction = "pca")
+DimHeatmap(X, dims = 1, cells = 500, balanced = TRUE)
+DimHeatmap(X, dims = 1:15, cells = 500, balanced = TRUE)
 </div>
 </body>
 </html>
