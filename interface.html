@@ -248,7 +248,7 @@
       <div id="GDinput">
         <h3>Genes detected in selected groups of cells </h3>
         <p>In group 1 (<span id="GDcellN1" style="color:red;">0</span>) cells and group 2 (<span id="GDcellN2" style="color:red;">0</span>) cells</p>
-        <p>Expression threshold:
+        <p>Expression cutoff:
         <input id="GDcutoff" type="number" step="0.1" value="1"/></p>
       </div>
       <button class="GDbt" onclick="GDplot()"><b>Plot</b></button>
@@ -300,8 +300,8 @@
           <label><input class="SGVcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="SGVcellN1" style="color:red">0</span>)</label>
           <label><input class="SGVcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="SGVcellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose a gene:
-        <select id="SGVgene"></select> with expression cutoff: <input id="SGVcutoff" type="number" step="0.1" value="1"/></p>
+        <p>Choose a gene ('Add Genes' first): <select id="SGVgene"></select></p>
+        <p>Expression cutoff: <input id="SGVcutoff" type="number" step="0.1" value="1"/></p>
         <p>Group by:
         <select id="SGVgrp"></select></p>
       </div>
@@ -323,8 +323,9 @@
           <label><input class="PGVcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="PGVcellN1" style="color:red">0</span>)</label>
           <label><input class="PGVcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="PGVcellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose genes with expression cutoff: <input id="PGVcutoff" type="number" step="0.1" value="1"/> <input type="checkbox" checked onclick="$('.PGVgenes').prop('checked', this.checked);">Uncheck / Check All</p>
+        <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.PGVgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="PGVgene"></p>
+        <p>Expression cutoff: <input id="PGVcutoff" type="number" step="0.1" value="1"/></p>
         <p>Select user-defined gene sets:</p><p id="PGVgeneGrp"></p>
         <div id="PVGgeneGrpCollapsing">
           <p>Collapsing the above gene sets:
@@ -396,9 +397,9 @@
           <label><input class="HEATcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="HEATcellN1" style="color:red">0</span>)</label>
           <label><input class="HEATcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="HEATcellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose genes: <input type="checkbox" checked onclick="$('.HEATgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.HEATgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
         <p id="HEATgene"></p>
-        <p>Clustering by:
+        <p>Cluster by:
         <select id="HEATorder"></select></p>
         <p>Choose annotation:</p>
         <p id="HEATgrp"></p>
@@ -428,8 +429,9 @@
           <label><input class="DOTcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DOTcellN1" style="color:red">0</span>)</label>
           <label><input class="DOTcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DOTcellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose genes with expression cutoff: <input id="DOTcutoff" type="number" step="0.1" value="1"/><input type="checkbox" checked onclick="$('.DOTgenes').prop('checked', this.checked);">Uncheck / Check All</p>
+        <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.DOTgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="DOTgene"></p>
+        <p>Expression cutoff: <input id="DOTcutoff" type="number" step="0.1" value="1"/></p>
         <p>Expression is averaged only over cells expressing a given gene above the cutoff: <input type="radio" name="mean_only_expressed" value="Yes">Yes<input type="radio" name="mean_only_expressed" value="No" checked>No</p>
   
         <p>Select user-defined gene sets:</p><p id="DOTgeneGrp"></p>
@@ -502,9 +504,9 @@
         </p>
         <p>Choose annotation groups:</p>
         <p id="EMBEDgrp"></p>
-        <p>Choose genes: <input type="checkbox" checked onclick="$('.EMBEDgenes').prop('checked', this.checked);">Uncheck / Check All</p>
+        <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.EMBEDgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="EMBEDgene"></p>
-        <p>Select the annotation group where the gene expression will split: 
+        <p>Split by: 
         <select id="EMBEDsplit">
           <option value="NONE">NONE</option>
         </select>
@@ -533,7 +535,7 @@
           <label><input class="TRAKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="TRAKcellN1" style="color:red">0</span>)</label>
           <label><input class="TRAKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="TRAKcellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose genes: <input type="checkbox" checked onclick="$('.TRAKgenes').prop('checked', this.checked);">Uncheck / Check All</p>
+        <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.TRAKgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="TRAKgene"></p>
         <p>Select user-defined gene sets: </p><p id="TRAKgeneGrp"></p>
         <div id="TRAKgeneGrpCollapsing">
@@ -567,7 +569,7 @@
           <label><input class="DENScell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DENScellN1" style="color:red">0</span>)</label>
           <label><input class="DENScell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DENScellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose genes: <input type="checkbox" checked onclick="$('.DENSgenes').prop('checked', this.checked);">Uncheck / Check All</p>
+        <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.DENSgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="DENSgene"></p>
         <p>Split by:
         <select id="DENSsplit"></select></p>
@@ -593,10 +595,10 @@
           <label><input class="DENS2Dcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DENS2DcellN1" style="color:red">0</span>)</label>
           <label><input class="DENS2Dcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DENS2DcellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose two genes:</p>
+        <p>Choose two genes ('Add Genes' first):</p>
         <p id="DENS2Dgene"></p>
-        <p>Please specify the gene expression cutoff: <input id="DENS2Dcutoff" type="number" step="0.1" value="1"/></p>
-        <p>Please specify the minimal bandwidth: <input id="DENS2Dbandwidth" type="number" step="0.1" value="0.5"/></p>
+        <p>Expression cutoff: <input id="DENS2Dcutoff" type="number" step="0.1" value="1"/></p>
+        <p>The minimal bandwidth: <input id="DENS2Dbandwidth" type="number" step="0.1" value="0.5"/></p>
       </div>
       <button class="DENS2Dbt"  onclick="DENS2Dplot()"><b>Plot</b></button>
       <button onclick="ZoomIn('DENS2Dresize')">Zoom In</button>
@@ -616,9 +618,8 @@
           <label><input class="DUALcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DUALcellN1" style="color:red">0</span>)</label>
           <label><input class="DUALcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DUALcellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose two genes:</p>
         <p id="DUALgene"></p>
-        <p>Please specify the gene expression cutoff: <input id="DUALcutoff" type="number" step="0.1" value="1"/></p>
+        <p>Expression cutoff: <input id="DUALcutoff" type="number" step="0.1" value="1"/></p>
         <p>Select the embedding layout:
         <select id="DUALlayout">
         </select>
@@ -642,7 +643,7 @@
           <label><input class="SANKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="SANKcellN1" style="color:red">0</span>)</label>
           <label><input class="SANKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="SANKcellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose genes: <input type="checkbox" checked onclick="$('.SANKgenes').prop('checked', this.checked);">Uncheck / Check All</p>
+        <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.SANKgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="SANKgene"></p>
         <!-- <p>Choose user-defined gene sets:</p><p id="SANKgeneGrp"></p> -->
         <p>Number of equally divided gene expression ranges: <input id="sankBin" type="number" step="1" value="5"/></p>
@@ -716,8 +717,8 @@
           <label><input class="STACBARcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="STACBARcellN1" style="color:red">0</span>)</label>
           <label><input class="STACBARcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="STACBARcellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose two from the following:</p>
-        <p>Genes:<p id="STACBARgene"></p>
+        <p>Choose two genes ('Add Genes' first):</p>
+        <p id="STACBARgene"></p>
         <div id='STACBARgeneSel'>
           <p>Number of equally divided gene expression ranges: <input id="STACBARbin" type="number" step="1" value="5"/></p>
         </div>
@@ -815,7 +816,7 @@
           <label><input class="CLIcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="CLIcellN1" style="color:red">0</span>)</label>
           <label><input class="CLIcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="CLIcellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose genes: <input type="checkbox" checked onclick="$('.CLIgenes').prop('checked', this.checked);">Uncheck / Check All</p>
+        <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.CLIgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="CLIgene"></p>
         <p>Choose annotation:</p><p id="CLIgrp"></p>
         <p>Choose layout:</p><p id="CLIlayout"></p>
@@ -2306,7 +2307,7 @@ function HEATcheck(){
   }
   var orderGrp = $("#HEATorder").val();
   if(orderGrp=="Expression" && cells.length>heatCell){
-    $('#HEATnote').text("Clustering by expression is not available for the number of selected cells larger than "+Math.round(heatCell/1000)+"k.");
+    $('#HEATnote').text("Cluster by expression is not available for the number of selected cells larger than "+Math.round(heatCell/1000)+"k.");
     return;
   }
   if(orderGrp!="Expression" && !grps.includes(orderGrp)){
