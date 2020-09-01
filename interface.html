@@ -820,6 +820,9 @@
         <p id="CLIgene"></p>
         <p>Choose annotation:</p><p id="CLIgrp"></p>
         <p>Choose layout:</p><p id="CLIlayout"></p>
+        # Use lines starting with '#' to seperate code for readability as empty lines will create new Jupyter notebook cells<br>
+        # adata: an AnnData object is available for python<br>
+        # X: an Seurat object is available for R (%%R: has to be the leading line of the cell)<br>
         <div id="CLIscript" style="height:380px;" ></div>
       </div> 
       <button class="CLIbt"  onclick="CLIplot()"><b>Run</b></button>
@@ -3554,8 +3557,6 @@ GetStyle('circle').style = {};
 <script type="text/javascript" src="static/stackedbar/endAll.js"></script>
 <script type="text/javascript" src="static/stackedbar/plot-transform.js"></script>
 <div id="CLIVignetteCode1" style="display:none;">
-# Use lines starting with '#' to seperate code for readability as empty lines will create new Jupyter notebook cells
-# adata: an AnnData object is available
 import warnings
 warnings.filterwarnings('ignore')
 import scanpy as sc

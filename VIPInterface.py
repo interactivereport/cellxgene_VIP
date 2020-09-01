@@ -29,6 +29,7 @@ ppr = pprint.PrettyPrinter(depth=6)
 import server.app.app as app
 import server.compute.diffexp_generic as diffDefault
 import pickle
+from pyarrow import feather
 
 sys.setrecursionlimit(10000)
 sc.settings.verbosity = 2
@@ -1115,11 +1116,19 @@ def CLI(data):
   strData = strPath + '.pkl'
   with open(strData,'wb') as f:
     pickle.dump(adata,f)
+  X = adata.to_df()
+  meta = pd.concat([adata.obs,adata.obsm.to_df()],axis=1)
+  feather.write_feather(X,strPath+'.feather')
+  feather.write_feather(meta,strPath+".obs.feather")
+
   
   strScript = strPath + '.py'
   #addedScript=['import os','os.chdir("%s")'%strExePath,'import VIPInterface as vip','adata=vip.ajaxData("%s")'%strData]
   with open(strScript,'w') as f:
-    f.writelines(['import pickle\n','with open("%s","rb") as f:\n'%strData,'  adata=pickle.load(f)\n\n'])
+    f.writelines(['%load_ext rpy2.ipython\n','import pickle\n','with open("%s","rb") as f:\n'%strData,'  adata=pickle.load(f)\n\n'])
+    f.writelines(['%%R\n','suppressMessages(require(Seurat,lib.loc="/home/oyoung/R/x86_64-redhat-linux-gnu-library/3.6"))\n',
+                  'D <- t(arrow::read_feather("%s.feather"))\n'%strPath,'meta <- as.data.frame(arrow::read_feather("%s.obs.feather"))\n'%strPath,
+                  'colnames(D) <- meta[,"name_0"]\n','X <- CreateSeuratObject(counts = D)\n','X@meta.data <- cbind(X@meta.data,meta)\n\n'])
     f.write(script)
   
   res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --ExecutePreprocessor.timeout=600 --to html --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
@@ -1131,6 +1140,9 @@ def CLI(data):
   html = h+s+e
   os.remove(strData)
   os.remove(strScript)
+  os.remove(strPath+'.feather')
+  os.remove(strPath+".obs.feather")
+
   return html
   
 def version():
