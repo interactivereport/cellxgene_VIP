@@ -19,6 +19,7 @@ pip install scanpy/
 pip install jupyter_client
 pip install jupytext
 pip install nbconvert
+pip install pyarrow
 
 cp jquery-ui.min.js $strweb
 cp color_*.png $strweb

@@ -109,6 +109,7 @@ pip install scanpy/
 pip install jupyter_client
 pip install jupytext
 pip install nbconvert
+pip install pyarrow
 
 # old versions
 # pip install git+https://github.com/theislab/scanpy.git@split_show
