@@ -64,3 +64,12 @@ cellxgene launch --host <xxx> --port <xxx> --disable-annotations --verbose <h5ad
 # Updating
 ## run "update.index_template.sh" if jsPanel is modified, seldom.
 ## run "update.VIPInterface.sh" if interface.html or VIPInterface.py is changed, often.
+
+# Note on installtion of packages
+## R: https://cran.r-project.org/web/packages/arrow/index.html 
+In command line:
+export LIBARROW_MINIMAL=false
+
+Then in R:
+install.packages("arrow”)
+
