@@ -820,16 +820,16 @@
         <p id="CLIgene"></p>
         <p>Choose annotation:</p><p id="CLIgrp"></p>
         <p>Choose layout:</p><p id="CLIlayout"></p>
-        # Use lines starting with '#' to seperate code for readability as empty lines will create new Jupyter notebook cells<br>
-        # adata: an AnnData object is available for python<br>
-        # strPath: a string available for temporary files<br>
-        # R code ploc can be use with "%%R" as the leading line of the cell)<br>
+        # Use lines with leading '#' to seperate code for readability as empty lines will create new Jupyter notebook cells<br>
+        # adata: a python AnnData object created for you to use in CLI based on your selected cells and metadata <br>
+        # strPath: a directory to store temporary files<br>
+        # R code cells should start with "%%R" as shown in Vignette 2 <br>
         <div id="CLIscript" style="height:380px;" ></div>
       </div> 
       <button class="CLIbt"  onclick="CLIplot()"><b>Run</b></button>
       <button class="CLIbt"  onclick="editor.getSession().setValue('')">Clear</button>
-      <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode1').html().trim());">Vignette 1</button>
-<!--      <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode2').html().trim());">Vignette 2</button> -->
+      <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode1').text().trim());">Vignette 1</button>
+      <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode2').text().trim());">Vignette 2</button>
       <button onclick="hideShow($('#CLIinput'),$(this));">Hide Input</button>
       <div id="CLIsvg"></div>
       <p id="CLInote" style="color:red;"></p>
@@ -1173,6 +1173,7 @@ function init(){
       });
     });
     observer.observe(document.getElementById('CLIscript'));
+	console.log("VIP (Visualization in Plugin) is ready.");
   }
   return true;
 }
@@ -3564,6 +3565,7 @@ warnings.filterwarnings('ignore')
 import scanpy as sc
 from matplotlib import pyplot as plt
 %config InlineBackend.figure_formats = ['svg']
+#
 sc.pp.scale(adata, zero_center=False)
 sc.tl.rank_genes_groups(adata,groupby='cell_type',groups=['OPC','Astrocytes'],method='t-test')
 marker_genes=['LHFPL3', 'PCDH15', 'DSCAM', 'TNR', 'NLGN1','AQP4', 'VCAN','CUX2']
@@ -3585,7 +3587,10 @@ feather.write_feather(X,strPath+'.feather')
 feather.write_feather(meta,strPath+".obs.feather")
 
 %%R
-suppressMessages(require(Seurat,lib.loc='/share/Seurat_3.0.2/'))
+# Seurat version > 3.0.2 has issues with Jupyter notebook.
+# Please change lib.loc to your installation location of Seurat v3.0.2, e.g.
+# library(Seurat,lib.loc='/usr/lib64/R/library/Seurat_3.0.2/')
+library(Seurat,lib.loc='/share/Seurat_3.0.2/')
 D <- t(arrow::read_feather(paste(strPath,".feather",sep="")))
 meta <- as.data.frame(arrow::read_feather(paste(strPath,".obs.feather",sep="")))
 colnames(D) <- meta[,"name_0"]
