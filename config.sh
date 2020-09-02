@@ -88,11 +88,12 @@ sed -i "s|logoRelatedPadding = 50|logoRelatedPadding = 60|" "cellxgene/client/sr
 sed -i "s|title=\"cellxgene\"|title=\"cellxgene VIP\"|" "cellxgene/client/src/components/app.js"
 
 ## update the server-side source code of cellxgene for VIP
+## Please change /tmp if different temporary directory is used in your local environment
 echo '
 from server.app.VIPInterface import route
 @webbp.route("/VIP", methods=["POST"])
 def VIP():
-    return route(request.data,current_app.app_config)' >> cellxgene/server/app/app.py
+    return route(request.data,current_app.app_config, "/tmp")' >> cellxgene/server/app/app.py
     
 
 ## buld the cellxgene and install -----------
