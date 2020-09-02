@@ -397,7 +397,7 @@
           <label><input class="HEATcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="HEATcellN1" style="color:red">0</span>)</label>
           <label><input class="HEATcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="HEATcellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.HEATgenes').prop('checked', this.checked);">Uncheck / Check All</button></p>
+        <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.HEATgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="HEATgene"></p>
         <p>Cluster by:
         <select id="HEATorder"></select></p>
@@ -1382,12 +1382,12 @@ function HEATref(){
       nCells += window.store.getState().differential[x[i].value].length;
     }
   }
-  var grps = Object.keys(window.store.getState().categoricalSelection); 
+  var gL = Object.keys(window.store.getState().categoricalSelection).length-1; //not considering the last one ">Description"
+  addCustomCombine("HEATorder");
+  $("#HEATorder option[value='Expression']").remove();
   x = document.getElementById("HEATorder");
-  if(nCells<heatCell && grps.length==x.length){
+  if(nCells<heatCell){
     x.add(createOpt("Expression"));
-  }else if(nCells>heatCell && grps.length<x.length){
-    x.remove(grps.length);
   }
 }
 function DOTref(){
