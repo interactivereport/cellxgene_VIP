@@ -68,8 +68,11 @@ cellxgene launch --host <xxx> --port <xxx> --disable-annotations --verbose <h5ad
 # Note on installtion of packages
 ## R: https://cran.r-project.org/web/packages/arrow/index.html 
 In command line:
+```bash
 export LIBARROW_MINIMAL=false
-
+```
 Then in R:
+```R
 install.packages("arrow”)
+```
 
