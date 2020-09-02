@@ -20,6 +20,7 @@ from io import BytesIO
 import sys
 import time
 import os
+import glob
 import subprocess
 strExePath = os.path.dirname(os.path.abspath(__file__))
 
@@ -37,12 +38,13 @@ rcParams.update({'figure.autolayout': True})
 
 api_version = "/api/v0.2"
 
-def route(data,appConfig=None):
+def route(data,appConfig=None,CLItmp="/tmp"):
   if appConfig is None:
     data["url"] = f'http://127.0.0.1:8888/{api_version}'
   else:
     data = json.loads(str(data,encoding='utf-8'))
     data["url"] = f'http://localhost:{appConfig.server__port}/{api_version}'#{appConfig.server__host}
+  data["CLItmp"] = CLItmp
   #ppr.pprint(data['figOpt']) 
   if 'figOpt' in data.keys():
     setFigureOpt(data['figOpt'])
@@ -1107,7 +1109,7 @@ def ajaxData(strData):
   return adata
 
 def CLI(data):
-  strPath = ('/tmp/CLI%f' % time.time())
+  strPath = data["CLItmp"]+('/CLI%f' % time.time())
   script = data['script']
   del data['script']
   
@@ -1116,32 +1118,27 @@ def CLI(data):
   strData = strPath + '.pkl'
   with open(strData,'wb') as f:
     pickle.dump(adata,f)
-  X = adata.to_df()
-  meta = pd.concat([adata.obs,adata.obsm.to_df()],axis=1)
-  feather.write_feather(X,strPath+'.feather')
-  feather.write_feather(meta,strPath+".obs.feather")
 
-  
   strScript = strPath + '.py'
   #addedScript=['import os','os.chdir("%s")'%strExePath,'import VIPInterface as vip','adata=vip.ajaxData("%s")'%strData]
   with open(strScript,'w') as f:
-    f.writelines(['%load_ext rpy2.ipython\n','import pickle\n','with open("%s","rb") as f:\n'%strData,'  adata=pickle.load(f)\n\n'])
-    f.writelines(['%%R\n','suppressMessages(require(Seurat,lib.loc="/home/oyoung/R/x86_64-redhat-linux-gnu-library/3.6"))\n',
-                  'D <- t(arrow::read_feather("%s.feather"))\n'%strPath,'meta <- as.data.frame(arrow::read_feather("%s.obs.feather"))\n'%strPath,
-                  'colnames(D) <- meta[,"name_0"]\n','X <- CreateSeuratObject(counts = D)\n','X@meta.data <- cbind(X@meta.data,meta)\n\n'])
+    f.writelines(['%load_ext rpy2.ipython\n','import pickle\n','with open("%s","rb") as f:\n'%strData,'  adata=pickle.load(f)\n','strPath="%s"\n\n'%strPath])
+    f.writelines(['%%R\n','strPath="%s"\n\n'%strPath])
     f.write(script)
-  
+
   res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --ExecutePreprocessor.timeout=600 --to html --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
   if 'Error' in res.stderr.decode('utf-8'):
     raise ValueError(res.stderr.decode('utf-8'))
   html = res.stdout.decode('utf-8')
   h,s,e = html.partition('<div class="cell border-box-sizing code_cell rendered">')
-  h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">')
+  h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">') ## remove the first cell
+  h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">') ## remove the second cell
   html = h+s+e
-  os.remove(strData)
-  os.remove(strScript)
-  os.remove(strPath+'.feather')
-  os.remove(strPath+".obs.feather")
+  for f in glob.glob(strPath+"*"):
+    try:
+      os.remove(f)
+    except:
+      continue
 
   return html
   

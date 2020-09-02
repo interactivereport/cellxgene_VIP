@@ -822,7 +822,8 @@
         <p>Choose layout:</p><p id="CLIlayout"></p>
         # Use lines starting with '#' to seperate code for readability as empty lines will create new Jupyter notebook cells<br>
         # adata: an AnnData object is available for python<br>
-        # X: an Seurat object is available for R (%%R: has to be the leading line of the cell)<br>
+        # strPath: a string available for temporary files<br>
+        # R code ploc can be use with "%%R" as the leading line of the cell)<br>
         <div id="CLIscript" style="height:380px;" ></div>
       </div> 
       <button class="CLIbt"  onclick="CLIplot()"><b>Run</b></button>
@@ -3576,6 +3577,21 @@ fig.tight_layout()
 </div>
 
 <div id="CLIVignetteCode2" style="display:none;">
+from pyarrow import feather
+import pandas as pd
+X = adata.to_df()
+meta = pd.concat([adata.obs,adata.obsm.to_df()],axis=1)
+feather.write_feather(X,strPath+'.feather')
+feather.write_feather(meta,strPath+".obs.feather")
+
+%%R
+suppressMessages(require(Seurat,lib.loc='/share/Seurat_3.0.2/'))
+D <- t(arrow::read_feather(paste(strPath,".feather",sep="")))
+meta <- as.data.frame(arrow::read_feather(paste(strPath,".obs.feather",sep="")))
+colnames(D) <- meta[,"name_0"]
+X <- CreateSeuratObject(counts=D)
+X@meta.data <- cbind(X@meta.data,meta)
+
 %%R
 X[["percent.mt"]] <- PercentageFeatureSet(X, pattern = "^MT-")
 VlnPlot(X, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
@@ -3602,6 +3618,7 @@ print(X[["pca"]], dims = 1:5, nfeatures = 5)
 DimPlot(X, reduction = "pca")
 DimHeatmap(X, dims = 1, cells = 500, balanced = TRUE)
 DimHeatmap(X, dims = 1:15, cells = 500, balanced = TRUE)
+
 </div>
 </body>
 </html>
