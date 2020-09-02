@@ -1174,6 +1174,15 @@ function init(){
     });
     observer.observe(document.getElementById('CLIscript'));
 	console.log("VIP (Visualization in Plugin) is ready.");
+    $.ajax({
+      type:"POST",
+      url: "/VIP",
+      data:JSON.stringify({'method':"HELLO"}),
+      contentType: 'application/json;charset=UTF-8',
+      success: function(res){
+        console.log(res);
+      }
+    })
   }
   return true;
 }
@@ -3579,6 +3588,7 @@ fig.tight_layout()
 </div>
 
 <div id="CLIVignetteCode2" style="display:none;">
+%Rdevice svg
 from pyarrow import feather
 import pandas as pd
 X = adata.to_df()
@@ -3588,7 +3598,7 @@ feather.write_feather(meta,strPath+".obs.feather")
 
 %%R
 # Seurat version > 3.0.2 has issues with Jupyter notebook.
-# Please change lib.loc to your installation location of Seurat v3.0.2, e.g.
+#!!! Please change lib.loc to your installation location of Seurat v3.0.2, e.g.
 # library(Seurat,lib.loc='/usr/lib64/R/library/Seurat_3.0.2/')
 library(Seurat,lib.loc='/share/Seurat_3.0.2/')
 D <- t(arrow::read_feather(paste(strPath,".feather",sep="")))
