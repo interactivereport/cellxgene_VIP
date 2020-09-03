@@ -63,8 +63,9 @@ cellxgene launch --host <xxx> --port <xxx> --disable-annotations --verbose <h5ad
 
 # Updating
 ```bash
-./update.index_template.sh # if jsPanel is modified, seldom.
-./update.VIPInterface.sh" # if "interface.html" or "VIPInterface.py" is modified, often.
+./update.VIPInterface.sh # if "interface.html" or "VIPInterface.py" is modified, often.
+
+./update.index_template.sh # if jsPanel is modified, very rare.
 ```
 
 # Note on installtion of packages
