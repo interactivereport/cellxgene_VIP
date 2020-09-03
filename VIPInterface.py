@@ -472,12 +472,18 @@ def pHeatmap(data):
     colTitle="Z-score"
   #ppr.pprint('HEAT data preparing cost %f seconds' % (time.time()-sT) )
   #sT = time.time()
-  g = sns.clustermap(adata.to_df(),
+  
+  try:
+    g = sns.clustermap(adata.to_df(),
                      method="ward",row_cluster=exprOrder,z_score=Zscore,cmap=heatCol,center=heatCenter,
                      row_colors=pd.concat(grpCol,axis=1).astype('str'),yticklabels=False,xticklabels=True,
                      figsize=(w,h),colors_ratio=0.05,
                      cbar_pos=(.3, .95, .55, .02),
                      cbar_kws={"orientation": "horizontal","label": colTitle,"shrink": 0.5})
+  except Exception as e:
+    return 'ERROR: Z score calculation failed for 0 standard diviation. '+traceback.format_exc() # 'ERROR @server: {}, {}'.format(type(e),str(e))
+
+  
   #ppr.pprint('HEAT plotting cost %f seconds' % (time.time()-sT) )
   #sT = time.time()
   g.ax_col_dendrogram.set_visible(False)
