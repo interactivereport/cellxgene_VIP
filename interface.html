@@ -3588,7 +3588,8 @@ fig.tight_layout()
 </div>
 
 <div id="CLIVignetteCode2" style="display:none;">
-%Rdevice svg
+# %Rdevice svg # uncomment if SVG format is desired and numbers of elements in SVG plots are managable
+#
 from pyarrow import feather
 import pandas as pd
 X = adata.to_df()
