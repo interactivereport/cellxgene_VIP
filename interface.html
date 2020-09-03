@@ -3534,7 +3534,8 @@ function load(){
     DENSload(content[i++]);
     DUALload(content[i++]);
     DEGload(content[i++]);
-    alert("Saved information was loaded successfully!\nYou might start with 'Check All Features' in 'Comb. & Abbr.' tab!");
+    ABBRall();
+//    alert("Saved information was loaded successfully!\nYou might start with 'Check All Features' in 'Comb. & Abbr.' tab!");
   };
   reader.readAsText($("#loadfile")[0].files[0]);
   
