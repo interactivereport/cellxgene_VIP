@@ -123,20 +123,15 @@ make install-dist
 cd ..
 
 ## finished setting up ------ 
-strPath="$(python -c 'import site; print(site.getsitepackages())')"
-strPath=${strPath//"['"/}
-strPath=${strPath//"']"/}
+strPath=$(python -c "import server as _; print(_.__file__.replace('/server/__init__.py',''))")
 strweb="${strPath}/server/common/web/static/."
-echo $strweb
-cp interface.html $strweb
-cp jquery.min.js $strweb
-cp color_*.png $strweb
 
+cp VIPInterface.py $strPath/server/app/.
+cp interface.html $strweb
+
+cp jquery.min.js $strweb
 cp -R DataTables $strweb
 cp -R jspanel $strweb
-
-cp cellxgene/server/test/decode_fbs.py $strPath/server/app/.
-cp VIPInterface.py $strPath/server/app/.
 
 cp jquery-ui.min.js $strweb
 cp color_*.png $strweb
@@ -144,3 +139,7 @@ cp -R ace $strweb
 cp -R stackedbar $strweb
 cp volcano.R $strPath/server/app/.
 cp Density2D.R $strPath/server/app/.
+
+echo -e "\nls -l $strweb\n"
+ls -l $strweb
+cp cellxgene/server/test/decode_fbs.py $strPath/server/app/.
