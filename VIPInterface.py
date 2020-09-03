@@ -292,8 +292,12 @@ def distributeTask(aTask):
     'DENS2D':DENS2D,
     'SANK':SANK,
     'STACBAR':STACBAR,
+    'HELLO':HELLO,
     'CLI':CLI
   }.get(aTask,errorTask)
+
+def HELLO(data):
+  return 'Hi, VIP is ready on server side.'
 
 def iostreamFig(fig):
   figD = BytesIO()

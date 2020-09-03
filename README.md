@@ -62,8 +62,11 @@ cellxgene launch --host <xxx> --port <xxx> --disable-annotations --verbose <h5ad
 *note: while spinning up the cellxgene from HPC, do **NOT** use qlogin. **ssh directly to the server**.*
 
 # Updating
-## run "update.index_template.sh" if jsPanel is modified, seldom.
-## run "update.VIPInterface.sh" if interface.html or VIPInterface.py is changed, often.
+```bash
+./update.VIPInterface.sh # if "interface.html" or "VIPInterface.py" is modified, often.
+
+./update.index_template.sh # if jsPanel is modified, very rare.
+```
 
 # Note on installtion of packages
 ## R: https://cran.r-project.org/web/packages/arrow/index.html 
