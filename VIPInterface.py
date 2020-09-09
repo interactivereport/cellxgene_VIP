@@ -172,9 +172,10 @@ def subData(data):
   ## create a custom annotation category and remove cells which are not in the selected annotation
   if combUpdate and len(data['grp'])>1:
     newGrp = 'Custom_combine'
-    obs[newGrp] = obs[data['grp'][0]]
-    for i in data['grp']:
-      if i!=data['grp'][0]:
+    combineGrp = list(data['combine'].keys());
+    obs[newGrp] = obs[combineGrp[0]]
+    for i in combineGrp:
+      if not i==combineGrp[0]:
         obs[newGrp] += ":"+obs[i]
     selC = ~obs[newGrp].str.contains("Other").to_numpy()
     expr = expr[selC]
@@ -427,7 +428,9 @@ def pHeatmap(data):
   #Xsep = createData(data,True)
   #adata = sc.AnnData(Xsep['expr'],Xsep['obs'])
   #sT = time.time()
+  
   adata = createData(data)
+  data['grp'] += data['addGrp']
   #Xdata = pd.concat([adata.to_df(),adata.obs], axis=1, sort=False).to_csv()
   #ppr.pprint('HEAT data reading cost %f seconds' % (time.time()-sT) )
   #sT = time.time()

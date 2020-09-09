@@ -1092,7 +1092,7 @@ function init(){
     htmlCheck= "";
     for(const one of grps){
       if (one.startsWith(">")) continue; 
-      htmlCheck += '<label><input class="eIDgrps" type="checkbox" value="'+one+'"/> '+one+' ('+grpL[one].numCategoryValues+')</label>';
+      htmlCheck += '<label id="eIDgrpsCK'+one+'"><input class="eIDgrps" type="checkbox" value="'+one+'"/> '+one+' ('+grpL[one].numCategoryValues+')</label>';
     }  
     //HEAT, EMBED, SANK, STACBAR, CLI
     $('#HEATgrp').html(htmlCheck.replace(/eID/g,'HEAT'));
@@ -1263,6 +1263,15 @@ function addCustomCombine(element) {
     //x.remove(grps.length);
 //  }
 }
+function addCustomCheck(aID){
+  $('#'+aID+'grpsCKcustom').remove();
+  var grpKeys = Object.keys(window.bioCombine);
+  if(grpKeys.length>0){
+    var htmlCheck = $('#'+aID+'grp').html();
+    htmlCheck += '<label id="'+aID+'grpsCKcustom"><input class="'+aID+'grps" type="checkbox" value="Custom_combine"/> Custom_combine ('+Object.keys(window.bioCombineCell).length+')</label>';
+  }
+  $('#'+aID+'grp').html(htmlCheck);
+}
 function MARKref(){
   addCustomCombine("MARKgrp");
 }
@@ -1383,12 +1392,13 @@ function HEATref(){
     }
   }
   var gL = Object.keys(window.store.getState().categoricalSelection).length-1; //not considering the last one ">Description"
-  //addCustomCombine("HEATorder");
+  addCustomCombine("HEATorder");
   $("#HEATorder option[value='Expression']").remove();
   x = document.getElementById("HEATorder");
   if(nCells<heatCell){
     x.add(createOpt("Expression"));
   }
+  addCustomCheck("HEAT");
 }
 function DOTref(){
   showGene('DOT');
@@ -2320,6 +2330,7 @@ function HEATcheck(){
       grps.push(x[i].value);
     }
   }
+  
   var orderGrp = $("#HEATorder").val();
   if(orderGrp=="Expression" && cells.length>heatCell){
     $('#HEATnote').text("Cluster by expression is not available for the number of selected cells larger than "+Math.round(heatCell/1000)+"k.");
@@ -2328,6 +2339,14 @@ function HEATcheck(){
   if(orderGrp!="Expression" && !grps.includes(orderGrp)){
     grps.push(orderGrp);
   }
+  
+  var grp=[],combGrp = [];
+  if(orderGrp=="Custom_combine" || grps.includes("Custom_combine")){
+    grp = grps.filter(function(e) { return e !== 'Custom_combine' });
+    grps = [...new Set(grp.concat(Object.keys(window.bioCombine)))];
+    combGrp = window.bioCombine;
+  }
+  
   if(grps.length==0){
     $('#HEATnote').text("Please select groups to plot");
     return;
@@ -2342,6 +2361,9 @@ function HEATcheck(){
             'order':orderGrp,
             'norm':$("#HEATnorm option:selected").val(),
             'grp':grps,
+            'abb':window.bioAbbr,
+            'combine':combGrp,
+            'addGrp':grp,
             'figOpt':window.figOpt};
   return D;
 }
