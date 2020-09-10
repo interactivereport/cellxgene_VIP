@@ -790,7 +790,7 @@ def MARK(data):
     return 'ERROR @server: {}'.format('Less than 3 groups in selected cells! Please use DEG for 2 groups')
     #return json.dumps([[['name','scores'],['None','0']],Msg('Less than 3 groups in selected cells!Please use DEG for 2 groups')])
     
-  sc.tl.rank_genes_groups(adata,groupby=data["grp"][0],n_genes=2,method=data['markMethod'])#int(data['geneN'])
+  sc.tl.rank_genes_groups(adata,groupby=data["grp"][0],n_genes=int(data['geneN']),method=data['markMethod'])#
   ppr.pprint(int(data['geneN']))
   sc.pl.rank_genes_groups(adata,n_genes=int(data['geneN']),ncols=min([3,len(adata.obs[data['grp'][0]].unique())]),show=False)
   fig =plt.gcf()
