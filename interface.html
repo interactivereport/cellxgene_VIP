@@ -823,7 +823,7 @@
         # Use lines with leading '#' to seperate code for readability as empty lines will create new Jupyter notebook cells<br>
         # adata: a python AnnData object created for you to use in CLI based on your selected cells and metadata <br>
         # strPath: a directory to store temporary files<br>
-        # R code cells should start with "%%R" as shown in Vignette 2 <br>
+        # R code cells should start with "%%R" as shown in Vignette 2. Add "%Rdevice svg" if SVG format is desired and numbers of elements in SVG plots are managable<br>
         <div id="CLIscript" style="height:380px;" ></div>
       </div> 
       <button class="CLIbt"  onclick="CLIplot()"><b>Run</b></button>
@@ -3612,7 +3612,6 @@ fig.tight_layout()
 
 <div id="CLIVignetteCode2" style="display:none;">
 # %Rdevice svg # uncomment if SVG format is desired and numbers of elements in SVG plots are managable
-#
 from pyarrow import feather
 import pandas as pd
 X = adata.to_df()
