@@ -3,16 +3,16 @@
 cd cellxgene; git checkout 735eb11eb78b5e6c35ba84438970d0ce369604e1 client/index_template.html client/src/components/leftSidebar/topLeftLogoAndTitle.js client/src/components/leftSidebar/index.js; cd ..
 
 read -d '' insertL << EOF
-<script src="https://raw.githubusercontent.com/interactivereport/cellxgene_VIP/master/jquery.min.js"></script>
+<script src="https://interactivereport.github.io/cellxgene_VIP/static/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="UTF-8"></script>
-<link href='https://raw.githubusercontent.com/interactivereport/cellxgene_VIP/master/jspanel/dist/jspanel.css' rel='stylesheet'>
-<script src='https://raw.githubusercontent.com/interactivereport/cellxgene_VIP/master/jspanel/dist/jspanel.js'></script>
-<script src='https://raw.githubusercontent.com/interactivereport/cellxgene_VIP/master/jspanel/dist/extensions/modal/jspanel.modal.js'></script>
-<script src='https://raw.githubusercontent.com/interactivereport/cellxgene_VIP/master/jspanel/dist/extensions/tooltip/jspanel.tooltip.js'></script>
-<script src='https://raw.githubusercontent.com/interactivereport/cellxgene_VIP/master/jspanel/dist/extensions/hint/jspanel.hint.js'></script>
-<script src='https://raw.githubusercontent.com/interactivereport/cellxgene_VIP/master/jspanel/dist/extensions/layout/jspanel.layout.js'></script>
-<script src='https://raw.githubusercontent.com/interactivereport/cellxgene_VIP/master/jspanel/dist/extensions/contextmenu/jspanel.contextmenu.js'></script>
-<script src='https://raw.githubusercontent.com/interactivereport/cellxgene_VIP/master/jspanel/dist/extensions/dock/jspanel.dock.js'></script>
+<link href="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/jspanel.css" rel="stylesheet">
+<script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/jspanel.js"></script>
+<script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/extensions/modal/jspanel.modal.js"></script>
+<script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/extensions/tooltip/jspanel.tooltip.js"></script>
+<script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/extensions/hint/jspanel.hint.js"></script>
+<script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/extensions/layout/jspanel.layout.js"></script>
+<script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/extensions/contextmenu/jspanel.contextmenu.js"></script>
+<script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/extensions/dock/jspanel.dock.js"></script>
 <script>
     // execute JavaScript code in panel content
     var setInnerHTML = function(elm, html) {
