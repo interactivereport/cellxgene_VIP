@@ -1139,7 +1139,7 @@ def CLI(data):
     f.writelines(['%%R\n','strPath="%s"\n\n'%strPath])
     f.write(script)
 
-  res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --ExecutePreprocessor.timeout=600 --to html --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
+  res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --ExecutePreprocessor.timeout=6000 --to html --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
   if 'Error' in res.stderr.decode('utf-8'):
     raise ValueError(res.stderr.decode('utf-8'))
   html = res.stdout.decode('utf-8')
