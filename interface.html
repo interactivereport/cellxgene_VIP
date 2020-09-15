@@ -1130,7 +1130,7 @@ function init(){
     /*
     $.ajax({
       type:"POST",
-      url: "/VIP",
+      url: "VIP",
       data:JSON.stringify({'method':"MINX"}),
       contentType: 'application/json;charset=UTF-8',//
       success: function(res){
@@ -1192,7 +1192,7 @@ function init(){
 	console.log("VIP (Visualization in Plugin) is ready.");
     $.ajax({
       type:"POST",
-      url: "/VIP",
+      url: "VIP",
       data:JSON.stringify({'method':"HELLO"}),
       contentType: 'application/json;charset=UTF-8',
       success: function(res){
@@ -1964,7 +1964,7 @@ function GDplot(){
   document.getElementById("GDspin").style.visibility="visible";
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',
     success: function(res){
@@ -2034,7 +2034,7 @@ function MARKplot(){
             'figOpt':window.figOpt};
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2150,7 +2150,7 @@ function SGVplot(acc){
   
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2274,7 +2274,7 @@ function PGVplot(acc){
 
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2389,7 +2389,7 @@ function HEATplot(){
   D['method'] = 'HEATplot';
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2421,7 +2421,7 @@ function HEATdata(){
   D['method'] = 'HEATdata';
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2507,7 +2507,7 @@ function DEGfind(){
   $(".DEGpngBT").prop('disabled',true);
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2625,7 +2625,7 @@ function DOTplot(){
   document.getElementById("DOTspin").style.visibility="visible";
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2702,7 +2702,7 @@ function TRAKplot(){
   document.getElementById("TRAKspin").style.visibility="visible";
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2791,7 +2791,7 @@ function DENSplot(){
   document.getElementById("DENSspin").style.visibility="visible";
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2863,7 +2863,7 @@ function DENS2Dplot(){
             'figOpt':window.figOpt};
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2950,7 +2950,7 @@ function EMBEDplot(){
   }
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -3025,7 +3025,7 @@ function DUALplot(){
             'figOpt':window.figOpt};
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -3104,7 +3104,7 @@ function SANKplot(){
   document.getElementById("SANKspin").style.visibility="visible";
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -3134,7 +3134,7 @@ function SANKimgSave(){
   document.getElementById("SANKspin").style.visibility="visible";
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -3206,7 +3206,7 @@ function STACBARplot(){
   $("#STACBARresize").html("");
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -3289,7 +3289,7 @@ function CLIplot(){
             'script':editor.getSession().getValue()};
    $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
