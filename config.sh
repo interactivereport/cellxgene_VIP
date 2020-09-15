@@ -7,7 +7,7 @@ if [[ $pythonV != *"Python 3.7"* && $pythonV != *"Python 3.8"* ]]; then
   exit 0
 fi
 
-conda install -c conda-forge nodejs
+conda install nodejs=10.13.0
 
 ## obtain a clean version cellxgene a specific version by sha key
 rm -rf cellxgene
@@ -98,7 +98,7 @@ def VIP():
 
 ## buld the cellxgene and install -----------
 conda remove PyYAML
-conda install fsspec=0.6.3
+conda install fsspec=0.8.2
 pip install tensorflow==2.2.0
 pip install diffxpy==0.7.4
 
