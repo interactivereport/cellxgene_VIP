@@ -9,7 +9,7 @@ fi
 
 ## buld the cellxgene and install -----------
 conda remove PyYAML
-conda install -c conda-forge nodejs=12.6.2 fsspec=0.8.2 botocore=1.17.44
+conda install -c conda-forge nodejs=12 fsspec=0.8.2 botocore=1.17.44
 
 ## obtain a clean version cellxgene a specific version by sha key
 rm -rf cellxgene
