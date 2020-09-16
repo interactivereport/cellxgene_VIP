@@ -7,7 +7,9 @@ if [[ $pythonV != *"Python 3.7"* && $pythonV != *"Python 3.8"* ]]; then
   exit 0
 fi
 
-conda install nodejs=10.13.0
+## buld the cellxgene and install -----------
+conda remove PyYAML
+conda install -c conda-forge nodejs=12.6.2 fsspec=0.8.2 botocore=1.17.44
 
 ## obtain a clean version cellxgene a specific version by sha key
 rm -rf cellxgene
@@ -96,12 +98,8 @@ def VIP():
     return route(request.data,current_app.app_config, "/tmp")' >> cellxgene/server/app/app.py
     
 
-## buld the cellxgene and install -----------
-conda remove PyYAML
-conda install -c conda-forge fsspec=0.8.2
 #pip install tensorflow==2.2.0
 pip install diffxpy==0.7.4
-
 pip install plotly==4.8.1
 pip install anndata==0.7.4
 git clone https://github.com/theislab/scanpy.git
