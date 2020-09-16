@@ -98,7 +98,7 @@ def VIP():
 
 ## buld the cellxgene and install -----------
 conda remove PyYAML
-conda install fsspec=0.8.2
+conda install -c conda-forge fsspec=0.8.2
 #pip install tensorflow==2.2.0
 pip install diffxpy==0.7.4
 
