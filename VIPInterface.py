@@ -1128,14 +1128,16 @@ def CLI(data):
   
   adata = createData(data)
 
-  strData = strPath + '.pkl'
-  with open(strData,'wb') as f:
-    pickle.dump(adata,f)
+  strData = strPath + '.h5ad'
+  adata.write(strData)
+#  with open(strData,'wb') as f:
+#    pickle.dump(adata,f)
 
   strScript = strPath + '.py'
   #addedScript=['import os','os.chdir("%s")'%strExePath,'import VIPInterface as vip','adata=vip.ajaxData("%s")'%strData]
   with open(strScript,'w') as f:
-    f.writelines(['%load_ext rpy2.ipython\n','import pickle\n','with open("%s","rb") as f:\n'%strData,'  adata=pickle.load(f)\n','strPath="%s"\n\n'%strPath])
+    f.writelines(['%load_ext rpy2.ipython\n','from anndata import read_h5ad\n','adata=read_h5ad("%s")\n'%strData, 'strPath="%s"\n\n'%strPath])
+#    f.writelines(['%load_ext rpy2.ipython\n','import pickle\n','with open("%s","rb") as f:\n'%strData,'  adata=pickle.load(f)\n','strPath="%s"\n\n'%strPath])
     f.writelines(['%%R\n','strPath="%s"\n\n'%strPath])
     f.write(script)
 
