@@ -831,9 +831,6 @@
       <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode1').text().trim());">Vignette 1</button>
       <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode2').text().trim());">Vignette 2</button>
       <button onclick="hideShow($('#CLIinput'),$(this));">Hide Input</button>
-      <button onclick="printNotebook();">Print Notebook</button>
-      <button onclick="hideShow($('.input'),$(this),'Code');">Hide Code</button>
-      <button onclick="hideShow($('.output_text'),$(this),'Output');">Hide Output</button>
       <div id="CLIsvg"></div>
       <p id="CLInote" style="color:red;"></p>
       <div id="CLIspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
@@ -848,19 +845,6 @@
 <script type="text/javascript">
 var heatCell = 10000;
 var editor;
-
-function printNotebook(){
-    var html = $('#CLIresize').html();
-    var w=window.open('','_blank');
-    w.document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script\>\n');
-    w.document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script\>\n');
-    w.document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha512-iztkobsvnjKfAtTNdHkGVjAYTrrtlC7mGp/54c40wowO7LhURYl3gVzzcEqGl/qKXQltJ2HwMrdLcNUdo+N/RQ==" crossorigin="anonymous"></script\>\n');
-    w.document.write('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css" integrity="sha512-pli9aKq758PMdsqjNA+Au4CJ7ZatLCCXinnlSfv023z4xmzl8s+Jbj2qNR7RI8DsxFp5e8OvbYGDACzKntZE9w==" crossorigin="anonymous" />\n');
-    w.document.write
-    w.document.write(html); 
-    w.document.close();
-}
-
 function checkLoading(){
     if(!window.store || !window.store.getState().categoricalSelection){
       return false;
@@ -1130,7 +1114,7 @@ function init(){
     /*
     $.ajax({
       type:"POST",
-      url: "/VIP",
+      url: "VIP",
       data:JSON.stringify({'method':"MINX"}),
       contentType: 'application/json;charset=UTF-8',//
       success: function(res){
@@ -1192,7 +1176,7 @@ function init(){
 	console.log("VIP (Visualization in Plugin) is ready.");
     $.ajax({
       type:"POST",
-      url: "/VIP",
+      url: "VIP",
       data:JSON.stringify({'method':"HELLO"}),
       contentType: 'application/json;charset=UTF-8',
       success: function(res){
@@ -1964,7 +1948,7 @@ function GDplot(){
   document.getElementById("GDspin").style.visibility="visible";
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',
     success: function(res){
@@ -2034,7 +2018,7 @@ function MARKplot(){
             'figOpt':window.figOpt};
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2150,7 +2134,7 @@ function SGVplot(acc){
   
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2274,7 +2258,7 @@ function PGVplot(acc){
 
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2389,7 +2373,7 @@ function HEATplot(){
   D['method'] = 'HEATplot';
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2421,7 +2405,7 @@ function HEATdata(){
   D['method'] = 'HEATdata';
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2507,7 +2491,7 @@ function DEGfind(){
   $(".DEGpngBT").prop('disabled',true);
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2625,7 +2609,7 @@ function DOTplot(){
   document.getElementById("DOTspin").style.visibility="visible";
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2702,7 +2686,7 @@ function TRAKplot(){
   document.getElementById("TRAKspin").style.visibility="visible";
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2791,7 +2775,7 @@ function DENSplot(){
   document.getElementById("DENSspin").style.visibility="visible";
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2863,7 +2847,7 @@ function DENS2Dplot(){
             'figOpt':window.figOpt};
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2950,7 +2934,7 @@ function EMBEDplot(){
   }
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -3025,7 +3009,7 @@ function DUALplot(){
             'figOpt':window.figOpt};
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -3104,7 +3088,7 @@ function SANKplot(){
   document.getElementById("SANKspin").style.visibility="visible";
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -3134,7 +3118,7 @@ function SANKimgSave(){
   document.getElementById("SANKspin").style.visibility="visible";
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -3206,7 +3190,7 @@ function STACBARplot(){
   $("#STACBARresize").html("");
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -3289,7 +3273,7 @@ function CLIplot(){
             'script':editor.getSession().getValue()};
    $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: "VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -3320,8 +3304,7 @@ function CLIplot(){
 
       var num = 0;
       for (let item of document.getElementsByClassName('output_svg')) {
-		makeIdsUnique(item.getElementsByTagName('svg')[0], false);
-        var onclickCode = "var a = document.createElement('a'); a.href = 'data:application/octet-stream;base64,' + btoa(unescape(encodeURIComponent(document.getElementsByClassName('output_svg')["+num+"].getElementsByTagName('svg')[0].outerHTML))); a.download = 'CLI-"+num+".svg'; a.click();"
+        var onclickCode = "var a = document.createElement('a'); a.href = 'data:application/octet-stream;base64,' + btoa(unescape(encodeURIComponent(document.getElementsByClassName('output_svg')["+num+"].getElementsByTagName('svg')[0].outerHTML))); a.download = 'CLI.svg'; a.click();"
 	    item.innerHTML += '<p><button class="CLIbt" onclick="' + onclickCode + '">Save as SVG</button></p>';
         num ++;
       }
@@ -3608,7 +3591,6 @@ GetStyle('circle').style = {};
 <script type="text/javascript" src="https://interactivereport.github.io/cellxgene_VIP/static/stackedbar/select.js"></script>
 <script type="text/javascript" src="https://interactivereport.github.io/cellxgene_VIP/static/stackedbar/endAll.js"></script>
 <script type="text/javascript" src="https://interactivereport.github.io/cellxgene_VIP/static/stackedbar/plot-transform.js"></script>
-<script type="text/javascript" src="https://baohongz.github.io/figureComposer/dist/svg-inject.js"></script>
 <div id="CLIVignetteCode1" style="display:none;">
 import warnings
 warnings.filterwarnings('ignore')
@@ -3638,60 +3620,42 @@ feather.write_feather(meta,strPath+".obs.feather")
 
 %%R
 # Seurat version > 3.0.2 has issues with Jupyter notebook.
-#!!! Please add your installation location of Seurat v3.0.2 to the code below,
-library(Seurat,lib.loc=c('/share/Seurat_3.0.2/','/usr/lib64/R/library/Seurat_3.0.2/'))
-library(patchwork)
-library(ggplot2)
+#!!! Please change lib.loc to your installation location of Seurat v3.0.2, e.g.
+# library(Seurat,lib.loc='/usr/lib64/R/library/Seurat_3.0.2/')
+library(Seurat,lib.loc='/share/Seurat_3.0.2/')
 D <- t(arrow::read_feather(paste(strPath,".feather",sep="")))
 meta <- as.data.frame(arrow::read_feather(paste(strPath,".obs.feather",sep="")))
 colnames(D) <- meta[,"name_0"]
 X <- CreateSeuratObject(counts=D)
 X@meta.data <- cbind(X@meta.data,meta)
 
-%Rdevice png
-
-%%R -r 600 -w 7200 -h 3600
+%%R
 X[["percent.mt"]] <- PercentageFeatureSet(X, pattern = "^MT-")
 VlnPlot(X, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
 plot1 <- FeatureScatter(X, feature1 = "nCount_RNA", feature2 = "percent.mt")
 plot2 <- FeatureScatter(X, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
-plot1 + plot2
+print(plot1)
+print(plot2)
 
-%%R -r 300 -w 3000 -h 1600
+%%R
 X <- subset(X, subset = nFeature_RNA > 200 & nFeature_RNA < 2500 & percent.mt < 5)
+X <- NormalizeData(X, normalization.method = "LogNormalize", scale.factor = 10000,verbose=F)
 X <- FindVariableFeatures(X, selection.method = "vst", nfeatures = 2000,verbose=F)
 top10 <- head(VariableFeatures(X,verbose=F), 10)
 plot1 <- VariableFeaturePlot(X)
 plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
-plot2
+print(plot1)
+print(plot2)
 
-%Rdevice svg
-
-%%R -w 8 -h 4
+%%R
 all.genes <- rownames(X)
 X <- ScaleData(X, features = all.genes,verbose=F)
 X <- RunPCA(X, features = VariableFeatures(object = X))
 print(X[["pca"]], dims = 1:5, nfeatures = 5)
 DimPlot(X, reduction = "pca")
-
-%Rdevice png
-
-%%R -r 150 -w 1000 -h 1000
 DimHeatmap(X, dims = 1, cells = 500, balanced = TRUE)
-
-%%R -r 150 -w 2000 -h 2400
 DimHeatmap(X, dims = 1:15, cells = 500, balanced = TRUE)
 
-%Rdevice svg
-
-%%R -w 6 -h 8
-sink(stdout(),type="message")
-suppressMessages(library(dplyr))
-X <- FindNeighbors(X, dims = 1:10, verbose=FALSE)
-X <- FindClusters(X, resolution = 0.5)
-X.markers <- FindAllMarkers(X, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
-top10 <- X.markers %>% group_by(cluster) %>% top_n(n = 10, wt = avg_logFC)
-DoHeatmap(X, features = top10$gene, label=FALSE) + theme(text = element_text(size = 8))
 </div>
 </body>
 </html>

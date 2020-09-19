@@ -27,7 +27,6 @@ strExePath = os.path.dirname(os.path.abspath(__file__))
 import pprint
 ppr = pprint.PrettyPrinter(depth=6)
 
-import server.app.app as app
 import server.compute.diffexp_generic as diffDefault
 import pickle
 from pyarrow import feather
@@ -39,6 +38,7 @@ rcParams.update({'figure.autolayout': True})
 api_version = "/api/v0.2"
 
 def route(data,appConfig=None,CLItmp="/tmp"):
+  ppr.pprint("current working dir:%s"%os.getcwd())
   if appConfig is None:
     data["url"] = f'http://127.0.0.1:8888/{api_version}'
   else:
@@ -53,6 +53,8 @@ def route(data,appConfig=None,CLItmp="/tmp"):
   except Exception as e:
     return 'ERROR @server: '+traceback.format_exc() # 'ERROR @server: {}, {}'.format(type(e),str(e))
   #return distributeTask(data["method"])(data)
+
+import server.app.app as app
 
 def setFigureOpt(opt):
   sc.set_figure_params(dpi_save=int(opt['dpi']),fontsize= float(opt['fontsize']),vector_friendly=(opt['vectorFriendly'] == 'Yes'),transparent=(opt['transparent'] == 'Yes'),color_map=opt['colorMap'])
@@ -1141,7 +1143,7 @@ def CLI(data):
     f.writelines(['%%R\n','strPath="%s"\n\n'%strPath])
     f.write(script)
 
-  res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --ExecutePreprocessor.timeout=6000 --to html --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
+  res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --ExecutePreprocessor.timeout=600 --to html --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
   if 'Error' in res.stderr.decode('utf-8'):
     raise ValueError(res.stderr.decode('utf-8'))
   html = res.stdout.decode('utf-8')
