@@ -8,8 +8,8 @@ if [[ $pythonV != *"Python 3.7"* && $pythonV != *"Python 3.8"* ]]; then
 fi
 
 ## buld the cellxgene and install -----------
-conda remove PyYAML
-conda install -c conda-forge nodejs=12 fsspec=0.8.2 botocore=1.17.44
+#conda remove -y PyYAML
+conda install -c conda-forge -y nodejs=13 fsspec=0.8.2
 
 ## obtain a clean version cellxgene a specific version by sha key
 rm -rf cellxgene
@@ -55,7 +55,7 @@ read -d '' insertL << EOF
         },
         headerTitle: function () {return '<strong>Visualization in Plugin</strong>'},
         contentAjax: {
-            url: '/static/interface.html',
+            url: 'static/interface.html',
             done: function (panel) {
                    setInnerHTML(panel.content, this.responseText);
             }
@@ -102,6 +102,8 @@ def VIP():
 pip install diffxpy==0.7.4
 pip install plotly==4.8.1
 pip install anndata==0.7.4
+pip install botocore==1.17.44
+pip install boto3==1.14.39
 git clone https://github.com/theislab/scanpy.git
 cd scanpy;git checkout 2ea9f836cec6e12a5cdd37bc4a229d4eadf59d37;cd ..
 pip install scanpy/
