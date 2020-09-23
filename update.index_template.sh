@@ -41,7 +41,7 @@ read -d '' insertL << EOF
         },
         headerTitle: function () {return '<strong>Visualization in Plugin</strong>'},
         contentAjax: {
-            url: window.location.pathname+'/static/interface.html',
+            url: window.location.href+'/static/interface.html',
             done: function (panel) {
                    setInnerHTML(panel.content, this.responseText);
             }
