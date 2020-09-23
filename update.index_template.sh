@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 ## obtain original index_template.html etc.
-cd cellxgene; git checkout 735eb11eb78b5e6c35ba84438970d0ce369604e1 client/index_template.html client/src/components/leftSidebar/topLeftLogoAndTitle.js client/src/components/leftSidebar/index.js; cd ..
+cd cellxgene
+git checkout 735eb11eb78b5e6c35ba84438970d0ce369604e1 client/index_template.html client/src/components/leftSidebar/topLeftLogoAndTitle.js client/src/components/leftSidebar/index.js
+cd ..
 
 read -d '' insertL << EOF
 <script src="https://interactivereport.github.io/cellxgene_VIP/static/jquery.min.js"></script>
@@ -39,7 +41,7 @@ read -d '' insertL << EOF
         },
         headerTitle: function () {return '<strong>Visualization in Plugin</strong>'},
         contentAjax: {
-            url: 'static/interface.html',
+            url: window.location.pathname+'/static/interface.html',
             done: function (panel) {
                    setInnerHTML(panel.content, this.responseText);
             }
@@ -70,7 +72,5 @@ sed -i "s|globals.datasetTitleMaxCharacterCount|50|; s|width: \"190px\"|width: \
 
 sed -i "s|logoRelatedPadding = 50|logoRelatedPadding = 60|" "cellxgene/client/src/components/leftSidebar/index.js"
 
-strPath="$(python -c 'import site; print(site.getsitepackages())')"
-strPath=${strPath//"['"/}
-strPath=${strPath//"']"/}
+strPath=$(python -c "import server as _; print(_.__file__.replace('/server/__init__.py',''))")
 cd cellxgene/client; make build; cp build/index.html $strPath/server/common/web/templates/; cd ../..

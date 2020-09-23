@@ -14,7 +14,9 @@ conda install -c conda-forge -y nodejs=13 fsspec=0.8.2
 ## obtain a clean version cellxgene a specific version by sha key
 rm -rf cellxgene
 git clone https://github.com/chanzuckerberg/cellxgene.git
-cd cellxgene;git checkout 735eb11eb78b5e6c35ba84438970d0ce369604e1;cd ..
+cd cellxgene
+git checkout 735eb11eb78b5e6c35ba84438970d0ce369604e1
+cd ..
 
 ## update the client-side source code of cellxgene for VIP
 echo -e "\nwindow.store = store;" >> cellxgene/client/src/reducers/index.js
