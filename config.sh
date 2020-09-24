@@ -144,4 +144,4 @@ cp Density2D.R $strPath/server/app/.
 
 echo -e "\nls -l $strweb\n"
 ls -l $strweb
-cp cellxgene/server/test/decode_fbs.py $strPath/server/app/.
+find ./cellxgene/server/ -name "decode_fbs.py" -exec cp {} $strPath/server/app/. \;
