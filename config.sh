@@ -7,12 +7,16 @@ if [[ $pythonV != *"Python 3.7"* && $pythonV != *"Python 3.8"* ]]; then
   exit 0
 fi
 
-conda install -c conda-forge nodejs
+## buld the cellxgene and install -----------
+#conda remove -y PyYAML
+conda install -c conda-forge -y nodejs=13 fsspec=0.8.2
 
 ## obtain a clean version cellxgene a specific version by sha key
 rm -rf cellxgene
 git clone https://github.com/chanzuckerberg/cellxgene.git
-cd cellxgene;git checkout 735eb11eb78b5e6c35ba84438970d0ce369604e1;cd ..
+cd cellxgene
+git checkout d99aac49564b98a51ebfab114fd59846c693fd62 # 735eb11eb78b5e6c35ba84438970d0ce369604e1 (v0.15.0)
+cd ..
 
 ## update the client-side source code of cellxgene for VIP
 echo -e "\nwindow.store = store;" >> cellxgene/client/src/reducers/index.js
@@ -53,7 +57,7 @@ read -d '' insertL << EOF
         },
         headerTitle: function () {return '<strong>Visualization in Plugin</strong>'},
         contentAjax: {
-            url: '/static/interface.html',
+            url: window.location.href.replace(/\\\/+$/,'')+'/static/interface.html',
             done: function (panel) {
                    setInnerHTML(panel.content, this.responseText);
             }
@@ -80,7 +84,7 @@ EOF
 insertL=$(sed -e 's/[&\\/]/\\&/g; s/|/\\|/g; s/$/\\/;' -e '$s/\\$//' <<<"$insertL")
 sed -i "s|<div id=\"root\"></div>|$insertL\n&|" "cellxgene/client/index_template.html"
 
-sed -i "s|globals.datasetTitleMaxCharacterCount|50|; s|width: \"190px\"|width: \"300px\"|; s|{aboutURL ? <a href={aboutURL}|{myURL ? <a href={myURL}|; s|return|var myURL=displayTitle.split('_')[0].startsWith('GSE') \? 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc='\+displayTitle.split('_')[0]:aboutURL;\n    \n    return|" "cellxgene/client/src/components/leftSidebar/topLeftLogoAndTitle.js"
+# sed -i "s|globals.datasetTitleMaxCharacterCount|50|; s|width: \"190px\"|width: \"300px\"|; s|{aboutURL ? <a href={aboutURL}|{myURL ? <a href={myURL}|; s|return|var myURL=displayTitle.split('_')[0].startsWith('GSE') \? 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc='\+displayTitle.split('_')[0]:aboutURL;\n    \n    return|" "cellxgene/client/src/components/leftSidebar/topLeftLogoAndTitle.js"
 
 sed -i "s|logoRelatedPadding = 50|logoRelatedPadding = 60|" "cellxgene/client/src/components/leftSidebar/index.js"
 
@@ -96,14 +100,12 @@ def VIP():
     return route(request.data,current_app.app_config, "/tmp")' >> cellxgene/server/app/app.py
     
 
-## buld the cellxgene and install -----------
-conda remove PyYAML
-conda install fsspec=0.6.3
-pip install tensorflow==2.2.0
+#pip install tensorflow==2.2.0
 pip install diffxpy==0.7.4
-
 pip install plotly==4.8.1
 pip install anndata==0.7.4
+pip install botocore==1.17.44
+pip install boto3==1.14.39
 git clone https://github.com/theislab/scanpy.git
 cd scanpy;git checkout 2ea9f836cec6e12a5cdd37bc4a229d4eadf59d37;cd ..
 pip install scanpy/
@@ -142,4 +144,4 @@ cp Density2D.R $strPath/server/app/.
 
 echo -e "\nls -l $strweb\n"
 ls -l $strweb
-cp cellxgene/server/test/decode_fbs.py $strPath/server/app/.
+find ./cellxgene/server/ -name "decode_fbs.py" -exec cp {} $strPath/server/app/. \;

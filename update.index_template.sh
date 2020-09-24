@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 ## obtain original index_template.html etc.
-cd cellxgene; git checkout 735eb11eb78b5e6c35ba84438970d0ce369604e1 client/index_template.html client/src/components/leftSidebar/topLeftLogoAndTitle.js client/src/components/leftSidebar/index.js; cd ..
+cd cellxgene; git checkout d99aac49564b98a51ebfab114fd59846c693fd62 client/index_template.html client/src/components/leftSidebar/topLeftLogoAndTitle.js client/src/components/leftSidebar/index.js; cd ..
 
 read -d '' insertL << EOF
 <script src="https://interactivereport.github.io/cellxgene_VIP/static/jquery.min.js"></script>
@@ -39,7 +39,7 @@ read -d '' insertL << EOF
         },
         headerTitle: function () {return '<strong>Visualization in Plugin</strong>'},
         contentAjax: {
-            url: '/static/interface.html',
+            url: 'static/interface.html',
             done: function (panel) {
                    setInnerHTML(panel.content, this.responseText);
             }
@@ -66,11 +66,14 @@ EOF
 insertL=$(sed -e 's/[&\\/]/\\&/g; s/|/\\|/g; s/$/\\/;' -e '$s/\\$//' <<<"$insertL")
 sed -i "s|<div id=\"root\"></div>|$insertL\n&|" "cellxgene/client/index_template.html"
 
-sed -i "s|globals.datasetTitleMaxCharacterCount|50|; s|width: \"190px\"|width: \"300px\"|; s|{aboutURL ? <a href={aboutURL}|{myURL ? <a href={myURL}|; s|return|var myURL=displayTitle.split('_')[0].startsWith('GSE') \? 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc='\+displayTitle.split('_')[0]:aboutURL;\n    \n    return|" "cellxgene/client/src/components/leftSidebar/topLeftLogoAndTitle.js"
+# sed -i "s|globals.datasetTitleMaxCharacterCount|50|; s|width: \"190px\"|width: \"300px\"|; s|{aboutURL ? <a href={aboutURL}|{myURL ? <a href={myURL}|; s|return|var myURL=displayTitle.split('_')[0].startsWith('GSE') \? 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc='\+displayTitle.split('_')[0]:aboutURL;\n    \n    return|" "cellxgene/client/src/components/leftSidebar/topLeftLogoAndTitle.js"
 
 sed -i "s|logoRelatedPadding = 50|logoRelatedPadding = 60|" "cellxgene/client/src/components/leftSidebar/index.js"
 
-strPath="$(python -c 'import site; print(site.getsitepackages())')"
-strPath=${strPath//"['"/}
-strPath=${strPath//"']"/}
-cd cellxgene/client; make build; cp build/index.html $strPath/server/common/web/templates/; cd ../..
+strPath=$(python -c "import server as _; print(_.__file__.replace('/server/__init__.py',''))")
+cd cellxgene/client; make build
+cp build/index.html $strPath/server/common/web/templates/
+rm $strPath/server/common/web/static/main-*.*
+rm $strPath/server/common/web/static/obsolete-*.*
+cp build/static/*   $strPath/server/common/web/static/
+cd ../..

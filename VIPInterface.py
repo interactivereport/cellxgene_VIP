@@ -27,7 +27,6 @@ strExePath = os.path.dirname(os.path.abspath(__file__))
 import pprint
 ppr = pprint.PrettyPrinter(depth=6)
 
-import server.app.app as app
 import server.compute.diffexp_generic as diffDefault
 import pickle
 from pyarrow import feather
@@ -43,9 +42,12 @@ def route(data,appConfig=None,CLItmp="/tmp"):
     data["url"] = f'http://127.0.0.1:8888/{api_version}'
   else:
     data = json.loads(str(data,encoding='utf-8'))
-    data["url"] = f'http://localhost:{appConfig.server__port}/{api_version}'#{appConfig.server__host}
+    if hasattr(appConfig,'server__port'):
+      port = appConfig.server__port
+    else:
+      port = appConfig.server_config.app__port
+    data["url"] = f'http://localhost:{port}/{api_version}'#{appConfig.server__host}
   data["CLItmp"] = CLItmp
-  #ppr.pprint(data['figOpt']) 
   if 'figOpt' in data.keys():
     setFigureOpt(data['figOpt'])
   try:
@@ -53,6 +55,8 @@ def route(data,appConfig=None,CLItmp="/tmp"):
   except Exception as e:
     return 'ERROR @server: '+traceback.format_exc() # 'ERROR @server: {}, {}'.format(type(e),str(e))
   #return distributeTask(data["method"])(data)
+
+import server.app.app as app
 
 def setFigureOpt(opt):
   sc.set_figure_params(dpi_save=int(opt['dpi']),fontsize= float(opt['fontsize']),vector_friendly=(opt['vectorFriendly'] == 'Yes'),transparent=(opt['transparent'] == 'Yes'),color_map=opt['colorMap'])
@@ -1128,25 +1132,28 @@ def CLI(data):
   
   adata = createData(data)
 
-  strData = strPath + '.pkl'
-  with open(strData,'wb') as f:
-    pickle.dump(adata,f)
+  strData = strPath + '.h5ad'
+  adata.write(strData)
+#  with open(strData,'wb') as f:
+#    pickle.dump(adata,f)
 
   strScript = strPath + '.py'
   #addedScript=['import os','os.chdir("%s")'%strExePath,'import VIPInterface as vip','adata=vip.ajaxData("%s")'%strData]
   with open(strScript,'w') as f:
-    f.writelines(['%load_ext rpy2.ipython\n','import pickle\n','with open("%s","rb") as f:\n'%strData,'  adata=pickle.load(f)\n','strPath="%s"\n\n'%strPath])
+    f.writelines(['%load_ext rpy2.ipython\n','from anndata import read_h5ad\n','adata=read_h5ad("%s")\n'%strData, 'strPath="%s"\n\n'%strPath])
+#    f.writelines(['%load_ext rpy2.ipython\n','import pickle\n','with open("%s","rb") as f:\n'%strData,'  adata=pickle.load(f)\n','strPath="%s"\n\n'%strPath])
     f.writelines(['%%R\n','strPath="%s"\n\n'%strPath])
     f.write(script)
 
-  res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --ExecutePreprocessor.timeout=6000 --to html --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
-  if 'Error' in res.stderr.decode('utf-8'):
-    raise ValueError(res.stderr.decode('utf-8'))
+  res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to html --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
+# ppr.pprint(res)
   html = res.stdout.decode('utf-8')
   h,s,e = html.partition('<div class="cell border-box-sizing code_cell rendered">')
   h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">') ## remove the first cell
   h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">') ## remove the second cell
   html = h+s+e
+  if 'Error' in res.stderr.decode('utf-8'):
+     html += res.stderr.decode('utf-8')
   for f in glob.glob(strPath+"*"):
     try:
       os.remove(f)

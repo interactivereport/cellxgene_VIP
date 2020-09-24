@@ -862,18 +862,13 @@ function printNotebook(){
 }
 
 function checkLoading(){
-    if(!window.store || !window.store.getState().categoricalSelection){
+    if(!window.store || !window.store.getState().categoricalSelection || !window.store.getState().annoMatrix._cache.obs.__columnsAccessor){
       return false;
     }
     var cateN = 0;
-    for(const one of window.store.getState().universe.schema.annotations.obs.columns){
-      if(one.type=='categorical'){
-        cateN++;
-      }
+    for (i=0;i<store.getState().annoMatrix._cache.obs.__columnsAccessor.length;i++) {
+        if (store.getState().annoMatrix._cache.obs.__columnsAccessor[i].summarize().categorical) cateN++;
     }
-//    if(cateN!=Object.keys(window.store.getState().categoricalSelection).filter(function(e) { return !window.store.getState().categoricalSelection[e].isTruncated }).length) {
-//      return false;
-//    }
     if(cateN!=Object.keys(window.store.getState().categoricalSelection).length) {
       return false;
     }
@@ -889,15 +884,15 @@ function enableButton(){
       for(const one of document.getElementsByClassName('tablinks')){
         one.disabled=false;
       }
-      if (window.store.getState().categoricalSelection[">Description"] !== undefined) {
-        if(window.store.getState().categoricalSelection[">Description"].categoryValues[0].split("|").length>1){
-          var ginit = window.store.getState().categoricalSelection[">Description"].categoryValues[0].split("|")[1].split(";");
+      if (window.store.getState().annoMatrix.schema.annotations.obsByName[">Description"] !== undefined) {
+        if(window.store.getState().annoMatrix.schema.annotations.obsByName[">Description"].categories[0].split("|").length>1){
+          var ginit = window.store.getState().annoMatrix.schema.annotations.obsByName[">Description"].categories[0].split("|")[1].split(";");
           window.store.dispatch({type: "set layout choice", layoutChoice: ginit[0].split("by")[1].trim()});
           window.store.dispatch({type: "color by categorical metadata", colorAccessor: ginit[1].split("by")[1].trim()});
           window.store.dispatch({type: "show centroid labels for category", showLabels: true});
         }
       }
-      window.store.dispatch({type: "store current cell selection as differential set 1", data:Int32Array.from({length:window.store.getState().universe.nObs},(v,k)=>k)});
+      window.store.dispatch({type: "store current cell selection as differential set 1", data:Int32Array.from({length:window.store.getState().annoMatrix.nObs},(v,k)=>k)});
       init();
     }
     //var d = new Date();
@@ -1039,20 +1034,20 @@ function init(){
     //--------------------------------------------------------------------------
     //ABBRinit
     var grps = Object.keys(window.store.getState().categoricalSelection).sort();
-    var grpL = window.store.getState().categoricalSelection;
+    var grpL = window.store.getState().annoMatrix.schema.annotations.obsByName;
     var htmlCheck= "";
     for(i=0;i<grps.length;i++){
       var one = grps[i];
       if (one.startsWith(">")) continue;
-      htmlCheck += '<label><input class="ABBRgrps" type="checkbox" value="'+grps[i]+'" onclick="ABBRlist()"/> '+grps[i]+' ('+grpL[grps[i]].numCategoryValues+')</label>';
+      htmlCheck += '<label><input class="ABBRgrps" type="checkbox" value="'+grps[i]+'" onclick="ABBRlist()"/> '+grps[i]+' ('+grpL[grps[i]].categories.length+')</label>';
     }  
     $('#ABBRgrp').html(htmlCheck);
     
     var bioAbbr = {}
     for(i=0;i<grps.length;i++){
       var one = {}
-      for(var j=0;j<grpL[grps[i]].numCategoryValues;j++){
-        one[grpL[grps[i]].categoryValues[j]] = grpL[grps[i]].categoryValues[j].toString();
+      for(var j=0;j<grpL[grps[i]].categories.length;j++){
+        one[grpL[grps[i]].categories[j]] = grpL[grps[i]].categories[j].toString();
       }
       bioAbbr[grps[i]] = one;
     }
@@ -1062,7 +1057,7 @@ function init(){
     window.biogen=[];
     window.bioGeneGrp={};
     window.figOpt={scale:'No',scaleZero:'No',clipValue:'Yes',scaleMax:20,dpi:150,img:'png',fontsize:11,vectorFriendly:'Yes',transparent:'No',scanpybranch:'split_show',colorMap:'viridis'};
-    if (grpL[">Description"] !== undefined && !grpL[">Description"].categoryValues[0].split(";")[1].includes("scale")) {
+    if (grpL[">Description"] !== undefined && !grpL[">Description"].categories[0].split(";")[1].includes("scale")) {
       window.figOpt['scale'] = "Yes";
     }
 
@@ -1097,8 +1092,8 @@ function init(){
     var embedLay = document.getElementById("EMBEDlayout");
     var dualLay = document.getElementById("DUALlayout");
     htmlCheck="";
-    for(const ix of Object.keys(window.store.getState().universe.schema.layout.obs)){
-      var one = window.store.getState().universe.schema.layout.obs[ix].name
+    for(const ix of Object.keys(window.store.getState().annoMatrix.schema.layout.obs)){
+      var one = window.store.getState().annoMatrix.schema.layout.obs[ix].name
       embedLay.add(createOpt(one));
       dualLay.add(createOpt(one));
       htmlCheck += '<label><input class="eIDlayouts" type="checkbox" value="'+one+'"/> '+one+' </label>';
@@ -1108,7 +1103,7 @@ function init(){
     htmlCheck= "";
     for(const one of grps){
       if (one.startsWith(">")) continue; 
-      htmlCheck += '<label id="eIDgrpsCK'+one+'"><input class="eIDgrps" type="checkbox" value="'+one+'"/> '+one+' ('+grpL[one].numCategoryValues+')</label>';
+      htmlCheck += '<label id="eIDgrpsCK'+one+'"><input class="eIDgrps" type="checkbox" value="'+one+'"/> '+one+' ('+grpL[one].categories.length+')</label>';
     }  
     //HEAT, EMBED, SANK, STACBAR, CLI
     $('#HEATgrp').html(htmlCheck.replace(/eID/g,'HEAT'));
@@ -1130,7 +1125,7 @@ function init(){
     /*
     $.ajax({
       type:"POST",
-      url: "/VIP",
+      url: window.location.href.replace(/\/+$/,'')+"/VIP",
       data:JSON.stringify({'method':"MINX"}),
       contentType: 'application/json;charset=UTF-8',//
       success: function(res){
@@ -1192,13 +1187,13 @@ function init(){
 	console.log("VIP (Visualization in Plugin) is ready.");
     $.ajax({
       type:"POST",
-      url: "/VIP",
+      url: window.location.href.replace(/\/+$/,'')+"/VIP",
       data:JSON.stringify({'method':"HELLO"}),
       contentType: 'application/json;charset=UTF-8',
       success: function(res){
         console.log(res);
       }
-    })
+    });
   }
   return true;
 }
@@ -1292,7 +1287,7 @@ function MARKref(){
   addCustomCombine("MARKgrp");
 }
 function SGVref(){
-  var genes = window.store.getState().universe.varData.colIndex.rindex;
+  var genes = window.store.getState().controls.userDefinedGenes;
   genes = genes.concat(window.biogen);
   genes = [...new Set(genes)];
   optG = [];
@@ -1346,7 +1341,7 @@ function showGeneSet(aID){
 }
 function showGene(aID, addInfo='', ckDefault='checked'){
   //console.log(aID+":"+ckDefault+":"+addInfo);
-  var genes = window.store.getState().universe.varData.colIndex.rindex;
+  var genes = window.store.getState().controls.userDefinedGenes;
   genes = genes.concat(window.biogen);
   genes = [...new Set(genes)];
   var optG = [], NcheckG=[],checkG=[];
@@ -1429,7 +1424,7 @@ function TRAKref(){
   showGeneGrpCollSet("TRAK");
 }
 function DENSref(){
-  var genes = window.store.getState().universe.varData.colIndex.rindex;
+  var genes = window.store.getState().controls.userDefinedGenes;
   genes = genes.concat(window.biogen);
   genes = [...new Set(genes)];
   var optG = [], NcheckG=[];
@@ -1461,7 +1456,7 @@ function DENSref(){
   addCustomCombine("DENSsplit");
 }
 function DENS2Dref(){
-  var genes = window.store.getState().universe.varData.colIndex.rindex;
+  var genes = window.store.getState().controls.userDefinedGenes;
   genes = genes.concat(window.biogen);
   genes = [...new Set(genes)];
   var optG = [], checkG=[];
@@ -1506,7 +1501,7 @@ function EMBEDref(){
   showGene('EMBED');
 }
 function DUALref(){
-  var genes = window.store.getState().universe.varData.colIndex.rindex;
+  var genes = window.store.getState().controls.userDefinedGenes;
   genes = genes.concat(window.biogen);
   genes = [...new Set(genes)];
   var optG = [], checkG=[];
@@ -1714,7 +1709,7 @@ function ABBRlist(){
   var x = document.getElementsByClassName('ABBRgrps');
   for(i=0;i<x.length;i++){
     if(x[i].checked){
-      grps[x[i].value]=window.store.getState().categoricalSelection[x[i].value].categoryValues.map(String);
+      grps[x[i].value]=window.store.getState().annoMatrix.schema.annotations.obsByName[x[i].value].categories.map(String);
       nrows = Math.max(nrows,grps[x[i].value].length);
     }
   }
@@ -1751,21 +1746,31 @@ function ABBRupdate(eID){
 function ABBRclear(){
   var grpKeys = Object.keys(window.store.getState().categoricalSelection);
   for(var i=0;i<grpKeys.length;i++) {
-    window.store.dispatch({type: "categorical metadata filter none of these", metadataField: grpKeys[i]});
+    var selectionMap = new Map();
+    var categories = window.store.getState().annoMatrix.schema.annotations.obsByName[grpKeys[i]].categories;
+    for (var j=0;j<categories.length; j++) {
+      selectionMap.set(categories[j], false);
+    }
+    window.store.dispatch({type: "categorical metadata filter none of these", metadataField: grpKeys[i], labelSelectionState: selectionMap});
   }
   return;
 }
 function ABBRall(){
   var grpKeys = Object.keys(window.store.getState().categoricalSelection);
   for(var i=0;i<grpKeys.length;i++) {
-    window.store.dispatch({type: "categorical metadata filter all of these", metadataField: grpKeys[i]});
+    var selectionMap = new Map();
+    var categories = window.store.getState().annoMatrix.schema.annotations.obsByName[grpKeys[i]].categories;
+    for (var j=0;j<categories.length; j++) {
+      selectionMap.set(categories[j], true);
+    }
+    window.store.dispatch({type: "categorical metadata filter all of these", metadataField: grpKeys[i], labelSelectionState: selectionMap});
   }
   return;
 }
 //const indexOfAll = (arr, val) => arr.reduce((acc, el, i) => (el === val ? [...acc, i] : acc), []);
 function ABBRcombineCell(){
   var annKeys = Object.keys(window.store.getState().categoricalSelection);
-  var obsMap = window.store.getState().universe.obsAnnotations.colIndex.index;
+  var obsMap = window.store.getState().annoMatrix._cache.obs.colIndex.index;
   var grpKeys = Object.keys(window.bioCombine);
   var cName = [], cVal = [];//, selC=[]
   for(const key of grpKeys){
@@ -1773,16 +1778,16 @@ function ABBRcombineCell(){
     if(cName.length==0){
       for(const v of window.bioCombine[key]){
         cName.push(window.bioAbbr[key][v]);
-        cVal.push(k+"_"+window.store.getState().categoricalSelection[key].categoryValueIndices.get(v));
-        //selC.push(indexOfAll(window.store.getState().universe.obsAnnotations.__columns[obsMap.get(key)],v));
+        cVal.push(k+"_"+window.store.getState().annoMatrix.schema.annotations.obsByName[key].categories.indexOf(v));
+        //selC.push(indexOfAll(window.store.getState().annoMatrix._cache.obs.__columns[obsMap.get(key)],v));
       }
     }else{
       var newGrp = [], newVal = [];//, newC = []
       for(var i=0;i<cName.length;i++){
         window.bioCombine[key].forEach(function(v){
           newGrp.push(cName[i]+":"+window.bioAbbr[key][v]);
-          newVal.push(cVal[i]+"__"+k+"_"+window.store.getState().categoricalSelection[key].categoryValueIndices.get(v));
-          //var oneSel = indexOfAll(window.store.getState().universe.obsAnnotations.__columns[obsMap.get(key)],v);
+          newVal.push(cVal[i]+"__"+k+"_"+window.store.getState().annoMatrix.schema.annotations.obsByName[key].categories.indexOf(v));
+          //var oneSel = indexOfAll(window.store.getState().annoMatrix._cache.obs.__columns[obsMap.get(key)],v);
           //newC.push(selC[i].filter(v => oneSel.includes(v)));
         });
       }
@@ -1805,13 +1810,13 @@ function ABBRcombine(){
   var combGrp = {};
   var grpKeys = Object.keys(window.store.getState().categoricalSelection);
   for(var i=0;i<grpKeys.length;i++) {
-    if(window.store.getState().categoricalSelection[grpKeys[i]].categorySelected){
-      combGrp[grpKeys[i]] = window.store.getState().categoricalSelection[grpKeys[i]].categoryValues;
+    if(window.store.getState().categoricalSelection[grpKeys[i]].size == 0){
+      combGrp[grpKeys[i]] = window.store.getState().annoMatrix.schema.annotations.obsByName[grpKeys[i]].categories;
     }else{
       var one = [];
-      for(var j=0;j<window.store.getState().categoricalSelection[grpKeys[i]].numCategoryValues;j++){
-        if(window.store.getState().categoricalSelection[grpKeys[i]].categoryValueSelected[j]){
-          one.push(window.store.getState().categoricalSelection[grpKeys[i]].categoryValues[j]);
+      for (let [key, value] of window.store.getState().categoricalSelection[grpKeys[i]]) {
+        if(value) {
+          one.push(key);
         }
       }
       if(one.length>0){
@@ -1831,15 +1836,19 @@ function ABBRcombine(){
 function ABBRcombineUpdate(){
   var combGrp = window.bioCombine;
   var combKey = Object.keys(combGrp);
-  var allGrp = window.store.getState().categoricalSelection;
+  var allGrp = store.getState().annoMatrix.schema.annotations.obsByName;
   for(var i=0;i<combKey.length;i++){
-    //console.log(allGrp[combKey[i]].categoryValues);
-    for(var j=0;j<allGrp[combKey[i]].numCategoryValues;j++){
-      if(combGrp[combKey[i]].includes(allGrp[combKey[i]].categoryValues[j])){
-        window.store.dispatch({type: "categorical metadata filter select", metadataField: combKey[i], categoryIndex: j});
-        //console.log([combKey[i],allGrp[combKey[i]].categoryValues[j]]);
+    //console.log(allGrp[combKey[i]].categories);
+    var selectionMap = new Map();
+    for(var j=0;j<allGrp[combKey[i]].categories.length;j++){
+      if(combGrp[combKey[i]].includes(allGrp[combKey[i]].categories[j])){
+        selectionMap.set(allGrp[combKey[i]].categories[j], true);
+        //console.log([combKey[i],allGrp[combKey[i]].categories[j]]);
+      } else {
+        selectionMap.set(allGrp[combKey[i]].categories[j], false);
       }
     }
+    window.store.dispatch({type: "categorical metadata filter select", metadataField: combKey[i], labelSelectionState: selectionMap});
   }
   return;
 }
@@ -1848,7 +1857,7 @@ function ADDGadd(){
   var addG = $("#ADDGinput").val().trim().split(/\s+|\s*,\s*|\s*;\s*/);
   var genes =  window.biogen;
   var notG = [];
-  var totalG = window.store.getState().universe.varAnnotations.__columns[0];
+  var totalG = window.store.getState().annoMatrix._cache.var.__columns[0];
   var totalGlower = totalG.map(function(s){return s.toLowerCase();});
   
   for(var i=0;i<addG.length;i++){
@@ -1893,7 +1902,7 @@ function ADDGsetAdd(){
   
   var gNames = $("#ADDGsetGene").val().trim().split(/\s+|\s*,\s*|\s*;\s*/);
   var notG = [],geneNames=[];
-  var totalG = window.store.getState().universe.varAnnotations.__columns[0];
+  var totalG = window.store.getState().annoMatrix._cache.var.__columns[0];
   var totalGlower = totalG.map(function(s){return s.toLowerCase();});
   for(var i=0;i<gNames.length;i++){
     var one = gNames[i].trim();
@@ -1964,7 +1973,7 @@ function GDplot(){
   document.getElementById("GDspin").style.visibility="visible";
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: window.location.href.replace(/\/+$/,'')+"/VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',
     success: function(res){
@@ -2034,7 +2043,7 @@ function MARKplot(){
             'figOpt':window.figOpt};
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: window.location.href.replace(/\/+$/,'')+"/VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2150,7 +2159,7 @@ function SGVplot(acc){
   
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: window.location.href.replace(/\/+$/,'')+"/VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2274,7 +2283,7 @@ function PGVplot(acc){
 
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: window.location.href.replace(/\/+$/,'')+"/VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2389,7 +2398,7 @@ function HEATplot(){
   D['method'] = 'HEATplot';
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: window.location.href.replace(/\/+$/,'')+"/VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2421,7 +2430,7 @@ function HEATdata(){
   D['method'] = 'HEATdata';
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: window.location.href.replace(/\/+$/,'')+"/VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2459,12 +2468,12 @@ function DEGselCells(){
     if($(this).prop("checked")){
       selNames.push(window.bioCombineCell[$(this).val()].cName);
       //selC[window.bioCombineCell[$(this).val()].cName.split(' ')[0]] = window.bioCombineCell[$(this).val()].selC;
-      //window.store.getState().categoricalSelection[key].categoryValueIndices.get(v)
+      //window.store.getState().annoMatrix.schema.annotations.obsByName[key].categories.indexOf(v)
       $(this).val().split("__").forEach(function(one){
         [k,v]=one.split("_");
         if(selAnno[grpKey[k]]==undefined){selAnno[grpKey[k]]=[]}
-        if(!selAnno[grpKey[k]].includes(window.store.getState().categoricalSelection[grpKey[k]].categoryValues[v])){
-          selAnno[grpKey[k]].push(window.store.getState().categoricalSelection[grpKey[k]].categoryValues[v]);
+        if(!selAnno[grpKey[k]].includes(window.store.getState().annoMatrix.schema.annotations.obsByName[grpKey[k]].categories[v])){
+          selAnno[grpKey[k]].push(window.store.getState().annoMatrix.schema.annotations.obsByName[grpKey[k]].categories[v]);
         }
       });
     }
@@ -2491,13 +2500,13 @@ function DEGfind(){
       cells['group2'] = window.store.getState().differential.celllist2;
     }
     D['cells'] = cells;
-    D['cellN'] = window.store.getState().universe.nObs;
+    D['cellN'] = window.store.getState().annoMatrix.nObs;
     D['comGrp'] = Object.keys(cells);
   }else{
     D['combine']=combGrp;
     D['abb']=window.bioAbbr;
     D['grp'] = Object.keys(combGrp);
-    D['cells'] = new Int32Array(Array(window.store.getState().universe.nObs).keys());
+    D['cells'] = new Int32Array(Array(window.store.getState().annoMatrix.nObs).keys());
     D['comGrp'] = combName.sort();
   }
   $('#DEGinfo').text("DEG: "+D['comGrp'].join(" vs "));
@@ -2507,7 +2516,7 @@ function DEGfind(){
   $(".DEGpngBT").prop('disabled',true);
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: window.location.href.replace(/\/+$/,'')+"/VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2625,7 +2634,7 @@ function DOTplot(){
   document.getElementById("DOTspin").style.visibility="visible";
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: window.location.href.replace(/\/+$/,'')+"/VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2702,7 +2711,7 @@ function TRAKplot(){
   document.getElementById("TRAKspin").style.visibility="visible";
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: window.location.href.replace(/\/+$/,'')+"/VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2791,7 +2800,7 @@ function DENSplot(){
   document.getElementById("DENSspin").style.visibility="visible";
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: window.location.href.replace(/\/+$/,'')+"/VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2863,7 +2872,7 @@ function DENS2Dplot(){
             'figOpt':window.figOpt};
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: window.location.href.replace(/\/+$/,'')+"/VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -2950,7 +2959,7 @@ function EMBEDplot(){
   }
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: window.location.href.replace(/\/+$/,'')+"/VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -3025,7 +3034,7 @@ function DUALplot(){
             'figOpt':window.figOpt};
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: window.location.href.replace(/\/+$/,'')+"/VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -3104,7 +3113,7 @@ function SANKplot(){
   document.getElementById("SANKspin").style.visibility="visible";
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: window.location.href.replace(/\/+$/,'')+"/VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -3134,7 +3143,7 @@ function SANKimgSave(){
   document.getElementById("SANKspin").style.visibility="visible";
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: window.location.href.replace(/\/+$/,'')+"/VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -3206,7 +3215,7 @@ function STACBARplot(){
   $("#STACBARresize").html("");
   $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: window.location.href.replace(/\/+$/,'')+"/VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -3289,7 +3298,7 @@ function CLIplot(){
             'script':editor.getSession().getValue()};
    $.ajax({
     type:"POST",
-    url: "/VIP",
+    url: window.location.href.replace(/\/+$/,'')+"/VIP",
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
@@ -3320,9 +3329,9 @@ function CLIplot(){
 
       var num = 0;
       for (let item of document.getElementsByClassName('output_svg')) {
-		makeIdsUnique(item.getElementsByTagName('svg')[0], false);
+        makeIdsUnique(item.getElementsByTagName('svg')[0], false);
         var onclickCode = "var a = document.createElement('a'); a.href = 'data:application/octet-stream;base64,' + btoa(unescape(encodeURIComponent(document.getElementsByClassName('output_svg')["+num+"].getElementsByTagName('svg')[0].outerHTML))); a.download = 'CLI-"+num+".svg'; a.click();"
-	    item.innerHTML += '<p><button class="CLIbt" onclick="' + onclickCode + '">Save as SVG</button></p>';
+        item.innerHTML += '<p><button class="CLIbt" onclick="' + onclickCode + '">Save as SVG</button></p>';
         num ++;
       }
     },

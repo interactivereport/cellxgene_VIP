@@ -30,6 +30,7 @@ cp -R ace $strweb
 cp -R stackedbar $strweb
 cp volcano.R $strPath/server/app/.
 cp Density2D.R $strPath/server/app/.
+find . -name "decode_fbs.py" -exec cp {} $strPath/server/app/. \;
 fi
 
 echo -e "\nls -l $strweb\n"
