@@ -1,12 +1,8 @@
 #!/usr/bin/env bash
 ## obtain original index_template.html etc.
-<<<<<<< HEAD
-cd cellxgene; git checkout d99aac49564b98a51ebfab114fd59846c693fd62 client/index_template.html client/src/components/leftSidebar/topLeftLogoAndTitle.js client/src/components/leftSidebar/index.js; cd ..
-=======
 cd cellxgene
-git checkout 735eb11eb78b5e6c35ba84438970d0ce369604e1 client/index_template.html client/src/components/leftSidebar/topLeftLogoAndTitle.js client/src/components/leftSidebar/index.js
+git checkout d99aac49564b98a51ebfab114fd59846c693fd62 client/index_template.html client/src/components/leftSidebar/topLeftLogoAndTitle.js client/src/components/leftSidebar/index.js
 cd ..
->>>>>>> 062b82c9e32d649226ea12dd019b458f6aa5782d
 
 read -d '' insertL << EOF
 <script src="https://interactivereport.github.io/cellxgene_VIP/static/jquery.min.js"></script>
@@ -45,11 +41,7 @@ read -d '' insertL << EOF
         },
         headerTitle: function () {return '<strong>Visualization in Plugin</strong>'},
         contentAjax: {
-<<<<<<< HEAD
-            url: 'static/interface.html',
-=======
             url: window.location.href.replace(/\\\/+$/,'')+'/static/interface.html',
->>>>>>> 062b82c9e32d649226ea12dd019b458f6aa5782d
             done: function (panel) {
                    setInnerHTML(panel.content, this.responseText);
             }
@@ -81,13 +73,9 @@ sed -i "s|<div id=\"root\"></div>|$insertL\n&|" "cellxgene/client/index_template
 sed -i "s|logoRelatedPadding = 50|logoRelatedPadding = 60|" "cellxgene/client/src/components/leftSidebar/index.js"
 
 strPath=$(python -c "import server as _; print(_.__file__.replace('/server/__init__.py',''))")
-<<<<<<< HEAD
 cd cellxgene/client; make build
 cp build/index.html $strPath/server/common/web/templates/
 rm $strPath/server/common/web/static/main-*.*
 rm $strPath/server/common/web/static/obsolete-*.*
 cp build/static/*   $strPath/server/common/web/static/
 cd ../..
-=======
-cd cellxgene/client; make build; cp build/index.html $strPath/server/common/web/templates/; cd ../..
->>>>>>> 062b82c9e32d649226ea12dd019b458f6aa5782d

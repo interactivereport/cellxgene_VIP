@@ -15,11 +15,7 @@ conda install -c conda-forge -y nodejs=13 fsspec=0.8.2
 rm -rf cellxgene
 git clone https://github.com/chanzuckerberg/cellxgene.git
 cd cellxgene
-<<<<<<< HEAD
 git checkout d99aac49564b98a51ebfab114fd59846c693fd62 # 735eb11eb78b5e6c35ba84438970d0ce369604e1 (v0.15.0)
-=======
-git checkout 735eb11eb78b5e6c35ba84438970d0ce369604e1
->>>>>>> 062b82c9e32d649226ea12dd019b458f6aa5782d
 cd ..
 
 ## update the client-side source code of cellxgene for VIP
