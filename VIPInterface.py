@@ -38,6 +38,7 @@ rcParams.update({'figure.autolayout': True})
 api_version = "/api/v0.2"
 
 def route(data,appConfig=None,CLItmp="/tmp"):
+  ppr.pprint("current working dir:%s"%os.getcwd())
   if appConfig is None:
     data["url"] = f'http://127.0.0.1:8888/{api_version}'
   else:
@@ -1146,7 +1147,12 @@ def CLI(data):
     f.write(script)
 
   res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to html --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
+<<<<<<< HEAD
 # ppr.pprint(res)
+=======
+  if 'Error' in res.stderr.decode('utf-8'):
+    raise ValueError(res.stderr.decode('utf-8'))
+>>>>>>> 062b82c9e32d649226ea12dd019b458f6aa5782d
   html = res.stdout.decode('utf-8')
   h,s,e = html.partition('<div class="cell border-box-sizing code_cell rendered">')
   h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">') ## remove the first cell
