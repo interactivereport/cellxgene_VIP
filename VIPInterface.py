@@ -49,6 +49,7 @@ def route(data,appConfig=None,CLItmp="/tmp"):
       port = appConfig.server_config.app__port
     data["url"] = f'http://localhost:{port}/{api_version}'#{appConfig.server__host}
   data["CLItmp"] = CLItmp
+  #ppr.pprint(data['figOpt'])
   if 'figOpt' in data.keys():
     setFigureOpt(data['figOpt'])
   try:
@@ -1147,12 +1148,6 @@ def CLI(data):
     f.write(script)
 
   res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to html --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
-<<<<<<< HEAD
-# ppr.pprint(res)
-=======
-  if 'Error' in res.stderr.decode('utf-8'):
-    raise ValueError(res.stderr.decode('utf-8'))
->>>>>>> 062b82c9e32d649226ea12dd019b458f6aa5782d
   html = res.stdout.decode('utf-8')
   h,s,e = html.partition('<div class="cell border-box-sizing code_cell rendered">')
   h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">') ## remove the first cell
