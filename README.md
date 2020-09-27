@@ -40,7 +40,6 @@ whole or sliced single cell dataset.
 
 ## 0. Install anaconda python 3.7 if not available on server
     - Anaconda3-2020.02-Linux-x86_64.sh
-    - jq is needed for cellxgene ver > 0.16 ("yum install jq" or "apt-get install jq" or "brew install jq")
 
 ## 1. create and enable conda environment
 ``` bash
