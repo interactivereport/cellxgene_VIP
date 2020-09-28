@@ -81,4 +81,12 @@ Then in R:
 ```R
 install.packages("arrow”)
 ```
+## If you want to use system installed R and packages
+```
+pip install rpy2
 
+$ jupyter kernelspec list
+Available kernels:
+  python3    /opt/anaconda3/envs/test2/share/jupyter/kernels/python3
+  ir         /usr/local/share/jupyter/kernels/ir
+```
