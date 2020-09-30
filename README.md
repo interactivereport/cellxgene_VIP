@@ -81,10 +81,14 @@ Then in R:
 ```R
 install.packages("arrow”)
 ```
-## If you want to use system installed R and packages
+## Packages needed for CLI.
 ```
-pip install rpy2
+conda install ipykernel
+pip install rpy2  # If you want to use system installed R and packages
+or
+conda install rpy2  # local R and R packages need to be installed locally too 
 
+# Sample Environment
 $ jupyter kernelspec list
 Available kernels:
   python3    /opt/anaconda3/envs/test2/share/jupyter/kernels/python3
