@@ -83,10 +83,10 @@ install.packages("arrow”)
 ```
 ## Packages needed for CLI.
 ```
-conda install ipykernel
-pip install rpy2  # If you want to use system installed R and packages
+$ conda install ipykernel
+$ pip install rpy2  # If you want to use system installed R and packages
 or
-conda install rpy2  # local R and R packages need to be installed locally too 
+$ conda install rpy2  # local R and R packages need to be installed locally too 
 
 # Sample Environment
 $ jupyter kernelspec list
