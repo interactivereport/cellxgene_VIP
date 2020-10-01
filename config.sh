@@ -9,7 +9,7 @@ fi
 
 ## buld the cellxgene and install -----------
 #conda remove -y PyYAML
-conda install -c conda-forge -y nodejs=13 fsspec=0.8.2 jq=1.6 ipykernel
+conda install -c conda-forge -y nodejs=13 fsspec=0.8.2 jq=1.6 ipykernel=5.3.4
 
 ## obtain a clean version cellxgene a specific version by sha key
 rm -rf cellxgene
@@ -112,7 +112,7 @@ pip install scanpy/
 pip install jupyter_client
 pip install jupytext
 pip install nbconvert
-pip install rpy2
+pip install rpy2==3.3.5
 pip install pyarrow
 
 # old versions
