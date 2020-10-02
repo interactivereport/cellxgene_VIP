@@ -84,13 +84,20 @@ install.packages("arrow”)
 ## Packages needed for CLI.
 ```
 $ conda install ipykernel
-$ pip install rpy2  # If you want to use system installed R and packages
+$ pip install rpy2  # If you want to use globally installed R and packages
 or
-$ conda install rpy2  # local R and R packages need to be installed locally too 
+$ conda install rpy2  # R and R packages will be installed locally 
 
 # Sample Environment
 $ jupyter kernelspec list
 Available kernels:
   python3    /opt/anaconda3/envs/test2/share/jupyter/kernels/python3
   ir         /usr/local/share/jupyter/kernels/ir
+```
+## Seurat ver3.0.2
+```
+mkdir /usr/lib64/R/library/Seurat_3.0.2/
+$ R
+>devtools::install_github(repo = 'satijalab/seurat@v3.0.2', dependencies=FALSE, force=TRUE, lib ='/usr/lib64/R/library/Seurat_3.0.2/')
+>library(Seurat, lib.loc = '/usr/lib64/R/library/Seurat_3.0.2/')
 ```
