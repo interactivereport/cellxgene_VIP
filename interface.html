@@ -3330,22 +3330,16 @@ function CLIplot(){
         $("#CLIresize").html("");
         return;
       }
-
       var filteredRes = '<style type="text/css"> pre { display: block; padding: 8.5px; margin: 0 0 9px; font-size: 12px; line-height: 1.42857143; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: 1px solid #ccc; border-radius: 2px; }';
       var readIt = false;
       res.split(/(\r\n|\n|\r)/g).forEach(function(line) {
         if (line.includes('div.inner_cell') || line.includes('<body>')) readIt = true;
         if (readIt) {
-          line = line.replace('output_subarea','');
+//          line = line.replace('output_subarea','');
           filteredRes += line;
-        }
-        if (line.includes('\.highlight \.il { color: #666666 }')) {
-          filteredRes += '</style>';
-          readIt = false;
         }
         if (line.includes('<\/body>')) readIt = false;
       });
-// console.log(filteredRes);
       $("#CLIresize").html(filteredRes);
 
       var num = 0;
