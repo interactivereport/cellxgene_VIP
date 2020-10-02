@@ -1972,6 +1972,7 @@ function GDplot(){
   }
 
   var D = {'method':'GD',
+            'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'cells':cells,
             'cutoff':$("#GDcutoff").val(),
             'figOpt':window.figOpt};
@@ -2040,6 +2041,7 @@ function MARKplot(){
   $(".MARKpngBT").prop('disabled',true);
   document.getElementById("MARKspin").style.visibility="visible";
   var D = {'method':'MARK',
+            'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'cells':cells,
             'genes':[],
             'grp':grp,
@@ -2151,6 +2153,7 @@ function SGVplot(acc){
   }
   
   var D = {'method':'SGV',
+            'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'cells':cells,
             'genes':[$("#SGVgene").val()],
             'grp':grp,
@@ -2271,6 +2274,7 @@ function PGVplot(acc){
   var color = $("#PGVcolor").val();
   if ($("#PGVcolor_r")[0].checked) color += '_r';
   var D = {'method':'PGV',
+            'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'cells':cells,
             'genes':genes,
             'geneGrp':geneSets,
@@ -2388,6 +2392,7 @@ function HEATcheck(){
   $(".HEATpngBT").prop('disabled',true);
   $(".HEATsaveBT").prop('disabled',true);
   var D = {'method':'HEAT',
+            'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'cells':cells,
             'genes':genes,
             'order':orderGrp,
@@ -2625,6 +2630,7 @@ function DOTplot(){
   if ($("#DOTcolor_r")[0].checked) color += '_r';
   
   var D = {'method':'DOT',
+            'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'cells':cells,
             'genes':genes,
             'grp':grp,
@@ -2706,6 +2712,7 @@ function TRAKplot(){
   }
 
   var D = {'method':'TRAK',
+            'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'cells':cells,
             'genes':genes,
             'grp':grp,
@@ -2795,6 +2802,7 @@ function DENSplot(){
 
   var bw = $("#DENSprec").val();
   var D = {'method':'DENS',
+            'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'cells':cells,
             'genes':genes,
             'grp':grp,
@@ -2870,6 +2878,7 @@ function DENS2Dplot(){
   $(".DENS2DpngBT").prop('disabled',true);
 
   var D = {'method':"DENS2D",
+            'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'cells':cells,
             'genes':genes,
             'grp':[],
@@ -2953,6 +2962,7 @@ function EMBEDplot(){
   $(".EMBEDpngBT").prop('disabled',true);
 
   var D = {'method':"EMBED",
+            'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'cells':cells,
             'genes':genes,
             'grp':grps,
@@ -3033,6 +3043,7 @@ function DUALplot(){
   $(".DUALpngBT").prop('disabled',true);
 
   var D = {'method':"DUAL",
+            'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'cells':cells,
             'genes':genes,
             'grp':[],
@@ -3101,6 +3112,7 @@ function SANKcheck(){
     return;
   }
   var D = {'method':'SANK',
+            'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'cells':cells,
             'genes':genes,
             //'geneGrp':geneSets,
@@ -3209,6 +3221,7 @@ function STACBARplot(){
   }
 
   var D = {'method':'STACBAR',
+            'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'cells':cells,
             'genes':genes,
             'grp':grp,
@@ -3298,6 +3311,7 @@ function CLIplot(){
   $(".CLIbt").prop('disabled',true);
   
   var D = {'method':"CLI",
+            'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'cells':cells,
             'genes':genes,
             'grp':grps,

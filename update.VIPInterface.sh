@@ -9,6 +9,7 @@ pip install scanpy/
 pip install jupyter_client
 pip install jupytext
 pip install nbconvert
+pip install rpy2
 pip install pyarrow
 fi
 

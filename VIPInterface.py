@@ -49,6 +49,14 @@ def route(data,appConfig=None,CLItmp="/tmp"):
       port = appConfig.server_config.app__port
     data["url"] = f'http://localhost:{port}/{api_version}'#{appConfig.server__host}
   data["CLItmp"] = CLItmp
+
+  if appConfig.server_config.multi_dataset__dataroot is None:
+    data["url_dataroot"]=None
+    data["dataset"]=None
+  else:
+    data["url_dataroot"]=appConfig.server_config.multi_dataset__dataroot['d']['base_url']
+  ppr.pprint(data["url_dataroot"])
+
   #ppr.pprint(data['figOpt'])
   if 'figOpt' in data.keys():
     setFigureOpt(data['figOpt'])
@@ -68,7 +76,7 @@ def getObs(data):
   selC = list(data['cells'].values())
   cNames = ["cell%d" %i for i in selC]
   ## obtain the category annotation
-  with app.get_data_adaptor() as scD:
+  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
     obs = scD.data.obs.loc[selC,['name_0']+data['grp']].astype('str')
   obs.index = cNames
   ## update the annotation Abbreviation
@@ -108,7 +116,7 @@ def subData(data):
     fSparse = False
     X = []
     if 'genes' in data.keys():
-      with app.get_data_adaptor() as scD:
+      with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
         if not type(scD.data.X) is np.ndarray:
           fSparse = True
         if len(data['genes'])>0:
@@ -129,7 +137,7 @@ def subData(data):
   else:
     fSparse = False
     if 'genes' in data.keys():
-      with app.get_data_adaptor() as scD:
+      with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
         if not type(scD.data.X) is np.ndarray:
           fSparse = True
         if len(data['genes'])>0:
@@ -158,7 +166,7 @@ def subData(data):
     embed = pd.DataFrame([],index=cNames)
     if 'layout' in data.keys():## tsne or umap
       strEmbed = data['layout']
-      with app.get_data_adaptor() as scD:
+      with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
         embed = pd.DataFrame(scD.data.obsm['X_%s'%strEmbed][selC][:,[0,1]],columns=['%s1'%strEmbed,'%s2'%strEmbed],index=cNames)
       strEmbed = 'umap'
 
@@ -169,7 +177,7 @@ def subData(data):
       layout = [layout]
     if len(layout)>0:
       for one in layout:
-        with app.get_data_adaptor() as scD:
+        with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
           embed['X_%s'%one] = pd.DataFrame(scD.data.obsm['X_%s'%one][selC][:,[0,1]],columns=['%s1'%one,'%s2'%one],index=cNames)
 
   ## obtain the category annotation
@@ -215,7 +223,7 @@ def cleanAbbr(data):
 def createData(data,seperate=False):
   return subData(data)
   #print("CreateData")
-  with app.get_data_adaptor() as scD:
+  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
     if (type(scD.data.X) is np.ndarray):
       return subData(data)
 
@@ -322,7 +330,7 @@ def Msg(msg):
   return iostreamFig(fig)
 
 def MINX(data):
-  with app.get_data_adaptor() as scD:
+  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
     minV = min(scD.data.X[0])
   return '%.1f'%minV
   
@@ -609,7 +617,7 @@ def DEG(data):
   if data['DEmethod']=='default':
     if sum(mask[0]==True)<10 or sum(mask[1]==True)<10:
       raise ValueError('Less than 10 cells in a group!')
-    with app.get_data_adaptor() as scD:
+    with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
       res = diffDefault.diffexp_ttest(scD,mask[0].to_numpy(),mask[1].to_numpy(),scD.data.shape[0])
       gNames = list(scD.data.var["name_0"])
     deg = pd.DataFrame(res,columns=['gID','log2fc','pval','qval'])
