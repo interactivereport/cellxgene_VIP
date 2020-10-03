@@ -3663,7 +3663,7 @@ feather.write_feather(meta,strPath+".obs.feather")
 %%R
 # Seurat version > 3.0.2 has issues with Jupyter notebook.
 #!!! Please add your installation location of Seurat v3.0.2 to the code below,
-library(Seurat,lib.loc=c('/share/Seurat_3.0.2/','/usr/lib64/R/library/Seurat_3.0.2/'))
+library(Seurat,lib.loc=c('/share/Seurat_3.0.2/','/usr/lib64/R/library/Seurat_3.0.2/','/usr/share/R/library','/usr/lib64/R/library'))
 library(patchwork)
 library(ggplot2)
 D <- t(arrow::read_feather(paste(strPath,".feather",sep="")))
