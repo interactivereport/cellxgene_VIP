@@ -1162,7 +1162,7 @@ def CLI(data):
   h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">') ## remove the second cell
   html = h+s+e
   if 'Error' in res.stderr.decode('utf-8'):
-     html += res.stderr.decode('utf-8')
+     html = 'ERROR @server:\nstderr:\n' + res.stderr.decode('utf-8') + '\nstdout:\n' + res.stdout.decode('utf-8')
   for f in glob.glob(strPath+"*"):
     try:
       os.remove(f)

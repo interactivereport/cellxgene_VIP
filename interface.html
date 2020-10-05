@@ -3294,7 +3294,7 @@ function CLIplot(){
     grps.push($(this).val());
   })
   if(grps.length==0){
-    $('#CLInote').text("Please select groups to start");
+    $('#CLInote').text("Please select at least one annotation");
     return;
   }
 
@@ -3303,7 +3303,7 @@ function CLIplot(){
     layouts.push($(this).val());
   })  
   if(layouts.length==0){
-    $('#CLInote').text("Please select layouts to start");
+    $('#CLInote').text("Please select at least one layout");
     return;
   }
   
