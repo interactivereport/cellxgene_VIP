@@ -79,7 +79,7 @@ export LIBARROW_MINIMAL=false
 ```
 Then in R:
 ```R
-install.packages("arrow”)
+install.packages("arrow")
 ```
 ## Packages needed for CLI.
 ```
