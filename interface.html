@@ -8,13 +8,13 @@
     <script src="static/d3plot/volcanoPlot.js"></script>
     <link rel="stylesheet" href="static/d3plot/volcanoPlot.css">
     <!-- for gene sets -->
-    <link href="https://bxaf.net/geneset/api/bootstrap-4/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-	  <script src="https://bxaf.net/geneset/api/bootstrap-4/js/bootstrap.min.js"></script>
+    <link href="https://bxaf.net/genesets/bootstrap-4/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	  <script src="https://bxaf.net/genesets/bootstrap-4/js/bootstrap.min.js"></script>
   	<script>
-		  var GENESET_ACTION_URL = "https://bxaf.net/geneset/api/genesets.php";
+		  var GENESET_ACTION_URL = "https://bxaf.net/genesets/genesets.php";
     </script>
-	  <link href="https://bxaf.net/geneset/api/genesets.css" rel="stylesheet">
-	  <script src="https://bxaf.net/geneset/api/genesets.js"></script>
+	  <link href="https://bxaf.net/genesets/genesets.css" rel="stylesheet">
+	  <script src="https://bxaf.net/genesets/genesets.js"></script>
     <!-- end -->
     <style>
       button.link{background:none;border:none;}
@@ -262,9 +262,9 @@
     			<input style="width: 30rem;" id="Geneset_Name1" name="Geneset_Name1" placeholder="Start typing to enter or select a geneset" type="text" class="form-control form-control-sm geneset_name" />
     			<a href="Javascript: void(0);" class="btn btn-sm btn-primary btn_browse_geneset">&#9906;</a>
     			<div id="Dropdown1" class="geneset_dropdown dropdown-menu"></div>
+      		<button onclick="ADDGsetAdd(1)"><b>Add</b></button>
     		</div>
     		<input class="geneset_id" type="hidden" id="Geneset_ID1" name="Geneset_ID1" />
-    		<button onclick="ADDGsetAdd(1)"><b>Add</b></button>
     		<textarea class="form-control my-3 geneset_genes" style="width: 30rem;" rows="5" id="Geneset_Genes1" name="Geneset_Genes1" placeholder="Here will list all genes in a geneset"></textarea>
     	</div>      
       
