@@ -140,7 +140,8 @@ cp jquery-ui.min.js $strweb
 cp color_*.png $strweb
 cp -R ace $strweb
 cp -R stackedbar $strweb
-cp volcano.R $strPath/server/app/.
+cp -R d3plot $strweb
+#cp volcano.R $strPath/server/app/.
 cp Density2D.R $strPath/server/app/.
 
 echo -e "\nls -l $strweb\n"
