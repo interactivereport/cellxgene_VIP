@@ -38,7 +38,7 @@ rcParams.update({'figure.autolayout': True})
 api_version = "/api/v0.2"
 
 def route(data,appConfig=None,CLItmp="/tmp"):
-  ppr.pprint("current working dir:%s"%os.getcwd())
+  #ppr.pprint("current working dir:%s"%os.getcwd())
   if appConfig is None:
     data["url"] = f'http://127.0.0.1:8888/{api_version}'
   else:
@@ -55,7 +55,7 @@ def route(data,appConfig=None,CLItmp="/tmp"):
     data["dataset"]=None
   else:
     data["url_dataroot"]=appConfig.server_config.multi_dataset__dataroot['d']['base_url']
-  ppr.pprint(data["url_dataroot"])
+  #ppr.pprint("url_dataroot:%s"%data["url_dataroot"])
 
   #ppr.pprint(data['figOpt'])
   if 'figOpt' in data.keys():
@@ -85,7 +85,15 @@ def getObs(data):
     for i in data['grp']:
       obs[i] = obs[i].map(data['abb'][i])
   return combUpdate, obs
-  
+
+def getVar(data):
+  ## obtain the gene annotation
+  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+    gInfo = scD.data.var
+  gInfo.index = list(gInfo['name_0'])
+  gInfo = gInfo.drop(['name_0'],axis=1)
+  return gInfo
+
 def collapseGeneSet(data,expr,gNames,cNames,fSparse):
   Y = expr
   if 'geneGrpColl' in data.keys() and not data['geneGrpColl']=='No' and 'geneGrp' in data.keys() and len(data['geneGrp'])>0:
@@ -601,18 +609,23 @@ def DEG(data):
   else:
     mask = [pd.Series(range(data['cellN'])).isin(data['cells'][one].values()) for one in data['comGrp']]
     for one in data['comGrp']:
-      oneD = {'cells':data['cells'][one],
-              'genes':[],
-              'grp':[],
-              'figOpt':{'scale':'false'},
-              'url':data['url']}
+      oneD = data.copy()
+      oneD['cells'] = data['cells'][one]
+      oneD['genes'] = []
+      oneD['grp'] = []
+      oneD['figOpt']['scale']='false'
+      #oneD = {'cells':data['cells'][one],
+      #        'genes':[],
+      #        'grp':[],
+      #        'figOpt':{'scale':'false'},
+      #        'url':data['url']}
+              
       D = createData(oneD)
       D.obs[comGrp] = one
       if adata is None:
         adata = D
       else:
         adata = adata.concatenate(D)
-
 
   if data['DEmethod']=='default':
     if sum(mask[0]==True)<10 or sum(mask[1]==True)<10:
@@ -634,19 +647,11 @@ def DEG(data):
     deg = res.summary()
     deg = deg.sort_values(by=['qval']).loc[:,['gene','log2fc','pval','qval']]
     deg['log2fc'] = -1 * deg['log2fc']
-  ## plot in R
-  strF = ('/tmp/DEG%f.csv' % time.time())
-  deg.to_csv(strF,index=False)
-  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]],capture_output=True)#
-  img = res.stdout.decode('utf-8')
-  os.remove(strF)
-  #####
-  deg = deg.iloc[range(int(data['topN'])),]
-  deg.loc[:,'log2fc'] = deg.loc[:,'log2fc'].apply(lambda x: '%.2f'%x)
-  deg.loc[:,'pval'] = deg.loc[:,'pval'].apply(lambda x: '%.4E'%x)
-  deg.loc[:,'qval'] = deg.loc[:,'qval'].apply(lambda x: '%.4E'%x)
-  
-  return json.dumps([deg.values.tolist(),img])
+
+  gInfo = getVar(data)
+  deg.index = deg['gene']
+  deg = pd.concat([deg,gInfo],axis=1)
+  return deg.to_csv()#json.dumps([deg.values.tolist()])#
 
 def DOT(data):
   updateGene(data)

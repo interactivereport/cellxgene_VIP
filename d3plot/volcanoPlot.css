@@ -1,0 +1,142 @@
+.axis path,
+.tick line,
+.tick text {
+    stroke: #666;
+    stroke-width: 0.5px;
+    stroke-opacity: 0.5;
+}
+
+.tick text {
+    fill: #666;
+}
+
+.label {
+    fill: #666;
+    font-weight: 700;
+    font-size: 12px;
+}
+
+/* Significance threshold line */
+.threshold {
+    stroke: #333;
+    stroke-dasharray: 5px 10px;
+    stroke-opacity: 0.25;
+}
+.dot.Unselect {
+  fill: #999;
+}
+.dot.col1 {
+  fill: #e41a1c;
+  z-index:100;
+}
+.dot.col2 {
+  fill: #377eb8;
+  z-index:100;
+}
+.dot.col3 {
+  fill: #4daf4a;
+  z-index:100;
+}
+.dot.col4 {
+  fill: #984ea3;
+  z-index:100;
+}
+.dot.col5 {
+  fill: #ff7f00;
+  z-index:100;
+}
+.dot.col6 {
+  fill: #ffff33;
+  z-index:100;
+}
+.dot.col7 {
+  fill: #a65628;
+  z-index:100;
+}
+.dot.col8 {
+  fill: #f781bf;
+  z-index:100;
+}
+.dotRed {
+  fill: firebrick;
+  z-index:100;
+}
+.dotGray {
+  fill: lightgray;
+}
+.dotBlue {
+  fill: dodgerblue;
+}
+.dotWhite {
+  fill: white;
+  display: none;
+}
+.dot {
+  opacity: 0.7;
+}
+.dotName {
+  fill: black;
+  font-size:16;
+  z-index:-1;
+  cursor: pointer;
+  text-anchor: middle;
+  alignment-baseline: ideographic;
+}
+.dotLine {
+  stroke: #aaa;
+  stroke-width:1px;
+  vector-effect: non-scaling-stroke;
+}
+.zoom {
+    /*cursor: move;*/
+    fill: none;
+    pointer-events: all;
+}
+
+/*Add clip path for dots and threshold lines to ensure they arent drawn if outside the clip box*/
+.circlesContainer {
+    clip-path: url(#clip);
+}
+
+.thresholdLines {
+    clip-path: url(#clip);
+}
+
+.tooltip {
+    position: absolute;
+    z-index: 100;
+    background-color: #000;
+    color: #fff;
+    padding: 2px 7px;
+    visibility: hidden;
+    opacity: 0.75;
+    border-radius: 3px;
+}
+
+.tooltip::after {
+    content: " ";
+    position: absolute;
+    top: 14%;
+    right: 100%; /* To the left of the tooltip */
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent #000 transparent transparent;
+}
+
+
+.volcanoReset {
+    font-size: 1em;
+    font-weight: bold;
+    color: #4c4c4c;
+    background-color: #e5e5e5;
+    box-shadow: 1px 1px 0.5px rgba(51,51,51, 0.1);
+    border: 1px solid rgba(76, 76, 76, 0.5);
+    border-radius: 3px;
+    outline: none;
+}
+
+.volcanoReset:hover {
+    color: #000;
+    cursor: pointer;
+}
