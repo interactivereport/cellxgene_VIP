@@ -3,10 +3,19 @@
     <!-- for datatables -->
     <link rel="stylesheet" type="text/css" href="https://interactivereport.github.io/cellxgene_VIP/static/DataTables/datatables.min.css">
     <script src="https://interactivereport.github.io/cellxgene_VIP/static/jquery-ui.min.js"></script>
+    <!-- for d3 volcano -->
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="static/d3plot/volcanoPlot.js"></script>
     <link rel="stylesheet" href="static/d3plot/volcanoPlot.css">
-    
+    <!-- for gene sets -->
+    <link href="http://bxngs.com/bxomics/api/bootstrap-4/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	  <script src="http://bxngs.com/bxomics/api/bootstrap-4/js/bootstrap.min.js"></script>
+  	<script>
+		  var GENESET_ACTION_URL = "http://bxngs.com/bxomics/api/genesets.php";
+    </script>
+	  <link href="http://bxngs.com/bxomics/api/genesets.css" rel="stylesheet">
+	  <script src="http://bxngs.com/bxomics/api/genesets.js"></script>
+    <!-- end -->
     <style>
       button.link{background:none;border:none;}
       #sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
@@ -237,14 +246,30 @@
       <p>The following genes were added (click on a gene name to remove): <span id="ADDGsel"></span></p>
       <p>The following genes are not in the data: <span id="ADDGdel" style="color:red"></span></p>
       
-      <h3>Add gene sets of interest for plotting</h3>
-      <p>Gene set name: <input id="ADDGsetName" type="text" size=10/>
-        Gene names:<input id="ADDGsetGene" type="text" size=35/>
-        <button onclick="ADDGsetAdd()"><b>Add</b></button>
-      </p>
-      <span id="ADDGsetError" style="color:red"></span><br>
-      The user-defined gene sets:
+      <h3>The user-defined gene sets:</h3>
       <p id="ADDGsets"></p>
+
+      <h3>Add gene sets of interest manually</h3>
+      <p>Gene set name: <input id="Geneset_Name0" type="text" size=10/>
+        Gene names:<input id="Geneset_Genes0" type="text" size=35/>
+        <button onclick="ADDGsetAdd(0)"><b>Add</b></button>
+      </p>
+      
+      <h3>Add gene sets from databases</h3>
+      
+    	<div id="div_geneset1" class="div_geneset">
+    		<div class="my-3 dropdown btn-group">
+    			<input style="width: 30rem;" id="Geneset_Name1" name="Geneset_Name1" placeholder="Start typing to enter or select a geneset" type="text" class="form-control form-control-sm geneset_name" />
+    			<a href="Javascript: void(0);" class="btn btn-sm btn-primary btn_browse_geneset">&#9906;</a>
+    			<div id="Dropdown1" class="geneset_dropdown dropdown-menu"></div>
+    		</div>
+    		<input class="geneset_id" type="hidden" id="Geneset_ID1" name="Geneset_ID1" />
+    		<button onclick="ADDGsetAdd(1)"><b>Add</b></button>
+    		<textarea class="form-control my-3 geneset_genes" style="width: 30rem;" rows="5" id="Geneset_Genes1" name="Geneset_Genes1" placeholder="Here will list all genes in a geneset"></textarea>
+    	</div>      
+      
+      <span id="ADDGsetError" style="color:red"></span><br>
+      
     </div><!--ADDG-->
     
     <div id="GD" class=tabcontent>
@@ -656,7 +681,7 @@
         <button id="SANKorderBTh" onclick="SANKorderHide()" style="padding:2px;border-radius:40%"><b>&#8722;</b></button>
         </p>
         <div id='SANKorderGrp'>
-          <ul id="SANKdynList" class="sortable-list"></ul>
+          <ul id="SANKdynList" class="sortable-list"></ul><!--   -->
         </div>
         <p>Please specify the diagram <u>width per category</u>: <input id="SANKw" type="number" step="10" value="250"/> and the <u>diagram height</u>: <input id="SANKh" type="number" step="10" value="700"/></p>
       </div>
@@ -1131,6 +1156,7 @@ function init(){
     //SANK
     $("#SANKorderGrp").hide();
     document.getElementById("SANKorderBTh").style.display="none";
+    
     $('.sortable-list').sortable({
         connectWith: '.sortable-list',
         placeholder: 'sortable-list-dropholder'
@@ -1274,7 +1300,7 @@ function ADDGref(){
   var html= "";
   var grpKeys = Object.keys(window.bioGeneGrp);
   for(const one of grpKeys){
-    html += "<p><button onclick=\"ADDGsetDel('"+one+"')\"><b>Delete</b></button> <b>"+one+"</b>: " + window.bioGeneGrp[one]+"</p>";
+    html += "<p><button onclick=\"ADDGsetDel('"+one+"')\"><b>Delete</b></button> <b>"+one+"</b>: " + (""+window.bioGeneGrp[one]).replaceAll(",",", ")+"</p>";
   }
   $("#ADDGsets").html(html);
 }
@@ -1572,7 +1598,7 @@ function SANKorderUpdate(){
   }})
   selSank = selSank.concat(getGenes('SANK'));
   selSank=selSank.map(function(one){return 'SANKli'+one;})
-  
+
   for(const one of $("#SANKdynList").sortable('toArray')){
     if(!selSank.includes(one)){
       $(document.getElementById(one)).remove();
@@ -1908,9 +1934,9 @@ function ADDGdel(gName){
   window.biogen.splice(ix,1);
   $("#ADDG_"+gName).remove();
 }
-function ADDGsetAdd(){
+function ADDGsetAdd(idx){//Geneset_Name Geneset_Genes
   $("#ADDGsetError").text("");
-  var grpName = $("#ADDGsetName").val().trim();
+  var grpName = $("#Geneset_Name"+idx).val().trim();
   if(grpName.length<1){
     $("#ADDGsetError").text("Please provide a gene set name with at least one character!");
     return;
@@ -1925,7 +1951,7 @@ function ADDGsetAdd(){
     definedG = definedG.concat(window.bioGeneGrp[grpKeys[i]]);
   }
   
-  var gNames = $("#ADDGsetGene").val().trim().split(/\s+|\s*,\s*|\s*;\s*/);
+  var gNames = $("#Geneset_Genes"+idx).val().trim().split(/\s+|\s*,\s*|\s*;\s*/);
   var notG = [],geneNames=[];
   var totalG = window.store.getState().annoMatrix._cache.var.__columns[0];
   var totalGlower = totalG.map(function(s){return s.toLowerCase();});
@@ -1953,8 +1979,8 @@ function ADDGsetAdd(){
     $("#ADDGsetError").text(eMsg+". No valid gene names is provided");
     return;
   }
-  $("#ADDGsetName").val("");
-  $("#ADDGsetGene").val("");
+  $("#Geneset_Name"+idx).val("");
+  $("#Geneset_Genes"+idx).val("");
   window.bioGeneGrp[grpName] = geneNames;
 
   geneNames = geneNames.concat(window.biogen);
