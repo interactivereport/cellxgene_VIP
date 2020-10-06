@@ -677,15 +677,6 @@
         <p>Differentially expressed genes will be detected between the two cell gorups defined above, unless two categories of the 'Custom_combine' annotation are selected, 
         which enables DE analysis between those two:</p>
         <p id="DEGgrp"></p>
-        <p>Select the number of top DEG: 
-        <select id="DEGtop">
-          <option value=10>10</option>
-          <option value=100>100</option>
-          <option value=500>500</option>
-          <option value=1000>1000</option>
-          <option value=2000>2000</option>
-          <option value=5000>5000</option>
-        </select></p>
         <p>Select the method: 
         <select id="DEGmethod">
           <option value='default'>Default</option>
@@ -2611,12 +2602,8 @@ function DEGplot(eID){//window.DEGraw,window.DEGsel 'DEG'
 }
 function DEGfind(){
   $('#DEGnote').text("");
-  var genes = getGenes('DEG');
   var D = {'method':'DEG',
-           'topN':$("#DEGtop").val(),
            'DEmethod':$("#DEGmethod").val(),
-           'genes':genes,
-           'logFC':$("#DEGlogfcCut").val(),
            'figOpt':window.figOpt}
   const [combGrp,combName] = DEGselCells();
   var cells = {};
