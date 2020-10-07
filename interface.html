@@ -8,13 +8,13 @@
     <script src="static/d3plot/volcanoPlot.js"></script>
     <link rel="stylesheet" href="static/d3plot/volcanoPlot.css">
     <!-- for gene sets -->
-    <link href="https://bxaf.net/genesets/bootstrap-4/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-	  <script src="https://bxaf.net/genesets/bootstrap-4/js/bootstrap.min.js"></script>
+    <link href="https://bxaf.net/genesets/bootstrap-3/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	  <script src="https://bxaf.net/genesets/bootstrap-3/js/bootstrap.min.js"></script>
   	<script>
-		  var GENESET_ACTION_URL = "https://bxaf.net/genesets/genesets.php";
+		  var GENESET_ACTION_URL = "https://bxaf.net/genesets/genesets3.php";
     </script>
-	  <link href="https://bxaf.net/genesets/genesets.css" rel="stylesheet">
-	  <script src="https://bxaf.net/genesets/genesets.js"></script>
+	  <link href="https://bxaf.net/genesets/genesets3.css" rel="stylesheet">
+	   <script src="https://bxaf.net/genesets/genesets3.js"></script>
     <!-- end -->
     <style>
       button.link{background:none;border:none;}
@@ -256,17 +256,16 @@
       </p>
       
       <h3>Add gene sets from databases</h3>
-      
-    	<div id="div_geneset1" class="div_geneset">
-    		<div class="my-3 dropdown btn-group">
-    			<input style="width: 30rem;" id="Geneset_Name1" name="Geneset_Name1" placeholder="Start typing to enter or select a geneset" type="text" class="form-control form-control-sm geneset_name" />
-    			<a href="Javascript: void(0);" class="btn btn-sm btn-primary btn_browse_geneset">&#9906;</a>
-    			<div id="Dropdown1" class="geneset_dropdown dropdown-menu"></div>
-      		<button onclick="ADDGsetAdd(1)"><b>Add</b></button>
-    		</div>
-    		<input class="geneset_id" type="hidden" id="Geneset_ID1" name="Geneset_ID1" />
-    		<textarea class="form-control my-3 geneset_genes" style="width: 30rem;" rows="5" id="Geneset_Genes1" name="Geneset_Genes1" placeholder="Here will list all genes in a geneset"></textarea>
-    	</div>      
+      <div id="div_geneset1" class="div_geneset">
+  		<div class="my-3 dropdown input-group">
+  			<input id="Geneset_Name1" name="Geneset_Name1" placeholder="enter geneset name" type="text" class="form-control geneset_name dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"/>
+  			<a href="Javascript: void(0);" class="input-group-addon btn btn-primary btn_browse_geneset"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a>
+  			<div id="Dropdown1" class="geneset_dropdown dropdown-menu" aria-labelledby="Geneset_Name1"></div>
+  			<button onclick="ADDGsetAdd(1)"><b>Add</b></button>
+  		</div>
+  		<input class="geneset_id" type="hidden" id="Geneset_ID1" name="Geneset_ID1" />
+  		<textarea class="form-control my-3 geneset_genes" style="width: 30rem; margin-top: 1rem;" rows="5" id="Geneset_Genes1" name="Geneset_Genes1" placeholder="Here will list all genes in a geneset"></textarea>
+  	</div>
       
       <span id="ADDGsetError" style="color:red"></span><br>
       
