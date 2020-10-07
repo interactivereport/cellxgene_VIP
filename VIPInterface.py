@@ -589,7 +589,7 @@ def GD(data):
 def DEG(data):
   
   adata = None;
-  genes = data['genes']
+#  genes = data['genes']
   data['genes'] = []
   comGrp = 'cellGrp'
   if 'combine' in data.keys():

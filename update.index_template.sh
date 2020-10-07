@@ -6,7 +6,7 @@ cd ..
 
 read -d '' insertL << EOF
 <script src="https://interactivereport.github.io/cellxgene_VIP/static/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="UTF-8"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
 <link href="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/jspanel.css" rel="stylesheet">
 <script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/jspanel.js"></script>
 <script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/extensions/modal/jspanel.modal.js"></script>

@@ -22,7 +22,7 @@ cd ..
 echo -e "\nwindow.store = store;" >> cellxgene/client/src/reducers/index.js
 read -d '' insertL << EOF
 <script src="https://interactivereport.github.io/cellxgene_VIP/static/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="UTF-8"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
 <link href="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/jspanel.css" rel="stylesheet">
 <script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/jspanel.js"></script>
 <script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/extensions/modal/jspanel.modal.js"></script>
@@ -141,9 +141,9 @@ cp color_*.png $strweb
 cp -R ace $strweb
 cp -R stackedbar $strweb
 cp -R d3plot $strweb
-#cp volcano.R $strPath/server/app/.
+cp volcano.R $strPath/server/app/.
 cp Density2D.R $strPath/server/app/.
+find ./cellxgene/server/ -name "decode_fbs.py" -exec cp {} $strPath/server/app/. \;
 
 echo -e "\nls -l $strweb\n"
 ls -l $strweb
-find ./cellxgene/server/ -name "decode_fbs.py" -exec cp {} $strPath/server/app/. \;
