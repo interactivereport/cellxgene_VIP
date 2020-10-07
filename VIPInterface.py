@@ -587,9 +587,8 @@ def GD(data):
   return iostreamFig(fig)
 
 def DEG(data):
-  
   adata = None;
-#  genes = data['genes']
+  genes = data['genes']
   data['genes'] = []
   comGrp = 'cellGrp'
   if 'combine' in data.keys():
@@ -648,10 +647,26 @@ def DEG(data):
     deg = deg.sort_values(by=['qval']).loc[:,['gene','log2fc','pval','qval']]
     deg['log2fc'] = -1 * deg['log2fc']
 
+  ## plot in R
+  strF = ('/tmp/DEG%f.csv' % time.time())
+  deg.to_csv(strF,index=False)
+  #ppr.pprint([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]])
+  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]],capture_output=True)#
+  img = res.stdout.decode('utf-8')
+  os.remove(strF)
+  #####
   gInfo = getVar(data)
   deg.index = deg['gene']
-  deg = pd.concat([deg,gInfo],axis=1)
-  return deg.to_csv()#json.dumps([deg.values.tolist()])#
+  deg = pd.concat([deg,gInfo],axis=1,sort=False)
+  #return deg.to_csv()
+  
+  if not data['topN']=='All':
+    deg = deg.iloc[range(int(data['topN'])),]
+  #deg.loc[:,'log2fc'] = deg.loc[:,'log2fc'].apply(lambda x: '%.2f'%x)
+  #deg.loc[:,'pval'] = deg.loc[:,'pval'].apply(lambda x: '%.4E'%x)
+  #deg.loc[:,'qval'] = deg.loc[:,'qval'].apply(lambda x: '%.4E'%x)
+
+  return json.dumps([deg.to_csv(),img])#json.dumps([deg.values.tolist(),img])
 
 def DOT(data):
   updateGene(data)
@@ -1149,14 +1164,14 @@ def CLI(data):
 
   strData = strPath + '.h5ad'
   adata.write(strData)
-#  with open(strData,'wb') as f:
-#    pickle.dump(adata,f)
+  #with open(strData,'wb') as f:
+  #pickle.dump(adata,f)
 
   strScript = strPath + '.py'
   #addedScript=['import os','os.chdir("%s")'%strExePath,'import VIPInterface as vip','adata=vip.ajaxData("%s")'%strData]
   with open(strScript,'w') as f:
     f.writelines(['%load_ext rpy2.ipython\n','from anndata import read_h5ad\n','adata=read_h5ad("%s")\n'%strData, 'strPath="%s"\n\n'%strPath])
-#    f.writelines(['%load_ext rpy2.ipython\n','import pickle\n','with open("%s","rb") as f:\n'%strData,'  adata=pickle.load(f)\n','strPath="%s"\n\n'%strPath])
+    #f.writelines(['%load_ext rpy2.ipython\n','import pickle\n','with open("%s","rb") as f:\n'%strData,'  adata=pickle.load(f)\n','strPath="%s"\n\n'%strPath])
     f.writelines(['%%R\n','strPath="%s"\n\n'%strPath])
     f.write(script)
 

@@ -206,16 +206,17 @@ function volcanoPlot() {
             //add tooltip
             var tooltip = d3.select("body")
                 .append("div")
-                .attr('class', 'tooltip');
+                .attr('class', 'volcanoTooltip');
 
             function tipEnter(d) {
               strHtml = "";
               tooltips.forEach(function(one){
                 strHtml += '<strong>'+one+'</strong>: '+d[one]+'<br/>'
               })
-                tooltip.style('visibility', 'visible')
-                    .style('font-size', '11px')
-                    .html(strHtml);
+              //console.log(strHtml);
+              tooltip.style('visibility', 'visible')
+                      .style('font-size', '11px')
+                      .html(strHtml);
             }
 
             function tipMove() {

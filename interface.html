@@ -4,7 +4,6 @@
     <link rel="stylesheet" type="text/css" href="https://interactivereport.github.io/cellxgene_VIP/static/DataTables/datatables.min.css">
     <script src="https://interactivereport.github.io/cellxgene_VIP/static/jquery-ui.min.js"></script>
     <!-- for d3 volcano -->
-    <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="static/d3plot/volcanoPlot.js"></script>
     <link rel="stylesheet" href="static/d3plot/volcanoPlot.css">
     <!-- for gene sets -->
@@ -701,6 +700,15 @@
         <p>Differentially expressed genes will be detected between the two cell gorups defined above, unless two categories of the 'Custom_combine' annotation are selected, 
         which enables DE analysis between those two:</p>
         <p id="DEGgrp"></p>
+        <p>Select the number of top DEG: 
+        <select id="DEGtop">
+          <option value=100>100</option>
+          <option value=500>200</option>
+          <option value=500>500</option>
+          <option value=1000>1000</option>
+          <option value=5000>5000</option>
+          <option value='All'>All</option>
+        </select></p>
         <p>Select the method: 
         <select id="DEGmethod">
           <option value='default'>Default</option>
@@ -708,17 +716,20 @@
           <option value='rank'>Wilcoxon rank sum</option>
           <option value='wald'>Wald test</option>
         </select></p>
+        <p>Select genes to be marked in the volcano plot:
+        <input type="checkbox" onclick="$('.DEGgenes').prop('checked', this.checked);">Uncheck / Check All</p>
+        <p id="DEGgene"></p>
+        <p>Remove genes in volcano plot with the absolute log2(FC) larger than: <input id="DEGlogfcCut" type="number" step="1" value="10" min="0"/></p>
       </div>
       
       <button class="DEGbt" onclick="DEGfind()"><b>Find</b></button>
-      <button class="DEGpngBT" onclick="saveImg('DEGimg')" disabled>Save</button>
       <button onclick="hideShow($('#DEGinput'),$(this));">Hide Input</button>
+      <button id="DEGinteractiveBtn" onclick="hideShow($('#DEGfinal'),$(this),'Interactive');">Hide Interactive</button>
       <pre id="DEGnote" style="color:red;">Note: Unscaled data is used. Scaling control in the Figure Option does not apply to DEG.</pre>
       <label id='DEGinfo'></label>
       <div id="DEGspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
      
       <div id="DEGfinal">
-        <p>Remove genes in volcano plot with the absolute log2(FC) larger than: <input id="DEGlogfcCut" type="number" step="1" value="10" min="0"/></p>
         <select id="DEGplotBy">
           <option value='color'>Color by</option>
           <option value='label'>Label by</option>
@@ -738,16 +749,22 @@
           <input id="DEGplotByGinfoVal" type="text"/>
         </div>
         <div id="DEGplotByGsel">
-          <input type="checkbox" onclick="$('.DEGgenes').prop('checked', this.checked);">Uncheck / Check All
-          <p id="DEGgene"></p>
+          <input type="checkbox" onclick="$('.DEGselgenes').prop('checked', this.checked);">Uncheck / Check All
+          <p id="DEGselgene"></p>
         </div>
         <div>
           <button id="DEGfigReset">Reset Axes</button>
           <button onclick="DEGplot('DEG')">Replot</button>
-          <p id="DEGfig" style="height: 500px; width:500px; padding: 0.5em; border: 1px solid #B6B6B6"></p>
+          <p id="DEGinteractive" style="height: 500px; width:500px; padding: 0.5em; border: 1px solid #B6B6B6"></p>
         </div>
       </div>
       <table id="DEGtable" class="display"></table>
+      <button onclick="ZoomIn('DEGresize')">Zoom In</button>
+      <button onclick="ZoomOut('DEGresize')">Zoom Out</button>
+      <button class="DEGpngBT" onclick="saveImg('DEGimg')" disabled>Save</button>
+      <div id="DEGresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6">
+        <p id="DEGfig"></p>
+      </div>
     </div><!--DEG-->
     
     <div id='STACBAR' class='tabcontent'>
@@ -1656,7 +1673,7 @@ function radioCheckTriger(eName){
 }
 function DEGref(){
   showGene('DEG',"","");
-  
+  showGene('DEGselgene',"","");
   var cName=[],cVal=Object.keys(window.bioCombineCell);
   for(const one of Object.values(window.bioCombineCell)){
     cName.push(one.cName);
@@ -1702,7 +1719,10 @@ function DEGref(){
     $('.DEGgrps').prop("disabled",false);
   }
   radioCheckTriger("DEGcolorBy");
-  if($("#DEGfig").html().length==0) $("#DEGfinal").hide();
+  if($("#DEGfig").html().length==0 && !$("#DEGinteractiveBtn").prop('disabled')){
+    $("#DEGfinal").hide();
+    $("#DEGinteractiveBtn").prop('disabled', true);
+  }
 }
 function IMGref(){
   $('#IMGscaleZero').prop('checked',(window.figOpt['scaleZero']=="Yes"));
@@ -2553,7 +2573,7 @@ function getSelOpt(eID){
                   opr:$("input[name='"+eID+"plotByGinfoRd']:checked").val(),
                   val:$("#"+eID+"plotByGinfoVal").val()});
   }else if($("input[name='"+eID+"colorBy']:checked").val()=='selGene'){
-    selOpt.push({column:'gene',opr:'include',val:getGenes('DEG')});
+    selOpt.push({column:'gene',opr:'include',val:getGenes('DEGsel')});
   }else{
     $('#'+eID+'note').text("Unknown selection!");
   }
@@ -2599,13 +2619,13 @@ function updateDEGdata(rawD,selOpts){
   });
 }
 function DEGplot(eID){//window.DEGraw,window.DEGsel 'DEG'
-  $("#"+eID+"fig").html("");
+  $("#"+eID+"interactive").html("");
   window[eID+'sel'][$("#"+eID+"plotBy").val()] = getSelOpt(eID);
-  var DEGdata=updateDEGdata(window[eID+'raw'],window[eID+'sel']);
-
+  var DEGdata=updateDEGdata(window[eID+'raw'],window[eID+'sel']).slice(0,5000);//maximun 5000 dots for interactive volcano plot
+  console.log("interactive colcano dots number:" + DEGdata.length);
   var vol = volcanoPlot()
-      .width($("#"+eID+"fig").width())
-      .height($("#"+eID+"fig").height())
+      .width($("#"+eID+"interactive").width())
+      .height($("#"+eID+"interactive").height())
       .xAxisLabel('log<tspan baseline-shift="sub">2</tspan>Fold-change')
       .yAxisLabel('-log<tspan baseline-shift="sub">10</tspan>False Discovery Rate')
       .vLines({a:-$("#"+eID+"logfc").val(),b:+$("#"+eID+"logfc").val()})
@@ -2615,20 +2635,24 @@ function DEGplot(eID){//window.DEGraw,window.DEGsel 'DEG'
       .yColumn("qval")
       .colorColumn('color')
       .labelColumn('label')
-      .maxY(50)
+      .maxY(300)
       .tooltips(['gene','log2fc','qval'])
       .resetBtnID(eID+"figReset");
 
 
-  d3.select('#'+eID+'fig')
+  d3.select('#'+eID+'interactive')
     .data([DEGdata.filter(function(d){return Math.abs(d.log2fc)< +$("#"+eID+"logfcCut").val();})])
     .call(vol);
   
 }
 function DEGfind(){
   $('#DEGnote').text("");
+  var genes = getGenes('DEG');
   var D = {'method':'DEG',
+           'topN':$("#DEGtop").val(),
            'DEmethod':$("#DEGmethod").val(),
+           'genes':genes,
+           'logFC':$("#DEGlogfcCut").val(),
            'figOpt':window.figOpt}
   const [combGrp,combName] = DEGselCells();
   var cells = {};
@@ -2670,7 +2694,7 @@ function DEGfind(){
         $('#DEGnote').text(res);
         return;
       }
-      //resD = JSON.parse(res);
+      resD = JSON.parse(res);
       //showImg('DEGfig',resD[1]);
       // the default color and label
       var selOpt=[];
@@ -2681,15 +2705,17 @@ function DEGfind(){
         window.DEGsel[$(this).val()]=selOpt;
       });
       // gene information
-      res.split("\n")[0].split(',').slice(5).forEach(function(d){
+      resD[0].split("\n")[0].split(',').slice(5).forEach(function(d){
         $('#DEGplotByGinfoSel').append('<option value="'+d+'">'+d+'</option>')
       });
       // raw DEG table
-      window.DEGraw = res;
+      window.DEGraw = resD[0];
       DEGplot('DEG');
       $("#DEGfinal").show();
+      $("#DEGinteractiveBtn").prop('disabled', false);
+      
       // process DEG table
-      var resD = d3.csvParse(res,function(data){
+      var tableD = d3.csvParse(resD[0],function(data){
                               return [data.gene,
                                       (data.log2fc*1).toFixed(2),
                                       (1*data.pval).toExponential(2),
@@ -2701,7 +2727,7 @@ function DEGfind(){
         lengthMenu:[[10,50,100,200,-1],[10,50,100,200,"All"]],
         order:[[3,"asc"]],
         buttons:['csv'],
-        data:resD,
+        data:tableD,
         columns:[
           {title: "Gene"},
           {title: "Log Fold Change"},
@@ -2709,6 +2735,8 @@ function DEGfind(){
           {title: "padj"}
         ]
       });
+      showImg('DEGfig',resD[1]);
+      
       $('#DEGtable tbody').on('click',"tr",function(){
         var data = table.row(this).data();
         //alert('Your clicked on '+data[0]+" row");
