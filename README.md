@@ -81,6 +81,12 @@ Then in R:
 ```R
 install.packages("arrow")
 ```
+## R packages needed for volcano plot in DEG (Differentially Expressed Genes) analysis
+```
+> library(ggplot2)
+> library(ggrepel)
+> library(ggrastr)
+```
 ## Packages needed for CLI.
 ```
 $ conda install ipykernel
