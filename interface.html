@@ -2932,7 +2932,8 @@ function DEGfind(){
         window.DEGsel[$(this).val()]=selOpt;
       });
       // gene information
-      resD[0].split("\n")[0].split(',').slice(5).forEach(function(d){
+      var gInfo = resD[0].split("\n")[0].split(',').slice(5);
+      gInfo.forEach(function(d){
         $('#DEGplotByGinfoSel').append('<option value="'+d+'">'+d+'</option>')
       });
       // raw DEG table
@@ -2943,11 +2944,14 @@ function DEGfind(){
       
       // process DEG table
       var tableD = d3.csvParse(resD[0],function(data){
-                              return [data.gene,
-                                      (data.log2fc*1).toFixed(2),
-                                      (1*data.pval).toExponential(2),
-                                      (1*data.qval).toExponential(2)];
-                            });
+        return [].concat([data.gene,
+                  (+data.log2fc).toFixed(2),
+                  (+data.pval).toExponential(2),
+                  (+data.qval).toExponential(2)],
+                  Object.values(data).slice(5));
+        });
+      var tableTitle = [];
+      [].concat(['Gene',"Log Fold Change","p-value","padj"],gInfo).forEach(function(d){tableTitle = tableTitle.concat({title:d})});
       var table = $('#DEGtable').DataTable({
         destroy: true,
         dom:'Blfrtip',
@@ -2955,12 +2959,7 @@ function DEGfind(){
         order:[[3,"asc"]],
         buttons:['csv'],
         data:tableD,
-        columns:[
-          {title: "Gene"},
-          {title: "Log Fold Change"},
-          {title: "p-value"},
-          {title: "padj"}
-        ]
+        columns:tableTitle
       });
       showImg('DEGfig',resD[1]);
       
