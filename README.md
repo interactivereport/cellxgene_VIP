@@ -72,7 +72,7 @@ You should be able to see this in Console of Chrome Developer Tools if everythin
 ```
 
 # Note on installtion of packages
-## R: https://cran.r-project.org/web/packages/arrow/index.html 
+### R: https://cran.r-project.org/web/packages/arrow/index.html 
 In command line:
 ```bash
 export LIBARROW_MINIMAL=false
@@ -81,13 +81,13 @@ Then in R:
 ```R
 install.packages("arrow")
 ```
-## R packages needed for volcano plot in DEG (Differentially Expressed Genes) analysis
+### R packages needed for volcano plot in DEG (Differentially Expressed Genes) analysis
 ```
 > library(ggplot2)
 > library(ggrepel)
 > library(ggrastr)
 ```
-## Packages needed for CLI.
+### Packages needed for CLI.
 ```
 $ conda install ipykernel
 $ pip install rpy2  # If you want to use globally installed R and packages
@@ -100,7 +100,7 @@ Available kernels:
   python3    /opt/anaconda3/envs/test2/share/jupyter/kernels/python3
   ir         /usr/local/share/jupyter/kernels/ir
 ```
-## Seurat ver3.0.2
+### Seurat ver3.0.2
 ```
 mkdir /usr/lib64/R/library/Seurat_3.0.2/
 $ R
