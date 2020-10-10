@@ -1,6 +1,6 @@
 (function(d3) {
 
-    var exports = d3.cbPlot = d3.coolPlot || {};
+    var exports = d3.cbPlot = d3v3.coolPlot || {};
 
     /**
      * Created by cool.blue@y7mail.com on 22/08/2015.
@@ -144,4 +144,4 @@
         axis.tickSubdivide = tickSubdivide.bind(axis);
         return axis;
     }
-})(d3)
+})(d3v3)

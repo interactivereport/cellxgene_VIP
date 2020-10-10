@@ -11,7 +11,7 @@
 	//		.style("stroke", isoLines.value());
 	//
 
-	d3.ui = d3.ui || {};
+	d3.ui = d3v3.ui || {};
 	d3.ui.select = function (config) {
         // add a select element on base with options matching data
         // if the text and value is the same then data is scalar array
@@ -102,4 +102,4 @@
 		}
 	}
 
-})(d3)
+})(d3v3)
