@@ -6,7 +6,7 @@ function stackedBar(aID,dataSet1){
 	    xRangeWidth = width - padding.left - padding.right,
 	    yRangeHeight = height - padding.top - padding.bottom;
 	
-	var vis = d3.select("#"+aID).append("div").attr({
+	var vis = d3v3.select("#"+aID).append("div").attr({
 	        margin: "auto",
 	        id: "STACBARplot"
 	    }),
@@ -19,7 +19,7 @@ function stackedBar(aID,dataSet1){
 	    .append("g")
 	    .attr("transform", "translate(" + [padding.left, padding.top] + ")");
 	
-	var offsetSelect = d3.ui.select({
+	var offsetSelect = d3v3.ui.select({
 	        base: vis,
 	        before: "svg",
 	        style: {position: "absolute", left: 0 + "px", top: -40 + "px"},
@@ -28,7 +28,7 @@ function stackedBar(aID,dataSet1){
 	        },
 	        data: ["zero", "expand", "silhouette"]
 	    }),
-	    orderSelect  = d3.ui.select({
+	    orderSelect  = d3v3.ui.select({
 	        base: vis,
 	        before: "svg",
 	        style: {position: "absolute", left: 100 + "px", top: -40 + "px"},
@@ -37,7 +37,7 @@ function stackedBar(aID,dataSet1){
 	        },
 	        data: ["inside-out", "default", "reverse"]
 	    }),
-	    stack        = d3.layout.stack()
+	    stack        = d3v3.layout.stack()
 	        .values(function(d) { return d.sales; })
 	        .x(function(d) { return d.year; })
 	        .y(function(d) { return d.profit; })
@@ -49,9 +49,9 @@ function stackedBar(aID,dataSet1){
 	
 	// x Axis
 	var xPadding = {inner: 0.1, outer: 0.3},
-	    xScale   = d3.scale.ordinal()
+	    xScale   = d3v3.scale.ordinal()
 	        .rangeBands([0, xRangeWidth], xPadding.inner, xPadding.outer),
-	    xAxis    = d3.cbPlot.d3Axis()
+	    xAxis    = d3v3.cbPlot.d3Axis()
 	        .scale(xScale)
 	        .orient("bottom"),
 	    gX       = svg.append("g")
@@ -59,9 +59,9 @@ function stackedBar(aID,dataSet1){
 	        .attr("transform", "translate(0," + yRangeHeight + ")");
 	
 	// y Axis
-	var yAxisScale = d3.scale.linear()
+	var yAxisScale = d3v3.scale.linear()
 	        .range([yRangeHeight, 0]),
-	    yAxis      = d3.cbPlot.d3Axis()
+	    yAxis      = d3v3.cbPlot.d3Axis()
 	        .scale(yAxisScale)
 	        .orient("left")
 	        .tickSubdivide(2),
@@ -70,10 +70,10 @@ function stackedBar(aID,dataSet1){
 	        .style({"pointer-events": "none", "font-size": "12px"}),
 	    yAxisTransition = 1000;
 	
-	var yPlotScale = d3.scale.linear()
+	var yPlotScale = d3v3.scale.linear()
 	    .range([0, yRangeHeight]);
 	
-	var color = d3.scale.category10();
+	var color = d3v3.scale.category10();
 	
 	function update(dataSet) {
 	    // create an array of normalised layers and
@@ -85,14 +85,14 @@ function stackedBar(aID,dataSet1){
 	            }),
 	        stackedData  = stack.offset(offsetSelect.value())
 	            .order(orderSelect.value())(dataSet),
-	        maxY         = d3.max(stackedData, function(d) {
-	            return d3.max(d.sales, function(s) {
+	        maxY         = d3v3.max(stackedData, function(d) {
+	            return d3v3.max(d.sales, function(s) {
 	                return s.profit + s.p0
 	            })
 	        }),
 	        years        = stackedData[0].sales.map(stack.x()),
 	        yearlyTotals = years.reduce(function(t, y) {
-	            return (t[y] = d3.sum(stackedData, function(o) {
+	            return (t[y] = d3v3.sum(stackedData, function(o) {
 	                return o.sales.filter(function(s) {
 	                    return s.year == y
 	                })[0].profit
@@ -115,7 +115,7 @@ function stackedBar(aID,dataSet1){
 	    var plotArea = svg.selectAll(".plotArea")
 	        .data([stackedData]);
 	    plotArea.enter().insert("g", ".axis")
-	        .attr(d3.cbPlot.transplot(yRangeHeight))
+	        .attr(d3v3.cbPlot.transplot(yRangeHeight))
 	        .attr("class", "plotArea");
 	
 	    plotArea.series = plotArea.selectAll(".series")
@@ -127,11 +127,11 @@ function stackedBar(aID,dataSet1){
 	        return color(i);
 	    });
 	    plotArea.series.exit().remove();
-	    Object.defineProperties(plotArea.series, d3._CB_selection_destructure);
+	    Object.defineProperties(plotArea.series, d3v3._CB_selection_destructure);
 	
 	    plotArea.series.components = plotArea.series.selectAll(".components")
 	        .data(function(d) {
-	            return d3.entries(d);
+	            return d3v3.entries(d);
 	        });
 	    plotArea.series.components.enter().append("g")
 	        .attr("class", function(d){return d.key})
@@ -141,17 +141,17 @@ function stackedBar(aID,dataSet1){
 	    plotArea.series.components.values = plotArea.series.components.filter(function(d){
 	        return d.key == "sales"
 	    });
-	    Object.defineProperties(plotArea.series.components.values, d3._CB_selection_destructure);
+	    Object.defineProperties(plotArea.series.components.values, d3v3._CB_selection_destructure);
 	    plotArea.series.components.labels = plotArea.series.components.filter(function(d){
 	        return d.key == "name"
 	    })
 	        // reverse the plotArea transform (it is it's own inverse)
-	        .attr(d3.cbPlot.transplot(yRangeHeight));
-	    Object.defineProperties(plotArea.series.components.labels, d3._CB_selection_destructure);
+	        .attr(d3v3.cbPlot.transplot(yRangeHeight));
+	    Object.defineProperties(plotArea.series.components.labels, d3v3._CB_selection_destructure);
 	
 	    var s         = xScale.rangeBand(),
 	        w         = s - xPadding.inner,
-	        drag = d3.behavior.drag()
+	        drag = d3v3.behavior.drag()
 	            .on("dragstart", mouseOver),
 	        points = plotArea.series.components.values.points = plotArea.series.components.values.selectAll("rect")
 	            .data(function(d){
@@ -176,7 +176,7 @@ function stackedBar(aID,dataSet1){
 	        .attr("stroke", "white");
 	
 	    points.exit().remove();
-	    Object.defineProperties(plotArea.series.components.values.points, d3._CB_selection_destructure);
+	    Object.defineProperties(plotArea.series.components.values.points, d3v3._CB_selection_destructure);
 	
 		svg.selectAll(".x.axis .tick text").style("text-anchor", "end").attr("dx",$('#STACBARxlabelshift').val()+"px").attr("transform", "rotate("+$('#STACBARxlabelrotate').val()+")").style("font-size",$('#STACBARxfontsize').val()+"px");;
 	
@@ -189,18 +189,18 @@ function stackedBar(aID,dataSet1){
 	            // wrap the node in a selection with the proper parent
 	            plotData = plotArea.series.components.values.data,
 	            seriesData = plotData[groupIndex],
-	            currentYear = d3.transpose(plotData)[pointIndex],
+	            currentYear = d3v3.transpose(plotData)[pointIndex],
 	            point         = plotArea.series.components.values.points.nodes[groupIndex][pointIndex];
 	
 	        // if the plot is not normalised, fly-in the axis on the selected year
 	        if(offsetSelect.value() != "expand") {
 	            yAxisScale.reset();
 	            // get the zero offset for the fly-in axis
-	            var pMin        = d3.min(currentYear, function(s) {
+	            var pMin        = d3v3.min(currentYear, function(s) {
 	                    return s.p0
 	                }),
 	                refP0 = seriesData[pointIndex].p0,
-	                selectedGroupHeight = d3.sum(currentYear, function(d) {return d.y}),
+	                selectedGroupHeight = d3v3.sum(currentYear, function(d) {return d.y}),
 	                // set the range and domain height for the selected year
 	                localDomain = [0, selectedGroupHeight].map(function(d){return d + pMin - refP0}),
 	                localRange  = [0, selectedGroupHeight].map(function(d) {return yAxisScale(d + pMin)});
@@ -214,7 +214,7 @@ function stackedBar(aID,dataSet1){
 	                .call(yAxis.ticks(+(Math.abs(localRange[0] - localRange[1]) / 15).toFixed()))
 	                .attr("transform", "translate(" + point.attr("x") + ",0)")
 	                .style({"font-size": "8px"})
-	                .call(function(t) {d3.select(t.node()).classed("fly-in", true)});
+	                .call(function(t) {d3v3.select(t.node()).classed("fly-in", true)});
 	            // align the selected series across all years
 	            points.transition("points")
 	                .attr("y", alignY(seriesData[pointIndex].p0, groupIndex))
@@ -228,14 +228,14 @@ function stackedBar(aID,dataSet1){
 	                return i == groupIndex ? 1 : 0.5;
 	            });
 	        //  x axis highlighting
-	        d3.selectAll(".x.axis .tick")
+	        d3v3.selectAll(".x.axis .tick")
 	            .filter(function(d) {
 	                return d == selectedYear
 	            })
 	            .classed("highlight", true);
 	
 	        // move the selected element to the front
-	        d3.select(this.parentNode)
+	        d3v3.select(this.parentNode)
 	            .moveToFront();
 	        gX.moveToFront();
 	
@@ -249,8 +249,8 @@ function stackedBar(aID,dataSet1){
 	                .attr("class", "tooltip")
 	                .attr("transform", "translate(" + [point.attr("x"), point.attr("y")] + ")")
 	                .append("text")
-	                .attr(d3.cbPlot.transflip())
-	                .text(d3.format(">8.0%")(pointData.yNorm))
+	                .attr(d3v3.cbPlot.transflip())
+	                .text(d3v3.format(">8.0%")(pointData.yNorm))
 	                .attr({x: "1em", y: -point.attr("height") / 2, dy: ".35em", opacity: 0})
 	                .transition("tooltip").attr("opacity", 1)
 	                .style({fill: "black", "pointer-events": "none"})
@@ -259,7 +259,7 @@ function stackedBar(aID,dataSet1){
 	    function mouseOut(d, nodeIndex, groupIndex) {
 // console.log(["out", nodeIndex].join("\t"));
 	        var year = d.year;
-	        d3.selectAll(".x.axis .tick")
+	        d3v3.selectAll(".x.axis .tick")
 	            .filter(function(d) {
 	                return d == year
 	            })
@@ -274,7 +274,7 @@ function stackedBar(aID,dataSet1){
 	        gY.transition("axis").call(yAxis)
 	            .attr("transform", "translate(0,0)")
 	            .style({"font-size": "12px"})
-	            .call(function(t) {d3.select(t.node()).classed("fly-in", false)});
+	            .call(function(t) {d3v3.select(t.node()).classed("fly-in", false)});
 	        plotArea.series.selectAll(".tooltip")
 	            .transition("tooltip")
 	            .attr({opacity: 0})
@@ -308,13 +308,13 @@ function stackedBar(aID,dataSet1){
 	    labelCircle.enter().append("circle")
 	        .on("mouseover", function(pointData, pointIndex, groupIndex) {
 	            var node = this,
-	                typicalP0 = d3.median(plotArea.series.components.values.data[groupIndex],
+	                typicalP0 = d3v3.median(plotArea.series.components.values.data[groupIndex],
 	                function(d){return d.p0});
 	            plotArea.series.components.values.points.transition("points")
 	                .attr("y", alignY(typicalP0, groupIndex));
 	            plotArea.series.transition("fade")
 	                .attr("opacity", function(d) {
-	                    return d === d3.select(node.parentNode.parentNode).datum() ? 1 : 0.5;
+	                    return d === d3v3.select(node.parentNode.parentNode).datum() ? 1 : 0.5;
 	                });
 	            legendText(groupIndex);
 	        })
@@ -351,11 +351,11 @@ function stackedBar(aID,dataSet1){
 	            seriesData = plotArea.series.components.values.data[groupIndex],
 	            fmt           = [">8,.0f", ">8.0%"][(offsetSelect.value() == "expand") * 1];
 	        labelText.classed("highlight", true);
-	        labelText.text(labelText.datum().value + ": " + d3.format(fmt)(
+	        labelText.text(labelText.datum().value + ": " + d3v3.format(fmt)(
 	                offsetSelect.value() != "expand" ?
-	                d3.sum(seriesData, stack.y()) :
-	                d3.sum(seriesData, function(s) {
-	                    var totalSales = d3.sum(d3.values(yearlyTotals));
+	                d3v3.sum(seriesData, stack.y()) :
+	                d3v3.sum(seriesData, function(s) {
+	                    var totalSales = d3v3.sum(d3v3.values(yearlyTotals));
 	                    return s.y * yearlyTotals[s.year] / totalSales
 	                })
 	            ));
@@ -377,17 +377,17 @@ function stackedBar(aID,dataSet1){
 	    }
 	}
 	
-	d3.selection.prototype.moveToFront = function() {
+	d3v3.selection.prototype.moveToFront = function() {
 	    return this.each(function() {
 	        this.parentNode.appendChild(this);
 	    });
 	};
-	d3._CB_selection_destructure = {
+	d3v3._CB_selection_destructure = {
 	    "nodes": {
 	        get: function() {
 	            return this.map(function(g) {
 	                return g.map(function(n) {
-	                    return d3.select(n)
+	                    return d3v3.select(n)
 	                })
 	            })
 	        }
@@ -395,7 +395,7 @@ function stackedBar(aID,dataSet1){
 	    data: {
 	        get: function() {
 	            return this.map(function(g) {
-	                return d3.select(g[0]).datum().value
+	                return d3v3.select(g[0]).datum().value
 	            })
 	        }
 	    }
