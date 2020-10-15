@@ -892,14 +892,15 @@ def DENS(data):
         else:
           sns.kdeplot(D[Dobs==one][genes[j]].to_numpy(),bw=bw,label=one)
 
+      ax.set_ylabel("",fontsize=defaultFontsize)
       if i==0:
         ax.set_title(genes[j],fontsize=defaultFontsize+2)
       if j==0:
         ax.set_ylabel(split[i],fontsize=defaultFontsize)
       if i==0 and j==(len(genes)-1):
         ax.legend(prop={'size': 10},title = cGrp,loc=2,bbox_to_anchor=(1,1),ncol=legendCol,frameon=False)#
-      else:
-        ax.get_legend().remove()
+#      else:
+#        ax.get_legend().remove()
   #fig.text(0.6,0.09,"Expression",ha='center')
   #ppr.pprint("plotting data cost: %f seconds" % dataT)
   #ppr.pprint("plotting plot cost: %f seconds" % plotT)
