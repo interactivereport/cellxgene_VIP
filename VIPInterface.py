@@ -890,7 +890,7 @@ def DENS(data):
         if sum(Dobs==one)<1:
           sns.kdeplot([0],label=one)
         else:
-          sns.kdeplot(D[Dobs==one][genes[j]].to_numpy(),bw=bw,label=one)
+          sns.kdeplot(D[Dobs==one][genes[j]].to_numpy(),bw_method=bw,label=one)
 
       ax.set_ylabel("",fontsize=defaultFontsize)
       if i==0:
@@ -899,8 +899,10 @@ def DENS(data):
         ax.set_ylabel(split[i],fontsize=defaultFontsize)
       if i==0 and j==(len(genes)-1):
         ax.legend(prop={'size': 10},title = cGrp,loc=2,bbox_to_anchor=(1,1),ncol=legendCol,frameon=False)#
-#      else:
-#        ax.get_legend().remove()
+      else:
+        leg = ax.get_legend()
+        if not leg==None:
+          leg.remove()
   #fig.text(0.6,0.09,"Expression",ha='center')
   #ppr.pprint("plotting data cost: %f seconds" % dataT)
   #ppr.pprint("plotting plot cost: %f seconds" % plotT)
