@@ -1340,7 +1340,7 @@ function init(){
     window.biogen=[];
     window.bioGeneGrp={};
     window.figOpt={scale:'No',scaleZero:'No',clipValue:'Yes',scaleMax:20,dpi:150,img:'png',fontsize:11,vectorFriendly:'Yes',transparent:'No',scanpybranch:'split_show',colorMap:'viridis'};
-    if (grpL[">Description"] !== undefined && !grpL[">Description"].categories[0].split(";")[1].includes("scale")) {
+    if (grpL[">Description"] !== undefined && grpL[">Description"].categories[0].split(";").length>1 && !grpL[">Description"].categories[0].split(";")[1].includes("scale")) {
       window.figOpt['scale'] = "Yes";
     }
 
