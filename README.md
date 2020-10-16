@@ -89,6 +89,11 @@ install.packages("arrow")
 ```
 ### Packages needed for CLI.
 ```
+# follow https://irkernel.github.io/installation/ to install IRkernel and make it avilable to Jupyter system-wide.
+$ R
+> install.packages('IRkernel')
+> IRkernel::installspec(user = FALSE)
+
 $ conda install ipykernel
 $ pip install rpy2  # If you want to use globally installed R and packages
 or
