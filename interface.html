@@ -1114,6 +1114,7 @@
       <button class="CLIbt"  onclick="editor.getSession().setValue('')">Clear</button>
       <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode1').text().trim());">Vignette 1</button>
       <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode2').text().trim());">Vignette 2</button>
+      <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode3').text().trim());">Vignette 3</button>
       <button onclick="hideShow($('#CLIinput'),$(this));">Hide Input</button>
       <button onclick="printNotebook();">Print Notebook</button>
       <button onclick="hideShow($('.input'),$(this),'Code');">Hide Code</button>
@@ -4120,6 +4121,55 @@ X <- FindClusters(X, resolution = 0.5)
 X.markers <- FindAllMarkers(X, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
 top10 <- X.markers %>% group_by(cluster) %>% top_n(n = 10, wt = avg_logFC)
 DoHeatmap(X, features = top10$gene, label=FALSE) + theme(text = element_text(size = 8))
+</div>
+
+<div id="CLIVignetteCode3" style="display:none;">
+```{python}
+from pyarrow import feather
+import pandas as pd
+from anndata import read_h5ad
+
+strData = r.strPath + '.h5ad'
+adata=read_h5ad(strData)
+X = adata.to_df()
+meta = pd.concat([adata.obs,adata.obsm.to_df()],axis=1)
+feather.write_feather(X,r.strPath+'.feather')
+feather.write_feather(meta,r.strPath+".obs.feather")
+```
+
+```{r block1, message=FALSE, fig.width=14, fig.height=6, dpi=300}
+library(Seurat)
+library(patchwork)
+library(ggplot2)
+D <- t(arrow::read_feather(paste(strPath,".feather",sep="")))
+meta <- as.data.frame(arrow::read_feather(paste(strPath,".obs.feather",sep="")))
+colnames(D) <- meta[,"name_0"]
+X <- CreateSeuratObject(counts=D)
+X@meta.data <- cbind(X@meta.data,meta)
+
+
+X[["percent.mt"]] <- PercentageFeatureSet(X, pattern = "^MT-")
+VlnPlot(X, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
+plot1 <- FeatureScatter(X, feature1 = "nCount_RNA", feature2 = "percent.mt")
+plot2 <- FeatureScatter(X, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
+plot1 + plot2
+
+
+X <- subset(X, subset = nFeature_RNA > 200 & nFeature_RNA < 2500 & percent.mt < 5)
+X <- FindVariableFeatures(X, selection.method = "vst", nfeatures = 2000,verbose=F)
+top10 <- head(VariableFeatures(X,verbose=F), 10)
+plot1 <- VariableFeaturePlot(X)
+plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
+plot2
+```
+
+```{r block2, message=FALSE, fig.width=8, fig.height=6, dev='svg'}
+all.genes <- rownames(X)
+X <- ScaleData(X, features = all.genes,verbose=F)
+X <- RunPCA(X, features = VariableFeatures(object = X))
+print(X[["pca"]], dims = 1:5, nfeatures = 5)
+DimPlot(X, reduction = "pca")
+```
 </div>
 </body>
 </html>
