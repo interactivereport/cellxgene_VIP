@@ -358,6 +358,37 @@
         padding: 0px 10px;
       }
 
+      .topTab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+      }
+      .topTab button{
+        text-align: top;
+        text-align: left;
+        
+        background-color: inherit;
+        float: left;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 5px 5px;
+        transition: 0.3s;
+      }
+      .topTab button:hover {
+        background-color: #ddd;
+      }
+      .topTab button.active {
+        background-color: #ccc;
+      }
+      .DEGcontent {
+        float: left;
+        border-left: none;
+        width:100%;
+        display: none;
+        padding: 0px 10px;
+      }
+      
       h3 {
         display: block;
         font-size: 1.17em;
@@ -433,6 +464,7 @@
       <button class="tablinks" onclick="selFun(event, 'STACBAR')">Stacked Barplot</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'DEG')">DEG</button>
+      <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultDEG('DEGlinksPlot')">Pre-Compu. DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
       <button class="tablinks" onclick="selFun(event, 'CLI')">Command Line Interface</button>
       <hr size="1" noshade>
@@ -929,8 +961,7 @@
         <p id="DEGgrp"></p>
         <p>Select the number of top DEG: 
         <select id="DEGtop">
-          <option value=100>100</option>
-          <option value=500>200</option>
+          <option value=200>200</option>
           <option value=500>500</option>
           <option value=1000>1000</option>
           <option value=5000>5000</option>
@@ -993,6 +1024,85 @@
         <p id="DEGfig"></p>
       </div>
     </div><!--DEG-->
+    
+    <div id="preDEGpanel" class="tabcontent">
+      <div class="topTab">
+        <button id="DEGlinksPlot" class="DEGlinks" onclick="selDEG(event, 'preDEGvolcano')">Plot DEG</button>
+        <button id="DEGlinksViolin" class="DEGlinks" onclick="selDEG(event, 'preDEGviolin')">Group Violin</button>
+        <button id="DEGlinksMulti" class="DEGlinks" onclick="selDEG(event, 'preDEGvmulti')">Multi DEG</button>
+      </div>
+      
+      <div id="preDEGvolcano" class="DEGcontent">
+        <h3>Plot volcano for the pre-computed DEGs</h3>
+        <select id="preDEGvolcanoTab"></select>
+        <p>Select genes to be marked in the volcano plot:
+        <input type="checkbox" onclick="$('.DEGgenes').prop('checked', this.checked);">Uncheck / Check All</p>
+        <p id="preDEGvolcanogene"></p>
+        <p>Select the number of top DEG: 
+          <select id="preDEGvolcanotop">
+            <option value=200>200</option>
+            <option value=500>500</option>
+            <option value=1000>1000</option>
+            <option value=5000>5000</option>
+            <option value='All'>All</option>
+          </select></p>
+        <p hidden>Remove genes in volcano plot with the absolute log2(FC) larger than: <input id="preDEGvolcanologfcCut" type="number" step="1" value="100" min="0"/></p>
+        <button class="preDEGvolcanobt" onclick="preDEGVolcanofind('preDEGvolcano')"><b>Plot</b></button>
+        <button id="preDEGvolcanointeractiveBtn" onclick="hideShow($('#DEGfinal'),$(this),'Interactive');">Hide Interactive</button>
+        <pre id="preDEGvolcanonote" style="color:red;"></pre>
+        <label id='preDEGvolcanoinfo'></label>
+        <div id="preDEGvolcanospin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+        
+        <div id="preDEGvolcanofinal">
+          <select id="preDEGvolcanoplotBy">
+            <option value='color'>Color by</option>
+            <option value='label'>Label by</option>
+          </select>
+          <input type="radio" name="preDEGvolcanocolorBy" value="significance" onclick="$('#preDEGvolcanoplotBySig').show();$('#preDEGvolcanoplotByGinfo').hide();$('#preDEGvolcanoplotByGsel').hide();" checked>Significance
+          <input type="radio" name="preDEGvolcanocolorBy" value="geneInfo" onclick="$('#preDEGvolcanoplotBySig').hide();$('#preDEGvolcanoplotByGinfo').show();$('#preDEGvolcanoplotByGsel').hide();">Gene Information
+          <input type="radio" name="preDEGvolcanocolorBy" value="selGene" onclick="$('#preDEGvolcanoplotBySig').hide();$('#preDEGvolcanoplotByGinfo').hide();$('#preDEGvolcanoplotByGsel').show();">Gene Selection
+          <div id="preDEGvolcanoplotBySig">
+            FDR: <input id="preDEGvolcanofdr" type="number" step="0.001" value="0.05" min="0" max="1"/>
+            Asolute logFC: <input id="preDEGvolcanologfc" type="number" step="0.1" value="1" min="0"/>
+          </div>
+          <div id="preDEGvolcanoplotByGinfo">
+            <select id="preDEGvolcanoplotByGinfoSel"></select>
+            <input type="radio" name="preDEGvolcanoplotByGinfoRd" value=">">Larger than
+            <input type="radio" name="preDEGvolcanoplotByGinfoRd" value="=" checked>Equal to
+            <input type="radio" name="preDEGvolcanoplotByGinfoRd" value="<">smaller than
+            <input id="preDEGvolcanoplotByGinfoVal" type="text"/>
+          </div>
+          <div id="preDEGvolcanoplotByGsel">
+            <input type="checkbox" onclick="$('.preDEGvolcanoselgenes').prop('checked', this.checked);">Uncheck / Check All
+            <p id="preDEGvolcanoselgene"></p>
+          </div>
+          <div>
+            <button id="preDEGvolcanofigReset">Reset Axes</button>
+            <button onclick="DEGplot('preDEGvolcano')">Replot</button>
+            <p id="preDEGvolcanointeractive" style="height: 500px; width:500px; padding: 0.5em; border: 1px solid #B6B6B6"></p>
+          </div>
+        </div>
+        
+        <table id="preDEGvolcanotable" class="display"></table>
+        <button class="preDEGvolcanobt" onclick="ZoomIn('preDEGvolcanoresize')">Zoom In</button>
+        <button class="preDEGvolcanobt" onclick="ZoomOut('preDEGvolcanoresize')">Zoom Out</button>
+        <button class="preDEGvolcanobt" onclick="saveImg('preDEGvolcanoimg')" disabled>Save</button>
+        <div id="preDEGvolcanoresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6">
+          <p id="preDEGvolcanofig"></p>
+        </div>
+        
+      </div><!--preDEGvolcano-->
+        
+      <div id="preDEGviolin" class="DEGcontent">
+        Plot the grouped violin for pre-computed DEGs
+      </div><!--preDEGviolin-->
+        
+      <div id="preDEGvmulti" class="DEGcontent">
+        Plot the circle heatmap for pre-computed DEGs from multiple comparisons
+      </div><!--preDEGvmulti-->
+
+    </div><!--preDEGpanel -->
+      
     
     <div id='STACBAR' class='tabcontent'>
       <div id="STACBARinput">
@@ -1114,6 +1224,7 @@
       <button class="CLIbt"  onclick="editor.getSession().setValue('')">Clear</button>
       <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode1').text().trim());">Vignette 1</button>
       <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode2').text().trim());">Vignette 2</button>
+      <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode3').text().trim());">Vignette 3</button>
       <button onclick="hideShow($('#CLIinput'),$(this));">Hide Input</button>
       <button onclick="printNotebook();">Print Notebook</button>
       <button onclick="hideShow($('.input'),$(this),'Code');">Hide Code</button>
@@ -1229,6 +1340,31 @@ function selFun(evt,sel){
   for (i = 0; i < tabL.length; i++) {
     tabL[i].className = tabL[i].className.replace(" active", "");
   }
+  document.getElementById(sel).style.display = "block";
+  evt.currentTarget.className += " active";
+  sync();
+}
+function defaultDEG(sel){
+  var initF = false;
+  $(".DEGlinks").each(function(){
+    initF ||= $(this).prop("class").includes("active");
+  });
+
+  if(!initF){
+    $("#"+sel)[0].click();
+  }
+}
+function selDEG(evt,sel){
+  var i, tabC, tabL;
+  tabC = document.getElementsByClassName("DEGcontent");
+  for (i = 0; i < tabC.length; i++) {
+    tabC[i].style.display = "none";
+  }
+  tabL = document.getElementsByClassName("DEGlinks");
+  for (i = 0; i < tabL.length; i++) {
+    tabL[i].className = tabL[i].className.replace(" active", "");
+  }
+  //console.log(sel);
   document.getElementById(sel).style.display = "block";
   evt.currentTarget.className += " active";
   sync();
@@ -1436,8 +1572,6 @@ function init(){
       }
     });
     
-    window.bioInit=true;
-
     editor = ace.edit("CLIscript");
     editor.setTheme("ace/theme/iplastic");
     editor.getSession().setMode("ace/mode/python");
@@ -1446,7 +1580,7 @@ function init(){
     editor.getSession().setValue($("#CLIVignetteCode1").html().trim());
 
 
-	document.getElementsByClassName('tablinks')[0].click();
+	  document.getElementsByClassName('tablinks')[0].click();
 
     var observer = new ResizeObserver(function(entries) {
       entries.forEach(function(entry) {
@@ -1482,7 +1616,32 @@ function init(){
       // all results are in the results array
       console.log(results);
       VIPurl = results[0];
+      
+    //for pre-computed DEG
+    //console.log("request for pre-computed DEG: url"+VIPurl);
+    $("#preDEGpanelBT").hide();
+    $.ajax({
+          type: "POST",
+          url: VIPurl,
+          data:JSON.stringify({'method':"preDEGname"}),
+          contentType: 'application/json;charset=UTF-8',
+          success: function(res){
+            if(res.length==0) return;
+            resD = JSON.parse(res);
+            $("#preDEGpanelBT").show();
+            for(const one of resD){
+              $('#preDEGvolcanoTab').append(createOpt(one));
+            }
+          },
+          error: function(request,status,error){
+            console.log(request.status+': cannot get preDEG information ...');
+          }
+        })
     });
+    
+    
+    window.bioInit=true;
+
   }
   return true;
 }
@@ -1528,6 +1687,7 @@ function sync(){
   SANKref();
   STACBARref();
   CLIref();
+  preDEGVolcanoref("preDEGvolcano");
 }
 function ABBRref(){
 }
@@ -1949,6 +2109,18 @@ function DEGref(){
     $("#DEGfinal").hide();
     $("#DEGinteractiveBtn").prop('disabled', true);
   }
+}
+function preDEGVolcanoref(eID){
+  showGene(eID,"","");
+  showGene(eID+'selgene',"","");
+  //console.log(eID);
+
+  radioCheckTriger(eID+"colorBy");
+  if($("#"+eID+"fig").html().length==0 && !$("#"+eID+"interactiveBtn").prop('disabled')){
+    $("#"+eID+"final").hide();
+    $("#"+eID+"interactiveBtn").prop('disabled', true);
+  }
+  
 }
 function IMGref(){
   $('#IMGscaleZero').prop('checked',(window.figOpt['scaleZero']=="Yes"));
@@ -2845,17 +3017,17 @@ function updateDEGdata(rawD,selOpts){
   });
 }
 function DEGplot(eID){//window.DEGraw,window.DEGsel 'DEG'
-  $("#"+eID+"interactive").html("");
   window[eID+'sel'][$("#"+eID+"plotBy").val()] = getSelOpt(eID);
   var DEGdata=updateDEGdata(window[eID+'raw'],window[eID+'sel']).slice(0,5000);//maximun 5000 dots for interactive volcano plot
   console.log("interactive colcano dots number:" + DEGdata.length);
+  $("#"+eID+"interactive").html("");
   var vol = volcanoPlot()
       .width($("#"+eID+"interactive").width())
       .height($("#"+eID+"interactive").height())
       .xAxisLabel('log<tspan baseline-shift="sub">2</tspan>Fold-change')
       .yAxisLabel('-log<tspan baseline-shift="sub">10</tspan>False Discovery Rate')
       .vLines({a:-$("#"+eID+"logfc").val(),b:+$("#"+eID+"logfc").val()})
-      .hLines({['qvalue='+$("#"+eID+"fdr").val()]:$("#"+eID+"fdr").val()})
+      .hLines({['qvalue='+$("#"+eID+"fdr").val()]:+$("#"+eID+"fdr").val()})
       .sampleID("gene")
       .xColumn("log2fc")
       .yColumn("qval")
@@ -2864,7 +3036,6 @@ function DEGplot(eID){//window.DEGraw,window.DEGsel 'DEG'
       .maxY(300)
       .tooltips(['gene','log2fc','qval'])
       .resetBtnID(eID+"figReset");
-
 
   d3.select('#'+eID+'interactive')
     .data([DEGdata.filter(function(d){return Math.abs(d.log2fc)< +$("#"+eID+"logfcCut").val();})])
@@ -2981,7 +3152,91 @@ function DEGfind(){
       $(".DEGbt").prop("disabled",false);
     }
   })
-  
+}
+function preDEGVolcanofind(eID){
+  //var genes = getGenes(eID);
+  var D = {'method':eID,
+           'topN':$("#"+eID+"top").val(),
+           'compSel':$("#"+eID+"Tab").val(),
+           'genes':getGenes(eID),
+           'logFC':10,
+           'figOpt':window.figOpt};
+  document.getElementById(eID+"spin").style.visibility="visible";
+  $("."+eID+"bt").prop('disabled',true);
+  $.ajax({
+    type:"POST",
+    url: VIPurl,
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',
+    success: function(res){
+      window.testD = res;
+      document.getElementById(eID+"spin").style.visibility="hidden";
+      $("."+eID+"bt").prop("disabled",false);
+      $('#'+eID+'table').empty();
+      
+      if(res.startsWith('ERROR')){
+        $('#'+eID+'note').text(res);
+        return;
+      }
+      resD = JSON.parse(res);
+      var selOpt=[];
+      selOpt.push({column:'absLogfc',opr:'>',val:+$("#"+eID+"logfc").val()});
+      selOpt.push({column:'qval',opr:'<',val:+$("#"+eID+"fdr").val()});
+      window[eID+"sel"] = {};
+      $("#"+eID+"plotBy option").each(function(){
+        window[eID+"sel"][$(this).val()]=selOpt;
+      });
+      // gene information
+      var gInfo = resD[0].split("\n")[0].split(',').slice(5);
+      gInfo.forEach(function(d){
+        $('#'+eID+'plotByGinfoSel').append('<option value="'+d+'">'+d+'</option>')
+      });
+      // raw DEG table
+      window[eID+"raw"] = resD[0];
+      DEGplot(eID);
+      $("#"+eID+"final").show();
+      $("#"+eID+"interactiveBtn").prop('disabled', false);
+      
+      // process DEG table
+      var tableD = d3.csvParse(resD[0],function(data){
+        return [].concat([data.gene,
+                          (+data.log2fc).toFixed(2),
+                          (+data.pval).toExponential(2),
+                          (+data.qval).toExponential(2)],
+                         Object.values(data).slice(5));
+      });
+      var tableTitle = [];
+      [].concat(['Gene',"Log Fold Change","p-value","padj"],gInfo).forEach(function(d){tableTitle = tableTitle.concat({title:d})});
+      var table = $('#'+eID+'table').DataTable({
+        destroy: true,
+        dom:'Blfrtip',
+        lengthMenu:[[10,50,100,200,-1],[10,50,100,200,"All"]],
+        order:[[3,"asc"]],
+        buttons:['csv'],
+        data:tableD,
+        columns:tableTitle
+      });
+      showImg(eID+'fig',resD[1]);
+      
+      $('#'+eID+'table tbody').on('click',"tr",function(){
+        var data = table.row(this).data();
+        //alert('Your clicked on '+data[0]+" row");
+        var genes =  window.biogen;
+        if(genes.includes(data[0])){
+          genes.splice(genes.indexOf(data[0]),1);
+        }else{
+          genes.push(data[0]);
+        }
+        $('#'+eID+'note').text("Selected genes: "+genes.join(", "));
+      });
+    },
+    error: function(request,status,error){
+      $('#'+eID+'note').text(request.status+request.responseText);
+      $('#'+eID+'table').empty();
+      document.getElementById(eID+"spin").style.visibility="hidden";
+      $("."+eID+"bt").prop("disabled",false);
+    }
+  });
 }
 function DOTplot(){
   $('#DOTnote').text("");
@@ -4124,6 +4379,55 @@ X <- FindClusters(X, resolution = 0.5)
 X.markers <- FindAllMarkers(X, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
 top10 <- X.markers %>% group_by(cluster) %>% top_n(n = 10, wt = avg_logFC)
 DoHeatmap(X, features = top10$gene, label=FALSE) + theme(text = element_text(size = 8))
+</div>
+
+<div id="CLIVignetteCode3" style="display:none;">
+```{python}
+from pyarrow import feather
+import pandas as pd
+from anndata import read_h5ad
+
+strData = r.strPath + '.h5ad'
+adata=read_h5ad(strData)
+X = adata.to_df()
+meta = pd.concat([adata.obs,adata.obsm.to_df()],axis=1)
+feather.write_feather(X,r.strPath+'.feather')
+feather.write_feather(meta,r.strPath+".obs.feather")
+```
+
+```{r block1, message=FALSE, fig.width=14, fig.height=6, dpi=300}
+library(Seurat)
+library(patchwork)
+library(ggplot2)
+D <- t(arrow::read_feather(paste(strPath,".feather",sep="")))
+meta <- as.data.frame(arrow::read_feather(paste(strPath,".obs.feather",sep="")))
+colnames(D) <- meta[,"name_0"]
+X <- CreateSeuratObject(counts=D)
+X@meta.data <- cbind(X@meta.data,meta)
+
+
+X[["percent.mt"]] <- PercentageFeatureSet(X, pattern = "^MT-")
+VlnPlot(X, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
+plot1 <- FeatureScatter(X, feature1 = "nCount_RNA", feature2 = "percent.mt")
+plot2 <- FeatureScatter(X, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
+plot1 + plot2
+
+
+X <- subset(X, subset = nFeature_RNA > 200 & nFeature_RNA < 2500 & percent.mt < 5)
+X <- FindVariableFeatures(X, selection.method = "vst", nfeatures = 2000,verbose=F)
+top10 <- head(VariableFeatures(X,verbose=F), 10)
+plot1 <- VariableFeaturePlot(X)
+plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
+plot2
+```
+
+```{r block2, message=FALSE, fig.width=8, fig.height=6, dev='svg'}
+all.genes <- rownames(X)
+X <- ScaleData(X, features = all.genes,verbose=F)
+X <- RunPCA(X, features = VariableFeatures(object = X))
+print(X[["pca"]], dims = 1:5, nfeatures = 5)
+DimPlot(X, reduction = "pca")
+```
 </div>
 </body>
 </html>
