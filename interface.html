@@ -1226,9 +1226,9 @@
       <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode2').text().trim());">Vignette 2</button>
       <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode3').text().trim());">Vignette 3</button>
       <button onclick="hideShow($('#CLIinput'),$(this));">Hide Input</button>
-      <button onclick="printNotebook();">Print Notebook</button>
-      <button onclick="hideShow($('.input'),$(this),'Code');">Hide Code</button>
-      <button onclick="hideShow($('.output_text'),$(this),'Output');">Hide Output</button>
+      <button id="printNotebook" onclick="printNotebook();">Print Notebook</button>
+      <button id="hideCode" onclick="hideShow($('.input'),$(this),'Code');">Hide Code</button>
+      <button id="hideOutput" onclick="hideShow($('.output_text'),$(this),'Output');">Hide Output</button>
       <div id="CLIsvg"></div>
       <pre id="CLInote" style="color:red;"></pre>
       <div id="CLIspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
@@ -3946,6 +3946,18 @@ function CLIplot(){
       return;
     }
   }
+
+  $('#printNotebook').show();
+  $('#hideCode').show();
+  $('#hideOutput').show();
+  var mywin;
+  if (editor.getSession().getValue().includes("```")) {
+    mywin=window.open('','_blank');
+    mywin.document.write('Please wait for the run to finish ... ...! Check the VIP window for status (spinning wheel).');
+    $('#printNotebook').hide();
+    $('#hideCode').hide();
+    $('#hideOutput').hide();
+  }
   
   var grps = [];
   $(".CLIgrps:checkbox:checked").each(function(){
@@ -3989,7 +4001,7 @@ function CLIplot(){
         return;
       }
       if (editor.getSession().getValue().includes("```")) {
-        var mywin=window.open('','_blank');
+        mywin.document.body.innerText='';
         mywin.document.write(res); 
         mywin.document.close();
       }
