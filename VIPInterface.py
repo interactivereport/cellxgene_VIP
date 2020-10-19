@@ -1206,12 +1206,12 @@ def CLI(data):
     html = h+s+e
   if 'Error' in res.stderr.decode('utf-8'):
      html = 'ERROR @server:\nstderr:\n' + res.stderr.decode('utf-8') + '\nstdout:\n' + res.stdout.decode('utf-8')
-#  for f in glob.glob(strPath+"*"):
-#    try:
-#      os.remove(f)
-#    except:
-#      continue
-#
+  for f in glob.glob(strPath+"*"):
+    try:
+      os.remove(f)
+    except:
+      continue
+
   return html
 
 def getPreDEGname(data):
