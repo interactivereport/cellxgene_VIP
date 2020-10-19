@@ -20,6 +20,7 @@ from io import BytesIO
 import sys
 import time
 import os
+import re
 import glob
 import subprocess
 strExePath = os.path.dirname(os.path.abspath(__file__))
@@ -1169,29 +1170,43 @@ def CLI(data):
   adata.write(strData)
   #with open(strData,'wb') as f:
   #pickle.dump(adata,f)
-
-  strScript = strPath + '.py'
-  #addedScript=['import os','os.chdir("%s")'%strExePath,'import VIPInterface as vip','adata=vip.ajaxData("%s")'%strData]
-  with open(strScript,'w') as f:
-    f.writelines(['%load_ext rpy2.ipython\n','from anndata import read_h5ad\n','adata=read_h5ad("%s")\n'%strData, 'strPath="%s"\n\n'%strPath])
-    #f.writelines(['%load_ext rpy2.ipython\n','import pickle\n','with open("%s","rb") as f:\n'%strData,'  adata=pickle.load(f)\n','strPath="%s"\n\n'%strPath])
-    f.writelines(['%%R\n','strPath="%s"\n\n'%strPath])
-    f.write(script)
-
-  res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to html --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
-  html = res.stdout.decode('utf-8')
-  h,s,e = html.partition('<div class="cell border-box-sizing code_cell rendered">')
-  h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">') ## remove the first cell
-  h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">') ## remove the second cell
-  html = h+s+e
+  ppr.pprint(len(re.findall(r'```',script)))
+  if (len(re.findall(r'```',script)) >0):
+    strScript = strPath + '.Rmd'
+    with open(strScript,'w') as f:
+     f.writelines(['---\noutput:\n  html_document:\n    code_folding: hide\n---\n\n```{r}\nstrPath <- "%s"\n```\n\n'%strPath])
+     f.write(script)
+    res = subprocess.run('Rscript -e \'rmarkdown::render("%s", output_file="%s.html")\''%(strScript,strPath),capture_output=True,shell=True)
+    if (os.path.exists('%s.html'%strPath)):
+      with open('%s.html'%strPath,'r') as file:
+        html = file.read()
+      else:
+        html = ''
+    ppr.pprint(res.stdout.decode('utf-8'))
+    ppr.pprint(res.stderr.decode('utf-8'))
+  else:
+    strScript = strPath + '.py'
+    #addedScript=['import os','os.chdir("%s")'%strExePath,'import VIPInterface as vip','adata=vip.ajaxData("%s")'%strData]
+    with open(strScript,'w') as f:
+      f.writelines(['%load_ext rpy2.ipython\n','from anndata import read_h5ad\n','adata=read_h5ad("%s")\n'%strData, 'strPath="%s"\n\n'%strPath])
+      #f.writelines(['%load_ext rpy2.ipython\n','import pickle\n','with open("%s","rb") as f:\n'%strData,'  adata=pickle.load(f)\n','strPath="%s"\n\n'%strPath])
+      f.writelines(['%%R\n','strPath="%s"\n\n'%strPath])
+      f.write(script)
+  
+    res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to html --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
+    html = res.stdout.decode('utf-8')
+    h,s,e = html.partition('<div class="cell border-box-sizing code_cell rendered">')
+    h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">') ## remove the first cell
+    h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">') ## remove the second cell
+    html = h+s+e
   if 'Error' in res.stderr.decode('utf-8'):
      html = 'ERROR @server:\nstderr:\n' + res.stderr.decode('utf-8') + '\nstdout:\n' + res.stdout.decode('utf-8')
-  for f in glob.glob(strPath+"*"):
-    try:
-      os.remove(f)
-    except:
-      continue
-
+#  for f in glob.glob(strPath+"*"):
+#    try:
+#      os.remove(f)
+#    except:
+#      continue
+#
   return html
   
 def version():

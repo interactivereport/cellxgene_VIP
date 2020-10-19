@@ -1134,14 +1134,13 @@ var VIPurl = '';
 
 function printNotebook(){
     var html = $('#CLIresize').html();
-    var w=window.open('','_blank');
-    w.document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script\>\n');
-    w.document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script\>\n');
-    w.document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha512-iztkobsvnjKfAtTNdHkGVjAYTrrtlC7mGp/54c40wowO7LhURYl3gVzzcEqGl/qKXQltJ2HwMrdLcNUdo+N/RQ==" crossorigin="anonymous"></script\>\n');
-    w.document.write('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css" integrity="sha512-pli9aKq758PMdsqjNA+Au4CJ7ZatLCCXinnlSfv023z4xmzl8s+Jbj2qNR7RI8DsxFp5e8OvbYGDACzKntZE9w==" crossorigin="anonymous" />\n');
-    w.document.write
-    w.document.write(html); 
-    w.document.close();
+    var mywin=window.open('','_blank');
+    mywin.document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script\>\n');
+    mywin.document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script\>\n');
+    mywin.document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha512-iztkobsvnjKfAtTNdHkGVjAYTrrtlC7mGp/54c40wowO7LhURYl3gVzzcEqGl/qKXQltJ2HwMrdLcNUdo+N/RQ==" crossorigin="anonymous"></script\>\n');
+    mywin.document.write('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css" integrity="sha512-pli9aKq758PMdsqjNA+Au4CJ7ZatLCCXinnlSfv023z4xmzl8s+Jbj2qNR7RI8DsxFp5e8OvbYGDACzKntZE9w==" crossorigin="anonymous" />\n');
+    mywin.document.write(html); 
+    mywin.document.close();
 }
 
 function checkLoading(){
@@ -3733,6 +3732,11 @@ function CLIplot(){
         $('#CLInote').text(res);
         $("#CLIresize").html("");
         return;
+      }
+      if (editor.getSession().getValue().includes("```")) {
+        var mywin=window.open('','_blank');
+        mywin.document.write(res); 
+        mywin.document.close();
       }
       var filteredRes = '<style type="text/css"> pre { display: block; padding: 8.5px; margin: 0 0 9px; font-size: 12px; line-height: 1.42857143; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: 1px solid #ccc; border-radius: 2px; }';
       var readIt = false;
