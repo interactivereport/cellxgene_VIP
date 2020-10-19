@@ -1185,8 +1185,8 @@ def CLI(data):
     if (os.path.exists('%s.html'%strPath)):
       with open('%s.html'%strPath,'r') as file:
         html = file.read()
-      else:
-        html = ''
+    else:
+      html = ''
     ppr.pprint(res.stdout.decode('utf-8'))
     ppr.pprint(res.stderr.decode('utf-8'))
   else:
