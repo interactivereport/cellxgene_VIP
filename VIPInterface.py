@@ -1,6 +1,7 @@
 import requests
 import json
 import traceback
+import sqlite3
 import server.app.decode_fbs as decode_fbs
 import scanpy as sc
 import pandas as pd
@@ -50,6 +51,8 @@ def route(data,appConfig=None,CLItmp="/tmp"):
     data["url"] = f'http://localhost:{port}/{api_version}'#{appConfig.server__host}
   data["CLItmp"] = CLItmp
 
+  #ppr.pprint(appConfig.server_config.single_dataset__datapath)
+  data['h5ad']=appConfig.server_config.single_dataset__datapath
   if appConfig.server_config.multi_dataset__dataroot is None:
     data["url_dataroot"]=None
     data["dataset"]=None
@@ -316,7 +319,9 @@ def distributeTask(aTask):
     'SANK':SANK,
     'STACBAR':STACBAR,
     'HELLO':HELLO,
-    'CLI':CLI
+    'CLI':CLI,
+    'preDEGname':getPreDEGname,
+    'preDEGvolcano':getPreDEGvolcano
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1193,7 +1198,50 @@ def CLI(data):
       continue
 
   return html
+
+def getPreDEGname(data):
+  strF = data["h5ad"].replace("h5ad","db")
+  if not os.path.isfile(strF):
+    return ""
+  conn = sqlite3.connect(strF)
+  df = pd.read_sql_query("select DISTINCT contrast,tags from DEG;", conn)
+  conn.close()
+
+  return json.dumps(list(df['contrast']+"::"+df['tags']))
+    
+def getPreDEGvolcano(data):
+  strF = data["h5ad"].replace("h5ad","db")
+  comGrp = data["compSel"].split("::")
   
+  conn = sqlite3.connect(strF)
+  df = pd.read_sql_query("select gene,log2fc,pval,qval from DEG where contrast=? and tags=?;", conn,params=comGrp)
+  conn.close()
+  deg = df.sort_values(by=['qval'])
+  data["comGrp"] = comGrp[0].split(".vs.")
+  
+  ## plot in R
+  strF = ('/tmp/DEG%f.csv' % time.time())
+  deg.to_csv(strF,index=False)
+  #ppr.pprint([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]])
+  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(data['genes']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]],capture_output=True)#
+  img = res.stdout.decode('utf-8')
+  os.remove(strF)
+  #####
+  gInfo = getVar(data)
+  deg.index = deg['gene']
+  deg = pd.concat([deg,gInfo],axis=1,sort=False)
+  #return deg.to_csv()
+  
+  if not data['topN']=='All':
+    deg = deg.iloc[range(int(data['topN'])),]
+  #deg.loc[:,'log2fc'] = deg.loc[:,'log2fc'].apply(lambda x: '%.2f'%x)
+  #deg.loc[:,'pval'] = deg.loc[:,'pval'].apply(lambda x: '%.4E'%x)
+  #deg.loc[:,'qval'] = deg.loc[:,'qval'].apply(lambda x: '%.4E'%x)
+
+  return json.dumps([deg.to_csv(),img])#json.dumps([deg.values.tolist(),img])
+  
+
+
 def version():
   print("1.0.8")
   ## 1.0.2: April 27, 2020
