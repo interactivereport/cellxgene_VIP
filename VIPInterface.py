@@ -322,7 +322,8 @@ def distributeTask(aTask):
     'HELLO':HELLO,
     'CLI':CLI,
     'preDEGname':getPreDEGname,
-    'preDEGvolcano':getPreDEGvolcano
+    'preDEGvolcano':getPreDEGvolcano,
+    'preDEGmulti':getPreDEGbubble,
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -654,7 +655,8 @@ def DEG(data):
     deg['log2fc'] = -1 * deg['log2fc']
 
   ## plot in R
-  strF = ('/tmp/DEG%f.csv' % time.time())
+  #strF = ('/tmp/DEG%f.csv' % time.time())
+  strF = ('%s/DEG%f.csv' % (data["CLItmp"],time.time()))
   deg.to_csv(strF,index=False)
   #ppr.pprint([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]])
   res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]],capture_output=True)#
@@ -1235,7 +1237,7 @@ def getPreDEGvolcano(data):
   data["comGrp"] = comGrp[0].split(".vs.")
   
   ## plot in R
-  strF = ('/tmp/DEG%f.csv' % time.time())
+  strF = ('%s/DEG%f.csv' % (data["CLItmp"],time.time()))
   deg.to_csv(strF,index=False)
   #ppr.pprint([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]])
   res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(data['genes']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]],capture_output=True)#
@@ -1255,7 +1257,27 @@ def getPreDEGvolcano(data):
 
   return json.dumps([deg.to_csv(),img])#json.dumps([deg.values.tolist(),img])
   
+def getPreDEGbubble(data):
+  #selTag = ','.join(data["compSel"])#data['genes']
+  sql = "select gene,log2fc,pval,qval,contrast || '::' || tags as tag from DEG where tag in ({comp}) and gene in ({gList}) order by case tag {oList} end;".format(
+    comp=','.join(['?']*len(data['compSel'])),
+    gList=','.join(['?']*len(data['genes'])),
+    oList=' '.join(['WHEN ? THEN %d'%i for i in range(len(data['compSel']))]))
+  
+  strF = data["h5ad"].replace("h5ad","db")
+  conn = sqlite3.connect(strF)
+  deg = pd.read_sql_query(sql,conn,params=data['compSel']+data['genes']+data['compSel'])
+  conn.close()
+  ## plot in R
+  strF = ('%s/DEG%f.csv' % (data["CLItmp"],time.time()))
+  deg.to_csv(strF,index=False)
+  #ppr.pprint(' '.join([strExePath+'/bubbleMap.R',strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['scale']]))
+  res = subprocess.run([strExePath+'/bubbleMap.R',strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['scale']],capture_output=True)#
+  img = res.stdout.decode('utf-8')
 
+  os.remove(strF)
+  #RASGEF1B SLC26A3 UNC5C AHI1
+  return img
 
 def version():
   print("1.0.8")
@@ -1337,14 +1359,7 @@ def version():
   ## -----------------------
   ## 1.0.11: June 14, 2020
   ## 1. volcano plot added for DEG
-  
-  
-  
-  
-  
-  
-  
-  
+
   
   
   

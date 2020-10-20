@@ -144,6 +144,7 @@ cp -R stackedbar $strweb
 cp -R d3plot $strweb
 cp volcano.R $strPath/server/app/.
 cp Density2D.R $strPath/server/app/.
+cp bubbleMap.R $strPath/server/app/.
 find ./cellxgene/server/ -name "decode_fbs.py" -exec cp {} $strPath/server/app/. \;
 
 echo -e "\nls -l $strweb\n"

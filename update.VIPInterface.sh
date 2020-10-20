@@ -8,6 +8,7 @@ strPath=$(python -c "import server as _; print(_.__file__.replace('/server/__ini
 strweb="${strPath}/server/common/web/static/."
 
 cp VIPInterface.py $strPath/server/app/.
+cp bubbleMap.R $strPath/server/app/.
 cp interface.html $strweb
 
 if [ -n "$1" ]; then
