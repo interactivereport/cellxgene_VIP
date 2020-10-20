@@ -1029,14 +1029,14 @@
       <div class="topTab">
         <button id="DEGlinksPlot" class="DEGlinks" onclick="selDEG(event, 'preDEGvolcano')">Plot DEG</button>
         <button id="DEGlinksViolin" class="DEGlinks" onclick="selDEG(event, 'preDEGviolin')">Group Violin</button>
-        <button id="DEGlinksMulti" class="DEGlinks" onclick="selDEG(event, 'preDEGvmulti')">Multi DEG</button>
+        <button id="DEGlinksMulti" class="DEGlinks" onclick="selDEG(event, 'preDEGmulti')">Multi DEG</button>
       </div>
       
       <div id="preDEGvolcano" class="DEGcontent">
         <h3>Plot volcano for the pre-computed DEGs</h3>
         <select id="preDEGvolcanoTab"></select>
         <p>Select genes to be marked in the volcano plot:
-        <input type="checkbox" onclick="$('.DEGgenes').prop('checked', this.checked);">Uncheck / Check All</p>
+        <input type="checkbox" onclick="$('.preDEGvolcanogenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="preDEGvolcanogene"></p>
         <p>Select the number of top DEG: 
           <select id="preDEGvolcanotop">
@@ -1097,9 +1097,33 @@
         Plot the grouped violin for pre-computed DEGs
       </div><!--preDEGviolin-->
         
-      <div id="preDEGvmulti" class="DEGcontent">
-        Plot the circle heatmap for pre-computed DEGs from multiple comparisons
-      </div><!--preDEGvmulti-->
+      <div id="preDEGmulti" class="DEGcontent">
+        <h3>Plot the bubble heatmap for pre-computed DEGs from multiple comparisons</h3>
+        <button class="preDEGmultibt" onclick="hideShow($('#preDEGmultiinput'),$(this));">Hide Input</button>
+        <div id="preDEGmultiinput">
+          <p>Select genes to be included in the bubble heatmap (rows):
+          <input type="checkbox" onclick="$('.preDEGmultigenes').prop('checked', this.checked);">Uncheck / Check All</p>
+          <p id="preDEGmultigene"></p>
+          <p>Select comparisons with tags to be included in the bubble heatmap (columns):
+          <input type="checkbox" onclick="$('.preDEGmultigrps').prop('checked', this.checked);">Uncheck / Check All</p>
+          <p id="preDEGmulticomp"></p>
+          <p>Change the order by dragging items up and down:
+          <b><button id="preDEGmultiorderBT" onclick="hideShow($('#preDEGmultiorderGrp'),$(this),'');" style="padding:2px;border-radius:50%">&#8722;</button></b></p>
+          <div id='preDEGmultiorderGrp'>
+            <ul id="preDEGmultidynList" class="sortable-list"></ul><!--   -->
+          </div>
+          <p>Bubble distance in plot: <input id="preDEGmultiFigureScale" type="number" step="0.1" value="0.7"/></p>
+        </div>
+        <button class="preDEGmultibt"  onclick="preDEGmultiplot('preDEGmulti')"><b>Plot</b> </button>
+        <div id="preDEGmultispin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+        <pre id="preDEGmultinote" style="color:red;"></pre>
+        <button onclick="ZoomIn('preDEGmultiresize')">Zoom In</button>
+        <button onclick="ZoomOut('preDEGmultiresize')">Zoom Out</button>
+        <button class="preDEGmultibt" onclick="saveImg('preDEGmultiimg')" disabled>Save</button>
+        <div id="preDEGmultiresize" style="height: 'auto'; width: 'auto'; padding: 0.5em;">
+          <p id="preDEGmultifig"></p>
+        </div>
+      </div><!--preDEGmulti-->
 
     </div><!--preDEGpanel -->
       
@@ -1644,9 +1668,13 @@ function init(){
             if(res.length==0) return;
             resD = JSON.parse(res);
             $("#preDEGpanelBT").show();
+            
+            var htmlCheck="";
             for(const one of resD){
               $('#preDEGvolcanoTab').append(createOpt(one));
-            }
+              htmlCheck += '<label id="preDEGmulticompCK'+one+'"><input class="preDEGmultigrps" type="checkbox" value="'+one+'" onchange="preDEGmultiorderUpdate()"/> '+one+' </label>';//
+            }//preDEGmulticomp
+            $('#preDEGmulticomp').html(htmlCheck);
           },
           error: function(request,status,error){
             console.log(request.status+': cannot get preDEG information ...');
@@ -1703,6 +1731,7 @@ function sync(){
   STACBARref();
   CLIref();
   preDEGVolcanoref("preDEGvolcano");
+  preDEGmultiref();
 }
 function ABBRref(){
 }
@@ -2002,12 +2031,36 @@ function DUALref(){
   }
   
 }
+function orderUpdate(eID,choseGene){
+  var selElem = [];
+  $("."+eID+"grps").each(function(){
+    if($(this).prop("checked")){
+      selElem.push($(this).val());
+  }})
+  if(choseGene) selElem = selElem.concat(getGenes(eID));
+  selElem=selElem.map(function(one){return eID+'li'+one;})
+
+  for(const one of $("#"+eID+"dynList").sortable('toArray')){
+    if(!selElem.includes(one)){
+      $(document.getElementById(one)).remove();
+    }
+  }
+  selElem = [...new Set($("#"+eID+"dynList").sortable('toArray').concat(selElem))];
+
+  var htmlCheck = "";
+  for(const one of selElem){
+    htmlCheck += "<li id='"+one+"'><label>"+one.replace(eID+"li","")+"</label></li>";
+  }
+  $("#"+eID+"dynList").html(htmlCheck);
+}
 function SANKref(){
   showGene('SANK','onchange="SANKorderUpdate()"');
   //showGeneSet('SANK');
   SANKorderUpdate();
 }
 function SANKorderUpdate(){
+  orderUpdate("SANK",true);
+  return;
   var selSank = [];
   $(".SANKgrps").each(function(){
     if($(this).prop("checked")){
@@ -2135,7 +2188,12 @@ function preDEGVolcanoref(eID){
     $("#"+eID+"final").hide();
     $("#"+eID+"interactiveBtn").prop('disabled', true);
   }
-  
+}
+function preDEGmultiref(){
+  showGene('preDEGmulti',"","");
+}
+function preDEGmultiorderUpdate(){
+  orderUpdate("preDEGmulti",false);
 }
 function IMGref(){
   $('#IMGscaleZero').prop('checked',(window.figOpt['scaleZero']=="Yes"));
@@ -2426,8 +2484,17 @@ function ADDGsetDel(grpName){
 }
 function hideShow(section, button, label) {
   section.toggle();
-  if (label == null) label = 'Input'
-  button.text(button.text()=='Hide '+label?'Show '+label:'Hide '+label);
+  if (label == null) label = 'Input';
+  //button.text(button.text()=='Hide '+label?'Show '+label:'Hide '+label);
+  if(button.text().includes('Hide')){
+    button.text('Show '+label);
+  }else if(button.text().includes('Show')){
+    button.text('Hide '+label);
+  }else if(button.text()=="−"){
+    button.text("+");
+  }else if(button.text()=="+"){
+    button.text("−");
+  }
 }
 // plot function 
 function GDplot(){
@@ -3184,7 +3251,6 @@ function preDEGVolcanofind(eID){
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',
     success: function(res){
-      window.testD = res;
       document.getElementById(eID+"spin").style.visibility="hidden";
       $("."+eID+"bt").prop("disabled",false);
       $('#'+eID+'table').empty();
@@ -3252,6 +3318,52 @@ function preDEGVolcanofind(eID){
       $("."+eID+"bt").prop("disabled",false);
     }
   });
+}
+function preDEGmultiplot(eID){
+  $('#'+eID+'note').text("");
+  var genes = getGenes(eID);
+  if(genes.length<1){
+    $('#'+eID+'note').text('Please select genes to be ploted!');
+    return;
+  }
+  var selComp = $("#"+eID+"dynList").sortable('toArray');
+  selComp=selComp.map(function(one){return one.replace(eID+"li","");});
+  if(selComp.length<1){
+    $('#'+eID+'note').text('Please select the comparisons to be ploted!');
+    return;
+  }  
+  var D = {'method':eID,
+           'genes':genes,
+           'compSel':selComp,
+           'scale':$("#"+eID+"FigureScale").val(),
+           'figOpt':window.figOpt}
+  document.getElementById(eID+"spin").style.visibility="visible";
+  $("."+eID+"bt").prop('disabled',true);
+  $.ajax({
+    type:"POST",
+    url: VIPurl,
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',
+    success: function(res){
+      //window.testD = res;
+      document.getElementById(eID+"spin").style.visibility="hidden";
+      $("."+eID+"bt").prop("disabled",false);
+      $('#'+eID+'table').empty();
+      
+      if(res.startsWith('ERROR')){
+        $('#'+eID+'note').text(res);
+        return;
+      }
+      
+      showImg(eID+'fig',res);
+    },
+    error: function(request,status,error){
+      $('#'+eID+'note').text(request.status+request.responseText);
+      document.getElementById(eID+"spin").style.visibility="hidden";
+      $("."+eID+"bt").prop("disabled",false);
+    }
+  });
+
 }
 function DOTplot(){
   $('#DOTnote').text("");
@@ -3774,8 +3886,8 @@ function SANKcheck(){
   //var geneSets = getGeneSet('SANK');
   var grp = [];
   $(".SANKgrps").each(function(){
-  if($(this).prop("checked")){
-    grp.push($(this).val());
+    if($(this).prop("checked")){
+      grp.push($(this).val());
   }})
   
   var selSank = $("#SANKdynList").sortable('toArray');
