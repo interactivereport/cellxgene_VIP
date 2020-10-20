@@ -1214,17 +1214,32 @@
         <p id="CLIgene"></p>
         <p>Choose annotation:</p><p id="CLIgrp"></p>
         <p>Choose layout:</p><p id="CLIlayout"></p>
-        # Use lines with leading '#' to seperate code for readability as empty lines will create new Jupyter notebook cells<br>
-        # adata: a python AnnData object created for you to use in CLI based on your selected cells and metadata <br>
-        # strPath: the full file name without suffix. strPath+'.h5ad' is the data file of adata. <br>
-        # R code cells should start with "%%R" as shown in Vignette 2. Add "%Rdevice svg" if SVG format is desired and numbers of elements in SVG plots are managable<br>
         <div id="CLIscript" style="height:380px;" ></div>
       </div> 
+      <div id="CLIhelp" style="display:none;">
+      <ul>
+        <li>adata: a python AnnData object created for you to use in CLI based on your selected cells and metadata.</li>
+        <li>strPath: the full file name without suffix. strPath+'.h5ad' is the data file of adata.</li>
+        <li>Python mini-Jupyter notebook (Vignette 1 & 2)
+          <ul>
+          <li>Use lines with leading '#' to seperate code for readability as empty lines will create new Jupyter notebook cells.</li>
+          <li>R code cells should start with "%%R" as shown in Vignette 2. Add "%Rdevice svg" if SVG format is desired and numbers of elements in SVG plots are managable.</li>
+          </ul>
+        </li>
+        <li>R Markdown (Vignette 3)
+          <ul>
+          <li>All objects created within Python chunks are available to R using the py object exported by the reticulate package.</li>
+          <li>You can analagously access R objects within Python chunks via the r object. </li>
+          </ul>
+        </li>
+      </ul>
+      </div>
       <button class="CLIbt"  onclick="CLIplot()"><b>Run</b></button>
       <button class="CLIbt"  onclick="editor.getSession().setValue('')">Clear</button>
       <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode1').text().trim());">Vignette 1</button>
       <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode2').text().trim());">Vignette 2</button>
       <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode3').text().trim());">Vignette 3</button>
+      <button onclick="hideShow($('#CLIhelp'),$(this),'Help');">Show Help</button>
       <button onclick="hideShow($('#CLIinput'),$(this));">Hide Input</button>
       <button id="printNotebook" onclick="printNotebook();">Print Notebook</button>
       <button id="hideCode" onclick="hideShow($('.input'),$(this),'Code');">Hide Code</button>
@@ -4004,6 +4019,7 @@ function CLIplot(){
         mywin.document.body.innerText='';
         mywin.document.write(res); 
         mywin.document.close();
+        $('#CLInote').text("Success! Please go to tab named as "+mywin.document.title);
       }
       var filteredRes = '<style type="text/css"> pre { display: block; padding: 8.5px; margin: 0 0 9px; font-size: 12px; line-height: 1.42857143; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: 1px solid #ccc; border-radius: 2px; }';
       var readIt = false;
