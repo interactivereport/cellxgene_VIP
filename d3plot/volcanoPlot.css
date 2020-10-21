@@ -75,7 +75,7 @@
 }
 .dotName {
   fill: black;
-  font-size:16;
+  font-size:10px;
   z-index:-1;
   cursor: pointer;
   text-anchor: middle;
