@@ -1258,7 +1258,7 @@ def getPreDEGvolcano(data):
   return json.dumps([deg.to_csv(),img])#json.dumps([deg.values.tolist(),img])
   
 def getPreDEGbubble(data):
-  #selTag = ','.join(data["compSel"])#data['genes']
+  #data={'compSel':['MS.vs.Control::EN.L4','MS.vs.Control::Endo.cells','MS.vs.Control::EN.PYR'],'genes':['RASGEF1B','SLC26A3','UNC5C','AHI1','CD9']}
   sql = "select gene,log2fc,pval,qval,contrast || '::' || tags as tag from DEG where tag in ({comp}) and gene in ({gList}) order by case tag {oList} end;".format(
     comp=','.join(['?']*len(data['compSel'])),
     gList=','.join(['?']*len(data['genes'])),
@@ -1268,6 +1268,11 @@ def getPreDEGbubble(data):
   conn = sqlite3.connect(strF)
   deg = pd.read_sql_query(sql,conn,params=data['compSel']+data['genes']+data['compSel'])
   conn.close()
+  
+  ## add selected genes which is not in the database back to the dataframe as NA
+  addG = [[i,np.nan,np.nan,np.nan,data['compSel'][0]] for i in data['genes'] if i not in list(deg.gene.unique())]
+  if len(addG)>0:
+    deg = pd.concat([deg,pd.DataFrame(addG,columns=deg.columns)])
   ## plot in R
   strF = ('%s/DEG%f.csv' % (data["CLItmp"],time.time()))
   deg.to_csv(strF,index=False)
