@@ -1217,8 +1217,9 @@ def CLI(data):
   return html
 
 def getPreDEGname(data):
-  strF = data["h5ad"].replace("h5ad","db")
+  strF = re.sub("h5ad$","db",data["h5ad”])
   if not os.path.isfile(strF):
+    ppr.pprint(strF+" is NOT found!")
     return ""
   conn = sqlite3.connect(strF)
   df = pd.read_sql_query("select DISTINCT contrast,tags from DEG;", conn)
@@ -1281,7 +1282,7 @@ def getPreDEGbubble(data):
   img = res.stdout.decode('utf-8')
 
   os.remove(strF)
-  #RASGEF1B SLC26A3 UNC5C AHI1
+  #RASGEF1B SLC26A3 UNC5C AHI1 CD9
   return img
 
 def version():
