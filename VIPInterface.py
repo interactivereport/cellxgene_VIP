@@ -1217,7 +1217,7 @@ def CLI(data):
   return html
 
 def getPreDEGname(data):
-  strF = re.sub("h5ad$","db",data["h5ad”])
+  strF = re.sub("h5ad$","db",data["h5ad"])
   if not os.path.isfile(strF):
     ppr.pprint(strF+" is NOT found!")
     return ""
@@ -1228,7 +1228,7 @@ def getPreDEGname(data):
   return json.dumps(list(df['contrast']+"::"+df['tags']))
     
 def getPreDEGvolcano(data):
-  strF = data["h5ad"].replace("h5ad","db")
+  strF = re.sub("h5ad$","db",data["h5ad"])
   comGrp = data["compSel"].split("::")
   
   conn = sqlite3.connect(strF)
@@ -1265,7 +1265,7 @@ def getPreDEGbubble(data):
     gList=','.join(['?']*len(data['genes'])),
     oList=' '.join(['WHEN ? THEN %d'%i for i in range(len(data['compSel']))]))
   
-  strF = data["h5ad"].replace("h5ad","db")
+  strF = re.sub("h5ad$","db",data["h5ad"])
   conn = sqlite3.connect(strF)
   deg = pd.read_sql_query(sql,conn,params=data['compSel']+data['genes']+data['compSel'])
   conn.close()
