@@ -255,7 +255,7 @@ function volcanoPlot() {
                     .attr('transform', transform);
                 svg.selectAll('.dotName')
                     .attr('transform', transform)
-                    .attr('font-size',16/transform.k);
+                    .style('font-size',12 / transform.k);;
                 svg.selectAll('.dotLine')
                     .attr('transform', transform);
             }

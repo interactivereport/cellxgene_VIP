@@ -3109,7 +3109,7 @@ function DEGplot(eID){//window.DEGraw,window.DEGsel 'DEG'
       .xAxisLabel('log<tspan baseline-shift="sub">2</tspan>Fold-change')
       .yAxisLabel('-log<tspan baseline-shift="sub">10</tspan>False Discovery Rate')
       .vLines({a:-$("#"+eID+"logfc").val(),b:+$("#"+eID+"logfc").val()})
-      .hLines({['qvalue='+$("#"+eID+"fdr").val()]:+$("#"+eID+"fdr").val()})
+      .hLines({['FDR='+$("#"+eID+"fdr").val()]:+$("#"+eID+"fdr").val()})
       .sampleID("gene")
       .xColumn("log2fc")
       .yColumn("qval")
