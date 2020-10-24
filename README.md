@@ -45,6 +45,8 @@ whole or sliced single cell dataset.
 ``` bash
 conda create -n <env name> python=3.7
 conda activate <env name>
+or
+source activate <env name>
 ```
 ## 2. Install cellxgene by run the config.sh in the folder
 ```bash
