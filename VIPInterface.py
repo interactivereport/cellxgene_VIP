@@ -396,7 +396,6 @@ def SGV(data):
 
 def SGVcompare(data):
   adata = createData(data)
-  ppr.pprint(adata)
   #adata = geneFiltering(adata,data['cutoff'],1)
   if len(adata)==0:
     raise ValueError('No cells in the condition!')
