@@ -120,7 +120,7 @@ def collapseGeneSet(data,expr,gNames,cNames,fSparse):
 def subData(data):
   selC = list(data['cells'].values())
   cNames = ["cell%d" %i for i in selC]
-  
+
   ## onbtain the expression matrix
   gNames = []
   expr = []
@@ -303,6 +303,7 @@ def errorTask(data):
 def distributeTask(aTask):
   return {
     'SGV':SGV,
+    'SGVcompare':SGVcompare,
     'PGV':PGV,
     'VIOdata':VIOdata,
     'HEATplot':pHeatmap,
@@ -392,6 +393,22 @@ def SGV(data):
   sc.pl.violin(adata,data['genes'],groupby=data['grp'][0],ax=fig.gca(),show=False)
   fig.autofmt_xdate(bottom=0.2,rotation=ro,ha='right')
   return iostreamFig(fig)
+
+def SGVcompare(data):
+  adata = createData(data)
+  ppr.pprint(adata)
+  #adata = geneFiltering(adata,data['cutoff'],1)
+  if len(adata)==0:
+    raise ValueError('No cells in the condition!')
+  
+  # plot in R
+  strF = ('%s/SGV%f.csv' % (data["CLItmp"],time.time()))
+  pd.concat([adata.to_df(),adata.obs[data['grp']]],axis=1,sort=False).to_csv(strF,index=False)
+  res = subprocess.run([strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi'])],capture_output=True)#
+  img = res.stdout.decode('utf-8')
+  os.remove(strF)
+  
+  return img
 
 def VIOdata(data):
   adata = createData(data)

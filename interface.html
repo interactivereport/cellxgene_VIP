@@ -451,7 +451,7 @@
   <div id="panel-left">
     <div class="tab">
       <button class="tablinks" onclick="selFun(event, 'ADDG')"><b>Add Genes</b></button>
-      <button class="tablinks" onclick="selFun(event, 'SGV');$('#SGVnote').text('');if($('#SGVgene').val() == null) $('#SGVnote').text('Please add genes either from the VIP menu or the main window');">Violin</button>
+      <button class="tablinks" onclick="selFun(event, 'SGV');defaultTopSel('SGV','SGVsingle')">Violin</button>
       <button class="tablinks" onclick="selFun(event, 'PGV')">Stacked Violin</button>
       <button class="tablinks" onclick="selFun(event, 'HEAT')">Heatmap</button>
       <button class="tablinks" onclick="selFun(event, 'EMBED')">UMAP/tSNE</button>
@@ -464,7 +464,7 @@
       <button class="tablinks" onclick="selFun(event, 'STACBAR')">Stacked Barplot</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'DEG')">DEG</button>
-      <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultDEG('DEGlinksPlot')">Pre-Compu. DEG</button>
+      <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')">Pre-Compu. DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
       <button class="tablinks" onclick="selFun(event, 'CLI')">Command Line Interface</button>
       <hr size="1" noshade>
@@ -532,7 +532,7 @@
     <div id="GD" class=tabcontent>
       <div id="GDinput">
         <h3>Genes detected in selected groups of cells </h3>
-        <p>In group 1 (<span id="GDcellN1" style="color:red;">0</span>) cells and group 2 (<span id="GDcellN2" style="color:red;">0</span>) cells</p>
+        <p>In group 1 (<span class="cellN1" style="color:red;">0</span>) cells and group 2 (<span class="cellN2" style="color:red;">0</span>) cells</p>
         <p>Expression cutoff:
         <input id="GDcutoff" type="number" step="0.1" value="1"/></p>
       </div>
@@ -551,8 +551,8 @@
       <div id="MARKinput">
         <h3>Marker genes of annotation categories on selected cells</h3>
         <p>Choose cell set(s):
-          <label><input class="MARKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="MARKcellN1" style="color:red">0</span>)</label>
-          <label><input class="MARKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="MARKcellN2" style="color:red">0</span>)</label>
+          <label><input class="MARKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="MARKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
         <p>Select an annotation: 
         <select id="MARKgrp"></select></p>
@@ -579,34 +579,69 @@
     </div><!--MARK-->
     
     <div id="SGV" class="tabcontent">
-      <div id="SGVinput">
-        <h3>Violin plot of a gene on selected cells</h3>
-        <p>Choose cell set(s):
-          <label><input class="SGVcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="SGVcellN1" style="color:red">0</span>)</label>
-          <label><input class="SGVcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="SGVcellN2" style="color:red">0</span>)</label>
-        </p>
-        <p>Choose a gene ('Add Genes' first): <select id="SGVgene"></select></p>
-        <p>Expression cutoff: <input id="SGVcutoff" type="number" step="0.1" value="1"/></p>
-        <p>Group by:
-        <select id="SGVgrp"></select></p>
+      <div class="topTab">
+        <button id="SGVsingle" class="SGVlinks" onclick="selTop(event, 'SGVsingleV','SGV')">Plot Violin</button>
+        <button id="SGVcompare" class="SGVlinks" onclick="selTop(event, 'SGVcompareV','SGV')">Group Violin</button>
       </div>
-      <button class="SGVbt" onclick="SGVplot('plot')"><b>Plot</b></button>
-      <button class="SGVsaveBT" onclick="SGVplot('data')">Get Data</button>
-      <button onclick="ZoomIn('SGVresize')">Zoom In</button>
-      <button onclick="ZoomOut('SGVresize')">Zoom Out</button>
-      <button class="SGVpngBT" onclick="saveImg('SGVimg')" disabled>Save</button>
-      <button onclick="hideShow($('#SGVinput'),$(this));">Hide Input</button>
-      <pre id="SGVnote" style="color:red;"></pre>
-      <div id="SGVspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div id="SGVresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="SGVfig"></p></div>
-    </div><!--SGV-->
+      
+      <div id="SGVsingleV" class="SGVcontent">
+        <h3>Violin plot of a gene on selected cells</h3>
+        <div id="SGVinput">
+          <p>Choose cell set(s):
+            <label><input class="SGVcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
+            <label><input class="SGVcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
+          </p>
+          <p>Choose a gene ('Add Genes' first): <select id="SGVgene"></select></p>
+          <p>Expression cutoff: <input id="SGVcutoff" type="number" step="0.1" value="1" min="0"/></p>
+          <p>Group by:
+          <select id="SGVgrp"></select></p>
+        </div>
+        <button class="SGVbt" onclick="SGVplot('plot')"><b>Plot</b></button>
+        <button class="SGVsaveBT" onclick="SGVplot('data')">Get Data</button>
+        <button onclick="ZoomIn('SGVresize')">Zoom In</button>
+        <button onclick="ZoomOut('SGVresize')">Zoom Out</button>
+        <button class="SGVpngBT" onclick="saveImg('SGVimg')" disabled>Save</button>
+        <button onclick="hideShow($('#SGVinput'),$(this));">Hide Input</button>
+        <pre id="SGVnote" style="color:red;"></pre>
+        <div id="SGVspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+        <div id="SGVresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="SGVfig"></p></div>
+      </div> <!-- SGVsingleV -->
+      
+      <div id="SGVcompareV" class="SGVcontent">
+        <h3>Plot the grouped violin</h3>
+        <div id="SGVcompareinput">
+          <p>Choose cell set(s):
+            <label><input class="SGVcomparecell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
+            <label><input class="SGVcomparecell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
+          </p>
+          <p>Choose a gene ('Add Genes' first): <select id="SGVcomparegene"></select></p>
+          <p>Expression cutoff: <input id="SGVcomparecutoff" type="number" step="0.1" value="0" min="0"/></p>
+          <p>Group by:
+          <select id="SGVcomparegrp"></select></p>
+          <p>Compare by:
+          <select id="SGVcompareorder"></select></p>
+        </div>
+        <button class="SGVcomparebt" onclick="SGVcompareplot()"><b>Plot</b></button> <!-- 'plot' -->
+        <!-- <button class="SGVsaveBT" onclick="SGVplot('data')">Get Data</button> -->
+        <button onclick="ZoomIn('SGVcompareresize')">Zoom In</button>
+        <button onclick="ZoomOut('SGVcompareresize')">Zoom Out</button>
+        <button class="SGVcomparepngBT" onclick="saveImg('SGVcompareimg')" disabled>Save</button>
+        <button onclick="hideShow($('#SGVcompareinput'),$(this));">Hide Input</button>
+        <pre id="SGVcomparenote" style="color:red;"></pre>
+        <div id="SGVcomparespin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+        <div id="SGVcompareresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="SGVcomparefig"></p></div>
+
+      </div> <!-- SGVcompareV -->
+      
+      
+    </div><!--SGV panel-->
     
     <div id="PGV" class="tabcontent">
       <div id="PGVinput">
         <h3>Stacked violin plot of genes on selected cells</h3>
         <p>Choose cell set(s):
-          <label><input class="PGVcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="PGVcellN1" style="color:red">0</span>)</label>
-          <label><input class="PGVcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="PGVcellN2" style="color:red">0</span>)</label>
+          <label><input class="PGVcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="PGVcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
         <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.PGVgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="PGVgene"></p>
@@ -679,8 +714,8 @@
       <div id="HEATinput">
         <h3>Heatmap on selected cells and genes</h3>
         <p>Choose cell set(s):
-          <label><input class="HEATcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="HEATcellN1" style="color:red">0</span>)</label>
-          <label><input class="HEATcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="HEATcellN2" style="color:red">0</span>)</label>
+          <label><input class="HEATcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="HEATcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
         <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.HEATgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="HEATgene"></p>
@@ -711,8 +746,8 @@
       <div id="DOTinput">
         <h3>Dot plot shows per group, the fraction of cells expressing a gene (dot size) and the mean expression of the gene in those cell (color scale)</h3>
         <p>Choose cell set(s):
-          <label><input class="DOTcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DOTcellN1" style="color:red">0</span>)</label>
-          <label><input class="DOTcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DOTcellN2" style="color:red">0</span>)</label>
+          <label><input class="DOTcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="DOTcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
         <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.DOTgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="DOTgene"></p>
@@ -784,8 +819,8 @@
       <div id="EMBEDinput">
         <h3>Embedding plots on selected genes and annotations</h3>
         <p>Choose cell set(s):
-          <label><input class="EMBEDcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="EMBEDcellN1" style="color:red">0</span>)</label>
-          <label><input class="EMBEDcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="EMBEDcellN2" style="color:red">0</span>)</label>
+          <label><input class="EMBEDcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="EMBEDcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
         <p>Choose annotation groups:</p>
         <p id="EMBEDgrp"></p>
@@ -817,8 +852,8 @@
       <div id="TRAKinput">
         <h3>Track plot shows the gene expression represented by height</h3>
         <p>Choose cell set(s):
-          <label><input class="TRAKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="TRAKcellN1" style="color:red">0</span>)</label>
-          <label><input class="TRAKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="TRAKcellN2" style="color:red">0</span>)</label>
+          <label><input class="TRAKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="TRAKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
         <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.TRAKgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="TRAKgene"></p>
@@ -851,8 +886,8 @@
       <div id="DENSinput">
         <h3>Density plots of selected genes</h3>
         <p>Choose cell set(s):
-          <label><input class="DENScell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DENScellN1" style="color:red">0</span>)</label>
-          <label><input class="DENScell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DENScellN2" style="color:red">0</span>)</label>
+          <label><input class="DENScell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="DENScell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
         <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.DENSgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="DENSgene"></p>
@@ -877,8 +912,8 @@
       <div id="DENS2Dinput">
         <h3>2D density plot to show expression relationship of two genes</h3>
         <p>Choose cell set(s):
-          <label><input class="DENS2Dcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DENS2DcellN1" style="color:red">0</span>)</label>
-          <label><input class="DENS2Dcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DENS2DcellN2" style="color:red">0</span>)</label>
+          <label><input class="DENS2Dcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="DENS2Dcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
         <p>Choose two genes ('Add Genes' first):</p>
         <p id="DENS2Dgene"></p>
@@ -900,8 +935,8 @@
       <div id="DUALinput">
         <h3>Embedding plot of two genes on selected cells</h3>
         <p>Choose cell set(s):
-          <label><input class="DUALcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="DUALcellN1" style="color:red">0</span>)</label>
-          <label><input class="DUALcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="DUALcellN2" style="color:red">0</span>)</label>
+          <label><input class="DUALcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="DUALcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
         <p id="DUALgene"></p>
         <p>Expression cutoff: <input id="DUALcutoff" type="number" step="0.1" value="1"/></p>
@@ -925,8 +960,8 @@
       <div id="SANKinput">
         <h3>Interactive sankey diagram of annotations and/or genes on selected cells</h3>
         <p>Choose cell set(s):
-          <label><input class="SANKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="SANKcellN1" style="color:red">0</span>)</label>
-          <label><input class="SANKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="SANKcellN2" style="color:red">0</span>)</label>
+          <label><input class="SANKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="SANKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
         <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.SANKgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="SANKgene"></p>
@@ -955,7 +990,7 @@
     <div id="DEG" class="tabcontent">
       <div id="DEGinput">
         <h3>Find differentially expressed genes</h3>
-        <p>Group 1 (<span id="DEGcellN1" style="color:red;">0</span>) cells and group 2 (<span id="DEGcellN2" style="color:red;">0</span>) cells</p>
+        <p>Group 1 (<span class="cellN1" style="color:red;">0</span>) cells and group 2 (<span class="cellN2" style="color:red;">0</span>) cells</p>
         <p>Differentially expressed genes will be detected between the two cell gorups defined above, unless two categories of the 'Custom_combine' annotation are selected, 
         which enables DE analysis between those two:</p>
         <p id="DEGgrp"></p>
@@ -1027,9 +1062,8 @@
     
     <div id="preDEGpanel" class="tabcontent">
       <div class="topTab">
-        <button id="DEGlinksPlot" class="DEGlinks" onclick="selDEG(event, 'preDEGvolcano')">Plot DEG</button>
-        <button id="DEGlinksViolin" class="DEGlinks" onclick="selDEG(event, 'preDEGviolin')">Group Violin</button>
-        <button id="DEGlinksMulti" class="DEGlinks" onclick="selDEG(event, 'preDEGmulti')">Multi DEG</button>
+        <button id="DEGlinksPlot" class="DEGlinks" onclick="selTop(event, 'preDEGvolcano','DEG')">Plot DEG</button>
+        <button id="DEGlinksMulti" class="DEGlinks" onclick="selTop(event, 'preDEGmulti','DEG')">Multi DEG</button>
       </div>
       
       <div id="preDEGvolcano" class="DEGcontent">
@@ -1093,10 +1127,6 @@
         
       </div><!--preDEGvolcano-->
         
-      <div id="preDEGviolin" class="DEGcontent">
-        Plot the grouped violin for pre-computed DEGs
-      </div><!--preDEGviolin-->
-        
       <div id="preDEGmulti" class="DEGcontent">
         <h3>Plot the bubble heatmap for pre-computed DEGs from multiple comparisons</h3>
         <button class="preDEGmultibt" onclick="hideShow($('#preDEGmultiinput'),$(this));">Hide Input</button>
@@ -1127,13 +1157,12 @@
 
     </div><!--preDEGpanel -->
       
-    
     <div id='STACBAR' class='tabcontent'>
       <div id="STACBARinput">
         <h3>Interactive stacked barplot of cell distribution of selected cells over two annotations and/or genes</h3>
         <p>Choose cell set(s):
-          <label><input class="STACBARcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="STACBARcellN1" style="color:red">0</span>)</label>
-          <label><input class="STACBARcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="STACBARcellN2" style="color:red">0</span>)</label>
+          <label><input class="STACBARcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="STACBARcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
         <p>Choose two genes ('Add Genes' first):</p>
         <p id="STACBARgene"></p>
@@ -1231,8 +1260,8 @@
     <div id="CLI" class="tabcontent">
       <div id="CLIinput">
         <p>Choose cell set(s):
-          <label><input class="CLIcell" type="checkbox" value="celllist1" checked/>Group 1 (<span id="CLIcellN1" style="color:red">0</span>)</label>
-          <label><input class="CLIcell" type="checkbox" value="celllist2" checked/>Group 2 (<span id="CLIcellN2" style="color:red">0</span>)</label>
+          <label><input class="CLIcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="CLIcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
         <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.CLIgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="CLIgene"></p>
@@ -1383,23 +1412,22 @@ function selFun(evt,sel){
   evt.currentTarget.className += " active";
   sync();
 }
-function defaultDEG(sel){
+function defaultTopSel(grp,sel){
   var initF = false;
-  $(".DEGlinks").each(function(){
+  $("."+grp+"links").each(function(){
     initF ||= $(this).prop("class").includes("active");
   });
-
   if(!initF){
     $("#"+sel)[0].click();
   }
 }
-function selDEG(evt,sel){
+function selTop(evt,sel,grp){
   var i, tabC, tabL;
-  tabC = document.getElementsByClassName("DEGcontent");
+  tabC = document.getElementsByClassName(grp+"content");
   for (i = 0; i < tabC.length; i++) {
     tabC[i].style.display = "none";
   }
-  tabL = document.getElementsByClassName("DEGlinks");
+  tabL = document.getElementsByClassName(grp+"links");
   for (i = 0; i < tabL.length; i++) {
     tabL[i].className = tabL[i].className.replace(" active", "");
   }
@@ -1442,37 +1470,12 @@ function cellNupdate(){
   if(!!window.store.getState().differential.celllist2){
     n2 = window.store.getState().differential.celllist2.length;
   }
-  $('#MARKcellN1').text(n1);
-  $('#SGVcellN1').text(n1);
-  $('#PGVcellN1').text(n1);
-  $('#HEATcellN1').text(n1);
-  $('#DOTcellN1').text(n1);
-  $('#DEGcellN1').text(n1);
-  $('#GDcellN1').text(n1);
-  $('#EMBEDcellN1').text(n1);
-  $('#TRAKcellN1').text(n1);
-  $('#DUALcellN1').text(n1);
-  $('#DENScellN1').text(n1);
-  $('#DENS2DcellN1').text(n1);
-  $('#SANKcellN1').text(n1);
-  $('#STACBARcellN1').text(n1);
-  $('#CLIcellN1').text(n1);
-
-  $('#MARKcellN2').text(n2);
-  $('#SGVcellN2').text(n2);
-  $('#PGVcellN2').text(n2);
-  $('#HEATcellN2').text(n2);
-  $('#DEGcellN2').text(n2);
-  $('#DOTcellN2').text(n2);
-  $('#GDcellN2').text(n2);
-  $('#EMBEDcellN2').text(n2);
-  $('#TRAKcellN2').text(n2);
-  $('#DUALcellN2').text(n2);
-  $('#DENScellN2').text(n2);
-  $('#DENS2DcellN2').text(n2);
-  $('#SANKcellN2').text(n2);
-  $('#STACBARcellN2').text(n2);
-  $('#CLIcellN2').text(n2);
+  $('.cellN1').each(function(){
+    $(this).text(n1);
+  });
+  $('.cellN2').each(function(){
+    $(this).text(n2);
+  });
 }
 
 //Page Initial functions
@@ -1521,6 +1524,8 @@ function init(){
     //--------------------------------------------------------------------------
     //add dropdown annotation categories
     var sgv = document.getElementById("SGVgrp");
+    var sgvGrp = document.getElementById("SGVcomparegrp");
+    var sgvOrder = document.getElementById("SGVcompareorder");
     var pgv = document.getElementById("PGVgrp");
     var heat = document.getElementById("HEATorder");
     var dot = document.getElementById("DOTgrp");
@@ -1533,6 +1538,8 @@ function init(){
     for(const one of grps){
       if (one.startsWith(">")) continue; 
       sgv.add(createOpt(one));
+      sgvGrp.add(createOpt(one));
+      sgvOrder.add(createOpt(one));
       pgv.add(createOpt(one));
       heat.add(createOpt(one));
       dot.add(createOpt(one));
@@ -1717,6 +1724,7 @@ function sync(){
   ADDGref();
   GDref();
   SGVref();
+  SGVcompareref();
   PGVref();
   HEATref();
   DOTref();
@@ -1779,14 +1787,14 @@ function addCustomCheck(aID){
 function MARKref(){
   addCustomCombine("MARKgrp");
 }
-function SGVref(){
+function dropGene(aID){
   var genes = window.store.getState().controls.userDefinedGenes;
   genes = genes.concat(window.biogen);
   genes = [...new Set(genes)];
   optG = [];
-  var i,x = document.getElementById("SGVgene");
+  var i,x = document.getElementById(aID+"gene");
   //remove options which are not in the gene list
-  $("#SGVgene option").each(function(){
+  $("#"+aID+"gene option").each(function(){
     optG.push($(this).val());
     if(!genes.includes($(this).val())){
       x.remove($(this).index())
@@ -1800,8 +1808,27 @@ function SGVref(){
       }
     }
   }
+}
+function SGVref(){
+  dropGene("SGV");
   addCustomCombine("SGVgrp");
-  if($('#SGVgene').val()) $('#SGVnote').text('');
+  //if($('#SGVgene').val()) $('#SGVnote').text('');
+  if($('#SGVgene').val() == null){
+    $('#SGVnote').text('Please add genes either from the VIP menu or the main window');
+  }else if($('#SGVnote').text().includes("VIP menu")){
+    $('#SGVnote').text('');
+  }
+}
+function SGVcompareref(){
+  dropGene("SGVcompare");
+  addCustomCombine("SGVcomparegrp");
+  addCustomCombine("SGVcompareorder");
+
+  if($('#SGVcomparegene').val() == null){
+    $('#SGVcomparenote').text('Please add genes either from the VIP menu or the main window');
+  }else if ($('#SGVcomparenote').text().includes("VIP menu")){
+    $('#SGVcomparenote').text("");
+  }
 }
 function showGeneSet(aID){
   var gSets = Object.keys(window.bioGeneGrp);
@@ -2675,10 +2702,7 @@ function SGVplot(acc){
       }
     }
   }
-  if($('#SGVgene').val() == null) {
-    $('#SGVnote').text('Please add genes either from the VIP menu or the main window');
-    return;
-  }
+
   if(cells.length==0){
     $('#SGVnote').text("Please use selection tools to put cells into groups");
     return;
@@ -2741,6 +2765,90 @@ function SGVplot(acc){
       document.getElementById("SGVfig").innerHTML = '<img id="SGVpng" src="data:image/png;base64," width=100% height="auto"/>';// height="450" width="450"
       $(".SGVbt").prop("disabled",false);
       document.getElementById("SGVspin").style.visibility="hidden";
+    }
+  })
+}
+function SGVcompareplot(){
+  $('#SGVcomparenote').text("");
+  if($("#SGVcomparegene option:selected").val()=="NA"){
+    $('#SGVcomparenote').text("Please select a gene to plot");
+    return;
+  }
+  if($("#SGVcomparegrp option:selected").val()=="NA"){
+    $('#SGVcomparenote').text("Please select a category to plot");
+    return;
+  }
+  var orderGrp = $("#SGVcomparegrp option:selected").val();
+  if($("#SGVcompareorder option:selected").val()!="NA"){
+    orderGrp = $("#SGVcompareorder option:selected").val();
+  }
+  var cells=[], x = document.getElementsByClassName('SGVcomparecell');
+  for(i=0;i<x.length;i++){
+    if(x[i].checked){
+      if(!!window.store.getState().differential[x[i].value]){
+        if(cells.length==0){
+          cells = window.store.getState().differential[x[i].value];
+        }else{
+          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
+          tmp.set(cells);
+          tmp.set(window.store.getState().differential[x[i].value],cells.length);
+          cells = tmp;
+        }
+      }
+    }
+  }
+
+  if(cells.length==0){
+    $('#SGVcomparenote').text("Please use selection tools to put cells into groups");
+    return;
+  }
+  if(+$("#SGVcomparecutoff").val() < +$("#SGVcomparecutoff").prop('min')){
+    $('#SGVcomparenote').text("The minimal expression level is "+$("#SGVcomparecutoff").prop('min'));
+    return;
+  }
+  //$('#SGVnote').text("Plotting on "+cells.length+" selected cells");
+  let grp = [...new Set([$("#SGVcomparegrp").val(),orderGrp])];
+  var combGrp = [];
+  if(grp[0]=="Custom_combine"){
+    grp = Object.keys(window.bioCombine);
+    combGrp = window.bioCombine;
+  }
+  
+  var D = {'method':'SGVcompare',
+            'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+            'cells':cells,
+            'genes':[$("#SGVcomparegene").val()],
+            'grp':grp,
+            'abb':window.bioAbbr,
+            'cutoff':$("#SGVcomparecutoff").val(),
+            'combine':combGrp,
+            'figOpt':window.figOpt};
+  //if(acc=='data') D['method']='VIOdata';
+  $(".SGVcomparebt").prop("disabled",true);
+  $(".SGVcomparepngBT").prop('disabled',true);
+  document.getElementById("SGVcomparespin").style.visibility="visible";
+  
+  $.ajax({
+    type:"POST",
+    url: VIPurl,
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(res){
+      $(".SGVcomparebt").prop("disabled",false);
+      document.getElementById("SGVcomparespin").style.visibility="hidden";
+      if(res.startsWith('ERROR')){
+        $('#SGVcomparenote').text(res);
+        showImg('SGVcomparefig',"");
+        return;
+      }
+      showImg('SGVcomparefig',res);
+      $(".SGVcomparepngBT").prop('disabled',false);
+    },
+    error: function(request,status,error){
+      $('#SGVcomparenote').text(request.status+request.responseText);
+      showImg('SGVcomparefig',"");
+      $(".SGVcomparebt").prop("disabled",false);
+      document.getElementById("SGVcomparespin").style.visibility="hidden";
     }
   })
 }
