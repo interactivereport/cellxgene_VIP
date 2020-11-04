@@ -50,7 +50,8 @@ def route(data,appConfig=None):
     else:
       port = appConfig.server_config.app__port
     data["url"] = f'http://localhost:{port}/{api_version}'#{appConfig.server__host}
-  data.update(getEnv())
+  #data.update(getEnv())
+  data.update(VIPenv)
   #ppr.pprint(appConfig.server_config.single_dataset__datapath)
   data['h5ad']=appConfig.server_config.single_dataset__datapath
   if appConfig.server_config.multi_dataset__dataroot is None:
@@ -403,11 +404,8 @@ def SGVcompare(data):
   strF = ('%s/SGV%f.csv' % (data["CLItmp"],time.time()))
   pd.concat([adata.to_df(),adata.obs[data['grp']]],axis=1,sort=False).to_csv(strF,index=False)
   strCMD = " ".join(["%s/Rscript"%data['Rpath'],strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
-  ppr.pprint(strCMD)
-  if len(data['Rpath'])>3:
-    res = subprocess.run(["%s/Rscript"%data['Rpath'],strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)
-  else:
-    res = subprocess.run([strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
+  #ppr.pprint(strCMD)
+  res = subprocess.run([strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
   os.remove(strF)
   
@@ -679,10 +677,7 @@ def DEG(data):
   strF = ('%s/DEG%f.csv' % (data["CLItmp"],time.time()))
   deg.to_csv(strF,index=False)
   #ppr.pprint([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]])
-  if len(data['Rpath'])>3:
-    res = subprocess.run(["%s/Rscript"%data['Rpath'],strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],data['Rlib']],capture_output=True)#
-  else:
-    res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],data['Rlib']],capture_output=True)#
+  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
   os.remove(strF)
   #####
@@ -1102,10 +1097,7 @@ def DENS2D(data):
   ## plot in R
   strF = ('/tmp/DEG%f.csv' % time.time())
   adata.to_df().to_csv(strF)#
-  if len(data['Rpath'])>3:
-    res = subprocess.run(["%s/Rscript"%data['Rpath'],strExePath+'/Density2D.R',strF,data['figOpt']['img'],str(data['cutoff']),str(data['bandwidth']),data['figOpt']['colorMap'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
-  else:
-    res = subprocess.run([strExePath+'/Density2D.R',strF,data['figOpt']['img'],str(data['cutoff']),str(data['bandwidth']),data['figOpt']['colorMap'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
+  res = subprocess.run([strExePath+'/Density2D.R',strF,data['figOpt']['img'],str(data['cutoff']),str(data['bandwidth']),data['figOpt']['colorMap'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
   if 'Error' in res.stderr.decode('utf-8'):
     raise ValueError(res.stderr.decode('utf-8'))
   img = res.stdout.decode('utf-8')
@@ -1267,10 +1259,7 @@ def getPreDEGvolcano(data):
   strF = ('%s/DEG%f.csv' % (data["CLItmp"],time.time()))
   deg.to_csv(strF,index=False)
   #ppr.pprint([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]])
-  if len(data['Rpath'])>3:
-    res = subprocess.run(["%s/Rscript"%data['Rpath'],strExePath+'/volcano.R',strF,';'.join(data['genes']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],data['Rlib']],capture_output=True)#
-  else:
-    res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(data['genes']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],data['Rlib']],capture_output=True)#
+  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(data['genes']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
   os.remove(strF)
   #####
@@ -1307,10 +1296,7 @@ def getPreDEGbubble(data):
   strF = ('%s/DEG%f.csv' % (data["CLItmp"],time.time()))
   deg.to_csv(strF,index=False)
   #ppr.pprint(' '.join([strExePath+'/bubbleMap.R',strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['scale']]))
-  if len(data['Rpath'])>3:
-    res = subprocess.run(["%s/Rscript"%data['Rpath'],strExePath+'/bubbleMap.R',strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['scale'],data['Rlib']],capture_output=True)#
-  else:
-    res = subprocess.run([strExePath+'/bubbleMap.R',strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['scale'],data['Rlib']],capture_output=True)#
+  res = subprocess.run([strExePath+'/bubbleMap.R',strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['scale'],data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
 
   os.remove(strF)
@@ -1328,7 +1314,14 @@ def getEnv():
   ppr.pprint(config)
   if len(config['Rpath'])>3:
     os.stat("%s/Rscript"%config['Rpath'])
+    os.environ['PATH'] = config['Rpath']+os.pathsep+os.environ['PATH']
   return config
+
+try:
+  VIPenv = getEnv()
+except Exception as e:
+  ppr.pprint("The specified R path is incorrect, please check or remove from vip.env!")
+  raise e
 
 def version():
   print("1.0.8")
