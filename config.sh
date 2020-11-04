@@ -146,6 +146,7 @@ cp volcano.R $strPath/server/app/.
 cp violin.R $strPath/server/app/.
 cp Density2D.R $strPath/server/app/.
 cp bubbleMap.R $strPath/server/app/.
+cp vip.env $strPath/server/app/. 2>/dev/null | true
 find ./cellxgene/server/ -name "decode_fbs.py" -exec cp {} $strPath/server/app/. \;
 
 echo -e "\nls -l $strweb\n"

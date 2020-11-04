@@ -1,6 +1,13 @@
 #!/usr/bin/env Rscript
 args = commandArgs(trailingOnly = TRUE)
 if(length(args)<1) q()
+libPath = tail(args,1)
+if(nchar(libPath)>3){
+  addPath <- unlist(strsplit(libPath,";"))
+  addPath <- addPath[sapply(addPath,dir.exists)]
+  .libPaths(c(addPath,.libPaths()))
+}
+
 library(ggplot2)
 library(ggrepel)
 library(ggrastr)

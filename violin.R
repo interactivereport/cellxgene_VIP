@@ -1,6 +1,12 @@
 #!/usr/bin/env Rscript
 args = commandArgs(trailingOnly = TRUE)
 if(length(args)<1) q()
+libPath = tail(args,1)
+if(nchar(libPath)>3){
+  addPath <- unlist(strsplit(libPath,";"))
+  addPath <- addPath[sapply(addPath,dir.exists)]
+  .libPaths(c(addPath,.libPaths()))
+}
 loadPackages <- function(){
   require(ggplot2)
   require(dplyr)
@@ -166,5 +172,3 @@ a <- dev.off()
 fig = base64enc::dataURI(file = strImg)
 cat(gsub("data:;base64,","",fig))
 a <- file.remove(strImg)
-
-#./violin.R /share/oyoung/violin.csv Gene1 pdf 10 300

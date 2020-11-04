@@ -3,6 +3,12 @@
 ##
 args = commandArgs(trailingOnly = TRUE)
 if(length(args)<1) q()
+libPath = tail(args,1)
+if(nchar(libPath)>3){
+  addPath <- unlist(strsplit(libPath,";"))
+  addPath <- addPath[sapply(addPath,dir.exists)]
+  .libPaths(c(addPath,.libPaths()))
+}
 if(!require(ggplot2,quietly=T) || !require(MASS,quietly=T) || !require(dplyr,quietly=T,warn.conflicts=F)) stop("ggplot2, dplyr and MASS are required R package!")
 
 get_density = function(x, y, ...) {

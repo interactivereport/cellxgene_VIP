@@ -39,7 +39,7 @@ rcParams.update({'figure.autolayout': True})
 
 api_version = "/api/v0.2"
 
-def route(data,appConfig=None,CLItmp="/tmp"):
+def route(data,appConfig=None):
   #ppr.pprint("current working dir:%s"%os.getcwd())
   if appConfig is None:
     data["url"] = f'http://127.0.0.1:8888/{api_version}'
@@ -50,8 +50,7 @@ def route(data,appConfig=None,CLItmp="/tmp"):
     else:
       port = appConfig.server_config.app__port
     data["url"] = f'http://localhost:{port}/{api_version}'#{appConfig.server__host}
-  data["CLItmp"] = CLItmp
-
+  data.update(getEnv())
   #ppr.pprint(appConfig.server_config.single_dataset__datapath)
   data['h5ad']=appConfig.server_config.single_dataset__datapath
   if appConfig.server_config.multi_dataset__dataroot is None:
@@ -403,7 +402,12 @@ def SGVcompare(data):
   # plot in R
   strF = ('%s/SGV%f.csv' % (data["CLItmp"],time.time()))
   pd.concat([adata.to_df(),adata.obs[data['grp']]],axis=1,sort=False).to_csv(strF,index=False)
-  res = subprocess.run([strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi'])],capture_output=True)#
+  strCMD = " ".join(["%s/Rscript"%data['Rpath'],strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
+  ppr.pprint(strCMD)
+  if len(data['Rpath'])>3:
+    res = subprocess.run(["%s/Rscript"%data['Rpath'],strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)
+  else:
+    res = subprocess.run([strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
   os.remove(strF)
   
@@ -675,7 +679,10 @@ def DEG(data):
   strF = ('%s/DEG%f.csv' % (data["CLItmp"],time.time()))
   deg.to_csv(strF,index=False)
   #ppr.pprint([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]])
-  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]],capture_output=True)#
+  if len(data['Rpath'])>3:
+    res = subprocess.run(["%s/Rscript"%data['Rpath'],strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],data['Rlib']],capture_output=True)#
+  else:
+    res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
   os.remove(strF)
   #####
@@ -1095,7 +1102,10 @@ def DENS2D(data):
   ## plot in R
   strF = ('/tmp/DEG%f.csv' % time.time())
   adata.to_df().to_csv(strF)#
-  res = subprocess.run([strExePath+'/Density2D.R',strF,data['figOpt']['img'],str(data['cutoff']),str(data['bandwidth']),data['figOpt']['colorMap'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi'])],capture_output=True)#
+  if len(data['Rpath'])>3:
+    res = subprocess.run(["%s/Rscript"%data['Rpath'],strExePath+'/Density2D.R',strF,data['figOpt']['img'],str(data['cutoff']),str(data['bandwidth']),data['figOpt']['colorMap'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
+  else:
+    res = subprocess.run([strExePath+'/Density2D.R',strF,data['figOpt']['img'],str(data['cutoff']),str(data['bandwidth']),data['figOpt']['colorMap'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
   if 'Error' in res.stderr.decode('utf-8'):
     raise ValueError(res.stderr.decode('utf-8'))
   img = res.stdout.decode('utf-8')
@@ -1257,7 +1267,10 @@ def getPreDEGvolcano(data):
   strF = ('%s/DEG%f.csv' % (data["CLItmp"],time.time()))
   deg.to_csv(strF,index=False)
   #ppr.pprint([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]])
-  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(data['genes']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]],capture_output=True)#
+  if len(data['Rpath'])>3:
+    res = subprocess.run(["%s/Rscript"%data['Rpath'],strExePath+'/volcano.R',strF,';'.join(data['genes']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],data['Rlib']],capture_output=True)#
+  else:
+    res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(data['genes']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
   os.remove(strF)
   #####
@@ -1294,12 +1307,28 @@ def getPreDEGbubble(data):
   strF = ('%s/DEG%f.csv' % (data["CLItmp"],time.time()))
   deg.to_csv(strF,index=False)
   #ppr.pprint(' '.join([strExePath+'/bubbleMap.R',strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['scale']]))
-  res = subprocess.run([strExePath+'/bubbleMap.R',strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['scale']],capture_output=True)#
+  if len(data['Rpath'])>3:
+    res = subprocess.run(["%s/Rscript"%data['Rpath'],strExePath+'/bubbleMap.R',strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['scale'],data['Rlib']],capture_output=True)#
+  else:
+    res = subprocess.run([strExePath+'/bubbleMap.R',strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['scale'],data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
 
   os.remove(strF)
   #RASGEF1B SLC26A3 UNC5C AHI1 CD9
   return img
+
+def getEnv():
+  config = {'CLItmp':'/tmp','Rpath':'','Rlib':''}
+  strEnv = '%s/vip.env'%strExePath
+  if os.path.isfile(strEnv):
+    with open(strEnv,'r') as fp: 
+      for line in fp:
+        one = line.rstrip().split("\t")
+        config[one[0]]=one[1]
+  ppr.pprint(config)
+  if len(config['Rpath'])>3:
+    os.stat("%s/Rscript"%config['Rpath'])
+  return config
 
 def version():
   print("1.0.8")
@@ -1382,8 +1411,5 @@ def version():
   ## 1.0.11: June 14, 2020
   ## 1. volcano plot added for DEG
 
-  
-  
-  
   
   
