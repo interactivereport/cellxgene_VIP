@@ -98,7 +98,7 @@ echo '
 from server.app.VIPInterface import route
 @webbp.route("/VIP", methods=["POST"])
 def VIP():
-    return route(request.data,current_app.app_config, "/tmp")' >> cellxgene/server/app/app.py
+    return route(request.data,current_app.app_config)' >> cellxgene/server/app/app.py
     
 
 #pip install tensorflow==2.2.0
