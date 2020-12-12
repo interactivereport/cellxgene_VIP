@@ -1309,7 +1309,7 @@ def getEnv():
   if os.path.isfile(strEnv):
     with open(strEnv,'r') as fp: 
       for line in fp:
-        one = line.rstrip().split("\t")
+        one = line.strip().replace("\t", "").replace(" ", "").split("=")
         config[one[0]]=one[1]
   ppr.pprint(config)
   if len(config['Rpath'])>3:
