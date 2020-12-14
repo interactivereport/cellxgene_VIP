@@ -115,3 +115,7 @@ $ R
 >devtools::install_github(repo = 'satijalab/seurat@v3.0.2', dependencies=FALSE, force=TRUE, lib ='/usr/lib64/R/library/Seurat_3.0.2/')
 >library(Seurat, lib.loc = '/usr/lib64/R/library/Seurat_3.0.2/')
 ```
+### pandoc, install R Studio Server https://rstudio.com/products/rstudio/download-server/ and then,
+```
+ln -s /usr/lib/rstudio-server/bin/pandoc/pandoc /usr/bin
+```
