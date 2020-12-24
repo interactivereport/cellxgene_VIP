@@ -4,6 +4,7 @@ import traceback
 import sqlite3
 import server.app.decode_fbs as decode_fbs
 import scanpy as sc
+import anndata as ad
 import pandas as pd
 import numpy as np
 import diffxpy.api as de
@@ -53,13 +54,14 @@ def route(data,appConfig=None):
   #data.update(getEnv())
   data.update(VIPenv)
   #ppr.pprint(appConfig.server_config.single_dataset__datapath)
+  ppr.pprint(appConfig.server_config.multi_dataset__dataroot)
   data['h5ad']=appConfig.server_config.single_dataset__datapath
   if appConfig.server_config.multi_dataset__dataroot is None:
     data["url_dataroot"]=None
     data["dataset"]=None
   else:
     data["url_dataroot"]=appConfig.server_config.multi_dataset__dataroot['d']['base_url']
-  #ppr.pprint("url_dataroot:%s"%data["url_dataroot"])
+  ppr.pprint("url_dataroot: %s"%data["url_dataroot"])
 
   #ppr.pprint(data['figOpt'])
   if 'figOpt' in data.keys():
@@ -325,6 +327,8 @@ def distributeTask(aTask):
     'preDEGname':getPreDEGname,
     'preDEGvolcano':getPreDEGvolcano,
     'preDEGmulti':getPreDEGbubble,
+    'mergeMeta': mergeMeta,
+    'isMeta': isMeta
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1304,7 +1308,7 @@ def getPreDEGbubble(data):
   return img
 
 def getEnv():
-  config = {'CLItmp':'/tmp','Rpath':'','Rlib':''}
+  config = {'CLItmp':'/tmp','Rpath':'','Rlib':'','METAtmp':'/tmp','METAurl':'','METAmax':1e4}
   strEnv = '%s/vip.env'%strExePath
   if os.path.isfile(strEnv):
     with open(strEnv,'r') as fp: 
@@ -1313,11 +1317,41 @@ def getEnv():
         if not len(one)==2:
           continue
         config[one[0]]=one[1]
-  ppr.pprint(config)
+  #ppr.pprint(config)
   if len(config['Rpath'])>3:
     os.stat("%s/Rscript"%config['Rpath'])
     os.environ['PATH'] = config['Rpath']+os.pathsep+os.environ['PATH']
   return config
+
+def mergeMeta(data):
+  selC = list(data['cells'].values())
+  ## obtain the category annotation
+  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+    if not 'cellN' in scD.data.obs:
+      raise ValueError('This is not a metacell data!')
+    obs = scD.data.obs.loc[selC,['name_0','cellN']]
+  ppr.pprint(obs)
+  ppr.pprint(obs['cellN'].sum())
+  if obs['cellN'].sum() > int(data['METAmax']):
+    raise ValueError('The selected meta cells include more than maximum %d cells!'%data['METAmax'])
+  strPath = re.sub(".h5ad$","",data["h5ad"])
+  selCells = []
+  for i in obs['name_0']:
+    strOne = strPath+"/"+i+".h5ad"
+    if os.path.exists(strOne):
+      selCells += [ad.read(strOne)]
+  strOut = data['METAtmp']+"/"+os.path.basename(strPath)+"_"+data['metaPostfix']+".h5ad"
+  ad.concat(selCells).write(strOut)
+  return data['METAurl']+"/d/"+os.path.basename(strOut)
+
+def isMeta(data):
+  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+    if not 'cellN' in scD.data.obs:
+      return "FALSE"
+  strPath = re.sub(".h5ad$","",data["h5ad"])
+  if not os.path.exists(strPath):
+    return "FALSE"
+  return "TRUE"
 
 try:
   VIPenv = getEnv()
@@ -1405,6 +1439,3 @@ def version():
   ## -----------------------
   ## 1.0.11: June 14, 2020
   ## 1. volcano plot added for DEG
-
-  
-  

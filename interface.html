@@ -323,6 +323,9 @@
         color: black;
       }
 
+      .colorButton{
+        color: #008cba;
+      }
       .tab {
         float: left;
         width: 100%;
@@ -467,6 +470,8 @@
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')">Pre-Compu. DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
       <button class="tablinks" onclick="selFun(event, 'CLI')">Command Line Interface</button>
+      <button id="metaCellBT" class="tablinks colorButton" onclick="metaSel()">Show MetaCell</button>
+      <div id="metaCellBTspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <hr size="1" noshade>
       <button class="tablinks" onclick="selFun(event, 'IMG')">Figure Option</button>
       <button class="tablinks" onclick="selFun(event, 'ABBR')">Comb. & Abbr.</button>
@@ -1310,6 +1315,7 @@
 var heatCell = 10000;
 var editor;
 var VIPurl = '';
+var uniqID = 'oyoung';
 
 function printNotebook(){
     var html = $('#CLIresize').html();
@@ -1663,33 +1669,50 @@ function init(){
       console.log(results);
       VIPurl = results[0];
       
-    //for pre-computed DEG
-    //console.log("request for pre-computed DEG: url"+VIPurl);
-    $("#preDEGpanelBT").hide();
-    $.ajax({
-          type: "POST",
-          url: VIPurl,
-          data:JSON.stringify({'method':"preDEGname"}),
-          contentType: 'application/json;charset=UTF-8',
-          success: function(res){
-            if(res.length==0) return;
-            resD = JSON.parse(res);
-            $("#preDEGpanelBT").show();
-            
-            var htmlCheck="";
-            for(const one of resD){
-              $('#preDEGvolcanoTab').append(createOpt(one));
-              htmlCheck += '<label id="preDEGmulticompCK'+one+'"><input class="preDEGmultigrps" type="checkbox" value="'+one+'" onchange="preDEGmultiorderUpdate()"/> '+one+' </label>';//
-            }//preDEGmulticomp
-            $('#preDEGmulticomp').html(htmlCheck);
-          },
-          error: function(request,status,error){
-            console.log(request.status+': cannot get preDEG information ...');
-          }
-        })
+      //for pre-computed DEG
+      //console.log("request for pre-computed DEG: url"+VIPurl);
+      $("#preDEGpanelBT").hide();
+      $.ajax({
+            type: "POST",
+            url: VIPurl,
+            data:JSON.stringify({'method':"preDEGname"}),
+            contentType: 'application/json;charset=UTF-8',
+            success: function(res){
+              if(res.length==0) return;
+              resD = JSON.parse(res);
+              $("#preDEGpanelBT").show();
+              
+              var htmlCheck="";
+              for(const one of resD){
+                $('#preDEGvolcanoTab').append(createOpt(one));
+                htmlCheck += '<label id="preDEGmulticompCK'+one+'"><input class="preDEGmultigrps" type="checkbox" value="'+one+'" onchange="preDEGmultiorderUpdate()"/> '+one+' </label>';//
+              }//preDEGmulticomp
+              $('#preDEGmulticomp').html(htmlCheck);
+            },
+            error: function(request,status,error){
+              console.log(request.status+': cannot get preDEG information ...');
+            }
+          });
+  
+      //for pre-computed DEG
+      //console.log("request for pre-computed DEG: url"+VIPurl);
+      $("#metaCellBT").hide();
+      $.ajax({
+            type: "POST",
+            url: VIPurl,
+            data:JSON.stringify({'method':"isMeta"}),
+            contentType: 'application/json;charset=UTF-8',
+            success: function(res){
+              if(res.length==0) return;
+              if(res == "TRUE"){
+                $("#metaCellBT").show();
+              }
+            },
+            error: function(request,status,error){
+              console.log(request.status+': cannot get metaCell information ...');
+            }
+          });
     });
-    
-    
     window.bioInit=true;
 
   }
@@ -4267,7 +4290,51 @@ function CLIplot(){
       $(".CLIbt").prop("disabled",false);
       document.getElementById("CLIspin").style.visibility="hidden";
     }
-  })
+  });
+}
+function metaSel(){
+  document.getElementById("metaCellBTspin").style.visibility="visible";
+  var cells=[], x = document.getElementsByClassName('CLIcell');
+  for(i=0;i<x.length;i++){
+    if(x[i].checked){
+      if(!!window.store.getState().differential[x[i].value]){
+        if(cells.length==0){
+          cells = window.store.getState().differential[x[i].value];
+        }else{
+          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
+          tmp.set(cells);
+          tmp.set(window.store.getState().differential[x[i].value],cells.length);
+          cells = tmp;
+        }
+      }
+    }
+  }
+  if(cells.length==0){
+    $('#CLInote').text("Please use selection tools to put meta cells into groups");
+    return;
+  }
+  console.log(cells.length)
+  var D = {'method':'mergeMeta',
+            'cells':cells,
+            'metaPostfix': uniqID};
+  $.ajax({
+    type:'POST',
+    url: VIPurl,
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',
+    success: function(res){
+      document.getElementById("metaCellBTspin").style.visibility="hidden";
+      if(res.startsWith('ERROR')){
+        alert(res);
+        return;
+      }
+      window.open(res, uniqID);
+    },
+    error: function(request,status,error){
+      document.getElementById("metaCellBTspin").style.visibility="hidden";
+      alert(request.status+request.responseText);
+    }
+  });
 }
 //save and load
 function checkSave(eID){
