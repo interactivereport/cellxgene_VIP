@@ -104,7 +104,7 @@ def VIP():
 #pip install tensorflow==2.2.0
 pip install diffxpy==0.7.4
 pip install plotly==4.8.1
-pip install anndata==0.7.4
+pip install anndata==0.7.5
 pip install botocore==1.17.44
 pip install boto3==1.14.39
 git clone https://github.com/theislab/scanpy.git

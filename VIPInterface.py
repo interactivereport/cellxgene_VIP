@@ -54,14 +54,14 @@ def route(data,appConfig=None):
   #data.update(getEnv())
   data.update(VIPenv)
   #ppr.pprint(appConfig.server_config.single_dataset__datapath)
-  ppr.pprint(appConfig.server_config.multi_dataset__dataroot)
+  #ppr.pprint(appConfig.server_config.multi_dataset__dataroot)
   data['h5ad']=appConfig.server_config.single_dataset__datapath
   if appConfig.server_config.multi_dataset__dataroot is None:
     data["url_dataroot"]=None
     data["dataset"]=None
   else:
     data["url_dataroot"]=appConfig.server_config.multi_dataset__dataroot['d']['base_url']
-  ppr.pprint("url_dataroot: %s"%data["url_dataroot"])
+  #ppr.pprint("url_dataroot: %s"%data["url_dataroot"])
 
   #ppr.pprint(data['figOpt'])
   if 'figOpt' in data.keys():
@@ -1241,7 +1241,7 @@ def CLI(data):
 def getPreDEGname(data):
   strF = re.sub("h5ad$","db",data["h5ad"])
   if not os.path.isfile(strF):
-    ppr.pprint(strF+" is NOT found!")
+    #ppr.pprint(strF+" is NOT found!")
     return ""
   conn = sqlite3.connect(strF)
   df = pd.read_sql_query("select DISTINCT contrast,tags from DEG;", conn)
@@ -1333,7 +1333,7 @@ def mergeMeta(data):
   ppr.pprint(obs)
   ppr.pprint(obs['cellN'].sum())
   if obs['cellN'].sum() > int(data['METAmax']):
-    raise ValueError('The selected meta cells include more than maximum %d cells!'%data['METAmax'])
+    raise ValueError('The selected meta cells include more than maximum %d cells!'% int(data['METAmax']))
   strPath = re.sub(".h5ad$","",data["h5ad"])
   selCells = []
   for i in obs['name_0']:
