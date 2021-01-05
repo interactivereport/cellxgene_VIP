@@ -1,6 +1,27 @@
 #!/usr/bin/env bash
 ## provide the location of python 3.7 lib install path as parameter
 ## e.g. config.sh
+
+
+envName="VIP"
+if [ $# -eq 0 ]
+then
+	# no user env name specified, use default
+    echo "No user env name provided, using default name VIP"
+else 
+	envName=$1
+	echo "User provided env name $1"
+fi
+
+## setup conda env based on VIP.yml
+#
+#conda env create -n $envName -f VIP.yml
+#conda activate $envName
+#echo "Done with conda env setup"
+#
+
+
+
 pythonV="$(python --version)"
 if [[ $pythonV != *"Python 3.7"* && $pythonV != *"Python 3.8"* ]]; then
   echo "Only support Python 3.7 or 3.8"
@@ -8,8 +29,6 @@ if [[ $pythonV != *"Python 3.7"* && $pythonV != *"Python 3.8"* ]]; then
 fi
 
 ## buld the cellxgene and install -----------
-#conda remove -y PyYAML
-conda install -c conda-forge -y nodejs=13 fsspec=0.8.2 jq=1.6 ipykernel=5.3.4
 
 ## obtain a clean version cellxgene a specific version by sha key
 rm -rf cellxgene
@@ -101,26 +120,9 @@ def VIP():
     return route(request.data,current_app.app_config)' >> cellxgene/server/app/app.py
     
 
-#pip install tensorflow==2.2.0
-pip install h5py==2.10.0
-pip install diffxpy==0.7.4
-pip install plotly==4.8.1
-pip install anndata==0.7.4
-pip install botocore==1.17.44
-pip install boto3==1.14.39
 git clone https://github.com/theislab/scanpy.git
 cd scanpy;git checkout 2ea9f836cec6e12a5cdd37bc4a229d4eadf59d37;cd ..
 pip install scanpy/
-pip install jupyter_client==6.1.7
-pip install jupytext==1.6.0
-pip install nbconvert==5.6.1
-pip install rpy2==3.3.5
-pip install pyarrow==1.0.1
-
-# old versions
-# pip install git+https://github.com/theislab/scanpy.git@split_show
-# pip install 'scanpy==1.4.6'   # works for v1.4.6 too
-# conda install -c plotly plotly-orca
 
 cd cellxgene
 make pydist
