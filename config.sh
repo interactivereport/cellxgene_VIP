@@ -3,16 +3,16 @@
 ## e.g. config.sh
 
 
-envName="VIP"
-if [ $# -eq 0 ]
-then
-	# no user env name specified, use default
-    echo "No user env name provided, using default name VIP"
-else 
-	envName=$1
-	echo "User provided env name $1"
-fi
-
+#envName="VIP"
+#if [ $# -eq 0 ]
+#then
+#	# no user env name specified, use default
+#    echo "No user env name provided, using default name VIP"
+#else 
+#	envName=$1
+#	echo "User provided env name $1"
+#fi
+#
 ## setup conda env based on VIP.yml
 #
 #conda env create -n $envName -f VIP.yml
