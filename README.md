@@ -43,15 +43,15 @@ whole or sliced single cell dataset.
 
 ## 1. create and enable conda environment
 ``` bash
-conda create -n <env name> python=3.7
-conda activate <env name>
+git clone https://github.com/interactivereport/cellxgene_VIP.git
+cd cellxgene_VIP
+conda env create -n <env name, such as: VIP> -f VIP.yml
+conda activate <env name, such as: VIP>
 or
 source activate <env name>
 ```
 ## 2. Install cellxgene by run the config.sh in the folder
 ```bash
-git clone https://github.com/interactivereport/cellxgene_VIP.git
-cd cellxgene_VIP
 ./config.sh
 ```
 ## 3. Run cellxgene by specifiying a h5ad file storing scRNA-seq data along with a host and a port, use "ps" to find used ports to spare, see https://chanzuckerberg.github.io/cellxgene/posts/launch for details.
