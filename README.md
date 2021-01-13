@@ -59,7 +59,7 @@ source activate <env name>
 ps -ef | grep cellxgene
 cellxgene launch --host <xxx> --port <xxx> --disable-annotations --verbose <h5ad file>
 ```
-## 4. From web browser (Chrome is preferred), access http(s)://host:port
+## 4. From web browser (Chrome is preferred, Version 87.0.4280.88 or 87.0.4280.141 is used), access http(s)://host:port
 
 You should be able to see this in Console of Chrome Developer Tools if everything is right.
 ![VIP_ready](https://user-images.githubusercontent.com/29576524/92059839-46482d00-ed60-11ea-8890-8e1b513a1656.png)
