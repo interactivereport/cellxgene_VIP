@@ -1,5 +1,17 @@
 <html>
   <head>
+    <!-- check the browser -->
+    <script type="text/javascript">
+      var ua= navigator.userAgent, tem,
+      M= ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+      if(M[1]!="Chrome"){
+        alert("Chrome is tested browser!")
+      }else{
+        if(M[2]<85){
+          alert("Chrome 85 and above is required!")
+        }
+      }
+    </script>
     <!-- for datatables -->
     <link rel="stylesheet" type="text/css" href="https://interactivereport.github.io/cellxgene_VIP/static/DataTables/datatables.min.css">
     <script src="https://interactivereport.github.io/cellxgene_VIP/static/jquery-ui.min.js"></script>
@@ -7,12 +19,14 @@
     <script src="static/d3plot/volcanoPlot.js"></script>
     <link rel="stylesheet" href="static/d3plot/volcanoPlot.css">
     <!-- for gene sets -->
-	<script src="https://bxaf.net/genesets/bootstrap-3/js/bootstrap.min.js"></script>
+	  <script src="https://bxaf.net/genesets/bootstrap-3/js/bootstrap.min.js"></script>
   	<script>
 		  var GENESET_ACTION_URL = "https://bxaf.net/genesets/genesets3.php";
     </script>
 	  <link href="https://bxaf.net/genesets/genesets3.css" rel="stylesheet">
-	   <script src="https://bxaf.net/genesets/genesets3.js"></script>
+	  <script src="https://bxaf.net/genesets/genesets3.js"></script>
+    <!-- for save & load session -->
+    <script src="static/saveVIP.js"></script>
     <!-- end -->
     <style>
       .dropup,
@@ -253,8 +267,8 @@
           display: flex;
           width: 100%;
       }
-      
-      #separator {  
+
+      #separator {
           cursor: col-resize;
           min-width: 6px;
           background-color: #aaa;
@@ -264,19 +278,19 @@
           -ms-user-select: none;
           user-select: none;
       }
-      
+
       #panel-left {
           background-color: #dde;
           width: 20%;
           white-space: nowrap;
       }
-      
+
       #panel-right {
           background-color: #fff;
           width: 80%;
       }
       #separator, #panel-left, #panel-right {
-          vertical-align: top; 
+          vertical-align: top;
       }
       #STACBARplot {
           margin: 40px;
@@ -290,7 +304,7 @@
       }
       .fly-in {
         font-size: 8px;
-  
+
       }
       .axis .tick line {
         stroke: #ccc;
@@ -330,7 +344,7 @@
         float: left;
         width: 100%;
         height: 100%;
-        
+
         border: 1px solid #ccc;
         background-color: #f1f1f1;
       }
@@ -338,7 +352,7 @@
         display: block;
         width: 100%;
         text-align: left;
-        
+
         background-color: inherit;
         border: none;
         outline: none;
@@ -356,7 +370,7 @@
         float: left;
         border-left: none;
         width:100%;
-        
+
         display: none;
         padding: 0px 10px;
       }
@@ -369,7 +383,7 @@
       .topTab button{
         text-align: top;
         text-align: left;
-        
+
         background-color: inherit;
         float: left;
         border: none;
@@ -391,7 +405,7 @@
         display: none;
         padding: 0px 10px;
       }
-      
+
       h3 {
         display: block;
         font-size: 1.17em;
@@ -411,11 +425,11 @@
           height: 70px;
           margin-top: -60px;
           margin-left: -60px;
-          
+
           position: absolute;
           top: 50%;
           left: 50%;
-          
+
           border-width: 30px;
           border-radius: 50%;
           -webkit-animation: spin 2s linear infinite;
@@ -432,14 +446,14 @@
               -webkit-transform: rotate(-360deg);
           }
       }
-      
+
       tr:nth-child(even) {background-color: #F1F1F1;}
       input[type=number]{
         width: 60px;
       }
       input,textarea,select{ font-size: 14px; }
       .ace_editor p,.ace_editor div,.ace_editor input,.ace_editor label,.ace_editor span,.ace_editor text {font-family: 'Monaco', 'Menlo', 'Droid Sans Mono', 'Courier New', monospace !important;}
-      pre span {font-size: 12px; font-family: 'Arial', monospace !important;} 
+      pre span {font-size: 12px; font-family: 'Arial', monospace !important;}
       table {
         border-collapse: collapse;
       }
@@ -484,7 +498,7 @@
   </div>
   <div id="separator" ></div>
   <div id="panel-right" >
-    	  
+
     <input id="loadfile" type="file" onchange="load()" style="display:none"/>
     <div id="ABBR" class="tabcontent"> <!-- Abbreviation -->
       <h3>Create a combinatorial annotation</h3>
@@ -493,14 +507,14 @@
         <li><p>Select the annotations of interest on the left panel of main window, then <button onclick="ABBRcombine();ABBRall()">Create</button> a new annotation named "Custom_combine" includes the following categories: <p id="ABBRcombine"></p>
 		</li>
       </ol>
-    
+
       <hr>
       <h3>Create abbreviations of annotations</h3><!-- <button onclick="ABBRsave()">Save to local</button><input id="ABBRfile" type="file" value="Load from local" onchange="ABBRload()"/>-->
       <p>Choose annotations:</p>
       <p id="ABBRgrp"></p>
       <p id="ABBRtable"></p>
     </div><!--ABBR-->
-    
+
     <div id="ADDG" class="tabcontent">
       <h3>Add genes of interest for plotting</h3>
       <p>Please input a list of genes (comma, semicolon, space or tab delimited):</p>
@@ -508,7 +522,7 @@
       <p><button onclick="ADDGadd()"><b>Add</b></button></p>
       <p>The following genes were added (click on a gene name to remove): <span id="ADDGsel"></span></p>
       <p>The following genes are not in the data: <span id="ADDGdel" style="color:red"></span></p>
-      
+
       <h3>The user-defined gene sets:</h3>
       <p id="ADDGsets"></p>
 
@@ -517,7 +531,7 @@
         Gene names:<input id="Geneset_Genes0" type="text" size=35/>
         <button onclick="ADDGsetAdd(0)"><b>Add</b></button>
       </p>
-      
+
       <h3>Add gene sets from databases</h3>
       <div id="div_geneset1" class="div_geneset">
   		<div class="my-3 dropdown input-group">
@@ -529,11 +543,11 @@
   		<textarea class="form-control my-3 geneset_genes" style="width: 30rem; margin-top: 1rem;" rows="5" id="Geneset_Genes1" name="Geneset_Genes1" placeholder="Here will list all genes in a geneset"></textarea>
   		<p><button onclick="ADDGsetAdd(1)"><b>Add</b></button></p>
   	</div>
-      
+
       <span id="ADDGsetError" style="color:red"></span><br>
-      
+
     </div><!--ADDG-->
-    
+
     <div id="GD" class=tabcontent>
       <div id="GDinput">
         <h3>Genes detected in selected groups of cells </h3>
@@ -551,7 +565,7 @@
       <div id="GDresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6">
         <p id="GDfig"></p></div>
     </div><!--GD-->
-    
+
     <div id="MARK" class="tabcontent">
       <div id="MARKinput">
         <h3>Marker genes of annotation categories on selected cells</h3>
@@ -559,9 +573,9 @@
           <label><input class="MARKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="MARKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Select an annotation: 
+        <p>Select an annotation:
         <select id="MARKgrp"></select></p>
-        <p>By method: 
+        <p>By method:
         <select id="MARKmethod">
           <option value="logreg">logreg</option>
           <option value="t-test">t-test</option>
@@ -576,19 +590,19 @@
       <button onclick="hideShow($('#MARKinput'),$(this));">Hide Input</button>
       <pre id="MARKnote" style="color:red;"></pre>
       <div id="MARKspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      
+
       <table id="MARKtable" class="display"></table>
       <div id="MARKresize" style="height: 'auto'">
         <p id="MARKfig"></p>
       </div>
     </div><!--MARK-->
-    
+
     <div id="SGV" class="tabcontent">
       <div class="topTab">
         <button id="SGVsingle" class="SGVlinks" onclick="selTop(event, 'SGVsingleV','SGV')">Plot Violin</button>
         <button id="SGVcompare" class="SGVlinks" onclick="selTop(event, 'SGVcompareV','SGV')">Group Violin</button>
       </div>
-      
+
       <div id="SGVsingleV" class="SGVcontent">
         <h3>Violin plot of a gene on selected cells</h3>
         <div id="SGVinput">
@@ -611,7 +625,7 @@
         <div id="SGVspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
         <div id="SGVresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="SGVfig"></p></div>
       </div> <!-- SGVsingleV -->
-      
+
       <div id="SGVcompareV" class="SGVcontent">
         <h3>Plot the grouped violin</h3>
         <div id="SGVcompareinput">
@@ -637,10 +651,10 @@
         <div id="SGVcompareresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="SGVcomparefig"></p></div>
 
       </div> <!-- SGVcompareV -->
-      
-      
+
+
     </div><!--SGV panel-->
-    
+
     <div id="PGV" class="tabcontent">
       <div id="PGVinput">
         <h3>Stacked violin plot of genes on selected cells</h3>
@@ -661,7 +675,7 @@
             <input type="radio" name="PGVgeneGrpCollCal" value="mean" checked>Average
             <input type="radio" name="PGVgeneGrpCollCal" value="median">Median</p>
           </div>
-        </div>   
+        </div>
         <p>Group by:<select id="PGVgrp"></select> as
         <select id="PGVgrpXY">
           <option value="Rows">Rows</option>
@@ -696,7 +710,7 @@
           <option value='RdBu'>RdBu</option>
           <option value='RdYlBu'>RdYlBu</option>
           <option value='RdYlGn'>RdYlGn</option>
-        </select> <button onclick="hideShow($('#PGVcolorhelp'),$(this),'Color Help');">Show Color Help</button></p>  
+        </select> <button onclick="hideShow($('#PGVcolorhelp'),$(this),'Color Help');">Show Color Help</button></p>
 		<div id="PGVcolorhelp" style="display:none;">
           <table border=0>
             <tr valign="top"><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_sequential.png" width="300"></td><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_diverging.png" width="300"></td></tr>
@@ -714,7 +728,7 @@
       <div id="PGVspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="PGVresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="PGVfig"></p></div>
     </div><!--PGV-->
-    
+
     <div id="HEAT" class="tabcontent">
       <div id="HEATinput">
         <h3>Heatmap on selected cells and genes</h3>
@@ -744,9 +758,9 @@
       <div id="HEATspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="HEATresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="HEATfig"></p></div>
       <div id="HEATdata" style="visibility: hidden;"></div>
-    
+
     </div><!--HEAT-->
-    
+
     <div id="DOT" class="tabcontent">
       <div id="DOTinput">
         <h3>Dot plot shows per group, the fraction of cells expressing a gene (dot size) and the mean expression of the gene in those cell (color scale)</h3>
@@ -758,7 +772,7 @@
         <p id="DOTgene"></p>
         <p>Expression cutoff: <input id="DOTcutoff" type="number" step="0.1" value="1"/></p>
         <p>Expression is averaged only over cells expressing a given gene above the cutoff: <input type="radio" name="mean_only_expressed" value="Yes">Yes<input type="radio" name="mean_only_expressed" value="No" checked>No</p>
-  
+
         <p>Select user-defined gene sets:</p><p id="DOTgeneGrp"></p>
         <div id="DOTgeneGrpCollapsing">
           <p>Collapsing the above gene sets:
@@ -770,7 +784,7 @@
             <input type="radio" name="DOTgeneGrpCollCal" value="median">Median</p>
           </div>
         </div>
-        
+
         <p>Group by: <select id="DOTgrp"></select></p>
         <p>Adjust the legend width: <input id="DOTlegendW" type="number" step="0.1" value="1.5"/></p>
         <p>Color: <input id="DOTcolor_r" type="checkbox">Reverse
@@ -801,13 +815,13 @@
           <option value='RdBu'>RdBu</option>
           <option value='RdYlBu'>RdYlBu</option>
           <option value='RdYlGn'>RdYlGn</option>
-        </select> <button onclick="hideShow($('#DOTcolorhelp'),$(this),'Color Help');">Show Color Help</button></p>  
+        </select> <button onclick="hideShow($('#DOTcolorhelp'),$(this),'Color Help');">Show Color Help</button></p>
 		<div id="DOTcolorhelp" style="display:none;">
           <table border=0>
             <tr valign="top"><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_sequential.png" width="300"></td><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_diverging.png" width="300"></td></tr>
           </table>
 		</div>
-        
+
         <pre id="DOTnote" style="color:red;">Note: Unscaled data is used as the visualiztion is hard to interpret for scaled or corrected matrices in which zero counts had been replaced by other values. Scaling control in the Figure Option does not apply to Dot plot</pre>
       </div>
       <button onclick="DOTplot()"><b>Plot</b></button>
@@ -817,9 +831,9 @@
       <button onclick="hideShow($('#DOTinput'),$(this));">Hide Input</button>
       <div id="DOTspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="DOTresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="DOTfig"></p></div>
-    
+
     </div><!--DOT-->
-    
+
     <div id="EMBED" class="tabcontent">
       <div id="EMBEDinput">
         <h3>Embedding plots on selected genes and annotations</h3>
@@ -831,7 +845,7 @@
         <p id="EMBEDgrp"></p>
         <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.EMBEDgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="EMBEDgene"></p>
-        <p>Split by: 
+        <p>Split by:
         <select id="EMBEDsplit">
           <option value="NONE">NONE</option>
         </select>
@@ -841,7 +855,7 @@
         </select> the number of plots per row:
         <input id="EMBEDslot" type="number" value="4" min="2"/>
         </p>
-      </div> 
+      </div>
       <button class="EMBEDbt"  onclick="EMBEDplot()"><b>Plot</b></button>
       <button onclick="ZoomIn('EMBEDresize')">Zoom In</button>
       <button onclick="ZoomOut('EMBEDresize')">Zoom Out</button>
@@ -850,9 +864,9 @@
       <pre id="EMBEDnote" style="color:red;"></pre>
       <div id="EMBEDspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="EMBEDresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="EMBEDfig"></p></div>
-    
+
     </div><!--EMBED-->
-    
+
     <div  id="TRAK" class="tabcontent">
       <div id="TRAKinput">
         <h3>Track plot shows the gene expression represented by height</h3>
@@ -884,7 +898,7 @@
       <pre id="TRAKnote" style="color:red;"></pre>
       <div id="TRAKspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="TRAKresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="TRAKfig"></p></div>
-    
+
     </div><!--TRAK-->
 
     <div  id="DENS" class="tabcontent">
@@ -910,7 +924,7 @@
       <pre id="DENSerror" style="color:red;"></pre>
       <div id="DENSspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="DENSresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="DENSfig"></p></div>
-    
+
     </div><!--DENS-->
 
     <div  id="DENS2D" class="tabcontent">
@@ -933,9 +947,9 @@
       <pre id="DENS2Dnote" style="color:red;"></pre>
       <div id="DENS2Dspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="DENS2Dresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="DENS2Dfig"></p></div>
-      
+
     </div><!--DENS2D-->
-      
+
     <div  id="DUAL" class="tabcontent">
       <div id="DUALinput">
         <h3>Embedding plot of two genes on selected cells</h3>
@@ -958,7 +972,7 @@
       <pre id="DUALnote" style="color:red;"></pre>
       <div id="DUALspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="DUALresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="DUALfig"></p></div>
-      
+
     </div><!--DUAL-->
 
     <div  id="SANK" class="tabcontent">
@@ -989,17 +1003,17 @@
       <pre id="SANKnote" style="color:red;"></pre>
       <div id="SANKspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="SANKresize" style="height: 'auto'; width: 'auto'; padding: 0.5em;"></div>
-      
+
     </div><!--SANK-->
-    
+
     <div id="DEG" class="tabcontent">
       <div id="DEGinput">
         <h3>Find differentially expressed genes</h3>
         <p>Group 1 (<span class="cellN1" style="color:red;">0</span>) cells and group 2 (<span class="cellN2" style="color:red;">0</span>) cells</p>
-        <p>Differentially expressed genes will be detected between the two cell gorups defined above, unless two categories of the 'Custom_combine' annotation are selected, 
+        <p>Differentially expressed genes will be detected between the two cell gorups defined above, unless two categories of the 'Custom_combine' annotation are selected,
         which enables DE analysis between those two:</p>
         <p id="DEGgrp"></p>
-        <p>Select the number of top DEG: 
+        <p>Select the number of top DEG:
         <select id="DEGtop">
           <option value=200>200</option>
           <option value=500>500</option>
@@ -1007,7 +1021,7 @@
           <option value=5000>5000</option>
           <option value='All'>All</option>
         </select></p>
-        <p>Select the method: 
+        <p>Select the method:
         <select id="DEGmethod">
           <option value='default'>Welch's t-test (cellxgene)</option>
           <option value='t-test'>Welch’s t-test (diffxpy)</option>
@@ -1019,14 +1033,14 @@
         <p id="DEGgene"></p>
         <p>Remove genes in volcano plot with the absolute log2(FC) larger than: <input id="DEGlogfcCut" type="number" step="1" value="10" min="0"/></p>
       </div>
-      
+
       <button class="DEGbt" onclick="DEGfind()"><b>Find</b></button>
       <button onclick="hideShow($('#DEGinput'),$(this));">Hide Input</button>
       <button id="DEGinteractiveBtn" onclick="hideShow($('#DEGfinal'),$(this),'Interactive');">Hide Interactive</button>
       <pre id="DEGnote" style="color:red;">Note: Unscaled data is used. Scaling control in the Figure Option does not apply to DEG.</pre>
       <label id='DEGinfo'></label>
       <div id="DEGspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-     
+
       <div id="DEGfinal">
         <select id="DEGplotBy">
           <option value='color'>Color by</option>
@@ -1064,20 +1078,20 @@
         <p id="DEGfig"></p>
       </div>
     </div><!--DEG-->
-    
+
     <div id="preDEGpanel" class="tabcontent">
       <div class="topTab">
         <button id="DEGlinksPlot" class="DEGlinks" onclick="selTop(event, 'preDEGvolcano','DEG')">Plot DEG</button>
         <button id="DEGlinksMulti" class="DEGlinks" onclick="selTop(event, 'preDEGmulti','DEG')">Multi DEG</button>
       </div>
-      
+
       <div id="preDEGvolcano" class="DEGcontent">
         <h3>Plot volcano for the pre-computed DEGs</h3>
         <select id="preDEGvolcanoTab"></select>
         <p>Select genes to be marked in the volcano plot:
         <input type="checkbox" onclick="$('.preDEGvolcanogenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="preDEGvolcanogene"></p>
-        <p>Select the number of top DEG: 
+        <p>Select the number of top DEG:
           <select id="preDEGvolcanotop">
             <option value=200>200</option>
             <option value=500>500</option>
@@ -1091,7 +1105,7 @@
         <pre id="preDEGvolcanonote" style="color:red;"></pre>
         <label id='preDEGvolcanoinfo'></label>
         <div id="preDEGvolcanospin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-        
+
         <div id="preDEGvolcanofinal">
           <select id="preDEGvolcanoplotBy">
             <option value='color'>Color by</option>
@@ -1121,7 +1135,7 @@
             <p id="preDEGvolcanointeractive" style="height: 500px; width:500px; padding: 0.5em; border: 1px solid #B6B6B6"></p>
           </div>
         </div>
-        
+
         <table id="preDEGvolcanotable" class="display"></table>
         <button class="preDEGvolcanobt" onclick="ZoomIn('preDEGvolcanoresize')">Zoom In</button>
         <button class="preDEGvolcanobt" onclick="ZoomOut('preDEGvolcanoresize')">Zoom Out</button>
@@ -1129,9 +1143,9 @@
         <div id="preDEGvolcanoresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6">
           <p id="preDEGvolcanofig"></p>
         </div>
-        
+
       </div><!--preDEGvolcano-->
-        
+
       <div id="preDEGmulti" class="DEGcontent">
         <h3>Plot the bubble heatmap for pre-computed DEGs from multiple comparisons</h3>
         <button class="preDEGmultibt" onclick="hideShow($('#preDEGmultiinput'),$(this));">Hide Input</button>
@@ -1161,7 +1175,7 @@
       </div><!--preDEGmulti-->
 
     </div><!--preDEGpanel -->
-      
+
     <div id='STACBAR' class='tabcontent'>
       <div id="STACBARinput">
         <h3>Interactive stacked barplot of cell distribution of selected cells over two annotations and/or genes</h3>
@@ -1177,12 +1191,12 @@
         <p>Annotations:</p><p id="STACBARgrp"></p>
         <p>Color by <select id="STACBARcol"></select></p>
 		<p>Figure width: <input id="STACBARwidth" type="number" step="50" value="800"/> , height: <input id="STACBARheight" type="number" step="40" value="480"/></p>
-        <p>x-Axis font size: <input id="STACBARxfontsize" type="number" step="2" value="16"/> , 
+        <p>x-Axis font size: <input id="STACBARxfontsize" type="number" step="2" value="16"/> ,
         label rotate: <input id="STACBARxlabelrotate" type="number" step="5" value="-60"/> ,
 		label shift: <input id="STACBARxlabelshift" type="number" step="2" value="-24"/></p>
       </div>
-      
-      
+
+
       <button class="STACBARbt"  onclick="STACBARplot()"><b>Plot</b> </button>
       <button onclick="hideShow($('#STACBARinput'),$(this));">Hide Input</button>
       <button class="STARBARbt" style="float:right;" onclick="var a = document.createElement('a'); a.href = 'data:application/octet-stream;base64,' + btoa(document.getElementById('STACBARsvg').outerHTML); a.download = 'Stackedbar.svg'; a.click();">Save as SVG</button>
@@ -1191,9 +1205,9 @@
       <div id="STACBARspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id='STACBARresize' style="height: 'auto'; width: 'auto'; padding: 0.5em;"></div>
     </div><!--STACBAR -->
-    
+
     <div id="IMG" class="tabcontent">
-      <div><p>Scale data to unit variance for plotting: 
+      <div><p>Scale data to unit variance for plotting:
         <input type="radio" name="IMGscale" value="Yes" onclick="IMGset()">Yes
         <input type="radio" name="IMGscale" value="No" onclick="IMGset()">No
         </p>
@@ -1204,31 +1218,31 @@
           </Blockquote>
         </div>
       </div>
-      <p>Figure DPI (Dots Per Inch): 
+      <p>Figure DPI (Dots Per Inch):
       <select id="IMGdpi" onchange="IMGset()">
         <option value=150>150</option>
         <option value=300>300</option>
         <option value=600>600</option>
       </select></p>
-      <p>Figure format: 
+      <p>Figure format:
       <select id="IMGimg" onchange="IMGset()">
         <option value='png'>PNG</option>
         <option value='svg'>SVG</option>
       </select></p>
       <p>Font size:
-      <input id="IMGfontsize" type="number" step="1" value="11" min="5" onchange="IMGset()"/></p>  
+      <input id="IMGfontsize" type="number" step="1" value="11" min="5" onchange="IMGset()"/></p>
       <p>Vector friendly:
         <input type="radio" name="IMGvector" value="Yes" onclick="IMGset()" checked>Yes
         <input type="radio" name="IMGvector" value="No" onclick="IMGset()">No
-      </p>  
+      </p>
       <p>Transparent figure:
         <input type="radio" name="IMGtransparent" value="Yes" onclick="IMGset()">Yes
         <input type="radio" name="IMGtransparent" value="No" onclick="IMGset()" checked>No
-      </p>  
+      </p>
       <p>Scanpy plot style:
         <input type="radio" name="IMGscanpybranch" value="master" onclick="IMGset()">master
         <input type="radio" name="IMGscanpybranch" value="split_show" onclick="IMGset()" checked>split_show
-      </p>  
+      </p>
       <p>Colormap of UMAP/tSNE, 2D Density (top 4):
       <select id="IMGcolor" onchange="IMGset()">
         <option value='viridis'>viridis</option>
@@ -1239,7 +1253,7 @@
         <option value='summer'>summer</option>
         <option value='autumn'>Fall</option>
         <option value='winter'>winter</option>
-      </select></p>  
+      </select></p>
       <table border=0>
         <tr><td>viridis</td><td rowspan=8><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_map.png" height="180px"></tr>
         <tr><td>plasma</td></tr>
@@ -1252,7 +1266,7 @@
       </table>
 
     </div><!--IMG-->
-    
+
     <div id="BRUSH" class="tabcontent">
       <h3>Brushed ranges</h3>
       <div id="BRUSHset"></div>
@@ -1261,7 +1275,7 @@
     <div id="SYNC" class="tabcontent">
       <pre id="SYNCnote"></pre>
     </div><!--SYNC-->
-	  
+
     <div id="CLI" class="tabcontent">
       <div id="CLIinput">
         <p>Choose cell set(s):
@@ -1273,7 +1287,7 @@
         <p>Choose annotation:</p><p id="CLIgrp"></p>
         <p>Choose layout:</p><p id="CLIlayout"></p>
         <div id="CLIscript" style="height:380px;" ></div>
-      </div> 
+      </div>
       <div id="CLIhelp" style="display:none;">
       <ul>
         <li>adata: a python AnnData object created for you to use in CLI based on your selected cells and metadata.</li>
@@ -1308,7 +1322,7 @@
       <div id="CLIresize" style="height: 'auto'; width: 'auto'; padding: 0.5em;"></div>
     </div><!--CLI-->
   </div>
-	  
+
 </div>
 
 <script type="text/javascript">
@@ -1324,7 +1338,7 @@ function printNotebook(){
     mywin.document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script\>\n');
     mywin.document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha512-iztkobsvnjKfAtTNdHkGVjAYTrrtlC7mGp/54c40wowO7LhURYl3gVzzcEqGl/qKXQltJ2HwMrdLcNUdo+N/RQ==" crossorigin="anonymous"></script\>\n');
     mywin.document.write('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css" integrity="sha512-pli9aKq758PMdsqjNA+Au4CJ7ZatLCCXinnlSfv023z4xmzl8s+Jbj2qNR7RI8DsxFp5e8OvbYGDACzKntZE9w==" crossorigin="anonymous" />\n');
-    mywin.document.write(html); 
+    mywin.document.write(html);
     mywin.document.close();
 }
 
@@ -1371,9 +1385,9 @@ function dragElement( element, direction){
     var   md; // remember mouse down info
     const pLeft  = document.getElementById("panel-left");
     const pRight = document.getElementById("panel-right");
-    
+
     element.onmousedown = onMouseDown;
-    
+
     function onMouseDown( e )
     {
     	//console.log("mouse down: " + e.clientX);
@@ -1382,12 +1396,12 @@ function dragElement( element, direction){
     	      lper:parseInt(pLeft.style.width)
     	};
       document.onmousemove = onMouseMove;
-      document.onmouseup = () => { 
+      document.onmouseup = () => {
           document.onmousemove = document.onmouseup = null;
       }
       console.log(md);
     }
-    
+
     function onMouseMove( e )
     {
       var moveR = Math.ceil(100*(e.clientX - md.e.x)/md.panelW);
@@ -1457,8 +1471,8 @@ function showImg(eID,data){
     document.getElementById(eID).innerHTML = '<img id="'+eID.replace('fig','img')+'" src="data:image/'+window.figOpt['img'].replace('svg','svg+xml')+';base64,'+data+'" width="100%" height="100%"/>';
   } else {
     document.getElementById(eID).innerHTML = '<img id="'+eID.replace('fig','img')+'" src="data:image/'+window.figOpt['img'].replace('svg','svg+xml')+';base64,'+data+'" width="100%" height="auto"/>';
-  } 
-  
+  }
+
 }
 function saveImg(pngID){
   var gh = document.getElementById(pngID).src;
@@ -1506,9 +1520,9 @@ function init(){
       var one = grps[i];
       if (one.startsWith(">")) continue;
       htmlCheck += '<label><input class="ABBRgrps" type="checkbox" value="'+grps[i]+'" onclick="ABBRlist()"/> '+grps[i]+' ('+grpL[grps[i]].categories.length+')</label>';
-    }  
+    }
     $('#ABBRgrp').html(htmlCheck);
-    
+
     var bioAbbr = {}
     for(i=0;i<grps.length;i++){
       var one = {}
@@ -1542,7 +1556,7 @@ function init(){
     var embed = document.getElementById("EMBEDsplit");
 
     for(const one of grps){
-      if (one.startsWith(">")) continue; 
+      if (one.startsWith(">")) continue;
       sgv.add(createOpt(one));
       sgvGrp.add(createOpt(one));
       sgvOrder.add(createOpt(one));
@@ -1572,31 +1586,31 @@ function init(){
     //--------------------------------------------------------------------------
     htmlCheck= "";
     for(const one of grps){
-      if (one.startsWith(">")) continue; 
+      if (one.startsWith(">")) continue;
       htmlCheck += '<label id="eIDgrpsCK'+one+'"><input class="eIDgrps" type="checkbox" value="'+one+'"/> '+one+' ('+grpL[one].categories.length+')</label>';
-    }  
+    }
     //HEAT, EMBED, SANK, STACBAR, CLI
     $('#HEATgrp').html(htmlCheck.replace(/eID/g,'HEAT'));
     $('#EMBEDgrp').html(htmlCheck.replace(/eID/g,'EMBED'));
     $('#CLIgrp').html(htmlCheck.replace(/eID/g,'CLI'));
     $('#SANKgrp').html(htmlCheck.replace(/eID/g,'SANK').replace(/value/g,'onchange="SANKorderUpdate()" value'));
     $('#STACBARgrp').html(htmlCheck.replace(/eID/g,'STACBAR').replace(/value/g,'onchange="STACBARref()" value'));
-    
-    
+
+
     //SANK
     $("#SANKorderGrp").hide();
     document.getElementById("SANKorderBTh").style.display="none";
-    
+
     $('.sortable-list').sortable({
         connectWith: '.sortable-list',
         placeholder: 'sortable-list-dropholder'
         //console.log("init SANK")
     });
     $('#SGVcutoff').prop('min',-5);
-    $('#PGVcutoff').prop('min',-5);  
+    $('#PGVcutoff').prop('min',-5);
     $('#GDcutoff').prop('min',-5);
     $('#DUALcutoff').prop('min',-5);
-    $('#DOTcutoff').prop('min',-5);  
+    $('#DOTcutoff').prop('min',-5);
 
     //add text on select brush on histogram
     var html = "<table style='border: 1px solid gray; padding: 5px;'><tr><th style='border: 1px solid gray; padding: 5px;'>Name</th><th style='border: 1px solid gray; padding: 5px;'>Low end value</th><th style='border: 1px solid gray; padding: 5px;'>High end value</th><tr>";
@@ -1606,10 +1620,10 @@ function init(){
       html += "<td style='border: 1px solid gray; padding: 5px;'><input type='number' id='input_"+aID+"_left' step=0.01 style='width: 12ch;border: 0' readonly></td>";
       html += "<td style='border: 1px solid gray; padding: 5px;'><input type='number' id='input_"+aID+"_right' step=0.01 style='width: 12ch;border: 0' readonly></td></tr>";
     });
-    
+
     $("#BRUSHset").html(html);
-    
-    
+
+
     $("div[id^=histogram]").each(function(){initBrush($(this).prop('id'));});
     const unsubscribe = window.store.subscribe(() => {
       if (window.store.getState()["@@undoable/filterState"].prevAction) {
@@ -1618,12 +1632,12 @@ function init(){
           sync();
         }
         if (action.type.includes("continuous metadata histogram")) {
-//          $('#SYNCnote').text(JSON.stringify(window.store.getState().continuousSelection));
+    //          $('#SYNCnote').text(JSON.stringify(window.store.getState().continuousSelection));
           $("div[id^=histogram]").each(function(){showBrush($(this).prop('id'));});
         }
       }
     });
-    
+
     editor = ace.edit("CLIscript");
     editor.setTheme("ace/theme/iplastic");
     editor.getSession().setMode("ace/mode/python");
@@ -1656,10 +1670,10 @@ function init(){
             results.push(this.url);
           },
           error: function(request,status,error){
-//            console.log(request.status+': handshake failed, keep trying ...');
+            //console.log(request.status+': handshake failed, keep trying ...');
           }
         }).then(function(data) {
-//          console.log("URL " + index);
+          //console.log("URL " + index);
         }).catch(function(jqXhr) {
         });
       })
@@ -1668,7 +1682,7 @@ function init(){
       // all results are in the results array
       console.log(results);
       VIPurl = results[0];
-      
+
       //for pre-computed DEG
       //console.log("request for pre-computed DEG: url"+VIPurl);
       $("#preDEGpanelBT").hide();
@@ -1681,7 +1695,7 @@ function init(){
               if(res.length==0) return;
               resD = JSON.parse(res);
               $("#preDEGpanelBT").show();
-              
+
               var htmlCheck="";
               for(const one of resD){
                 $('#preDEGvolcanoTab').append(createOpt(one));
@@ -1693,7 +1707,7 @@ function init(){
               console.log(request.status+': cannot get preDEG information ...');
             }
           });
-  
+
       //for pre-computed DEG
       //console.log("request for pre-computed DEG: url"+VIPurl);
       $("#metaCellBT").hide();
@@ -1773,7 +1787,7 @@ function ADDGref(){
   }
   $("#ADDGsel").html(html);
   //$("#ADDGsel").text(window.biogen.join(", "));
-  
+
   var html= "";
   var grpKeys = Object.keys(window.bioGeneGrp);
   for(const one of grpKeys){
@@ -1785,13 +1799,13 @@ function GDref(){
 }
 function addCustomCombine(element) {
   var x = document.getElementById(element);
-//  var grps = Object.keys(window.store.getState().categoricalSelection).filter(function(e) { return !(e.startsWith('>') || e.startsWith('|')) });
+  //var grps = Object.keys(window.store.getState().categoricalSelection).filter(function(e) { return !(e.startsWith('>') || e.startsWith('|')) });
   $("#"+element+" option[value='Custom_combine']").remove();
   var grpKeys = Object.keys(window.bioCombine);
   if(grpKeys.length>0){
     x.add(createOpt("Custom_combine"));
   }
-//  if(grpKeys.length>0 && grps.length==x.length){
+  //if(grpKeys.length>0 && grps.length==x.length){
 //    x.add(createOpt("Custom_combine"));
 //  }else if(grpKeys.length==0){// && grps.length<x.length
 //    $("#"+element+" option[value='Custom_combine']").remove();
@@ -1880,7 +1894,7 @@ function showGeneSet(aID){
       $(this).prop("checked",false);
     }
   })
-  
+
 }
 function showGene(aID, addInfo='', ckDefault='checked'){
   //console.log(aID+":"+ckDefault+":"+addInfo);
@@ -1927,7 +1941,7 @@ function showGeneGrpCollSet(aID){
     $('#'+aID+'geneGrpCollShow').show();
   }else{
     $('#'+aID+'geneGrpCollShow').hide();
-  }  
+  }
 }
 function PGVref(){
   showGene('PGV');
@@ -2038,7 +2052,7 @@ function DENS2Dref(){
   }else{
     $('.DENS2Dgenes').prop("disabled",false);
   }
-  
+
 }
 function EMBEDref(){
   showGene('EMBED');
@@ -2079,7 +2093,7 @@ function DUALref(){
   }else{
     $('.DUALgenes').prop("disabled",false);
   }
-  
+
 }
 function orderUpdate(eID,choseGene){
   var selElem = [];
@@ -2182,7 +2196,7 @@ function DEGref(){
   for(const one of Object.values(window.bioCombineCell)){
     cName.push(one.cName);
   }
-  
+
   var optG = [], checkG=[];
   //remove checkbox which are not in the annotation list
   $(".DEGgrps").each(function(){
@@ -2289,10 +2303,6 @@ function CLIref(){
   showGene('CLI');
   $(".CLIgrps:checkbox[value='cell_type']").prop("checked","true");
   $(".CLIlayouts:checkbox[value='umap_harmony']").prop("checked","true");
-}
-
-function SYNCtest(){
-  
 }
 // process annotation
 function ABBRlist(){
@@ -2421,7 +2431,7 @@ function ABBRcombine(){
   for(const one of Object.values(window.bioCombineCell)){
     combVal.push(one.cName);
   }
-  
+
   $('#ABBRcombine').html("<span style='color:red;'><strong>"+combVal.join('; ')+"</strong></span>");
 }
 function ABBRcombineUpdate(){
@@ -2450,7 +2460,7 @@ function ADDGadd(){
   var notG = [];
   var totalG = window.store.getState().annoMatrix._cache.var.__columns[0];
   var totalGlower = totalG.map(function(s){return s.toLowerCase();});
-  
+
   for(var i=0;i<addG.length;i++){
     var one = addG[i].trim();
     if (addG[i].trim().length<1)
@@ -2490,7 +2500,7 @@ function ADDGsetAdd(idx){//Geneset_Name Geneset_Genes
   for(var i=0;i<grpKeys.length;i++){
     definedG = definedG.concat(window.bioGeneGrp[grpKeys[i]]);
   }
-  
+
   var gNames = $("#Geneset_Genes"+idx).val().trim().split(/\s+|\s*,\s*|\s*;\s*/);
   var notG = [],geneNames=[];
   var totalG = window.store.getState().annoMatrix._cache.var.__columns[0];
@@ -2546,7 +2556,7 @@ function hideShow(section, button, label) {
     button.text("−");
   }
 }
-// plot function 
+// plot function
 function GDplot(){
   if(!window.store.getState().differential.celllist1 && !window.store.getState().differential.celllist2){
     $('#GDnote').text("Please select cells into group 1 or/and group 2");
@@ -2617,7 +2627,7 @@ function MARKplot(){
     $('#MARKnote').text("Please use selection tools to put cells into groups");
     return;
   }
-  
+
   if($("#MARKn").val()<3){
     $('#MARKnote').text("Minimal number of markers per group is 3");
     return;
@@ -2628,8 +2638,8 @@ function MARKplot(){
     grp = Object.keys(window.bioCombine);
     combGrp = window.bioCombine;
   }
-  
-  
+
+
   $(".MARKbt").prop("disabled",true);
   $(".MARKpngBT").prop('disabled',true);
   document.getElementById("MARKspin").style.visibility="visible";
@@ -2741,7 +2751,7 @@ function SGVplot(acc){
     grp = Object.keys(window.bioCombine);
     combGrp = window.bioCombine;
   }
-  
+
   var D = {'method':'SGV',
             'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'cells':cells,
@@ -2756,7 +2766,7 @@ function SGVplot(acc){
   $(".SGVsaveBT").prop('disabled',true);
   $(".SGVpngBT").prop('disabled',true);
   document.getElementById("SGVspin").style.visibility="visible";
-  
+
   $.ajax({
     type:"POST",
     url: VIPurl,
@@ -2836,7 +2846,7 @@ function SGVcompareplot(){
     grp = Object.keys(window.bioCombine);
     combGrp = window.bioCombine;
   }
-  
+
   var D = {'method':'SGVcompare',
             'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'cells':cells,
@@ -2850,7 +2860,7 @@ function SGVcompareplot(){
   $(".SGVcomparebt").prop("disabled",true);
   $(".SGVcomparepngBT").prop('disabled',true);
   document.getElementById("SGVcomparespin").style.visibility="visible";
-  
+
   $.ajax({
     type:"POST",
     url: VIPurl,
@@ -2906,7 +2916,7 @@ function PGVplot(acc){
     $('#PGVnote').text("Please select at least a gene or a gene set to plot");
     return;
   }
-  
+
   if($("#PGVgrp option:selected").val()=="NA"){
     $('#PGVnote').text("Please select a category to plot");
     return;
@@ -3002,7 +3012,7 @@ function PGVplot(acc){
   })
 }
 function violinData(){
-  
+
 }
 function HEATcheck(){
   $('#HEATnote').text("");
@@ -3032,7 +3042,7 @@ function HEATcheck(){
     $('#HEATnote').text("It needs at least two genes");
     return;
   }
-  
+
   var grps = [];
   x = document.getElementsByClassName('HEATgrps');
   for(i=0;i<x.length;i++){
@@ -3040,7 +3050,7 @@ function HEATcheck(){
       grps.push(x[i].value);
     }
   }
-  
+
   var orderGrp = $("#HEATorder").val();
   if(orderGrp=="Expression" && cells.length>heatCell){
     $('#HEATnote').text("Cluster by expression is not available for the number of selected cells larger than "+Math.round(heatCell/1000)+"k.");
@@ -3049,14 +3059,14 @@ function HEATcheck(){
   if(orderGrp!="Expression" && !grps.includes(orderGrp)){
     grps.push(orderGrp);
   }
-  
+
   var grp=[],combGrp = [];
   if(orderGrp=="Custom_combine" || grps.includes("Custom_combine")){
     grp = grps.filter(function(e) { return e !== 'Custom_combine' });
     grps = [...new Set(grp.concat(Object.keys(window.bioCombine)))];
     combGrp = window.bioCombine;
   }
-  
+
   if(grps.length==0){
     $('#HEATnote').text("Please select groups to plot");
     return;
@@ -3188,7 +3198,7 @@ function getSelOpt(eID){
   }else{
     $('#'+eID+'note').text("Unknown selection!");
   }
-  return selOpt; 
+  return selOpt;
 }
 function updateDEGdata(rawD,selOpts){
   return d3.csvParse(rawD,function(d){
@@ -3253,7 +3263,7 @@ function DEGplot(eID){//window.DEGraw,window.DEGsel 'DEG'
   d3.select('#'+eID+'interactive')
     .data([DEGdata.filter(function(d){return Math.abs(d.log2fc)< +$("#"+eID+"logfcCut").val();})])
     .call(vol);
-  
+
 }
 function DEGfind(){
   $('#DEGnote').text("");
@@ -3299,7 +3309,7 @@ function DEGfind(){
       $(".DEGbt").prop("disabled",false);
       $(".DEGpngBT").prop('disabled',false);
       $('#DEGtable').empty();
-      
+
       if(res.startsWith('ERROR')){
         $('#DEGnote').text(res);
         return;
@@ -3324,7 +3334,7 @@ function DEGfind(){
       DEGplot('DEG');
       $("#DEGfinal").show();
       $("#DEGinteractiveBtn").prop('disabled', false);
-      
+
       // process DEG table
       var tableD = d3.csvParse(resD[0],function(data){
         return [].concat([data.gene,
@@ -3345,7 +3355,7 @@ function DEGfind(){
         columns:tableTitle
       });
       showImg('DEGfig',resD[1]);
-      
+
       $('#DEGtable tbody').on('click',"tr",function(){
         var data = table.row(this).data();
         //alert('Your clicked on '+data[0]+" row");
@@ -3385,7 +3395,7 @@ function preDEGVolcanofind(eID){
       document.getElementById(eID+"spin").style.visibility="hidden";
       $("."+eID+"bt").prop("disabled",false);
       $('#'+eID+'table').empty();
-      
+
       if(res.startsWith('ERROR')){
         $('#'+eID+'note').text(res);
         return;
@@ -3408,7 +3418,7 @@ function preDEGVolcanofind(eID){
       DEGplot(eID);
       $("#"+eID+"final").show();
       $("#"+eID+"interactiveBtn").prop('disabled', false);
-      
+
       // process DEG table
       var tableD = d3.csvParse(resD[0],function(data){
         return [].concat([data.gene,
@@ -3429,7 +3439,7 @@ function preDEGVolcanofind(eID){
         columns:tableTitle
       });
       showImg(eID+'fig',resD[1]);
-      
+
       $('#'+eID+'table tbody').on('click',"tr",function(){
         var data = table.row(this).data();
         //alert('Your clicked on '+data[0]+" row");
@@ -3462,7 +3472,7 @@ function preDEGmultiplot(eID){
   if(selComp.length<1){
     $('#'+eID+'note').text('Please select the comparisons to be ploted!');
     return;
-  }  
+  }
   var D = {'method':eID,
            'genes':genes,
            'compSel':selComp,
@@ -3480,12 +3490,12 @@ function preDEGmultiplot(eID){
       document.getElementById(eID+"spin").style.visibility="hidden";
       $("."+eID+"bt").prop("disabled",false);
       $('#'+eID+'table').empty();
-      
+
       if(res.startsWith('ERROR')){
         $('#'+eID+'note').text(res);
         return;
       }
-      
+
       showImg(eID+'fig',res);
     },
     error: function(request,status,error){
@@ -3530,7 +3540,7 @@ function DOTplot(){
     $('#DOTnote').text("The minimal expression level is: "+$('#DOTcutoff').prop('min'));
     return;
   }
-  
+
   var grp = [$("#DOTgrp").val()];
   var combGrp = [];
   if(grp[0]=="Custom_combine"){
@@ -3544,7 +3554,7 @@ function DOTplot(){
 
   var color = $("#DOTcolor").val();
   if ($("#DOTcolor_r")[0].checked) color += '_r';
-  
+
   var D = {'method':'DOT',
             'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'cells':cells,
@@ -3574,7 +3584,7 @@ function DOTplot(){
         document.getElementById("DOTfig").innerHTML = '';
         return;
       }
-      
+
       showImg('DOTfig',res)
       //document.getElementById("DOTfig").innerHTML = '<img id="DOTpng" src="data:image/png;base64,'+res+'" width=100% height="auto"/>';// height="450" width="450"
       $(".DOTpngBT").prop('disabled',false);
@@ -3615,7 +3625,7 @@ function TRAKplot(){
     $('#TRAKnote').text("Please use selection tools to put cells into groups");
     return;
   }
-  
+
   var grp = [$("#TRAKgrp").val()];
   var combGrp = [];
   if(grp[0]=="Custom_combine"){
@@ -3664,7 +3674,7 @@ function TRAKplot(){
       document.getElementById("TRAKspin").style.visibility="hidden";
     }
   })
-  
+
 }
 function DENSplot(){
   $('#DENSerror').text("");
@@ -3687,7 +3697,7 @@ function DENSplot(){
     $('#DENSerror').text("Please use selection tools to put cells into groups");
     return;
   }
-  
+
   var genes = getGenes('DENS');
   if(genes.length<1){
     $('#DENSerror').text("It needs at least a gene");
@@ -3697,7 +3707,7 @@ function DENSplot(){
     $('#DENSerror').text("The minimal bandwidth is "+$("#DENSprec").prop('min'));
     return;
   }
-  
+
   if($("#DENSsplit").val()==$("#DENSgrp").val()){
     $('#DENSerror').text("Please choose different annotations for Split and Color!");
     return;
@@ -3754,7 +3764,7 @@ function DENSplot(){
       document.getElementById("DENSspin").style.visibility="hidden";
     }
   })
-            
+
 }
 function DENS2Dplot(){
   $('#DENS2Dnote').text("");
@@ -3777,7 +3787,7 @@ function DENS2Dplot(){
     $('#DENS2Dnote').text("Please use selection tools to put cells into groups");
     return;
   }
-  
+
   var genes = [];
   $(".DENS2Dgenes").each(function(){
     if($(this).prop("checked")){
@@ -3826,7 +3836,7 @@ function DENS2Dplot(){
       document.getElementById("DENS2Dspin").style.visibility="hidden";
     }
   })
-  
+
 }
 function EMBEDplot(){
   $('#EMBEDnote').text("");
@@ -3849,13 +3859,13 @@ function EMBEDplot(){
     $('#EMBEDnote').text("Please use selection tools to put cells into groups");
     return;
   }
-  
+
   var genes = getGenes('EMBED');
   if(genes.length==0){
     $('#EMBEDnote').text("Please select a gene to plot");
     return;
   }
-  
+
   var grps = [];
   x = document.getElementsByClassName('EMBEDgrps');
   for(i=0;i<x.length;i++){
@@ -3871,8 +3881,8 @@ function EMBEDplot(){
     $('#EMBEDnote').text("The minimal number of plots per row is 2");
     return;
   }
-  
-  
+
+
   document.getElementById("EMBEDspin").style.visibility="visible";
   $(".EMBEDbt").prop('disabled',true);
   $(".EMBEDpngBT").prop('disabled',true);
@@ -3938,7 +3948,7 @@ function DUALplot(){
     $('#DUALnote').text("Please use selection tools to put cells into groups");
     return;
   }
-  
+
   var genes = [];
   $(".DUALgenes").each(function(){
     if($(this).prop("checked")){
@@ -3953,7 +3963,7 @@ function DUALplot(){
     $('#DUALnote').text("The minimal expression level is: "+$('#DUALcutoff').prop('min'));
     return;
   }
-  
+
   document.getElementById("DUALspin").style.visibility="visible";
   $(".DUALbt").prop('disabled',true);
   $(".DUALpngBT").prop('disabled',true);
@@ -4020,7 +4030,7 @@ function SANKcheck(){
     if($(this).prop("checked")){
       grp.push($(this).val());
   }})
-  
+
   var selSank = $("#SANKdynList").sortable('toArray');
   selSank=selSank.map(function(one){return one.replace("SANKli","");})
   if (selSank.length < 2) {
@@ -4039,7 +4049,7 @@ function SANKcheck(){
             'imgH':$("#SANKh").val(),
             'abb':window.bioAbbr,
             'figOpt':window.figOpt};
-  return(D);  
+  return(D);
 }
 function SANKplot(){
   D = SANKcheck();
@@ -4102,7 +4112,7 @@ function SANKimgSave(){
 
     }
   })
-  
+
 }
 function STACBARplot(){
   $('#STACBARnote').text("");
@@ -4163,7 +4173,7 @@ function STACBARplot(){
         return;
       }
       res = JSON.parse(res);
-console.log(res);
+      //console.log(res);
       stackedBar('STACBARresize',res);
     },
     error: function(request,status,error){
@@ -4173,7 +4183,7 @@ console.log(res);
 
     }
   })
-  
+
 }
 function CLIplot(){
   $('#CLInote').text("");
@@ -4197,7 +4207,7 @@ function CLIplot(){
     $('#CLInote').text("Please use selection tools to put cells into groups");
     return;
   }
-  
+
   var genes = getGenes('CLI');
   if(genes.length==0){
     if(!confirm("No genes is sepecified. Are you sure you want to continue with all genes (might be very slow or out of memory)?")){
@@ -4216,7 +4226,7 @@ function CLIplot(){
     $('#hideCode').hide();
     $('#hideOutput').hide();
   }
-  
+
   var grps = [];
   $(".CLIgrps:checkbox:checked").each(function(){
     grps.push($(this).val());
@@ -4229,15 +4239,15 @@ function CLIplot(){
   var layouts = [];
   $(".CLIlayouts:checkbox:checked").each(function(){
     layouts.push($(this).val());
-  })  
+  })
   if(layouts.length==0){
     $('#CLInote').text("Please select at least one layout");
     return;
   }
-  
+
   document.getElementById("CLIspin").style.visibility="visible";
   $(".CLIbt").prop('disabled',true);
-  
+
   var D = {'method':"CLI",
             'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'cells':cells,
@@ -4260,7 +4270,7 @@ function CLIplot(){
       }
       if (editor.getSession().getValue().includes("```")) {
         mywin.document.body.innerText='';
-        mywin.document.write(res); 
+        mywin.document.write(res);
         mywin.document.close();
         $('#CLInote').text("Success! Please go to tab named as "+mywin.document.title);
       }
@@ -4269,7 +4279,7 @@ function CLIplot(){
       res.split(/(\r\n|\n|\r)/g).forEach(function(line) {
         if (line.includes('div.inner_cell') || line.includes('<body>')) readIt = true;
         if (readIt) {
-//          line = line.replace('output_subarea','');
+  //          line = line.replace('output_subarea','');
           filteredRes += line;
         }
         if (line.includes('<\/body>')) readIt = false;
@@ -4337,210 +4347,18 @@ function metaSel(){
   });
 }
 //save and load
-function checkSave(eID){
-  var notCK = [];
-  for(const one of $("."+eID+":checkbox:not(:checked)")){
-    notCK.push(one.value);
-  }
-  return notCK;
-}
-function checkLoad(eID,notCK){
-  for(const one of $("."+eID)){
-    if(notCK.includes(one.value)){
-      one.checked=false;
-    }else{
-      one.checked=true;
-    }
-  }
-}
-function ABBRsave(){
-  return [window.bioAbbr,window.bioCombine,checkSave('ABBRgrps')];
-}
-function ABBRload(content){
-  window.bioAbbr= content[0];
-  window.bioCombine = content[1];
-  checkLoad("ABBRgrps",content[2]);
-  
-  ABBRlist();
-  ABBRclear();
-  ABBRcombineUpdate();
-  ABBRcombine();
-}
-function ADDsave(){
-  return [window.biogen,window.bioGeneGrp];
-}
-function ADDload(content){
-  window.biogen = content[0];
-  window.bioGeneGrp = content[1];
-  sync();
-}
-function IMGsave(){
-  return(window.figOpt);
-}
-function IMGload(content){
-  Object.keys(content).forEach(function(k) {
-    window.figOpt[k] = content[k];
-  });
-}
-
-function GDsave(){
-  var cells = {'celllist1':[],'celllist2':[]};
-  if(window.store.getState().differential.celllist1){
-    cells['celllist1'] = window.store.getState().differential.celllist1;
-  }
-  if(window.store.getState().differential.celllist2){
-    cells['celllist2'] = window.store.getState().differential.celllist2;
-  }
-  
-  if($('#GDcutoff').prop('min')>$("#GDcutoff").val()){
-    $('#GDnote').text("The minimal expression level is: "+$('#GDcutoff').prop('min'));
-    return;
-  }
-  return [cells,Math.max($("#GDcutoff").val(),$('#GDcutoff').prop('min'))];
-}
-function GDload(content){
-  cells = content[0];
-  var newCells={};
-  for(const one in cells){
-    var arr=[];
-    for(var p in Object.getOwnPropertyNames(cells[one])){
-      arr[p]=cells[one][p];
-    }
-    newCells[one] = new Int32Array(arr);
-  }
-
-  for(const one of Object.keys(newCells)){
-    if(newCells[one].length>0){
-      window.store.getState().differential[one] = newCells[one];
-    }else{
-      window.store.getState().differential[one] = null;
-    }
-  }
-  $("#GDcutoff").val(content[1]);
-  cellNupdate();
-}
-function MARKsave(){
-  return [checkSave('MARKcell'),$("#MARKgrp").val(),$("#MARKmethod").val(),$("#MARKn").val()];
-}
-function MARKload(content){
-  checkLoad('MARKcell',content[0]);
-  $("#MARKgrp").val(content[1])
-  $("#MARKmethod").val(content[2])
-  $("#MARKn").val(content[3])
-}
-function SGVsave(){
-  return [checkSave('SGVcell'),$("#SGVgene").val(),$("#SGVgrp").val(),
-          Math.max($("#SGVcutoff").val(),$('#SGVcutoff').prop('min'))];
-}
-function SGVload(content){
-  checkLoad('SGVcell',content[0]);
-  $("#SGVgene").val(content[1]);
-  $("#SGVgrp").val(content[2]);
-  $("#SGVcutoff").val(content[3]);
-}
-function PGVsave(){
-  return [checkSave('PGVcell'),checkSave("PGVgenes"),checkSave('PGVgeneGrp'),
-          $("#PGVgrp").val(),$("#PGVgrpXY").val(),
-          Math.max($("#PGVcutoff").val(),$('#PGVcutoff').prop('min'))];
-}
-function PGVload(content){
-  checkLoad('PGVcell',content[0]);
-  checkLoad('PGVgenes',content[1]);
-  checkLoad('PGVgeneGrp',content[2])
-  $("#PGVgrp").val(content[3]);
-  $("#PGVgrpXY").val(content[4]);
-  $("#PGVcutoff").val(content[5]);
-}
-function HEATsave(){
-  return [checkSave('HEATcell'),checkSave("HEATgenes"),$("#HEATorder").val(),checkSave("HEATgrps")];
-}
-function HEATload(content){
-  checkLoad('HEATcell',content[0]);
-  checkLoad("HEATgenes",content[1]);
-  $("#HEATorder").val(content[2]);
-  checkLoad("HEATgrps",content[3]);
-}
-function EMBEDsave(){
-  return [checkSave('EMBEDcell'),checkSave("EMBEDgenes"),checkSave("EMBEDgrps"),
-          $("#EMBEDlayout").val(),$('#EMBEDslot').val(),$("#EMBEDsplit").val()];
-}
-function EMBEDload(content){
-  checkLoad('EMBEDcell',content[0]);
-  checkLoad("EMBEDgenes",content[1]);
-  checkLoad("EMBEDgrps",content[2]);
-  $("#EMBEDlayout").val(content[3]);
-  $('#EMBEDslot').val(content[4]);
-  $('#EMBEDsplit').val(content[5]);
-}
-function DOTsave(){
-  return [checkSave('DOTcell'),checkSave("DOTgenes"),checkSave('DOTgeneGrp'),
-          $("#DOTgrp").val(),Math.max($("#DOTcutoff").val(),$('#DOTcutoff').prop('min'))];
-}
-function DOTload(content){
-  checkLoad('DOTcell',content[0]);
-  checkLoad("DOTgenes",content[1]);
-  checkLoad('DOTgeneGrp',content[2])
-  $("#DOTgrp").val(content[3]);
-  $("#DOTcutoff").val(content[4]);
-}
-function TRAKsave(){
-  return [checkSave('TRAKcell'),checkSave("TRAKgenes"),$("#TRAKgrp").val(),checkSave("TRAKgeneGrp")];
-}
-function TRAKload(content){
-  checkLoad('TRAKcell',content[0]);
-  checkLoad("TRAKgenes",content[1]);
-  $("#TRAKgrp").val(content[2]);
-  checkLoad("TRAKgeneGrp",content[3]);
-}
-function DENSsave(){
-  return [checkSave('DENScell'),checkSave("DENSgenes"),
-          $("#DENSsplit").val(),$("#DENSgrp").val(),
-          $("#DENScutoff").val()]
-}
-function DENSload(content){
-  checkLoad('DENScell',content[0]);
-  checkLoad('DENSgenes',content[1]);
-  $("#DENSsplit").val(content[2]);
-  $("#DENSgrp").val(content[3]);
-  $("#DENScutoff").val(content[4]);
-}
-function DUALsave(){
-  return [checkSave('DUALcell'),checkSave("DUALgenes"),Math.max($("#DUALcutoff").val(),$('#DUALcutoff').prop('min')),$("#DUALlayout").val()];
-}
-function DUALload(content){
-  checkLoad('DUALcell',content[0]);
-  checkLoad("DUALgenes",content[1]);
-  $("#DUALcutoff").val(content[2]);
-  $("#DUALlayout").val(content[3]);
-}
-function DEGsave(){
-  return [checkSave('DEGgrp'),$("#DEGtop").val(),$("#DEGmethod").val()]
-}
-function DEGload(content){
-  checkLoad('DEGgrp',content[0])
-  $("#DEGtop").val(content[1]);
-  $("#DEGmethod").val(content[2]);
-}
 function save(){
   sync();
 
-  var content = ['cellxgene.'+window.store.getState().config.displayNames.dataset];
-  content.push(ABBRsave());
-  content.push(ADDsave());
-  content.push(IMGsave());
-  content.push(GDsave());
-  content.push(MARKsave());
-  content.push(SGVsave());
-  content.push(PGVsave());
-  content.push(HEATsave());
-  content.push(EMBEDsave());
-  content.push(DOTsave());
-  content.push(TRAKsave());
-  content.push(DENSsave());
-  content.push(DUALsave());
-  content.push(DEGsave());
-  
-  
+  var content = {'saveName':'cellxgene.'+window.store.getState().config.displayNames.dataset};
+  content['selCells'] = cellSave();
+  content['selGenes'] = geneSave();
+  content['dropdown'] = selectSave();
+  content['checkbox'] = checkSave();
+  content['radio'] = radioSave();
+  content['number'] = numberSave();
+  content['sortable'] = sortableSave();
+
   var hiddenE = document.createElement('a');
   hiddenE.href="data:attachment/text,"+encodeURIComponent(JSON.stringify(content));
   hiddenE.target='_blank';
@@ -4555,50 +4373,39 @@ function load(){
   var reader = new FileReader();
   reader.onload=function(ev){
     var content = JSON.parse(decodeURIComponent(ev.target.result));
-    if(content[0]!='cellxgene.'+window.store.getState().config.displayNames.dataset){
+    if(content['saveName']!='cellxgene.'+window.store.getState().config.displayNames.dataset){
       if(!confirm("Saved information is NOT matching with the current data! Continue?")){
         return;
       }
     }
-    var i=1;
-    ABBRload(content[i++]);
-    ADDload(content[i++]);
-    IMGload(content[i++]);
-    GDload(content[i++]);
-    MARKload(content[i++]);
-    SGVload(content[i++]);
-    PGVload(content[i++]);
-    HEATload(content[i++]);
-    EMBEDload(content[i++]);
-    DOTload(content[i++]);
-    TRAKload(content[i++]);
-    DENSload(content[i++]);
-    DUALload(content[i++]);
-    DEGload(content[i++]);
-    ABBRall();
-//    alert("Saved information was loaded successfully!\nYou might start with 'Check All Features' in 'Comb. & Abbr.' tab!");
+    cellLoad(content['selCells']);
+    geneLoad(content['selGenes']);
+    sync();
+    selectLoad(content['dropdown']);
+    checkLoad(content['checkbox']);
+    radioLoad(content['radio']);
+    numberLoad(content['number']);
+    sortableLoad(content['sortable']);
   };
   reader.readAsText($("#loadfile")[0].files[0]);
-  
 }
 // ignore global definition for stackedBar legend circle
-function GetStyle(CLASSname)
-{
+function GetStyle(CLASSname){
     var styleSheets = document.styleSheets;
     var styleSheetsLength = styleSheets.length;
     for(var i = 0; i < styleSheetsLength; i++){
         if (styleSheets[i].rules ) { var classes = styleSheets[i].rules; }
-        else {  
+        else {
             try {  if(!styleSheets[i].cssRules) {continue;} }
             //Note that SecurityError exception is specific to Firefox.
             catch(e) { if(e.name == 'SecurityError') { console.log("SecurityError. Cant readd: "+ styleSheets[i].href);  continue; }}
             var classes = styleSheets[i].cssRules ;
-        }       
+        }
         for (var x = 0; x < classes.length; x++) {
             if (classes[x].selectorText == CLASSname) {
                 return classes[x];
-            }       
-        }       
+            }
+        }
     }
 }
 GetStyle('circle').style = {};

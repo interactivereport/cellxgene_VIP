@@ -12,6 +12,7 @@ cp interface.html $strweb
 cp vip.env $strPath/server/app/. 2>/dev/null | true
 
 if [ -n "$1" ]; then
+cp saveVIP.js $strweb/static/.
 cp -R stackedbar $strweb
 cp -R d3plot $strweb
 cp bubbleMap.R $strPath/server/app/.
