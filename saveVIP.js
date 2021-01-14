@@ -4,8 +4,13 @@ The following provide the functionality for saving and loading the session
 
 // functions for selected cells
 function cellSave(){
-  return {'celllist1':Array.from(window.store.getState().differential['celllist1']),
-          'celllist2':Array.from(window.store.getState().differential['celllist2'])};
+  var v = {};
+  for(const i of ['1','2']){
+    var cN = window.store.getState().differential['celllist'+i];
+    if(cN===null) cN = [];
+    v['celllist'+i] = Array.from(cN);
+  }
+  return v;
 }
 function cellLoad(v){
   for(const i of [1,2]){
@@ -46,7 +51,7 @@ function checkSave(){
   var cIDs = [];
   $('input:checkbox').each(function(){
     if(!!this.className && this.className.length>0){
-      cIDs.push(this.className); 
+      cIDs.push(this.className);
     }
   });
   var v={};
@@ -76,7 +81,7 @@ function radioSave(){
   var cNames = [];
   $('input:radio').each(function(){
     if(!!this.name && this.name.length>0){
-      cNames.push(this.name); 
+      cNames.push(this.name);
     }
   });
   var v={};
