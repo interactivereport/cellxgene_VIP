@@ -454,6 +454,7 @@
       input,textarea,select{ font-size: 14px; }
       .ace_editor p,.ace_editor div,.ace_editor input,.ace_editor label,.ace_editor span,.ace_editor text {font-family: 'Monaco', 'Menlo', 'Droid Sans Mono', 'Courier New', monospace !important;}
       pre span {font-size: 12px; font-family: 'Arial', monospace !important;}
+      pre { display: block; padding: 0; margin: 0; font-size: 12px; white-space: pre-wrap; background-color: #f5f5f5; border: 1px solid #ccc; }
       table {
         border-collapse: collapse;
       }
@@ -4274,7 +4275,7 @@ function CLIplot(){
         mywin.document.close();
         $('#CLInote').text("Success! Please go to tab named as "+mywin.document.title);
       }
-      var filteredRes = '<style type="text/css"> pre { display: block; padding: 8.5px; margin: 0 0 9px; font-size: 12px; line-height: 1.42857143; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: 1px solid #ccc; border-radius: 2px; }';
+      var filteredRes = '<style type="text/css"> pre { display: block; font-size: 12px; line-height: 1.42857143; word-break: break-all; word-wrap: break-word; color: #333333; background-color: #f5f5f5; border: 1px solid #ccc; border-radius: 2px; }';
       var readIt = false;
       res.split(/(\r\n|\n|\r)/g).forEach(function(line) {
         if (line.includes('div.inner_cell') || line.includes('<body>')) readIt = true;
