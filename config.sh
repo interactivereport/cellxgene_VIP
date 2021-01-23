@@ -120,9 +120,12 @@ def VIP():
     return route(request.data,current_app.app_config)' >> cellxgene/server/app/app.py
     
 
-git clone https://github.com/theislab/scanpy.git
-cd scanpy;git checkout 2ea9f836cec6e12a5cdd37bc4a229d4eadf59d37;cd ..
-pip install scanpy/
+# Old branch for nicer plots that are incorporated into ver 1.6.1 now
+#git clone https://github.com/theislab/scanpy.git
+#cd scanpy;git checkout 2ea9f836cec6e12a5cdd37bc4a229d4eadf59d37;cd ..
+#pip install scanpy/
+
+pip install scanpy==1.6.1
 
 cd cellxgene
 make pydist
