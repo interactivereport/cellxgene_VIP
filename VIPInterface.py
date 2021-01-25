@@ -577,11 +577,10 @@ def GD(data):
   adata = None;
   for one in data['cells'].keys():
     sT = time.time()
-    oneD = {'cells':data['cells'][one],
-            'genes':[],
-            'grp':[],
-            'figOpt':data['figOpt'],
-            'url':data['url']}
+    oneD = data.copy()
+    oneD['cells'] = data['cells'][one]
+    oneD['genes'] = []
+    oneD['grp'] = []
     D = createData(oneD)
     ppr.pprint("one grp aquire data cost %f seconds" % (time.time()-sT))
     D.obs['cellGrp'] = one
