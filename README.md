@@ -74,6 +74,11 @@ You should be able to see this in Console of Chrome Developer Tools if everythin
 ```
 
 # Note on installtion of packages
+### pandoc, install R Studio Server https://rstudio.com/products/rstudio/download-server/ and then,
+```
+ln -s /usr/lib/rstudio-server/bin/pandoc/pandoc /usr/bin
+```
+## Install R and R Packages at system level (root or sudo privilege is needed)
 ### R: https://cran.r-project.org/web/packages/arrow/index.html 
 In command line:
 ```bash
@@ -115,7 +120,4 @@ $ R
 >devtools::install_github(repo = 'satijalab/seurat@v3.0.2', dependencies=FALSE, force=TRUE, lib ='/usr/lib64/R/library/Seurat_3.0.2/')
 >library(Seurat, lib.loc = '/usr/lib64/R/library/Seurat_3.0.2/')
 ```
-### pandoc, install R Studio Server https://rstudio.com/products/rstudio/download-server/ and then,
-```
-ln -s /usr/lib/rstudio-server/bin/pandoc/pandoc /usr/bin
-```
+
