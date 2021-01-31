@@ -95,26 +95,7 @@ install.packages("arrow")
 > library(ggrepel)
 > library(ggrastr)
 ```
-### Packages needed for CLI.
-#### follow https://irkernel.github.io/installation/ to install IRkernel and make it avilable to Jupyter system-wide.
-```
-$ R
->install.packages('IRkernel')
->IRkernel::installspec(user = FALSE)
-```
-```
-$ conda install ipykernel
-$ pip install rpy2  # If you want to use globally installed R and packages
-or
-$ conda install rpy2  # R and R packages will be installed locally 
-
-# Sample Environment
-$ jupyter kernelspec list
-Available kernels:
-  python3    /opt/anaconda3/envs/test2/share/jupyter/kernels/python3
-  ir         /usr/local/share/jupyter/kernels/ir
-```
-### Seurat ver3.0.2
+#### Seurat ver3.0.2
 ```
 mkdir /usr/lib64/R/library/Seurat_3.0.2/
 $ R
@@ -122,3 +103,11 @@ $ R
 >library(Seurat, lib.loc = '/usr/lib64/R/library/Seurat_3.0.2/')
 ```
 
+### Packages needed for CLI.
+
+```
+$ conda install ipykernel
+$ pip install rpy2  # If you want to use globally installed R and packages
+or
+$ conda install rpy2  # R and R packages will be installed locally 
+```
