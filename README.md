@@ -57,7 +57,7 @@ source activate <env name>
 ## 3. Run cellxgene by specifiying a h5ad file storing scRNA-seq data along with a host and a port, use "ps" to find used ports to spare, see https://chanzuckerberg.github.io/cellxgene/posts/launch for details.
 ```bash
 ps -ef | grep cellxgene
-Rscript -e 'library(reticulate); py_config()'
+Rscript -e 'reticulate::py_config()'
 # Run the following command if the output of the above command is not the python in your env.
 export RETICULATE_PYTHON=`which python`
 cellxgene launch --host <xxx> --port <xxx> --disable-annotations --verbose <h5ad file>
