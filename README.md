@@ -45,7 +45,7 @@ whole or sliced single cell dataset.
 ``` bash
 git clone https://github.com/interactivereport/cellxgene_VIP.git
 cd cellxgene_VIP
-conda env create -n <env name, such as: VIP> -f VIP.yml
+conda env create -n <env name, such as: VIP> -f VIP.yml (or VIP_conda_R.yml for non-system conda managed R)
 conda activate <env name, such as: VIP>
 or
 source activate <env name>
@@ -54,7 +54,23 @@ source activate <env name>
 ```bash
 ./config.sh
 ```
-## 3. Run cellxgene by specifiying a h5ad file storing scRNA-seq data along with a host and a port, use "ps" to find used ports to spare, see https://chanzuckerberg.github.io/cellxgene/posts/launch for details.
+## 3. Install R packages
+```bash
+export LIBARROW_MINIMAL=false
+#  ensure that the right R used. e.g. System: /bin/R or /usr/bin/R ; Conda managed R: ~/.conda/envs/VIP_conda_R/bin/R
+which R
+R 
+> install.packages("remotes")
+> remotes::install_url("https://cran.r-project.org/src/contrib/Archive/foreign/foreign_0.8-76.tar.gz")
+> remotes::install_url("https://cran.r-project.org/src/contrib/Archive/ggpubr/ggpubr_0.3.0.tar.gz")
+> remotes::install_url("https://cran.r-project.org/src/contrib/Archive/ggrastr/ggrastr_0.1.9.tar.gz")
+> remotes::install_url("https://cran.r-project.org/src/contrib/Archive/arrow/arrow_2.0.0.tar.gz")
+> remotes::install_url("https://cran.r-project.org/src/contrib/Archive/Cairo/Cairo_1.5-12.tar.gz")
+> remotes::install_url("https://cran.r-project.org/src/contrib/Archive/Seurat/Seurat_3.2.3.tar.gz")
+> remotes::install_url("https://cran.r-project.org/src/contrib/Archive/rmarkdown/rmarkdown_2.5.tar.gz")
+> install.packages("tidyverse")
+```
+## 4. Run cellxgene by specifiying a h5ad file storing scRNA-seq data along with a host and a port, use "ps" to find used ports to spare, see https://chanzuckerberg.github.io/cellxgene/posts/launch for details.
 ```bash
 ps -ef | grep cellxgene
 Rscript -e 'reticulate::py_config()'
@@ -81,35 +97,11 @@ You should be able to see this in Console of Chrome Developer Tools if everythin
 ```
 ln -s /usr/lib/rstudio-server/bin/pandoc/pandoc /usr/bin
 ```
-## Install R and R Packages at system level (root or sudo privilege is needed)
-### R: https://cran.r-project.org/web/packages/arrow/index.html 
-In command line:
-```bash
-export LIBARROW_MINIMAL=false
-```
-Then in R:
-```R
-install.packages("arrow")
-```
-### R packages needed for volcano plot in DEG (Differentially Expressed Genes) analysis
-```
-> library(ggplot2)
-> library(ggrepel)
-> library(ggrastr)
-```
+
 #### Seurat ver3.0.2
 ```
 mkdir /usr/lib64/R/library/Seurat_3.0.2/
 $ R
 >devtools::install_github(repo = 'satijalab/seurat@v3.0.2', dependencies=FALSE, force=TRUE, lib ='/usr/lib64/R/library/Seurat_3.0.2/')
 >library(Seurat, lib.loc = '/usr/lib64/R/library/Seurat_3.0.2/')
-```
-
-### Packages needed for CLI.
-
-```
-$ conda install ipykernel
-$ pip install rpy2  # If you want to use globally installed R and packages
-or
-$ conda install rpy2  # R and R packages will be installed locally 
 ```
