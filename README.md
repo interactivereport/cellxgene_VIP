@@ -93,15 +93,12 @@ You should be able to see this in Console of Chrome Developer Tools if everythin
 ```
 
 # Note on installtion of packages
-### pandoc, install R Studio Server https://rstudio.com/products/rstudio/download-server/ and then,
-```
-ln -s /usr/lib/rstudio-server/bin/pandoc/pandoc /usr/bin
-```
 
 #### Seurat ver3.0.2
 ```
-mkdir /usr/lib64/R/library/Seurat_3.0.2/
+# replace <dir> with a real one
+mkdir <dir> (e.g. /usr/lib64/R/library/Seurat_3.0.2/)
 $ R
->devtools::install_github(repo = 'satijalab/seurat@v3.0.2', dependencies=FALSE, force=TRUE, lib ='/usr/lib64/R/library/Seurat_3.0.2/')
->library(Seurat, lib.loc = '/usr/lib64/R/library/Seurat_3.0.2/')
+>devtools::install_github(repo = 'satijalab/seurat@v3.0.2', dependencies=FALSE, force=TRUE, lib ='<dir>')
+>library(Seurat, lib.loc = '<dir>')
 ```
