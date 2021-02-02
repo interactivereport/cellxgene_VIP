@@ -45,7 +45,7 @@ whole or sliced single cell dataset.
 ``` bash
 git clone https://github.com/interactivereport/cellxgene_VIP.git
 cd cellxgene_VIP
-conda env create -n <env name, such as: VIP> -f VIP.yml (or VIP_conda_R.yml for non-system conda managed R)
+conda env create -n <env name, such as: VIP> -f VIP.yml (or VIP_conda_R.yml to use conda managed R)
 conda activate <env name, such as: VIP>
 or
 source activate <env name>
