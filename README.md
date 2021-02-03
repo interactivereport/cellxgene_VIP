@@ -45,6 +45,8 @@ whole or sliced single cell dataset.
 ``` bash
 git clone https://github.com/interactivereport/cellxgene_VIP.git
 cd cellxgene_VIP
+
+conda config --set channel_priority flexible
 conda env create -n <env name, such as: VIP> -f VIP.yml (or VIP_conda_R.yml to use conda managed R)
 conda activate <env name, such as: VIP>
 or
