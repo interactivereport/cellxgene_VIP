@@ -47,7 +47,7 @@ git clone https://github.com/interactivereport/cellxgene_VIP.git
 cd cellxgene_VIP
 
 conda config --set channel_priority flexible
-conda env create -n <env name, such as: VIP> -f VIP.yml (or VIP_conda_R.yml to use conda managed R)
+conda env create -n <env name, such as: VIP> -f VIP.yml (system-wide R) or VIP_conda_R.yml (conda managed local R)
 conda activate <env name, such as: VIP>
 or
 source activate <env name>
@@ -76,7 +76,7 @@ R
 ```bash
 ps -ef | grep cellxgene
 Rscript -e 'reticulate::py_config()'
-# Run the following command if the output of the above command is not the python in your env.
+# Run the following command if the output of the above command is not pointing to the python in your env.
 export RETICULATE_PYTHON=`which python`
 cellxgene launch --host <xxx> --port <xxx> --disable-annotations --verbose <h5ad file>
 ```
