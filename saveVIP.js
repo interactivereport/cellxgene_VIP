@@ -32,7 +32,7 @@ function geneLoad(v){
 function selectSave(){
   var v = {};
   $('select').each(function(){
-    if(!this.id.includes('geneset')){
+    if(!this.id.includes('geneset') && this.id.length>0){
       v[this.id] = $(this).val();
     }
   });
@@ -130,4 +130,19 @@ function sortableLoad(v){
     }
     $("#"+cID).html(htmlCheck);
   }
+}
+
+// function save images
+function imageSave(){
+  var v={};
+  $('img').each(function(){
+    if(this.id.length>0){
+      v[this.id] = $(this).attr('src');
+    }
+  })
+  var hiddenE = document.createElement('a');
+  hiddenE.href="data:attachment/text,"+encodeURIComponent(JSON.stringify(v));
+  hiddenE.target='_blank';
+  hiddenE.download='cellxgene.'+window.store.getState().config.displayNames.dataset+'.img.txt';
+  hiddenE.click();
 }

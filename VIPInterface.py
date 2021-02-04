@@ -115,7 +115,7 @@ def collapseGeneSet(data,expr,gNames,cNames,fSparse):
       for gene in data['geneGrp'][aN]:
         if gene in data['genes']:
           data['genes'].remove(gene)
-      data['genes'] += [aN] 
+      data['genes'] += [aN]
     gNames = list(Y.columns)
   return Y,gNames
 
@@ -162,16 +162,16 @@ def subData(data):
           if fSparse:
             expr = pd.DataFrame.sparse.from_spmatrix(X,index=cNames,columns=gNames)
           else:
-            expr = pd.DataFrame(X,columns=gNames,index=cNames) 
+            expr = pd.DataFrame(X,columns=gNames,index=cNames)
         else:
           X = scD.data.X[selC]
           gNames = list(scD.data.var["name_0"])
           if fSparse:
             expr = X
           else:
-            expr = pd.DataFrame(X,columns=gNames,index=cNames) 
+            expr = pd.DataFrame(X,columns=gNames,index=cNames)
   expr,gNames = collapseGeneSet(data,expr,gNames,cNames,fSparse)
-  
+
   ## obtain the embedding
   if False:
     strEmbed = 'umap'
@@ -211,12 +211,12 @@ def subData(data):
       embed[i] = embed[i][selC]
     obs = obs[selC]
     data['grp'] = [newGrp]
-    
+
   obs = obs.astype('category')
   ## empty selection
   if expr.shape[0]==0 or expr.shape[1]==0:
     return []
-    
+
   return sc.AnnData(expr,obs,var=pd.DataFrame([],index=gNames),obsm={layout:embed[layout].to_numpy() for layout in embed.keys()})
   #return sc.AnnData(expr,obs,var=pd.DataFrame([],index=gNames),obsm={'X_%s'%strEmbed:embed.to_numpy()})
 
@@ -249,7 +249,7 @@ def createData(data,seperate=False):
     data['genes'] = gNames[0]
   if len(data['genes'])==0:# obtain all genes
     data['genes'] = gNames
-    
+
   fil = json.dumps({'filter':{'var':{'annotation_value':[{'name':'name_0','values':data['genes']}]}}})
   res = requests.put('%s/data/var' % data["url"],fil,headers=headers)
   expr = decode_fbs.decode_matrix_FBS(res.content)
@@ -296,12 +296,12 @@ def createData(data,seperate=False):
   ## empty selection
   if expr.shape[0]==0 or expr.shape[1]==0:
     return []
-  
+
   return sc.AnnData(expr,obs,obsm={'X_%s'%strEmbed:embed.to_numpy()})
 
 def errorTask(data):
   raise ValueError('Error task!')
-  
+
 def distributeTask(aTask):
   return {
     'SGV':SGV,
@@ -328,7 +328,8 @@ def distributeTask(aTask):
     'preDEGvolcano':getPreDEGvolcano,
     'preDEGmulti':getPreDEGbubble,
     'mergeMeta': mergeMeta,
-    'isMeta': isMeta
+    'isMeta': isMeta,
+    'testVIPready':testVIPready
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -341,7 +342,7 @@ def iostreamFig(fig):
   figD.close()
   plt.close('all')
   return imgD
-  
+
 def Msg(msg):
   fig = plt.figure(figsize=(5,2))
   plt.text(0,0.5,msg)
@@ -353,7 +354,7 @@ def MINX(data):
   with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
     minV = min(scD.data.X[0])
   return '%.1f'%minV
-  
+
 def geneFiltering(adata,cutoff,opt):
   ## 1. remove cells if the max expression of all genes is lower than the cutoff
   if opt==1:
@@ -367,7 +368,7 @@ def geneFiltering(adata,cutoff,opt):
     #sT = time.time()
     #ix = pd.DataFrame((adata.X>float(cutoff)).sum(1)>0,index=list(adata.obs.index)).iloc[:,0]
     #ppr.pprint(time.time()-sT)
-    
+
     adata = adata[ix,]
   ## 2. Set all expression level smaller than the cutoff to be NaN not for plotting without removing any cells
   elif opt==2:
@@ -386,7 +387,7 @@ def SGV(data):
   adata = geneFiltering(adata,data['cutoff'],1)
   if len(adata)==0:
     raise ValueError('No cells in the condition!')
-    
+
   a = list(set(list(adata.obs[data['grp'][0]])))
   ncharA = max([len(x) for x in a])
   w = len(a)/4+1
@@ -403,7 +404,7 @@ def SGVcompare(data):
   #adata = geneFiltering(adata,data['cutoff'],1)
   if len(adata)==0:
     raise ValueError('No cells in the condition!')
-  
+
   # plot in R
   strF = ('%s/SGV%f.csv' % (data["CLItmp"],time.time()))
   pd.concat([adata.to_df(),adata.obs[data['grp']]],axis=1,sort=False).to_csv(strF,index=False)
@@ -412,7 +413,9 @@ def SGVcompare(data):
   res = subprocess.run([strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
   os.remove(strF)
-  
+  if 'Error' in res.stderr.decode('utf-8'):
+    raise SyntaxError("in R: "+res.stderr.decode('utf-8'))
+
   return img
 
 def VIOdata(data):
@@ -435,7 +438,7 @@ def updateGene(data):
       grpLoc += [(len(allG),len(allG)+len(data['geneGrp'][aN])-1)]
       allG += data['geneGrp'][aN]
       grpID += [aN]
-        
+
   data['genes'] = unique(allG+data['genes'])
   data['grpLoc'] = grpLoc
   data['grpID'] = grpID
@@ -479,7 +482,7 @@ def pHeatmap(data):
   #Xsep = createData(data,True)
   #adata = sc.AnnData(Xsep['expr'],Xsep['obs'])
   #sT = time.time()
-  
+
   adata = createData(data)
   data['grp'] += data['addGrp']
   #Xdata = pd.concat([adata.to_df(),adata.obs], axis=1, sort=False).to_csv()
@@ -514,7 +517,7 @@ def pHeatmap(data):
       grpWd.append(max([len(x) for x in Ugrp]))#0.02*fW*max([len(x) for x in Ugrp])
       grpLen.append(len(Ugrp)+2)
 
-  w += 2 
+  w += 2
   Zscore=None
   heatCol=None
   heatCenter=None
@@ -526,7 +529,7 @@ def pHeatmap(data):
     colTitle="Z-score"
   #ppr.pprint('HEAT data preparing cost %f seconds' % (time.time()-sT) )
   #sT = time.time()
-  
+
   try:
     g = sns.clustermap(adata.to_df(),
                      method="ward",row_cluster=exprOrder,z_score=Zscore,cmap=heatCol,center=heatCenter,
@@ -537,7 +540,7 @@ def pHeatmap(data):
   except Exception as e:
     return 'ERROR: Z score calculation failed for 0 standard diviation. '+traceback.format_exc() # 'ERROR @server: {}, {}'.format(type(e),str(e))
 
-  
+
   #ppr.pprint('HEAT plotting cost %f seconds' % (time.time()-sT) )
   #sT = time.time()
   g.ax_col_dendrogram.set_visible(False)
@@ -562,7 +565,7 @@ def pHeatmap(data):
       #                          bbox_to_anchor=(1.02,1-i*0.25),fontsize=5)#grpW[i],0.5,0.
       cumulaMax = max([cumulaMax,grpWd[i]*characterW])
       grpH.append(grpH[-1]-grpLen[i]*characterH)
-      
+
       leg.get_title().set_fontsize(6)#min(grpSize)+2
       g.ax_heatmap.add_artist(leg)
   #ppr.pprint('HEAT post plotting cost %f seconds' % (time.time()-sT) )
@@ -572,27 +575,27 @@ def HeatData(data):
   adata = createData(data)
   Xdata = pd.concat([adata.to_df(),adata.obs], axis=1, sort=False).to_csv()
   return Xdata
-  
+
 def GD(data):
   adata = None;
   for one in data['cells'].keys():
-    sT = time.time()
+    #sT = time.time()
     oneD = data.copy()
-    oneD['cells'] = data['cells'][one]
-    oneD['genes'] = []
-    oneD['grp'] = []
+    oneD.update({'cells':data['cells'][one],
+            'genes':[],
+            'grp':[]})
     D = createData(oneD)
-    ppr.pprint("one grp aquire data cost %f seconds" % (time.time()-sT))
+    #ppr.pprint("one grp aquire data cost %f seconds" % (time.time()-sT))
     D.obs['cellGrp'] = one
     if adata is None:
       adata = D
     else:
       sT =time.time()
       adata = adata.concatenate(D)
-      ppr.pprint("Concatenate data cost %f seconds" % (time.time()-sT))
+      #ppr.pprint("Concatenate data cost %f seconds" % (time.time()-sT))
   if adata is None:
     return Msg("No cells were satisfied the condition!")
-  
+
   ##
   adata.obs.astype('category')
   cutOff = 'geneN_cutoff'+data['cutoff']
@@ -646,7 +649,7 @@ def DEG(data):
       #        'grp':[],
       #        'figOpt':{'scale':'false'},
       #        'url':data['url']}
-              
+
       D = createData(oneD)
       D.obs[comGrp] = one
       if adata is None:
@@ -668,7 +671,7 @@ def DEG(data):
       raise ValueError('No data extracted by user selection')
     adata.obs.astype('category')
     nm = None
-    if data['DEmethod']=='wald': 
+    if data['DEmethod']=='wald':
       nm = 'nb'
     res = de.test.two_sample(adata,comGrp,test=data['DEmethod'],noise_model=nm)
     deg = res.summary()
@@ -679,16 +682,19 @@ def DEG(data):
   #strF = ('/tmp/DEG%f.csv' % time.time())
   strF = ('%s/DEG%f.csv' % (data["CLItmp"],time.time()))
   deg.to_csv(strF,index=False)
-  #ppr.pprint([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]])
-  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],data['Rlib']],capture_output=True)#
+  #ppr.pprint([strExePath+'/volcano.R',strF,'"%s"'%';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]])
+  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],str(data['sigFDR']),str(data['sigFC']),data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
   os.remove(strF)
+  if 'Error' in res.stderr.decode('utf-8'):
+    raise SyntaxError("in R: "+res.stderr.decode('utf-8'))
+
   #####
   gInfo = getVar(data)
   deg.index = deg['gene']
   deg = pd.concat([deg,gInfo],axis=1,sort=False)
   #return deg.to_csv()
-  
+
   if not data['topN']=='All':
     deg = deg.iloc[range(int(data['topN'])),]
   #deg.loc[:,'log2fc'] = deg.loc[:,'log2fc'].apply(lambda x: '%.2f'%x)
@@ -713,7 +719,7 @@ def DOT(data):
   else:
       col = np.array(sns.color_palette("husl",len(grp)).as_hex())
   adata.uns[data['grp'][0]+'_colors'] = col
-  
+
   #ppr.pprint(sc.__version__)
   if 'split_show' in data['figOpt']['scanpybranch']:#.dev140+ge9cbc5f
     dp = sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],expression_cutoff=float(data['cutoff']),mean_only_expressed=(data['mean_only_expressed'] == 'Yes'),
@@ -739,10 +745,10 @@ def EMBED(data):
     splitName = list(adata.obs[data['splitGrp']].unique())
     nsplitRow = math.ceil(len(splitName)/ncol)
     nrow = ngrp+ngene*nsplitRow
-  
+
   step =11
   grpCol = {gID:math.ceil(len(list(adata.obs[gID].unique()))/step) for gID in data['grp']}
-  
+
   rcParams['figure.constrained_layout.use'] = False
   fig = plt.figure(figsize=(ncol*subSize,subSize*nrow))
   gs = fig.add_gridspec(nrow,ncol,wspace=0.2)
@@ -776,7 +782,7 @@ def EMBED(data):
         ax.set_ylabel('%s2'%data['layout'])
 
   return iostreamFig(fig)
-  
+
 def TRACK(data):
   updateGene(data)
   adata = createData(data)
@@ -786,16 +792,16 @@ def TRACK(data):
   h = adata.n_vars/2
 
   ## a bug in scanpy reported: https://github.com/theislab/scanpy/issues/1265, if resolved the following code is not needed
-  #if len(data['grpLoc'])>0 and data['grpLoc'][len(data['grpLoc'])-1][1] < (len(data['genes'])-1):
-  #  data['grpLoc'] += [(data['grpLoc'][len(data['grpLoc'])-1][1]+1,len(data['genes'])-1)]
-  #  data['grpID'] += ['others']
+  if len(data['grpLoc'])>0 and data['grpLoc'][len(data['grpLoc'])-1][1] < (len(data['genes'])-1):
+    data['grpLoc'] += [(data['grpLoc'][len(data['grpLoc'])-1][1]+1,len(data['genes'])-1)]
+    data['grpID'] += ['others']
   ##############
-  ppr.pprint(data['genes'])
-  
+  #ppr.pprint(data['grpLoc'])
+  #ppr.pprint(data['grpID'])
+
   ax = sc.pl.tracksplot(adata,data['genes'],groupby=data['grp'][0],figsize=(w,h),
                         var_group_positions=data['grpLoc'],var_group_labels=data['grpID'],
                         show=False)
-  ppr.pprint("test")
   fig=ax['track_axes'][0].figure
   return iostreamFig(fig)
 
@@ -826,12 +832,12 @@ def DUAL(data):
   #ppr.pprint(data['cutoff'])
   #ppr.pprint(adata.obs['Expressed'].cat.categories)
   #ppr.pprint(adata.obs['Expressed'].value_counts())
-  
+
   #ppr.pprint('DUAL filtering cost %f seconds' % (time.time()-sT) )
   #sT = time.time()
   pCol = {"None":"#AAAAAA44","Both":"#EDDF01AA",data['genes'][0]:"#1CAF82AA",data['genes'][1]:"#FA2202AA"}
   adata.uns["Expressed_colors"]=[pCol[i] for i in adata.obs['Expressed'].cat.categories]
-  
+
   rcParams['figure.figsize'] = 4.5, 4
   fig = sc.pl.embedding(adata,data['layout'],color='Expressed',return_fig=True,show=False,legend_fontsize="small")
   plt.xlabel('%s1'%data['layout'])
@@ -848,16 +854,16 @@ def MARK(data):
   vCount = adata.obs[data["grp"][0]].value_counts()
   keepG = [key for key,val in vCount.items() if val>2]
   adata = adata[adata.obs[data["grp"][0]].isin(keepG),:]
-  
+
   if len(adata.obs[data['grp'][0]].unique())<3:
     return 'ERROR @server: {}'.format('Less than 3 groups in selected cells! Please use DEG for 2 groups')
     #return json.dumps([[['name','scores'],['None','0']],Msg('Less than 3 groups in selected cells!Please use DEG for 2 groups')])
-    
+
   sc.tl.rank_genes_groups(adata,groupby=data["grp"][0],n_genes=int(data['geneN']),method=data['markMethod'])#
   ppr.pprint(int(data['geneN']))
   sc.pl.rank_genes_groups(adata,n_genes=int(data['geneN']),ncols=min([3,len(adata.obs[data['grp'][0]].unique())]),show=False)
   fig =plt.gcf()
-  
+
   gScore = adata.uns['rank_genes_groups']
   #ppr.pprint(gScore)
   pKeys = [i for i in ['names','scores','logfoldchanges','pvals','pvals_adj'] if i in gScore.keys()]
@@ -886,7 +892,7 @@ def DENS(data):
   bw=float(data['bw'])
   sGrp = data['category'][0]
   cGrp = data['category'][1]
-  
+
   defaultFontsize = 16
   if 'figOpt' in data.keys():
     defaultFontsize = float(data['figOpt']['fontsize'])
@@ -951,7 +957,7 @@ def SANK(data):
   D = D.astype('str').astype('category')
   if 'name_0' in D.columns:
     del D['name_0']
-  
+
   colName =['Set1','Set3','viridis']
   labels = []
   cols = []
@@ -964,7 +970,7 @@ def SANK(data):
       colindex += 1
     else:
       cols += sns.color_palette(colName[2],len(gNames)).as_hex()
-  
+
   sIDs =[]
   dIDs =[]
   v=[]
@@ -979,7 +985,7 @@ def SANK(data):
     sIDs += list(summaryOne[oneName[0]].apply(lambda x: labels.index(x)))
     dIDs += list(summaryOne[oneName[1]].apply(lambda x: labels.index(x)))
     v += list(summaryOne['Count'])
-    
+
   data_trace = dict(
     type='sankey',
     domain=dict(x=[0,1],y=[0,1]),
@@ -1011,7 +1017,7 @@ def SANK(data):
     fig = go.Figure(data=[go.Sankey(data_trace)],layout=layout)
     img = plotIO.to_image(fig,data['imgSave'])
     return base64.encodebytes(img).decode('utf-8')
-    
+
   layout = dict(
     font = dict(size=int(data['figOpt']['fontsize'])),
     height= int(data['imgH']),
@@ -1029,7 +1035,7 @@ def SANK(data):
                         label='Thin',
                         method='restyle',
                         args=['node.thickness', 8]
-                    )      
+                    )
                 ]
             ),
             dict(
@@ -1069,12 +1075,12 @@ def SANK(data):
                         label='Fixed',
                         method='restyle',
                         args=['arrangement', 'fixed']
-                    )       
+                    )
                 ]
             ),
             dict(
                 y=0.6,
-                buttons=[             
+                buttons=[
                     dict(
                         label='Horizontal',
                         method='restyle',
@@ -1086,9 +1092,9 @@ def SANK(data):
                         args=['orientation','v']#{'orientation': 'v','height':250*D.shape[1],'width':700}
                     )
                 ]
-            
+
             )
-        ]    
+        ]
   )
   fig = go.Figure(data=[go.Sankey(data_trace)],layout=layout)
   div = plotIO.to_html(fig)
@@ -1096,30 +1102,30 @@ def SANK(data):
 
 def DENS2D(data):
   adata = createData(data)
-  
+
   ## plot in R
   strF = ('/tmp/DEG%f.csv' % time.time())
   adata.to_df().to_csv(strF)#
   res = subprocess.run([strExePath+'/Density2D.R',strF,data['figOpt']['img'],str(data['cutoff']),str(data['bandwidth']),data['figOpt']['colorMap'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
-  if 'Error' in res.stderr.decode('utf-8'):
-    raise ValueError(res.stderr.decode('utf-8'))
   img = res.stdout.decode('utf-8')
   os.remove(strF)
-  
+  if 'Error' in res.stderr.decode('utf-8'):
+    raise SyntaxError("in R: "+res.stderr.decode('utf-8'))
+
   return img
 
 def toInt(x):
   if len(x)==0:
     return 0
   return int(x)
-  
+
 def STACBAR(data):
   if len(data['genes'])==0:
     tmp, D = getObs(data)
     D = D.apply(lambda x:x.apply(lambda y:y))
   else:
     adata = createData(data)
-    
+
     D = pd.concat([adata.obs.apply(lambda x:x.apply(lambda y:y)),
                    adata.to_df().apply(lambda x:pd.cut(x,int(data['Nbin'])).apply(lambda y:'%s:%.1f_%.1f'%(x.name,y.left,y.right)))],
                   axis=1,sort=False)
@@ -1127,7 +1133,7 @@ def STACBAR(data):
   if 'name_0' in D.columns:
     del D['name_0']
   cellN = D.groupby(list(D.columns)).size().reset_index(name="Count")
-  
+
   strCol = data['colorBy']
   tmp = list(D.columns)
   tmp.remove(strCol)
@@ -1149,8 +1155,8 @@ def ajaxData(strData):
   cells = data['cells']#{str(x):cix[x] for x in range(len(cix))}
   layout= data['layout']#['umap_harmony','umap_liger']
   grps = data['grp']#['cell_type','diagnosis']
-  
-  ## 
+
+  ##
   headers = {'content-type':'application/json'}
   #### obtain the expression -------------
   res = requests.get('%s/annotations/var' % url,params={'annotation-name':'name_0'})
@@ -1158,12 +1164,12 @@ def ajaxData(strData):
   if len(genes)==0:
     genes=gNames
   fil = json.dumps({'filter':{'var':{'annotation_value':[{'name':'name_0','values':genes}]}}})
-  res = requests.put('%s/data/var' % url,fil,headers=headers)    
-  expr = decode_fbs.decode_matrix_FBS(res.content)  
+  res = requests.put('%s/data/var' % url,fil,headers=headers)
+  expr = decode_fbs.decode_matrix_FBS(res.content)
   cNames = ["cell%d" % x for x in cells.values()]
   expr = pd.DataFrame([[expr['columns'][i][x] for x in cells.values()] for i in range(len(expr['columns']))],
                           index=[gNames[x] for x in expr['col_idx']],columns=cNames).T
-  
+
   #### obtain the layout -------------
   layX = {}
   if len(layout)>0:
@@ -1173,7 +1179,7 @@ def ajaxData(strData):
       embed = pd.DataFrame([[embed['columns'][i][x] for x in cells.values()] for i in range(len(embed['columns']))],
                             index=embed['col_idx'],columns=cNames).T
       layX['X_%s'%one]=embed.to_numpy()
-  
+
   ## obtain the meta ---------
   obsL = [cNames]
   for one in grps:
@@ -1183,7 +1189,7 @@ def ajaxData(strData):
     obsL += [subGrp]
   obs = pd.DataFrame(obsL,index=['name_0']+grps,columns=cNames).T
   obs = obs.astype('category')
-  
+
   adata = sc.AnnData(expr,obs,obsm=layX)
   return adata
 
@@ -1191,7 +1197,7 @@ def CLI(data):
   strPath = data["CLItmp"]+('/CLI%f' % time.time())
   script = data['script']
   del data['script']
-  
+
   adata = createData(data)
 
   strData = strPath + '.h5ad'
@@ -1220,7 +1226,7 @@ def CLI(data):
       #f.writelines(['%load_ext rpy2.ipython\n','import pickle\n','with open("%s","rb") as f:\n'%strData,'  adata=pickle.load(f)\n','strPath="%s"\n\n'%strPath])
       f.writelines(['%%R\n','strPath="%s"\n\n'%strPath])
       f.write(script)
-  
+
     res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to html --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
     html = res.stdout.decode('utf-8')
     h,s,e = html.partition('<div class="cell border-box-sizing code_cell rendered">')
@@ -1247,30 +1253,32 @@ def getPreDEGname(data):
   conn.close()
 
   return json.dumps(list(df['contrast']+"::"+df['tags']))
-    
+
 def getPreDEGvolcano(data):
   strF = re.sub("h5ad$","db",data["h5ad"])
   comGrp = data["compSel"].split("::")
-  
+
   conn = sqlite3.connect(strF)
   df = pd.read_sql_query("select gene,log2fc,pval,qval from DEG where contrast=? and tags=?;", conn,params=comGrp)
   conn.close()
   deg = df.sort_values(by=['qval'])
   data["comGrp"] = comGrp[0].split(".vs.")
-  
+
   ## plot in R
   strF = ('%s/DEG%f.csv' % (data["CLItmp"],time.time()))
   deg.to_csv(strF,index=False)
   #ppr.pprint([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]])
-  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(data['genes']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],data['Rlib']],capture_output=True)#
+  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(data['genes']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],str(data['sigFDR']),str(data['sigFC']),data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
   os.remove(strF)
+  if 'Error' in res.stderr.decode('utf-8'):
+    raise SyntaxError("in R: "+res.stderr.decode('utf-8'))
   #####
   gInfo = getVar(data)
   deg.index = deg['gene']
   deg = pd.concat([deg,gInfo],axis=1,sort=False)
   #return deg.to_csv()
-  
+
   if not data['topN']=='All':
     deg = deg.iloc[range(int(data['topN'])),]
   #deg.loc[:,'log2fc'] = deg.loc[:,'log2fc'].apply(lambda x: '%.2f'%x)
@@ -1278,19 +1286,19 @@ def getPreDEGvolcano(data):
   #deg.loc[:,'qval'] = deg.loc[:,'qval'].apply(lambda x: '%.4E'%x)
 
   return json.dumps([deg.to_csv(),img])#json.dumps([deg.values.tolist(),img])
-  
+
 def getPreDEGbubble(data):
   #data={'compSel':['MS.vs.Control::EN.L4','MS.vs.Control::Endo.cells','MS.vs.Control::EN.PYR'],'genes':['RASGEF1B','SLC26A3','UNC5C','AHI1','CD9']}
   sql = "select gene,log2fc,pval,qval,contrast || '::' || tags as tag from DEG where tag in ({comp}) and gene in ({gList}) order by case tag {oList} end;".format(
     comp=','.join(['?']*len(data['compSel'])),
     gList=','.join(['?']*len(data['genes'])),
     oList=' '.join(['WHEN ? THEN %d'%i for i in range(len(data['compSel']))]))
-  
+
   strF = re.sub("h5ad$","db",data["h5ad"])
   conn = sqlite3.connect(strF)
   deg = pd.read_sql_query(sql,conn,params=data['compSel']+data['genes']+data['compSel'])
   conn.close()
-  
+
   ## add selected genes which is not in the database back to the dataframe as NA
   addG = [[i,np.nan,np.nan,np.nan,data['compSel'][0]] for i in data['genes'] if i not in list(deg.gene.unique())]
   if len(addG)>0:
@@ -1301,8 +1309,10 @@ def getPreDEGbubble(data):
   #ppr.pprint(' '.join([strExePath+'/bubbleMap.R',strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['scale']]))
   res = subprocess.run([strExePath+'/bubbleMap.R',strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['scale'],data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
-
   os.remove(strF)
+  if 'Error' in res.stderr.decode('utf-8'):
+    raise SyntaxError("in R: "+res.stderr.decode('utf-8'))
+
   #RASGEF1B SLC26A3 UNC5C AHI1 CD9
   return img
 
@@ -1310,7 +1320,7 @@ def getEnv():
   config = {'CLItmp':'/tmp','Rpath':'','Rlib':'','METAtmp':'/tmp','METAurl':'','METAmax':1e4}
   strEnv = '%s/vip.env'%strExePath
   if os.path.isfile(strEnv):
-    with open(strEnv,'r') as fp: 
+    with open(strEnv,'r') as fp:
       for line in fp:
         one = line.strip().replace("\t", "").replace(" ", "").split("=")
         if not len(one)==2:
@@ -1321,6 +1331,11 @@ def getEnv():
     os.stat("%s/Rscript"%config['Rpath'])
     os.environ['PATH'] = config['Rpath']+os.pathsep+os.environ['PATH']
   return config
+try:
+  VIPenv = getEnv()
+except Exception as e:
+  ppr.pprint("The specified R path is incorrect, please check or remove from vip.env!")
+  raise e
 
 def mergeMeta(data):
   selC = list(data['cells'].values())
@@ -1351,90 +1366,16 @@ def isMeta(data):
   if not os.path.exists(strPath):
     return "FALSE"
   return "TRUE"
-
-try:
-  VIPenv = getEnv()
-except Exception as e:
-  ppr.pprint("The specified R path is incorrect, please check or remove from vip.env!")
-  raise e
-
-def version():
-  print("1.0.8")
-  ## 1.0.2: April 27, 2020
-  ## 1. add Spinning button
-  ## 2. Selection on both groups of selected cells
-  ## ------------
-  ## 1.0.1: April 26, 2020
-  ## 1. Removed “close” & “Max” according to baohong's code;
-  ## 2. Added footerToolbar according to baohong' code;
-  ## 3. Relocated the “refresh” button;
-  ## 4. Fixed a bug to handle any numerical group information;
-  ## 5. Added the group element number into group information at Heatmap page.
-  ## ---------------
-  ## 1.0.2: May 6, 2020
-  ## 1. Panel violin add an option to swap the axes
-  ## 2. Provide the user to add the annotation abbreviation, as well as a customized categoryby combining annotation across existing categories.
-  ## 3. Add dot plot as expression level and cell proportion for specified gene sets 
-  ## ---------------
-  ## 1.0.3: May 10, 2020
-  ## 1. Keep the selection when refresh is clicked;
-  ## 2. Multi-tsne/umap, embedding plots for genes; for annotations as well;
-  ## 3. Batch adding genes with verifications as well as adding gene sets;
-  ## 4. Download heatmap data including meta info as csv;
-  ## 5. Uncheck All features and check all features with the dispatch method;
-  ## 6. Updated using "_" to separate the combined groups;
-  ## the following is required reinstall cellxgene
-  ## 7. Change "PLOTTING PANEL" to "Visulization in Plugin";
-  ## 8. Change biogenInterface to VIPInterface.py, and change the ajax call to VIP instead of biogen
-  ## -------------------
-  ## 1.0.4: May 13, 2020
-  ## 1. Adding genes are case insensitive
-  ## 2. update the data obtaining from ajax API to direct call by server.app.app.get_data_adaptor method
-  ## 3. Trackplot;
-  ## 4. Two gene embedding plots;
-  ## ------------------
-  ## 1.0.5: May 15, 2020
-	## 1. Used “annotation” instead of group consistently across VIP;
-	## 2. Removed "',' separated" from adding gene groups;
-	## 3. Set the minimal value for gene expression in dual gene and dot plots
-	## 4. Added a button to create Combine Annotation which can only be changed in "Combine & Abbr" tab
-	## 5. Initialized the panel with full load main page by detecting the category number in window.store is NOT increased in 0.5 second interval
-	## 6. Added a gene expression cut-off in the gene detection plot instead of pre-calculated in the meta data
-  ## 7. Change the location of the menu button from the top to the left side due to too many buttons;	
-	## 8. Visualize marker genes with download;
-	## 9. Fixed the tSNE/UMAP when annotation legend is too wide with each annotation is in a separated row while the number of gene plots per row is specified by user.
-	##------------------------------
-	## 1.0.6: May 17, 2020
-	## 1. Update the scanpy to incorporate a fancier dotplot and updated the stacked violin plots;
-	## 2. Disabled the panel button until all categorical information ajaxed over, buttons will be automatically enabled after;
-	## 3. Adjust the image panel not to be limited by the VIP window size;
-	## 4. Fixed a bug of ignoring the tsne for embeding plot;
-	## 5. Adjust the embeding plot to improve the legend for annotation
-	## 6. Added handing ajax error to return control to the users
-	## 7. Added a new tab for figure setting, update the python to respond to those setting
-	## 8. Added a spliter between side menu buttons and content using more efficient JS code
-	## 9. Other UI bug fix pointed by Baohong
-	## 10. Add different DEG methods from diffxpy;
-	## 11. Save all user current information into local file and load from a local file;
-  ## --------------------------
-  ## 1.0.7: May 26, 2020
-  ## 1. Performance (time) was significantly improved for several plots (gene detection, violin, stack violin, tSNE/UMAP,...) on large data half million cells
-  ## 2. Separated the heatmap data downloading from heatmap plotting, which improved the time for heatmap plotting
-  ## 3. Added gene expression density plots splitted by one annoation and colored by one annotation
-  ## -------------------------
-  ## 1.0.8: May 28, 2020
-  ## 1. Optimize the legend for the density plots;
-  ## 2. Add the display on cell numbers for custom combined annotations;
-  ## 3. Add DEG option on custom combined annotations;
-  ## 4. Add the python error return to the user interface.
-  ## -------------------------
-  ## 1.0.9: June 3, 2020
-  ## 1. Add the annotation split for gene express in tsne/umap plot 
-  ## 2. Add the gene sets selection for stack violin
-  ## 3. Add the gene selection for Dot plot and track plot
-  ## -------------------------
-  ## 1.0.10: Jun 8, 2020
-  ## 1. Add Sankey diagram
-  ## -----------------------
-  ## 1.0.11: June 14, 2020
-  ## 1. volcano plot added for DEG
+## in order for the following VIP auto testing work after updating
+## 1. make sure the h5ad file name is listed in vip.env as variable 'testVIP'
+## 2. have previously saved session file 'info.txt' (including the selected cells,
+##    and options with image generated) located in .../static/testVIP/ folder
+## 3. have previously images information file 'img.txt' saved in .../static/testVIP/ folder by 
+##    executing 'imageSave()' in browser console right after previous step
+def testVIPready(data):
+  if 'testVIP' in data and data["h5ad"]!=data["testVIP"]:
+    for one in ['testVIP.js','img.txt','info.txt']:
+      if not os.path.exists(strExePath+"/../common/web/static/testVIP/"+one):
+        return "FALSE"
+    return "TRUE"
+  return "FALSE"

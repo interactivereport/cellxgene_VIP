@@ -495,6 +495,7 @@
       <button class="tablinks" onclick="ABBRall()">Check All Annotations</button>
       <button class="tablinks" onclick="selFun(event, 'BRUSH');">Brush</button>
       <button class="tablinks" onclick="sync();">Sync</button>
+      <button id="VIPtestBT" class="tablinks" onclick="selFun(event, 'tVIP');testVIP('tVIP');">Test</button>
     </div>
   </div>
   <div id="separator" ></div>
@@ -635,7 +636,7 @@
             <label><input class="SGVcomparecell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
           </p>
           <p>Choose a gene ('Add Genes' first): <select id="SGVcomparegene"></select></p>
-          <p>Expression cutoff: <input id="SGVcomparecutoff" type="number" step="0.1" value="0" min="0"/></p>
+          <p>Expression cutoff: <input id="SGVcomparecutoff" type="number" step="0.1" value="1" min="0"/></p>
           <p>Group by:
           <select id="SGVcomparegrp"></select></p>
           <p>Compare by:
@@ -1032,6 +1033,8 @@
         <p>Select genes to be marked in the volcano plot:
         <input type="checkbox" onclick="$('.DEGgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="DEGgene"></p>
+        <p>Define the significance in FDR &#62; <input id="DEGsigFDR" type="number" step="0.001" value="0.05" min="0" max="1"/>
+          and absolute logFC &#62; <input id="DEGsigLogfc" type="number" step="0.1" value="1" min="0"/> </p>
         <p>Remove genes in volcano plot with the absolute log2(FC) larger than: <input id="DEGlogfcCut" type="number" step="1" value="10" min="0"/></p>
       </div>
 
@@ -1100,6 +1103,9 @@
             <option value=5000>5000</option>
             <option value='All'>All</option>
           </select></p>
+        <p>Define the significance in FDR &#62; <input id="preDEGvolcanoFDR" type="number" step="0.001" value="0.05" min="0" max="1"/>
+            and absolute logFC &#62; <input id="preDEGvolcanoLogfc" type="number" step="0.1" value="1" min="0"/> </p>
+
         <p hidden>Remove genes in volcano plot with the absolute log2(FC) larger than: <input id="preDEGvolcanologfcCut" type="number" step="1" value="100" min="0"/></p>
         <button class="preDEGvolcanobt" onclick="preDEGVolcanofind('preDEGvolcano')"><b>Plot</b></button>
         <button id="preDEGvolcanointeractiveBtn" onclick="hideShow($('#DEGfinal'),$(this),'Interactive');">Hide Interactive</button>
@@ -1322,6 +1328,8 @@
       <div id="CLIspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="CLIresize" style="height: 'auto'; width: 'auto'; padding: 0.5em;"></div>
     </div><!--CLI-->
+
+    <div id="tVIP" class="tabcontent"></div>
   </div>
 
 </div>
@@ -1361,6 +1369,9 @@ function enableButton(){
       for(const one of document.getElementsByClassName('tablinks')){
         one.disabled=true;
       }
+      $("#preDEGpanelBT").hide();
+      $("#metaCellBT").hide();
+      $("#VIPtestBT").hide();
       setTimeout(enableButton, 100);
     }else{
       for(const one of document.getElementsByClassName('tablinks')){
@@ -1473,7 +1484,6 @@ function showImg(eID,data){
   } else {
     document.getElementById(eID).innerHTML = '<img id="'+eID.replace('fig','img')+'" src="data:image/'+window.figOpt['img'].replace('svg','svg+xml')+';base64,'+data+'" width="100%" height="auto"/>';
   }
-
 }
 function saveImg(pngID){
   var gh = document.getElementById(pngID).src;
@@ -1685,8 +1695,6 @@ function init(){
       VIPurl = results[0];
 
       //for pre-computed DEG
-      //console.log("request for pre-computed DEG: url"+VIPurl);
-      $("#preDEGpanelBT").hide();
       $.ajax({
             type: "POST",
             url: VIPurl,
@@ -1709,9 +1717,7 @@ function init(){
             }
           });
 
-      //for pre-computed DEG
-      //console.log("request for pre-computed DEG: url"+VIPurl);
-      $("#metaCellBT").hide();
+      //for metaCell
       $.ajax({
             type: "POST",
             url: VIPurl,
@@ -1727,6 +1733,26 @@ function init(){
               console.log(request.status+': cannot get metaCell information ...');
             }
           });
+
+      //for VIP test
+      $.ajax({
+            type: "POST",
+            url: VIPurl,
+            data:JSON.stringify({'method':"testVIPready"}),
+            contentType: 'application/json;charset=UTF-8',
+            success: function(res){
+              if(res == "TRUE"){
+                var script = document.createElement("script");
+                script.src = 'static/testVIP/testVIP.js';
+                document.head.appendChild(script);
+                $("#VIPtestBT").show();
+              }
+            },
+            error: function(request,status,error){
+              console.log(request.status+': cannot get VIP test information ...');
+            }
+          });
+
     });
     window.bioInit=true;
 
@@ -1807,11 +1833,11 @@ function addCustomCombine(element) {
     x.add(createOpt("Custom_combine"));
   }
   //if(grpKeys.length>0 && grps.length==x.length){
-//    x.add(createOpt("Custom_combine"));
-//  }else if(grpKeys.length==0){// && grps.length<x.length
-//    $("#"+element+" option[value='Custom_combine']").remove();
+  //    x.add(createOpt("Custom_combine"));
+  //  }else if(grpKeys.length==0){// && grps.length<x.length
+  //    $("#"+element+" option[value='Custom_combine']").remove();
     //x.remove(grps.length);
-//  }
+  //  }
 }
 function addCustomCheck(aID){
   $('#'+aID+'grpsCKcustom').remove();
@@ -3243,7 +3269,7 @@ function updateDEGdata(rawD,selOpts){
 function DEGplot(eID){//window.DEGraw,window.DEGsel 'DEG'
   window[eID+'sel'][$("#"+eID+"plotBy").val()] = getSelOpt(eID);
   var DEGdata=updateDEGdata(window[eID+'raw'],window[eID+'sel']).slice(0,5000);//maximun 5000 dots for interactive volcano plot
-  console.log("interactive colcano dots number:" + DEGdata.length);
+  //console.log("interactive colcano dots number:" + DEGdata.length);
   $("#"+eID+"interactive").html("");
   var vol = volcanoPlot()
       .width($("#"+eID+"interactive").width())
@@ -3274,6 +3300,8 @@ function DEGfind(){
            'DEmethod':$("#DEGmethod").val(),
            'genes':genes,
            'logFC':$("#DEGlogfcCut").val(),
+           'sigFDR':$("#DEGsigFDR").val(),
+           'sigFC':$("#DEGsigLogfc").val(),
            'figOpt':window.figOpt}
   const [combGrp,combName] = DEGselCells();
   var cells = {};
@@ -3384,6 +3412,8 @@ function preDEGVolcanofind(eID){
            'compSel':$("#"+eID+"Tab").val(),
            'genes':getGenes(eID),
            'logFC':10,
+           'sigFC':$("#"+eID+"Logfc").val(),
+           'sigFDR':$("#"+eID+"FDR").val(),
            'figOpt':window.figOpt};
   document.getElementById(eID+"spin").style.visibility="visible";
   $("."+eID+"bt").prop('disabled',true);
@@ -4374,21 +4404,24 @@ function load(){
   var reader = new FileReader();
   reader.onload=function(ev){
     var content = JSON.parse(decodeURIComponent(ev.target.result));
-    if(content['saveName']!='cellxgene.'+window.store.getState().config.displayNames.dataset){
-      if(!confirm("Saved information is NOT matching with the current data! Continue?")){
-        return;
-      }
-    }
-    cellLoad(content['selCells']);
-    geneLoad(content['selGenes']);
-    sync();
-    selectLoad(content['dropdown']);
-    checkLoad(content['checkbox']);
-    radioLoad(content['radio']);
-    numberLoad(content['number']);
-    sortableLoad(content['sortable']);
+    loadexe(content);
   };
   reader.readAsText($("#loadfile")[0].files[0]);
+}
+function loadexe(content){
+  if(content['saveName']!='cellxgene.'+window.store.getState().config.displayNames.dataset){
+    if(!confirm("Saved information is NOT matching with the current data! Continue?")){
+      return;
+    }
+  }
+  cellLoad(content['selCells']);
+  geneLoad(content['selGenes']);
+  sync();
+  selectLoad(content['dropdown']);
+  checkLoad(content['checkbox']);
+  radioLoad(content['radio']);
+  numberLoad(content['number']);
+  sortableLoad(content['sortable']);
 }
 // ignore global definition for stackedBar legend circle
 function GetStyle(CLASSname){
