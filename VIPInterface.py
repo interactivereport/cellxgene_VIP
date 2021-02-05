@@ -40,6 +40,14 @@ rcParams.update({'figure.autolayout': True})
 
 api_version = "/api/v0.2"
 
+import threading
+jobLock = threading.Lock()
+def getLock(lock):
+    while not lock.acquire():
+        time.sleep(1.0)
+def freeLock(lock):
+    lock.release()
+
 def route(data,appConfig=None):
   #ppr.pprint("current working dir:%s"%os.getcwd())
   if appConfig is None:
@@ -67,7 +75,10 @@ def route(data,appConfig=None):
   if 'figOpt' in data.keys():
     setFigureOpt(data['figOpt'])
   try:
-    return distributeTask(data["method"])(data)
+    getLock(jobLock)
+    taskRes = distributeTask(data["method"])(data)
+    freeLock(jobLock)
+    return taskRes
   except Exception as e:
     return 'ERROR @server: '+traceback.format_exc() # 'ERROR @server: {}, {}'.format(type(e),str(e))
   #return distributeTask(data["method"])(data)
@@ -336,11 +347,18 @@ def HELLO(data):
   return 'Hi, VIP is ready on server side.'
 
 def iostreamFig(fig):
+  #getLock(iosLock)
   figD = BytesIO()
+  #ppr.pprint('io located at %d'%int(str(figD).split(" ")[3].replace(">",""),0))
   fig.savefig(figD,bbox_inches="tight")
+  #ppr.pprint(sys.getsizeof(figD))
+  #ppr.pprint('io located at %d'%int(str(figD).split(" ")[3].replace(">",""),0))
   imgD = base64.encodebytes(figD.getvalue()).decode("utf-8")
   figD.close()
-  plt.close('all')
+  #ppr.pprint("saved Fig")
+  #freeLock(iosLock)
+  if 'matplotlib' in str(type(fig)):
+    plt.close(fig)#'all'
   return imgD
 
 def Msg(msg):
@@ -382,12 +400,12 @@ def geneFiltering(adata,cutoff,opt):
 def SGV(data):
   # figure width and heights depends on number of unique categories
   # characters of category names, gene number
-
+  #ppr.pprint("SGV: creating data ...")
   adata = createData(data)
+  #ppr.pprint("SGV: data created ...")
   adata = geneFiltering(adata,data['cutoff'],1)
   if len(adata)==0:
     raise ValueError('No cells in the condition!')
-
   a = list(set(list(adata.obs[data['grp'][0]])))
   ncharA = max([len(x) for x in a])
   w = len(a)/4+1
@@ -447,7 +465,9 @@ def PGV(data):
   # figure width and heights depends on number of unique categories
   # characters of category names, gene number
   updateGene(data)
+  #ppr.pprint("PGV: creating data ...")
   adata = createData(data)
+  #ppr.pprint("PGV: data created ...")
   adata = geneFiltering(adata,data['cutoff'],1)
   if adata.shape[0]==0 or adata.shape[1]==0:
     return Msg('No cells in the condition!')
@@ -466,7 +486,7 @@ def PGV(data):
     vp = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],return_fig=True,figsize=(w,h),swap_axes=swapAx,var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
     vp.add_totals().style(yticklabels=True, cmap=data['color']).show()
     #vp.add_totals().show()
-    fig = plt.gcf()
+    fig = vp#plt.gcf()
   else:
     fig = plt.figure(figsize=[w,h])
     axes = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],show=False,ax=fig.gca(),swap_axes=swapAx,
@@ -704,10 +724,13 @@ def DEG(data):
   return json.dumps([deg.to_csv(),img])#json.dumps([deg.values.tolist(),img])
 
 def DOT(data):
+  #ppr.pprint("DOT, starting ...")
   updateGene(data)
   # Dot plot, The dotplot visualization provides a compact way of showing per group, the fraction of cells expressing a gene (dot size) and the mean expression of the gene in those cell (color scale). The use of the dotplot is only meaningful when the counts matrix contains zeros representing no gene counts. dotplot visualization does not work for scaled or corrected matrices in which zero counts had been replaced by other values, see http://scanpy-tutorials.readthedocs.io/en/multiomics/visualizing-marker-genes.html
   data['figOpt']['scale'] = 'false';
+  #ppr.pprint("DOT: creating data ...")
   adata = createData(data)
+  #ppr.pprint("DOT: data created!")
   if len(adata)==0:
     return Msg('No cells in the condition!')
   #return adata
@@ -719,7 +742,6 @@ def DOT(data):
   else:
       col = np.array(sns.color_palette("husl",len(grp)).as_hex())
   adata.uns[data['grp'][0]+'_colors'] = col
-
   #ppr.pprint(sc.__version__)
   if 'split_show' in data['figOpt']['scanpybranch']:#.dev140+ge9cbc5f
     dp = sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],expression_cutoff=float(data['cutoff']),mean_only_expressed=(data['mean_only_expressed'] == 'Yes'),
@@ -731,6 +753,7 @@ def DOT(data):
   else:
     sc.pl.dotplot(adata,data['genes'],groupby=data['grp'][0],show=False,expression_cutoff=float(data['cutoff']),mean_only_expressed=(data['mean_only_expressed'] == 'Yes'),var_group_positions=data['grpLoc'],var_group_labels=data['grpID'], color_map=data['color'])
     fig = plt.gcf()
+  #ppr.pprint(adata)
 
   return iostreamFig(fig)
 
@@ -1210,6 +1233,7 @@ def CLI(data):
     with open(strScript,'w') as f:
      f.writelines(['---\noutput:\n  html_document:\n    code_folding: hide\n---\n\n```{r}\nstrPath <- "%s"\n```\n\n'%strPath])
      f.write(script)
+    #ppr.pprint(subprocess.run('which Rscript',capture_output=True,shell=True).stdout.decode('utf-8'))
     res = subprocess.run('Rscript -e \'rmarkdown::render("%s", output_file="%s.html")\''%(strScript,strPath),capture_output=True,shell=True)
     if (os.path.exists('%s.html'%strPath)):
       with open('%s.html'%strPath,'r') as file:
@@ -1226,7 +1250,9 @@ def CLI(data):
       #f.writelines(['%load_ext rpy2.ipython\n','import pickle\n','with open("%s","rb") as f:\n'%strData,'  adata=pickle.load(f)\n','strPath="%s"\n\n'%strPath])
       f.writelines(['%%R\n','strPath="%s"\n\n'%strPath])
       f.write(script)
-
+    ppr.pprint(subprocess.run('which Rscript',capture_output=True,shell=True).stdout.decode('utf-8'))
+    ppr.pprint(subprocess.run('which pandoc',capture_output=True,shell=True).stdout.decode('utf-8'))
+    ppr.pprint(subprocess.run("Rscript -e 'reticulate::py_config()'",capture_output=True,shell=True).stdout.decode('utf-8'))
     res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to html --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
     html = res.stdout.decode('utf-8')
     h,s,e = html.partition('<div class="cell border-box-sizing code_cell rendered">')
@@ -1370,7 +1396,7 @@ def isMeta(data):
 ## 1. make sure the h5ad file name is listed in vip.env as variable 'testVIP'
 ## 2. have previously saved session file 'info.txt' (including the selected cells,
 ##    and options with image generated) located in .../static/testVIP/ folder
-## 3. have previously images information file 'img.txt' saved in .../static/testVIP/ folder by 
+## 3. have previously images information file 'img.txt' saved in .../static/testVIP/ folder by
 ##    executing 'imageSave()' in browser console right after previous step
 def testVIPready(data):
   if 'testVIP' in data and data["h5ad"]!=data["testVIP"]:
