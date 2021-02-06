@@ -61,16 +61,25 @@ source activate <env name>
 export LIBARROW_MINIMAL=false
 #  ensure that the right R used. e.g. System: /bin/R or /usr/bin/R ; Conda managed R: ~/.conda/envs/VIP_conda_R/bin/R
 which R
-R 
-> install.packages("remotes")
-> remotes::install_url("https://cran.r-project.org/src/contrib/Archive/foreign/foreign_0.8-76.tar.gz")
-> remotes::install_url("https://cran.r-project.org/src/contrib/Archive/ggpubr/ggpubr_0.3.0.tar.gz")
-> remotes::install_url("https://cran.r-project.org/src/contrib/Archive/ggrastr/ggrastr_0.1.9.tar.gz")
-> remotes::install_url("https://cran.r-project.org/src/contrib/Archive/arrow/arrow_2.0.0.tar.gz")
-> remotes::install_url("https://cran.r-project.org/src/contrib/Archive/Cairo/Cairo_1.5-12.tar.gz")
-> remotes::install_url("https://cran.r-project.org/src/contrib/Archive/Seurat/Seurat_3.2.3.tar.gz")
-> remotes::install_url("https://cran.r-project.org/src/contrib/Archive/rmarkdown/rmarkdown_2.5.tar.gz")
-> install.packages("tidyverse")
+
+R -q -e 'if(!require(devtools)) install.packages("devtools",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(Cairo)) devtools::install_version("Cairo",version="1.5-12",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(foreign)) devtools::install_version("foreign",version="0.8-76",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(ggpubr)) devtools::install_version("ggpubr",version="0.3.0",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(ggrastr)) devtools::install_version("ggrastr",version="0.1.9",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(arrow)) devtools::install_version("arrow",version="2.0.0",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(Seurat)) devtools::install_version("Seurat",version="3.2.3",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(rmarkdown)) devtools::install_version("rmarkdown",version="2.5",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(tidyverse)) devtools::install_version("tidyverse",version="1.3.0",repos = "http://cran.us.r-project.org")'
+
+# These should be already installed as dependencies of above packages
+R -q -e 'if(!require(dbplyr)) devtools::install_version("dbplyr",version="1.0.2",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(RColorBrewer)) devtools::install_version("RColorBrewer",version="1.1-2",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(glue)) devtools::install_version("glue",version="1.4.2",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(gridExtra)) devtools::install_version("gridExtra",version="2.3",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(ggrepel)) devtools::install_version("ggrepel",version="0.8.2",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(MASS)) devtools::install_version("MASS",version="7.3-51.6",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(data.table)) devtools::install_version("data.table",version="1.13.0",repos = "http://cran.us.r-project.org")'
 ```
 ## 4. Run cellxgene by specifiying a h5ad file storing scRNA-seq data along with a host and a port, use "ps" to find used ports to spare, see https://chanzuckerberg.github.io/cellxgene/posts/launch for details.
 ```bash
