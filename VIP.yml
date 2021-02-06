@@ -3,54 +3,57 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - _libgcc_mutex=0.1=main
-  - backcall=0.2.0=pyh9f0ad1d_0
-  - backports=1.0=py_2
-  - backports.functools_lru_cache=1.6.1=py_0
-  - ca-certificates=2020.12.5=ha878542_0
-  - certifi=2020.12.5=py38h578d9bd_1
-  - decorator=4.4.2=py_0
-  - icu=64.2=he1b5a44_1
-  - ipykernel=5.3.4=py38h81c977d_1
-  - ipython=7.19.0=py38h81c977d_2
-  - ipython_genutils=0.2.0=py_1
-  - jedi=0.17.2=py38h578d9bd_1
-  - jq=1.6=h36c2ea0_1000
-  - jupyter_core=4.7.0=py38h578d9bd_1
-  - ld_impl_linux-64=2.33.1=h53a641e_7
-  - libedit=3.1.20191231=h14c3975_1
-  - libffi=3.3=he6710b0_2
-  - libgcc-ng=9.1.0=hdf63c60_0
-  - libsodium=1.0.18=h36c2ea0_1
-  - libstdcxx-ng=9.1.0=hdf63c60_0
-  - libuv=1.34.0=h516909a_0
-  - ncurses=6.2=he6710b0_1
-  - nodejs=13.13.0=hf5d1a2b_0
-  - oniguruma=6.9.3=h36c2ea0_0
-  - openssl=1.1.1h=h516909a_0
-  - parso=0.7.1=pyh9f0ad1d_0
-  - pexpect=4.8.0=pyh9f0ad1d_2
-  - pickleshare=0.7.5=py_1003
-  - pip=20.3.3=py38h06a4308_0
-  - prompt-toolkit=3.0.14=pyha770c72_0
-  - ptyprocess=0.7.0=pyhd3deb0d_0
-  - pygments=2.7.4=pyhd8ed1ab_0
-  - python=3.8.5=h7579374_1
-  - python-dateutil=2.8.1=py_0
-  - python_abi=3.8=1_cp38
-  - pyzmq=20.0.0=py38h1d1b12f_1
-  - readline=8.1=h27cfd23_0
-  - setuptools=52.0.0=py38h06a4308_0
-  - six=1.15.0=pyh9f0ad1d_0
-  - sqlite=3.33.0=h62c20be_0
-  - tk=8.6.10=hbc83047_0
-  - tornado=6.1=py38h25fe258_0
-  - traitlets=5.0.5=py_0
-  - wcwidth=0.2.5=pyh9f0ad1d_2
-  - wheel=0.36.2=pyhd3eb1b0_0
-  - xz=5.2.5=h7b6447c_0
-  - zeromq=4.3.3=h58526e2_3
-  - zlib=1.2.11=h7b6447c_3
+  - _libgcc_mutex=0.1
+  - backcall=0.2.0
+  - backports=1.0
+  - backports.functools_lru_cache=1.6.1
+  - ca-certificates=2020.12.5
+  - certifi=2020.12.5
+  - decorator=4.4.2
+  - gmp=6.2.1
+  - icu=64.2
+  - ipykernel=5.4.3
+  - ipython=7.20.0
+  - ipython_genutils=0.2.0
+  - jedi=0.18.0
+  - jq=1.6
+  - jupyter_client=6.1.11
+  - jupyter_core=4.7.1
+  - ld_impl_linux-64=2.33.1
+  - libedit=3.1.20191231
+  - libffi=3.3
+  - libgcc-ng=9.1.0
+  - libsodium=1.0.18
+  - libstdcxx-ng=9.1.0
+  - libuv=1.34.0
+  - ncurses=6.2
+  - nodejs=13.13.0
+  - oniguruma=6.9.6
+  - openssl=1.1.1h
+  - pandoc=2.5
+  - parso=0.8.1
+  - pexpect=4.8.0
+  - pickleshare=0.7.5
+  - pip=20.3.3
+  - prompt-toolkit=3.0.14
+  - ptyprocess=0.7.0
+  - pygments=2.7.4
+  - python=3.8.5
+  - python-dateutil=2.8.1
+  - python_abi=3.8
+  - pyzmq=20.0.0
+  - readline=8.1
+  - setuptools=52.0.0
+  - six=1.15.0
+  - sqlite=3.33.0
+  - tk=8.6.10
+  - tornado=6.1
+  - traitlets=5.0.5
+  - wcwidth=0.2.5
+  - wheel=0.36.2
+  - xz=5.2.5
+  - zeromq=4.3.3
+  - zlib=1.2.11
   - pip:
     - aniso8601==8.1.1
     - anndata==0.7.4
@@ -90,7 +93,6 @@ dependencies:
     - jmespath==0.10.0
     - joblib==1.0.0
     - jsonschema==3.2.0
-    - jupyter-client==6.1.7
     - jupytext==1.6.0
     - kiwisolver==1.3.1
     - legacy-api-wrap==1.2
