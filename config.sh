@@ -157,3 +157,5 @@ find ./cellxgene/server/ -name "decode_fbs.py" -exec cp {} $strPath/server/app/.
 
 echo -e "\nls -l $strweb\n"
 ls -l $strweb
+
+export LIBARROW_MINIMAL=false
