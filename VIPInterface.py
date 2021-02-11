@@ -80,6 +80,7 @@ def route(data,appConfig=None):
     freeLock(jobLock)
     return taskRes
   except Exception as e:
+    freeLock(jobLock)
     return 'ERROR @server: '+traceback.format_exc() # 'ERROR @server: {}, {}'.format(type(e),str(e))
   #return distributeTask(data["method"])(data)
 
@@ -340,7 +341,8 @@ def distributeTask(aTask):
     'preDEGmulti':getPreDEGbubble,
     'mergeMeta': mergeMeta,
     'isMeta': isMeta,
-    'testVIPready':testVIPready
+    'testVIPready':testVIPready,
+    'Description':getDesp
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -846,18 +848,9 @@ def dualExp(df,cutoff,anno):
   return pd.Series([label[i] for i in list(a+2*b)],index=df.index,dtype='category')
 
 def DUAL(data):
-  #sT = time.time()
   adata = createData(data)
-  #ppr.pprint('DUAL data reading cost %f seconds' % (time.time()-sT) )
-  #sT = time.time()
-  #adata.obs['Expressed'] = adata.to_df().apply(cut,axis=1,args=(float(data['cutoff']),adata.var_names)).astype('category')
   adata.obs['Expressed'] = dualExp(adata.to_df(),float(data['cutoff']),adata.var_names)
-  #ppr.pprint(data['cutoff'])
-  #ppr.pprint(adata.obs['Expressed'].cat.categories)
-  #ppr.pprint(adata.obs['Expressed'].value_counts())
-
-  #ppr.pprint('DUAL filtering cost %f seconds' % (time.time()-sT) )
-  #sT = time.time()
+  sT = time.time()
   pCol = {"None":"#AAAAAA44","Both":"#EDDF01AA",data['genes'][0]:"#1CAF82AA",data['genes'][1]:"#FA2202AA"}
   adata.uns["Expressed_colors"]=[pCol[i] for i in adata.obs['Expressed'].cat.categories]
 
@@ -866,7 +859,6 @@ def DUAL(data):
   plt.xlabel('%s1'%data['layout'])
   plt.ylabel('%s2'%data['layout'])
   rcParams['figure.figsize'] = 4, 4
-  #ppr.pprint('DUAL plotting cost %f seconds' % (time.time()-sT) )
   return iostreamFig(fig)
 
 def MARK(data):
@@ -1268,6 +1260,16 @@ def CLI(data):
       continue
 
   return html
+
+def getDesp(data):
+  strF = re.sub("h5ad$","txt",data["h5ad"])
+  if not os.path.isfile(strF):
+    return ""
+  txt = ""
+  with open(strF,'r') as fp:
+    for line in fp:
+      txt = "%s<br>%s"%(txt,line)
+  return txt
 
 def getPreDEGname(data):
   strF = re.sub("h5ad$","db",data["h5ad"])

@@ -8,7 +8,7 @@
 #then
 #	# no user env name specified, use default
 #    echo "No user env name provided, using default name VIP"
-#else 
+#else
 #	envName=$1
 #	echo "User provided env name $1"
 #fi
@@ -34,7 +34,14 @@ fi
 rm -rf cellxgene
 git clone https://github.com/chanzuckerberg/cellxgene.git
 cd cellxgene
-git checkout d99aac49564b98a51ebfab114fd59846c693fd62 # 735eb11eb78b5e6c35ba84438970d0ce369604e1 (v0.15.0)
+git checkout 036b5f8c0f088bfeca335225d3f08069f5b5eae6 #Commits on Feb 8, 2021 v 0.16.6  # 735eb11eb78b5e6c35ba84438970d0ce369604e1 (v0.15.0)
+sed -i 's|0.16.0|0.16.6|' '.bumpversion.cfg'
+sed -i 's|0.16.0|0.16.6|' 'client/package-lock.json'
+sed -i 's|0.16.0|0.16.6|' 'client/package.json'
+sed -i 's|0.16.0|0.16.6|' 'server/__init__.py'
+sed -i 's|0.16.0|0.16.6|' 'setup.py'
+sed -i 's|anndata>=0.7.0|anndata>=0.7.4|' 'server/requirements.txt'
+sed -i 's|scanpy==1.4.6|scanpy==1.6.1|' 'server/requirements.txt'
 cd ..
 
 ## update the client-side source code of cellxgene for VIP
@@ -118,21 +125,21 @@ from server.app.VIPInterface import route
 @webbp.route("/VIP", methods=["POST"])
 def VIP():
     return route(request.data,current_app.app_config)' >> cellxgene/server/app/app.py
-    
+
 
 # Old branch for nicer plots that are incorporated into ver 1.6.1 now
 #git clone https://github.com/theislab/scanpy.git
 #cd scanpy;git checkout 2ea9f836cec6e12a5cdd37bc4a229d4eadf59d37;cd ..
 #pip install scanpy/
 
-pip install scanpy==1.6.1
+#pip install scanpy==1.6.1
 
 cd cellxgene
 make pydist
 make install-dist
 cd ..
 
-## finished setting up ------ 
+## finished setting up ------
 strPath=$(python -c "import server as _; print(_.__file__.replace('/server/__init__.py',''))")
 strweb="${strPath}/server/common/web/static/."
 

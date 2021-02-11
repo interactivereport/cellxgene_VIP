@@ -501,7 +501,7 @@
   <div id="separator" ></div>
   <div id="panel-right" >
 
-    <input id="loadfile" type="file" onchange="load()" style="display:none"/>
+    <input id="loadfile" type="file" onchange="load()" style="display:none" files="static/testVIP/info.txt"/>
     <div id="ABBR" class="tabcontent"> <!-- Abbreviation -->
       <h3>Create a combinatorial annotation</h3>
       <ol type="1">
@@ -1359,7 +1359,11 @@ function checkLoading(){
     for (i=0;i<store.getState().annoMatrix._cache.obs.__columnsAccessor.length;i++) {
         if (store.getState().annoMatrix._cache.obs.__columnsAccessor[i].summarize().categorical) cateN++;
     }
-    if(cateN!=Object.keys(window.store.getState().categoricalSelection).length) {
+    var justN = 0;
+    if(Object.keys(window.store.getState().categoricalSelection).includes('>Description')){
+      justN = 1;
+    }
+    if(cateN!=(Object.keys(window.store.getState().categoricalSelection).length-justN)) {
       return false;
     }
     return true;
@@ -1377,20 +1381,21 @@ function enableButton(){
       for(const one of document.getElementsByClassName('tablinks')){
         one.disabled=false;
       }
-      if (window.store.getState().annoMatrix.schema.annotations.obsByName[">Description"] !== undefined) {
-        if(window.store.getState().annoMatrix.schema.annotations.obsByName[">Description"].categories[0].split("|").length>1){
-          var ginit = window.store.getState().annoMatrix.schema.annotations.obsByName[">Description"].categories[0].split("|")[1].split(";");
-          window.store.dispatch({type: "set layout choice", layoutChoice: ginit[0].split("by")[1].trim()});
-          window.store.dispatch({type: "color by categorical metadata", colorAccessor: ginit[1].split("by")[1].trim()});
-          window.store.dispatch({type: "show centroid labels for category", showLabels: true});
-        }
-      }
+      //if (window.store.getState().annoMatrix.schema.annotations.obsByName[">Description"] !== undefined) {
+      //  if(window.store.getState().annoMatrix.schema.annotations.obsByName[">Description"].categories[0].split("|").length>1){
+      //    var ginit = window.store.getState().annoMatrix.schema.annotations.obsByName[">Description"].categories[0].split("|")[1].split(";");
+      //    window.store.dispatch({type: "set layout choice", layoutChoice: ginit[0].split("by")[1].trim()});
+      //    window.store.dispatch({type: "color by categorical metadata", colorAccessor: ginit[1].split("by")[1].trim()});
+      //    window.store.dispatch({type: "show centroid labels for category", showLabels: true});
+      //  }
+      //}
       window.store.dispatch({type: "store current cell selection as differential set 1", data:Int32Array.from({length:window.store.getState().annoMatrix.nObs},(v,k)=>k)});
       init();
     }
     //var d = new Date();
     //console.log(d.getTime());
 }
+
 enableButton();
 
 function dragElement( element, direction){
@@ -1516,6 +1521,98 @@ function createOpt(val){
   opt.value = val;
   return(opt)
 }
+function addDescription(){
+  $.ajax({
+        type: "POST",
+        url: VIPurl,
+        data:JSON.stringify({'method':"Description"}),
+        contentType: 'application/json;charset=UTF-8',
+        success: function(res){
+          if(res.length==0){
+            console.log('No description available!');
+            return;
+          }
+          var appendDIV = $("[data-testclass='category']").parent();
+          appendDIV.append("<div id='dataDescription'>"+res+"</div>");
+          for(const one of res.split("<br>")){
+            if(one.startsWith('data') && !one.includes('scale')){
+              window.figOpt['scale'] = "Yes";
+            }
+            if(one.startsWith("embedding")){
+              window.store.dispatch({type: "set layout choice", layoutChoice: one.split("by")[1].trim()});
+            }
+            if(one.startsWith("color")){
+              window.store.dispatch({type: "color by categorical metadata", colorAccessor: one.split("by")[1].trim()});
+            }
+          }
+          window.store.dispatch({type: "show centroid labels for category", showLabels: true});
+
+        },
+        error: function(request,status,error){
+          console.log(request.status+': cannot get description ...');
+        }
+      });
+}
+function enablePreDEG(){
+  $.ajax({
+        type: "POST",
+        url: VIPurl,
+        data:JSON.stringify({'method':"preDEGname"}),
+        contentType: 'application/json;charset=UTF-8',
+        success: function(res){
+          if(res.length==0) return;
+          resD = JSON.parse(res);
+          $("#preDEGpanelBT").show();
+
+          var htmlCheck="";
+          for(const one of resD){
+            $('#preDEGvolcanoTab').append(createOpt(one));
+            htmlCheck += '<label id="preDEGmulticompCK'+one+'"><input class="preDEGmultigrps" type="checkbox" value="'+one+'" onchange="preDEGmultiorderUpdate()"/> '+one+' </label>';//
+          }//preDEGmulticomp
+          $('#preDEGmulticomp').html(htmlCheck);
+        },
+        error: function(request,status,error){
+          console.log(request.status+': cannot get preDEG information ...');
+        }
+      });
+}
+function enableMetaCell(){
+  $.ajax({
+        type: "POST",
+        url: VIPurl,
+        data:JSON.stringify({'method':"isMeta"}),
+        contentType: 'application/json;charset=UTF-8',
+        success: function(res){
+          if(res.length==0) return;
+          if(res == "TRUE"){
+            $("#metaCellBT").show();
+          }
+        },
+        error: function(request,status,error){
+          console.log(request.status+': cannot get metaCell information ...');
+        }
+      });
+}
+function enableVIPtest(){
+  $.ajax({
+        type: "POST",
+        url: VIPurl,
+        data:JSON.stringify({'method':"testVIPready"}),
+        contentType: 'application/json;charset=UTF-8',
+        success: function(res){
+          if(res == "TRUE"){
+            var script = document.createElement("script");
+            script.src = 'static/testVIP/testVIP.js';
+            document.head.appendChild(script);
+            $("#VIPtestBT").show();
+          }
+        },
+        error: function(request,status,error){
+          console.log(request.status+': cannot get VIP test information ...');
+        }
+      });
+
+}
 function init(){
   if(!('bioInit' in window)){
     //----------------
@@ -1548,9 +1645,9 @@ function init(){
     window.biogen=[];
     window.bioGeneGrp={};
     window.figOpt={scale:'No',scaleZero:'No',clipValue:'Yes',scaleMax:20,dpi:150,img:'png',fontsize:11,vectorFriendly:'Yes',transparent:'No',scanpybranch:'split_show',colorMap:'viridis'};
-    if (grpL[">Description"] !== undefined && grpL[">Description"].categories[0].split(";").length>1 && !grpL[">Description"].categories[0].split(";")[1].includes("scale")) {
-      window.figOpt['scale'] = "Yes";
-    }
+    //if (grpL[">Description"] !== undefined && grpL[">Description"].categories[0].split(";").length>1 && !grpL[">Description"].categories[0].split(";")[1].includes("scale")) {
+    //  window.figOpt['scale'] = "Yes";
+    //}
 
     //--------------------------------------------------------------------------
     //add dropdown annotation categories
@@ -1694,64 +1791,17 @@ function init(){
       console.log(results);
       VIPurl = results[0];
 
-      //for pre-computed DEG
-      $.ajax({
-            type: "POST",
-            url: VIPurl,
-            data:JSON.stringify({'method':"preDEGname"}),
-            contentType: 'application/json;charset=UTF-8',
-            success: function(res){
-              if(res.length==0) return;
-              resD = JSON.parse(res);
-              $("#preDEGpanelBT").show();
+      //Add Description
+      addDescription();
 
-              var htmlCheck="";
-              for(const one of resD){
-                $('#preDEGvolcanoTab').append(createOpt(one));
-                htmlCheck += '<label id="preDEGmulticompCK'+one+'"><input class="preDEGmultigrps" type="checkbox" value="'+one+'" onchange="preDEGmultiorderUpdate()"/> '+one+' </label>';//
-              }//preDEGmulticomp
-              $('#preDEGmulticomp').html(htmlCheck);
-            },
-            error: function(request,status,error){
-              console.log(request.status+': cannot get preDEG information ...');
-            }
-          });
+      //for pre-computed DEG
+      enablePreDEG();
 
       //for metaCell
-      $.ajax({
-            type: "POST",
-            url: VIPurl,
-            data:JSON.stringify({'method':"isMeta"}),
-            contentType: 'application/json;charset=UTF-8',
-            success: function(res){
-              if(res.length==0) return;
-              if(res == "TRUE"){
-                $("#metaCellBT").show();
-              }
-            },
-            error: function(request,status,error){
-              console.log(request.status+': cannot get metaCell information ...');
-            }
-          });
+      enableMetaCell();
 
       //for VIP test
-      $.ajax({
-            type: "POST",
-            url: VIPurl,
-            data:JSON.stringify({'method':"testVIPready"}),
-            contentType: 'application/json;charset=UTF-8',
-            success: function(res){
-              if(res == "TRUE"){
-                var script = document.createElement("script");
-                script.src = 'static/testVIP/testVIP.js';
-                document.head.appendChild(script);
-                $("#VIPtestBT").show();
-              }
-            },
-            error: function(request,status,error){
-              console.log(request.status+': cannot get VIP test information ...');
-            }
-          });
+      enableVIPtest();
 
     });
     window.bioInit=true;
@@ -4299,6 +4349,7 @@ function CLIplot(){
         $("#CLIresize").html("");
         return;
       }
+      window.testD=res;
       if (editor.getSession().getValue().includes("```")) {
         mywin.document.body.innerText='';
         mywin.document.write(res);
@@ -4480,10 +4531,9 @@ feather.write_feather(X,strPath+'.feather')
 feather.write_feather(meta,strPath+".obs.feather")
 
 %%R
-# Some Seurat versions have issues with Jupyter notebook.
-# !!! Please add your installation location of Seurat v3.0.2 to the code below and uncomment it if you have to use lower version.
-# library(Seurat,lib.loc=c('/share/Seurat_3.0.2/','/usr/lib64/R/library/Seurat_3.0.2/','/usr/share/R/library','/usr/lib64/R/library'))
-library(Seurat)
+# Seurat version > 3.0.2 has issues with Jupyter notebook.
+#!!! Please add your installation location of Seurat v3.0.2 to the code below,
+library(Seurat,lib.loc=c('/share/Seurat_3.0.2/','/usr/lib64/R/library/Seurat_3.0.2/','/usr/share/R/library','/usr/lib64/R/library'))
 library(patchwork)
 library(ggplot2)
 D <- t(arrow::read_feather(paste(strPath,".feather",sep="")))
