@@ -132,7 +132,12 @@ def VIP():
 #cd scanpy;git checkout 2ea9f836cec6e12a5cdd37bc4a229d4eadf59d37;cd ..
 #pip install scanpy/
 
+<<<<<<< HEAD
 #pip install scanpy==1.6.1
+=======
+pip install scanpy==1.6.1
+if [ $(python -c 'import scanpy; print(scanpy.__version__)') != "1.6.1" ]; then pip install scanpy==1.6.1; fi
+>>>>>>> 22fe519ce8eaaea5127a67d71def96479ed4beac
 
 cd cellxgene
 make pydist
@@ -166,3 +171,5 @@ echo -e "\nls -l $strweb\n"
 ls -l $strweb
 
 export LIBARROW_MINIMAL=false
+if [ $(python -c 'import nbconvert; print(nbconvert.__version__)') != "5.6.1" ]; then pip install nbconvert==5.6.1; fi
+
