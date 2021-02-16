@@ -821,17 +821,17 @@
           <option value='RdYlBu'>RdYlBu</option>
           <option value='RdYlGn'>RdYlGn</option>
         </select> <button onclick="hideShow($('#DOTcolorhelp'),$(this),'Color Help');">Show Color Help</button></p>
-		<div id="DOTcolorhelp" style="display:none;">
-          <table border=0>
-            <tr valign="top"><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_sequential.png" width="300"></td><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_diverging.png" width="300"></td></tr>
-          </table>
-		</div>
+    		<div id="DOTcolorhelp" style="display:none;">
+              <table border=0>
+                <tr valign="top"><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_sequential.png" width="300"></td><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_diverging.png" width="300"></td></tr>
+              </table>
+    		</div>
 
         <pre id="DOTnote" style="color:red;">Note: Unscaled data is used as the visualiztion is hard to interpret for scaled or corrected matrices in which zero counts had been replaced by other values. Scaling control in the Figure Option does not apply to Dot plot</pre>
       </div>
-      <button onclick="DOTplot()"><b>Plot</b></button>
-      <button onclick="ZoomIn('DOTresize')">Zoom In</button>
-      <button onclick="ZoomOut('DOTresize')">Zoom Out</button>
+      <button class="DOTbt" onclick="DOTplot()"><b>Plot</b></button>
+      <button class="DOTbt" onclick="ZoomIn('DOTresize')">Zoom In</button>
+      <button class="DOTbt" onclick="ZoomOut('DOTresize')">Zoom Out</button>
       <button class="DOTpngBT" onclick="saveImg('DOTimg')" disabled>Save</button>
       <button onclick="hideShow($('#DOTinput'),$(this));">Hide Input</button>
       <div id="DOTspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
@@ -861,7 +861,7 @@
         <input id="EMBEDslot" type="number" value="4" min="2"/>
         </p>
       </div>
-      <button class="EMBEDbt"  onclick="EMBEDplot()"><b>Plot</b></button>
+      <button class="EMBEDbt" onclick="EMBEDplot()"><b>Plot</b></button>
       <button onclick="ZoomIn('EMBEDresize')">Zoom In</button>
       <button onclick="ZoomOut('EMBEDresize')">Zoom Out</button>
       <button class="EMBEDpngBT" onclick="saveImg('EMBEDimg')" disabled>Save</button>
@@ -895,9 +895,9 @@
 
         <p>Group by: <select id="TRAKgrp"></select></p>
       </div>
-      <button onclick="TRAKplot()"><b>Plot</b></button>
-      <button onclick="ZoomIn('TRAKresize')">Zoom In</button>
-      <button onclick="ZoomOut('TRAKresize')">Zoom Out</button>
+      <button class="TRAKbt" onclick="TRAKplot()"><b>Plot</b></button>
+      <button class="TRAKbt" onclick="ZoomIn('TRAKresize')">Zoom In</button>
+      <button class="TRAKbt" onclick="ZoomOut('TRAKresize')">Zoom Out</button>
       <button class="TRAKpngBT" onclick="saveImg('TRAKimg')" disabled>Save</button>
       <button onclick="hideShow($('#TRAKinput'),$(this));">Hide Input</button>
       <pre id="TRAKnote" style="color:red;"></pre>
@@ -921,9 +921,9 @@
         <select id="DENSgrp"></select></p>
         <p>Bandwidth: <input id="DENSprec" type="number" step="0.1" value="0.5" min="0.1"/> controls how tightly the curve is fit to the data, much like the bin size in a histogram.</p>
       </div>
-      <button onclick="DENSplot()"><b>Plot</b></button>
-      <button onclick="ZoomIn('DENSresize')">Zoom In</button>
-      <button onclick="ZoomOut('DENSresize')">Zoom Out</button>
+      <button class="DENSbt" onclick="DENSplot()"><b>Plot</b></button>
+      <button class="DENSbt" onclick="ZoomIn('DENSresize')">Zoom In</button>
+      <button class="DENSbt" onclick="ZoomOut('DENSresize')">Zoom Out</button>
       <button class="DENSpngBT" onclick="saveImg('DENSimg')" disabled>Save</button>
       <button onclick="hideShow($('#DENSinput'),$(this));">Hide Input</button>
       <pre id="DENSerror" style="color:red;"></pre>

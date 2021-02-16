@@ -34,12 +34,7 @@ fi
 rm -rf cellxgene
 git clone https://github.com/chanzuckerberg/cellxgene.git
 cd cellxgene
-git checkout 036b5f8c0f088bfeca335225d3f08069f5b5eae6 #Commits on Feb 8, 2021 v 0.16.6  # 735eb11eb78b5e6c35ba84438970d0ce369604e1 (v0.15.0)
-sed -i 's|0.16.0|0.16.6|' '.bumpversion.cfg'
-sed -i 's|0.16.0|0.16.6|' 'client/package-lock.json'
-sed -i 's|0.16.0|0.16.6|' 'client/package.json'
-sed -i 's|0.16.0|0.16.6|' 'server/__init__.py'
-sed -i 's|0.16.0|0.16.6|' 'setup.py'
+git checkout bedbc87ed6178cd00a586feac3e99d4912d1c74e # v 0.16.7  # 735eb11eb78b5e6c35ba84438970d0ce369604e1 (v0.15.0)
 sed -i 's|anndata>=0.7.0|anndata>=0.7.4|' 'server/requirements.txt'
 sed -i 's|scanpy==1.4.6|scanpy==1.6.1|' 'server/requirements.txt'
 cd ..
