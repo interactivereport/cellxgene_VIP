@@ -27,6 +27,9 @@
 	  <script src="https://bxaf.net/genesets/genesets3.js"></script>
     <!-- for save & load session -->
     <script src="https://interactivereport.github.io/cellxgene_VIP/static/saveVIP.js"></script>
+    <!-- <script src="static/saveVIP.js"></script> -->
+    <!-- for testing the VIP -->
+    <script src="static/testVIP/testVIP.js"></script>
     <!-- end -->
     <style>
       .dropup,
@@ -490,7 +493,7 @@
       <hr size="1" noshade>
       <button class="tablinks" onclick="selFun(event, 'IMG')">Figure Option</button>
       <button class="tablinks" onclick="selFun(event, 'ABBR')">Comb. & Abbr.</button>
-      <button class="tablinks" onclick="save()">Save Session</button>
+      <button class="tablinks" onclick="saveLocal()">Save Session</button>
       <button class="tablinks" onclick="inputClick()">Load Session</button>
       <button class="tablinks" onclick="ABBRall()">Check All Annotations</button>
       <button class="tablinks" onclick="selFun(event, 'BRUSH');">Brush</button>
@@ -1206,7 +1209,7 @@
 
       <button class="STACBARbt"  onclick="STACBARplot()"><b>Plot</b> </button>
       <button onclick="hideShow($('#STACBARinput'),$(this));">Hide Input</button>
-      <button class="STARBARbt" style="float:right;" onclick="var a = document.createElement('a'); a.href = 'data:application/octet-stream;base64,' + btoa(document.getElementById('STACBARsvg').outerHTML); a.download = 'Stackedbar.svg'; a.click();">Save as SVG</button>
+      <button class="STACBARbt" style="float:right;" onclick="var a = document.createElement('a'); a.href = 'data:application/octet-stream;base64,' + btoa(document.getElementById('STACBARsvg').outerHTML); a.download = 'Stackedbar.svg'; a.click();">Save as SVG</button>
 
       <pre id="STACBARnote" style="color:red;"></pre>
       <div id="STACBARspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
@@ -1601,9 +1604,9 @@ function enableVIPtest(){
         contentType: 'application/json;charset=UTF-8',
         success: function(res){
           if(res == "TRUE"){
-            var script = document.createElement("script");
-            script.src = 'static/testVIP/testVIP.js';
-            document.head.appendChild(script);
+            //var script = document.createElement("script");
+            //script.src = 'static/testVIP/testVIP.js';
+            //document.head.appendChild(script);
             $("#VIPtestBT").show();
           }
         },
@@ -1984,29 +1987,30 @@ function showGene(aID, addInfo='', ckDefault='checked'){
     optG.push($(this).val());
     if(!genes.includes($(this).val())){
       $('#'+aID+'ck'+$(this).val()).remove();
-    }else if($(this).prop("checked") == false){
+    }else if($(this).prop("checked") === false){// == false
       NcheckG.push($(this).val());
     }else if($(this).prop("checked")){
       checkG.push($(this).val());
     }
-  })
+  });
   //add options which are missing from gene list
-  if(genes.length>0){
-    var htmlCheck = $('#'+aID+'gene').html();
-    for(const g of genes){
-      if(!optG.includes(g)){
-        htmlCheck += '<label id="'+aID+'ck'+g+'"><input class="'+aID+'genes" type="checkbox" value="'+g+'" '+ckDefault+' '+addInfo+'/>'+g+'</label>';// '+g+'
-      }
+  var missG = genes.filter(i=>!optG.includes(i));
+  if(missG.length>0){
+    var htmlCheck = "";//$('#'+aID+'gene').html();
+    for(const g of missG){
+      htmlCheck += '<label id="'+aID+'ck'+g+'"><input class="'+aID+'genes" type="checkbox" value="'+g+'" '+ckDefault+' '+addInfo+'/>'+g+'</label>';// '+g+'
     }
-    $('#'+aID+'gene').html(htmlCheck);
+    $('#'+aID+'gene').append(htmlCheck);//html(htmlCheck);
   }
-  $("."+aID+"genes").each(function(){
-    if(NcheckG.includes($(this).val())){
-      $(this).prop("checked",false);
-    }else if(checkG.includes($(this).val())){
-      $(this).prop("checked",true);
-    }
-  })
+  //$("."+aID+"genes").each(function(){
+  //  if(NcheckG.includes($(this).val())){
+  //    $(this).prop("checked",false);
+  //  }else if(checkG.includes($(this).val())){
+  //    $(this).prop("checked",true);
+  //  }
+  //});
+  if(ckDefault==='checked') $.merge(checkG,missG);
+  return checkG;
 }
 function showGeneGrpCollSet(aID){
   if(Object.keys(window.bioGeneGrp).length>0){
@@ -2090,42 +2094,39 @@ function DENSref(){
   addCustomCombine("DENSsplit");
 }
 function DENS2Dref(){
-  var genes = window.store.getState().controls.userDefinedGenes;
-  genes = genes.concat(window.biogen);
-  genes = [...new Set(genes)];
-  var optG = [], checkG=[];
-  //remove checkbox which are not in the gene list
-  $(".DENS2Dgenes").each(function(){
-    optG.push($(this).val());
-    if(!genes.includes($(this).val())){
-      $('#DENS2Dck'+$(this).val()).remove();
-    }else if($(this).prop("checked")){
-      checkG.push($(this).val());
-    }
-  })
-  //add options which are missing from gene list
-  if(genes.length>0){
-    var htmlCheck = $('#DENS2Dgene').html();
-    for(const g of genes){
-      if(!optG.includes(g)){
-        htmlCheck += '<label id="DENS2Dck'+g+'"><input class="DENS2Dgenes" type="checkbox" value="'+g+'" onclick="DENS2Dref()"/>'+g+'</label>';// '+g+'
-      }
-    }
-    $('#DENS2Dgene').html(htmlCheck);
-  }
-  var iEnabled=0;
-  $(".DENS2Dgenes").each(function(){
-    if(checkG.includes($(this).val())){
-      $(this).prop("checked",true);
-      iEnabled++;
-    }
-  })
-  if(iEnabled>1){
+  if(false){
+    var genes = window.store.getState().controls.userDefinedGenes;
+    genes = genes.concat(window.biogen);
+    genes = [...new Set(genes)];
+    var optG = [], checkG=[];
+    //remove checkbox which are not in the gene list
     $(".DENS2Dgenes").each(function(){
-      if($(this).prop("checked")==false){
-        $(this).prop("disabled",true);
+      optG.push($(this).val());
+      if(!genes.includes($(this).val())){
+        $('#DENS2Dck'+$(this).val()).remove();
+      }else if($(this).prop("checked")){
+        checkG.push($(this).val());
       }
     })
+    //add options which are missing from gene list
+    var missG = genes.filter(i=>!optG.includes(i));
+    if(missG.length>0){
+      var htmlCheck = "";//$('#DENS2Dgene').html();
+      for(const g of missG){
+        htmlCheck += '<label id="DENS2Dck'+g+'"><input class="DENS2Dgenes" type="checkbox" value="'+g+'" onclick="DENS2Dref()"/>'+g+'</label>';// '+g+'
+      }
+      $('#DENS2Dgene').append(htmlCheck);
+    }
+  }
+  var iEnabled=showGene('DENS2D','onclick="DENS2Dref()"','').length;
+  //$(".DENS2Dgenes").each(function(){
+  //  if(checkG.includes($(this).val())){
+  //    $(this).prop("checked",true);
+  //    iEnabled++;
+  //  }
+  //})
+  if(iEnabled>1){
+    $(".DENS2Dgenes:checkbox:not(:checked)").prop("disabled",true);
   }else{
     $('.DENS2Dgenes').prop("disabled",false);
   }
@@ -2135,36 +2136,32 @@ function EMBEDref(){
   showGene('EMBED');
 }
 function DUALref(){
-  var genes = window.store.getState().controls.userDefinedGenes;
-  genes = genes.concat(window.biogen);
-  genes = [...new Set(genes)];
-  var optG = [], checkG=[];
-  //remove checkbox which are not in the gene list
-  $(".DUALgenes").each(function(){
-    optG.push($(this).val());
-    if(!genes.includes($(this).val())){
-      $('#DUALck'+$(this).val()).remove();
-    }else if($(this).prop("checked")){
-      checkG.push($(this).val());
-    }
-  })
-  //add options which are missing from gene list
-  if(genes.length>0){
-    var htmlCheck = $('#DUALgene').html();
-    for(const g of genes){
-      if(!optG.includes(g)){
-        htmlCheck += '<label id="DUALck'+g+'"><input class="DUALgenes" type="checkbox" value="'+g+'" onclick="DUALref()"/>'+g+'</label>';// '+g+'
+  if(false){
+    var genes = window.store.getState().controls.userDefinedGenes;
+    genes = genes.concat(window.biogen);
+    genes = [...new Set(genes)];
+    var optG = [], checkG=[];
+    //remove checkbox which are not in the gene list
+    $(".DUALgenes").each(function(){
+      optG.push($(this).val());
+      if(!genes.includes($(this).val())){
+        $('#DUALck'+$(this).val()).remove();
+      }else if($(this).prop("checked")){
+        checkG.push($(this).val());
       }
+    })
+    //add options which are missing from gene list
+    if(genes.length>0){
+      var htmlCheck = $('#DUALgene').html();
+      for(const g of genes){
+        if(!optG.includes(g)){
+          htmlCheck += '<label id="DUALck'+g+'"><input class="DUALgenes" type="checkbox" value="'+g+'" onclick="DUALref()"/>'+g+'</label>';// '+g+'
+        }
+      }
+      $('#DUALgene').html(htmlCheck);
     }
-    $('#DUALgene').html(htmlCheck);
   }
-  var iEnabled=0;
-  $(".DUALgenes").each(function(){
-    if(checkG.includes($(this).val())){
-      $(this).prop("checked",true);
-      iEnabled++;
-    }
-  })
+  var iEnabled = showGene('DUAL','onclick="DUALref()"','').length;
   if(iEnabled>1){
     $(".DUALgenes:checkbox:not(:checked)").prop("disabled",true);
   }else{
@@ -2234,16 +2231,18 @@ function SANKorderHide(){
   document.getElementById("SANKorderBTs").style.display="inline";
 }
 function STACBARref(){
-  showGene('STACBAR','onchange="STACBARref()"','');
-  var iEnabled=0;
+  var selGene=showGene('STACBAR','onchange="STACBARref()"','');
   $("#STACBARcol").empty();
   var colSel = document.getElementById("STACBARcol");
-  $(".STACBARgenes").each(function(){
-    if($(this).prop("checked")){
-      iEnabled++;
-      colSel.add(createOpt($(this).val()));
-    }
-  })
+  for(const one of selGene){
+    colSel.add(createOpt(one));
+  }
+  var iEnabled=selGene.length;
+  //$(".STACBARgenes").each(function(){
+  //  if($(this).prop("checked")){
+  //    colSel.add(createOpt($(this).val()));
+  //  }
+  //})
   $("#STACBARgeneSel").hide();
   if(iEnabled>0){
     $("#STACBARgeneSel").show();
@@ -4263,7 +4262,7 @@ function STACBARplot(){
       document.getElementById("STACBARspin").style.visibility="hidden";
 
     }
-  })
+  });
 
 }
 function CLIplot(){
@@ -4429,7 +4428,7 @@ function metaSel(){
   });
 }
 //save and load
-function save(){
+function saveContent(){
   sync();
 
   var content = {'saveName':'cellxgene.'+window.store.getState().config.displayNames.dataset};
@@ -4440,7 +4439,10 @@ function save(){
   content['radio'] = radioSave();
   content['number'] = numberSave();
   content['sortable'] = sortableSave();
-
+  return content;
+}
+function saveLocal(){
+  var content = saveContent();
   var hiddenE = document.createElement('a');
   hiddenE.href="data:attachment/text,"+encodeURIComponent(JSON.stringify(content));
   hiddenE.target='_blank';

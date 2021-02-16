@@ -133,13 +133,18 @@ function sortableLoad(v){
 }
 
 // function save images
-function imageSave(){
+function imageCreate(){
   var v={};
   $('img').each(function(){
     if(this.id.length>0){
       v[this.id] = $(this).attr('src');
     }
   })
+  return v;
+}
+function imageSave(){
+  var v=imageCreate();
+
   var hiddenE = document.createElement('a');
   hiddenE.href="data:attachment/text,"+encodeURIComponent(JSON.stringify(v));
   hiddenE.target='_blank';

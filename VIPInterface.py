@@ -342,7 +342,8 @@ def distributeTask(aTask):
     'mergeMeta': mergeMeta,
     'isMeta': isMeta,
     'testVIPready':testVIPready,
-    'Description':getDesp
+    'Description':getDesp,
+    'saveTest':saveTest
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1395,15 +1396,26 @@ def isMeta(data):
     return "FALSE"
   return "TRUE"
 ## in order for the following VIP auto testing work after updating
-## 1. make sure the h5ad file name is listed in vip.env as variable 'testVIP'
-## 2. have previously saved session file 'info.txt' (including the selected cells,
-##    and options with image generated) located in .../static/testVIP/ folder
-## 3. have previously images information file 'img.txt' saved in .../static/testVIP/ folder by
-##    executing 'imageSave()' in browser console right after previous step
+## 1. generating the test data by one of the following steps:
+##    > manually selecting all information on VIP for all plots, and then run 'randomPlot' in the browser console;
+##    > run 'createTest(grpName)' in the browser console to randomly generate test case, grpName is a string of a category name, such as 'cell_type'
+## 2. make sure the h5ad file name is listed in vip.env as a variable 'testVIP';
 def testVIPready(data):
-  if 'testVIP' in data and data["h5ad"]!=data["testVIP"]:
-    for one in ['testVIP.js','img.txt','info.txt']:
+  strH5ad = os.path.basename(data["h5ad"])
+  if 'testVIP' in data and strH5ad==data["testVIP"]:
+    for one in ['testVIP.js',re.sub("h5ad$","info.txt",strH5ad),re.sub("h5ad$","img.txt",strH5ad)]:
       if not os.path.exists(strExePath+"/../common/web/static/testVIP/"+one):
         return "FALSE"
     return "TRUE"
   return "FALSE"
+
+def saveTest(data):
+    strH5ad = os.path.basename(data["h5ad"])
+    if len(data['info'])>100:
+        ppr.pprint(strExePath+"/../common/web/static/testVIP/"+re.sub("h5ad$","info.txt",strH5ad))
+        with open(strExePath+"/../common/web/static/testVIP/"+re.sub("h5ad$","info.txt",strH5ad),'w') as f:
+            f.write(data['info'])
+    if len(data['img'])>100:
+        with open(strExePath+"/../common/web/static/testVIP/"+re.sub("h5ad$","img.txt",strH5ad),'w') as f:
+            f.write(data['img'])
+    return 'success'
