@@ -52,7 +52,7 @@ conda activate <env name, such as: VIP>
 or
 source activate <env name>
 ```
-## 2. Install cellxgene by run the config.sh in the folder
+## 2. Install cellxgene by running config.sh in "cellxgene_VIP" directory
 ```bash
 ./config.sh
 ```
