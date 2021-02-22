@@ -159,3 +159,4 @@ echo -e "\nls -l $strweb\n"
 ls -l $strweb
 
 export LIBARROW_MINIMAL=false
+if [ $(python -c 'import nbconvert; print(nbconvert.__version__)') != "5.6.1" ]; then pip install nbconvert==5.6.1; fi
