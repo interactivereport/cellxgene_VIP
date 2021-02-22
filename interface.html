@@ -1342,6 +1342,7 @@ var heatCell = 10000;
 var editor;
 var VIPurl = '';
 var uniqID = 'oyoung';
+var loadingCycle = 0;
 
 function printNotebook(){
     var html = $('#CLIresize').html();
@@ -1355,18 +1356,15 @@ function printNotebook(){
 }
 
 function checkLoading(){
-    if(!window.store || !window.store.getState().categoricalSelection || !window.store.getState().annoMatrix._cache.obs.__columnsAccessor){
+    if(!window.store || !window.store.getState().categoricalSelection || !window.store.getState().annoMatrix._cache.obs.__columns){
       return false;
     }
-    var cateN = 0;
-    for (i=0;i<store.getState().annoMatrix._cache.obs.__columnsAccessor.length;i++) {
-        if (store.getState().annoMatrix._cache.obs.__columnsAccessor[i].summarize().categorical) cateN++;
-    }
-    var justN = 0;
-    if(Object.keys(window.store.getState().categoricalSelection).includes('>Description')){
-      justN = 1;
-    }
-    if(cateN!=(Object.keys(window.store.getState().categoricalSelection).length-justN)) {
+    if (loadingCycle > 300) return true;
+    console.log("Loaded Annotation:"+store.getState().annoMatrix._cache.obs.__columns.length);
+    var annoNum = store.getState().annoMatrix.schema.annotations.obs.columns.length;
+    if (Object.keys(store.getState().annoMatrix.schema.annotations.obsByName).includes(store.getState().annoMatrix.schema.annotations.obs.index)) annoNum--;
+    if (Object.keys(store.getState().annoMatrix.schema.annotations.obsByName).includes(">Description")) annoNum--;
+	if (store.getState().annoMatrix._cache.obs.__columns.length < annoNum) {
       return false;
     }
     return true;
@@ -1380,6 +1378,7 @@ function enableButton(){
       $("#metaCellBT").hide();
       $("#VIPtestBT").hide();
       setTimeout(enableButton, 100);
+      loadingCycle ++;
     }else{
       for(const one of document.getElementsByClassName('tablinks')){
         one.disabled=false;
