@@ -47,7 +47,7 @@ git clone https://github.com/interactivereport/cellxgene_VIP.git
 cd cellxgene_VIP
 
 conda config --set channel_priority flexible
-conda env create -n <env name, such as: VIP> -f VIP.yml (system-wide R) or VIP_conda_R.yml (conda managed local R)
+conda env create -n <env name, such as: VIP> -f VIP.yml (system-wide R) or VIP_conda_R.yml (local R under conda, no root privilege needed)
 conda activate <env name, such as: VIP>
 or
 source activate <env name>
@@ -102,15 +102,4 @@ You should be able to see this in Console of Chrome Developer Tools if everythin
 ./update.VIPInterface.sh # if "interface.html" or "VIPInterface.py" is modified, often.
 
 ./update.index_template.sh # if jsPanel is modified, very rare.
-```
-
-# Note on installtion of packages
-
-#### Seurat ver3.0.2
-```
-# replace <dir> with a real one
-mkdir <dir> (e.g. /usr/lib64/R/library/Seurat_3.0.2/)
-$ R
->devtools::install_github(repo = 'satijalab/seurat@v3.0.2', dependencies=FALSE, force=TRUE, lib ='<dir>')
->library(Seurat, lib.loc = '<dir>')
 ```
