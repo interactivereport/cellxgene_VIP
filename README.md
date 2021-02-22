@@ -59,7 +59,7 @@ source activate <env name>
 ## 3. Install R packages
 ```bash
 export LIBARROW_MINIMAL=false
-#  ensure that the right R used. e.g. System: /bin/R or /usr/bin/R ; Conda managed R: ~/.conda/envs/VIP_conda_R/bin/R
+#  ensure that the right installation of R is used. e.g. system-wide: /bin/R or /usr/bin/R ; local R under conda: ~/.conda/envs/VIP_conda_R/bin/R
 which R
 
 R -q -e 'if(!require(devtools)) install.packages("devtools",repos = "http://cran.us.r-project.org")'
