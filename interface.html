@@ -29,7 +29,8 @@
     <script src="https://interactivereport.github.io/cellxgene_VIP/static/saveVIP.js"></script>
     <!-- <script src="static/saveVIP.js"></script> -->
     <!-- for testing the VIP -->
-    <script src="static/testVIP/testVIP.js"></script>
+    <script src="https://interactivereport.github.io/cellxgene_VIP/static/testVIP.js"></script>
+    <!-- <script src="static/testVIP/testVIP.js"></script> -->
     <!-- end -->
     <style>
       .dropup,
@@ -1603,9 +1604,6 @@ function enableVIPtest(){
         contentType: 'application/json;charset=UTF-8',
         success: function(res){
           if(res == "TRUE"){
-            //var script = document.createElement("script");
-            //script.src = 'static/testVIP/testVIP.js';
-            //document.head.appendChild(script);
             $("#VIPtestBT").show();
           }
         },

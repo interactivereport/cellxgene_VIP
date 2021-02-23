@@ -48,32 +48,9 @@ def getLock(lock):
 def freeLock(lock):
     lock.release()
 
-def route(data,appConfig=None):
+def route(data,appConfig):
   #ppr.pprint("current working dir:%s"%os.getcwd())
-  if appConfig is None:
-    data["url"] = f'http://127.0.0.1:8888/{api_version}'
-  else:
-    data = json.loads(str(data,encoding='utf-8'))
-    if hasattr(appConfig,'server__port'):
-      port = appConfig.server__port
-    else:
-      port = appConfig.server_config.app__port
-    data["url"] = f'http://localhost:{port}/{api_version}'#{appConfig.server__host}
-  #data.update(getEnv())
-  data.update(VIPenv)
-  #ppr.pprint(appConfig.server_config.single_dataset__datapath)
-  #ppr.pprint(appConfig.server_config.multi_dataset__dataroot)
-  data['h5ad']=appConfig.server_config.single_dataset__datapath
-  if appConfig.server_config.multi_dataset__dataroot is None:
-    data["url_dataroot"]=None
-    data["dataset"]=None
-  else:
-    data["url_dataroot"]=appConfig.server_config.multi_dataset__dataroot['d']['base_url']
-  #ppr.pprint("url_dataroot: %s"%data["url_dataroot"])
-
-  #ppr.pprint(data['figOpt'])
-  if 'figOpt' in data.keys():
-    setFigureOpt(data['figOpt'])
+  data = initialization(data,appConfig)
   try:
     getLock(jobLock)
     taskRes = distributeTask(data["method"])(data)
@@ -86,6 +63,37 @@ def route(data,appConfig=None):
 
 import server.app.app as app
 
+def initialization(data,appConfig):
+  # obtain the server host information
+  data = json.loads(str(data,encoding='utf-8'))
+  if hasattr(appConfig,'server__port'):
+    port = appConfig.server__port
+  else:
+    port = appConfig.server_config.app__port
+  data["url"] = f'http://localhost:{port}/{api_version}'
+
+  # update the environment information
+  data.update(VIPenv)
+
+  # updatting the hosting data information
+  data['h5ad']=appConfig.server_config.single_dataset__datapath
+  if appConfig.server_config.multi_dataset__dataroot is None:
+    data["url_dataroot"]=None
+    data["dataset"]=None
+  else:
+    data["url_dataroot"]=appConfig.server_config.multi_dataset__dataroot['d']['base_url']
+
+  # setting the plotting options
+  if 'figOpt' in data.keys():
+    setFigureOpt(data['figOpt'])
+
+  # get the var (gene) and obv index
+  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+    data['obs_index'] = scD.get_schema()["annotations"]["obs"]["index"]
+    data['var_index'] = scD.get_schema()["annotations"]["var"]["index"]
+
+  return data
+
 def setFigureOpt(opt):
   sc.set_figure_params(dpi_save=int(opt['dpi']),fontsize= float(opt['fontsize']),vector_friendly=(opt['vectorFriendly'] == 'Yes'),transparent=(opt['transparent'] == 'Yes'),color_map=opt['colorMap'])
   rcParams.update({'savefig.format':opt['img']})
@@ -95,7 +103,7 @@ def getObs(data):
   cNames = ["cell%d" %i for i in selC]
   ## obtain the category annotation
   with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-    obs = scD.data.obs.loc[selC,['name_0']+data['grp']].astype('str')
+    obs = scD.data.obs.loc[selC,[data['obs_index']]+data['grp']].astype('str')
   obs.index = cNames
   ## update the annotation Abbreviation
   combUpdate = cleanAbbr(data)
@@ -108,8 +116,8 @@ def getVar(data):
   ## obtain the gene annotation
   with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
     gInfo = scD.data.var
-  gInfo.index = list(gInfo['name_0'])
-  gInfo = gInfo.drop(['name_0'],axis=1)
+  gInfo.index = list(gInfo[data['var_index']])
+  gInfo = gInfo.drop([data['var_index']],axis=1)
   return gInfo
 
 def collapseGeneSet(data,expr,gNames,cNames,fSparse):
@@ -131,71 +139,38 @@ def collapseGeneSet(data,expr,gNames,cNames,fSparse):
     gNames = list(Y.columns)
   return Y,gNames
 
-def subData(data):
+def createData(data):
   selC = list(data['cells'].values())
   cNames = ["cell%d" %i for i in selC]
 
   ## onbtain the expression matrix
   gNames = []
   expr = []
-  if True:
-    fSparse = False
-    X = []
-    if 'genes' in data.keys():
-      with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-        if not type(scD.data.X) is np.ndarray:
-          fSparse = True
-        if len(data['genes'])>0:
-          fullG = list(scD.data.var['name_0'])
-          selG = [fullG.index(i) for i in data['genes']]
-          X = scD.data.X[:,selG]
-          gNames = data['genes']
-        else:
-          X = scD.data.X
-          gNames = list(scD.data.var["name_0"])
-      if 'figOpt' in data.keys() and data['figOpt']['scale'] == 'Yes':
-        X = sc.pp.scale(X,zero_center=(data['figOpt']['scaleZero'] == 'Yes'),max_value=(float(data['figOpt']['scaleMax']) if data['figOpt']['clipValue']=='Yes' else None))
-      X = X[selC]
-    if fSparse:
-      expr = X
-    else:
-      expr = pd.DataFrame(X,columns=gNames,index=cNames)
+  fSparse = False
+  X = []
+  if 'genes' in data.keys():
+    with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+      if not type(scD.data.X) is np.ndarray:
+        fSparse = True
+      if len(data['genes'])>0:
+        fullG = list(scD.data.var[data['var_index']])
+        selG = [fullG.index(i) for i in data['genes']]
+        X = scD.data.X[:,selG]
+        gNames = data['genes']
+      else:
+        X = scD.data.X
+        gNames = list(scD.data.var[data['var_index']])
+    if 'figOpt' in data.keys() and data['figOpt']['scale'] == 'Yes':
+      X = sc.pp.scale(X,zero_center=(data['figOpt']['scaleZero'] == 'Yes'),max_value=(float(data['figOpt']['scaleMax']) if data['figOpt']['clipValue']=='Yes' else None))
+    X = X[selC]
+  if fSparse:
+    expr = X
   else:
-    fSparse = False
-    if 'genes' in data.keys():
-      with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-        if not type(scD.data.X) is np.ndarray:
-          fSparse = True
-        if len(data['genes'])>0:
-          fullG = list(scD.data.var['name_0'])
-          selG = [fullG.index(i) for i in data['genes']]
-          X = scD.data.X[selC][:,selG]
-          gNames = data['genes']
-          if fSparse:
-            expr = pd.DataFrame.sparse.from_spmatrix(X,index=cNames,columns=gNames)
-          else:
-            expr = pd.DataFrame(X,columns=gNames,index=cNames)
-        else:
-          X = scD.data.X[selC]
-          gNames = list(scD.data.var["name_0"])
-          if fSparse:
-            expr = X
-          else:
-            expr = pd.DataFrame(X,columns=gNames,index=cNames)
+    expr = pd.DataFrame(X,columns=gNames,index=cNames)
+
   expr,gNames = collapseGeneSet(data,expr,gNames,cNames,fSparse)
 
   ## obtain the embedding
-  if False:
-    strEmbed = 'umap'
-    #embed = pd.DataFrame([[0 for x in range(len(cNames))] for i in range(2)],
-    #                      index=['%s1'%strEmbed,'%s2'%strEmbed],columns=cNames).T
-    embed = pd.DataFrame([],index=cNames)
-    if 'layout' in data.keys():## tsne or umap
-      strEmbed = data['layout']
-      with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-        embed = pd.DataFrame(scD.data.obsm['X_%s'%strEmbed][selC][:,[0,1]],columns=['%s1'%strEmbed,'%s2'%strEmbed],index=cNames)
-      strEmbed = 'umap'
-
   embed = {}
   if 'layout' in data.keys():
     layout = data['layout']
@@ -230,7 +205,6 @@ def subData(data):
     return []
 
   return sc.AnnData(expr,obs,var=pd.DataFrame([],index=gNames),obsm={layout:embed[layout].to_numpy() for layout in embed.keys()})
-  #return sc.AnnData(expr,obs,var=pd.DataFrame([],index=gNames),obsm={'X_%s'%strEmbed:embed.to_numpy()})
 
 def cleanAbbr(data):
   updated = False
@@ -245,71 +219,6 @@ def cleanAbbr(data):
         else:
           data['abb'][cate] = {key:"Other" for key in data['abb'][cate].keys()}
   return updated
-
-def createData(data,seperate=False):
-  return subData(data)
-  #print("CreateData")
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-    if (type(scD.data.X) is np.ndarray):
-      return subData(data)
-
-  headers = {'content-type':'application/json'}
-  # obtain the expression
-  res = requests.get('%s/annotations/var' % data["url"],params={'annotation-name':'name_0'})
-  gNames = decode_fbs.decode_matrix_FBS(res.content)['columns'][0]
-  if not 'genes' in data:
-    data['genes'] = gNames[0]
-  if len(data['genes'])==0:# obtain all genes
-    data['genes'] = gNames
-
-  fil = json.dumps({'filter':{'var':{'annotation_value':[{'name':'name_0','values':data['genes']}]}}})
-  res = requests.put('%s/data/var' % data["url"],fil,headers=headers)
-  expr = decode_fbs.decode_matrix_FBS(res.content)
-  cNames = ["cell%d" % x for x in data['cells'].values()]
-  expr = pd.DataFrame([[expr['columns'][i][x] for x in data['cells'].values()] for i in range(len(expr['columns']))],
-                        index=[gNames[x] for x in expr['col_idx']],columns=cNames).T
-
-  ## obtain the embedding
-  strEmbed = 'umap'
-  embed = pd.DataFrame([[0 for x in range(len(cNames))] for i in range(2)],
-                        index=['%s1'%strEmbed,'%s2'%strEmbed],columns=cNames).T
-  if 'layout' in data.keys():## tsne or umap
-    strEmbed = data['layout']
-    res = requests.get('%s/layout/obs' % data["url"],params={'layout-name':strEmbed})
-    embed= decode_fbs.decode_matrix_FBS(res.content)
-    embed = pd.DataFrame([[embed['columns'][i][x] for x in data['cells'].values()] for i in range(len(embed['columns']))],
-                          index=embed['col_idx'],columns=cNames).T
-
-  # obtain the meta grouping
-  obsL = [cNames]
-  combUpdate = cleanAbbr(data)
-  for one in data['grp']:
-    res = requests.get('%s/annotations/obs' % data["url"],params={'annotation-name':one})
-    grp = decode_fbs.decode_matrix_FBS(res.content)
-    if 'abb' in data.keys():
-      subGrp = [data['abb'][one][str(grp['columns'][0][i])] for i in data['cells'].values()]
-    else:
-      subGrp = [str(grp['columns'][0][i]) for i in data['cells'].values()]
-    obsL += [subGrp]
-  obs = pd.DataFrame(obsL,index=['name_0']+data['grp'],columns=cNames).T
-
-  if combUpdate and len(data['grp'])>1:
-    newGrp = 'Custom_combine'
-    obs[newGrp] = obs[data['grp'][0]]
-    for i in data['grp']:
-      if i!=data['grp'][0]:
-        obs[newGrp] += "_"+obs[i]
-    expr = expr[~obs[newGrp].str.contains("Other")]
-    embed = embed[~obs[newGrp].str.contains("Other")]
-    obs = obs[~obs[newGrp].str.contains("Other")]
-    data['grp'] = [newGrp]
-
-  obs = obs.astype('category')
-  ## empty selection
-  if expr.shape[0]==0 or expr.shape[1]==0:
-    return []
-
-  return sc.AnnData(expr,obs,obsm={'X_%s'%strEmbed:embed.to_numpy()})
 
 def errorTask(data):
   raise ValueError('Error task!')
@@ -685,7 +594,7 @@ def DEG(data):
       raise ValueError('Less than 10 cells in a group!')
     with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
       res = diffDefault.diffexp_ttest(scD,mask[0].to_numpy(),mask[1].to_numpy(),scD.data.shape[0])
-      gNames = list(scD.data.var["name_0"])
+      gNames = list(scD.data.var[data['var_index']])
     deg = pd.DataFrame(res,columns=['gID','log2fc','pval','qval'])
     gName = pd.Series([gNames[i] for i in deg['gID']],name='gene')
     deg = pd.concat([deg,gName],axis=1).loc[:,['gene','log2fc','pval','qval']]
@@ -971,8 +880,8 @@ def SANK(data):
                    adata.to_df().apply(lambda x:pd.cut(x,int(data['sankBin'])).apply(lambda y:x.name+":"+'%.1f_%.1f'%(y.left,y.right)))],
                   axis=1,sort=False)
   D = D.astype('str').astype('category')
-  if 'name_0' in D.columns:
-    del D['name_0']
+  if data['obs_index'] in D.columns:
+    del D[data['obs_index']]
 
   colName =['Set1','Set3','viridis']
   labels = []
@@ -1146,8 +1055,8 @@ def STACBAR(data):
                    adata.to_df().apply(lambda x:pd.cut(x,int(data['Nbin'])).apply(lambda y:'%s:%.1f_%.1f'%(x.name,y.left,y.right)))],
                   axis=1,sort=False)
   D = D.astype('str').astype('category')
-  if 'name_0' in D.columns:
-    del D['name_0']
+  if data['obs_index'] in D.columns:
+    del D[data['obs_index']]
   cellN = D.groupby(list(D.columns)).size().reset_index(name="Count")
 
   strCol = data['colorBy']
@@ -1160,54 +1069,6 @@ def STACBAR(data):
                         for j in cellN[strX].unique()]}
               for i in cellN[strCol].unique()]
   return json.dumps(returnD)
-
-def ajaxData(strData):
-  with open(strData,'rb') as f:
-    data=pickle.load(f)
-  url = 'http://localhost:8888/api/v0.2'#data['url']#
-  genes = data['genes']#['BTK','SALL1']
-  #import random
-  #cix = random.sample(range(40000),10000)
-  cells = data['cells']#{str(x):cix[x] for x in range(len(cix))}
-  layout= data['layout']#['umap_harmony','umap_liger']
-  grps = data['grp']#['cell_type','diagnosis']
-
-  ##
-  headers = {'content-type':'application/json'}
-  #### obtain the expression -------------
-  res = requests.get('%s/annotations/var' % url,params={'annotation-name':'name_0'})
-  gNames = decode_fbs.decode_matrix_FBS(res.content)['columns'][0]
-  if len(genes)==0:
-    genes=gNames
-  fil = json.dumps({'filter':{'var':{'annotation_value':[{'name':'name_0','values':genes}]}}})
-  res = requests.put('%s/data/var' % url,fil,headers=headers)
-  expr = decode_fbs.decode_matrix_FBS(res.content)
-  cNames = ["cell%d" % x for x in cells.values()]
-  expr = pd.DataFrame([[expr['columns'][i][x] for x in cells.values()] for i in range(len(expr['columns']))],
-                          index=[gNames[x] for x in expr['col_idx']],columns=cNames).T
-
-  #### obtain the layout -------------
-  layX = {}
-  if len(layout)>0:
-    for one in layout:
-      res = requests.get('%s/layout/obs' % url,params={'layout-name':one})
-      embed= decode_fbs.decode_matrix_FBS(res.content)
-      embed = pd.DataFrame([[embed['columns'][i][x] for x in cells.values()] for i in range(len(embed['columns']))],
-                            index=embed['col_idx'],columns=cNames).T
-      layX['X_%s'%one]=embed.to_numpy()
-
-  ## obtain the meta ---------
-  obsL = [cNames]
-  for one in grps:
-    res = requests.get('%s/annotations/obs' % url,params={'annotation-name':one})
-    grp = decode_fbs.decode_matrix_FBS(res.content)
-    subGrp = [str(grp['columns'][0][i]) for i in cells.values()]
-    obsL += [subGrp]
-  obs = pd.DataFrame(obsL,index=['name_0']+grps,columns=cNames).T
-  obs = obs.astype('category')
-
-  adata = sc.AnnData(expr,obs,obsm=layX)
-  return adata
 
 def CLI(data):
   strPath = data["CLItmp"]+('/CLI%f' % time.time())
@@ -1237,7 +1098,6 @@ def CLI(data):
     ppr.pprint(res.stderr.decode('utf-8'))
   else:
     strScript = strPath + '.py'
-    #addedScript=['import os','os.chdir("%s")'%strExePath,'import VIPInterface as vip','adata=vip.ajaxData("%s")'%strData]
     with open(strScript,'w') as f:
       f.writelines(['%load_ext rpy2.ipython\n','from anndata import read_h5ad\n','adata=read_h5ad("%s")\n'%strData, 'strPath="%s"\n\n'%strPath])
       #f.writelines(['%load_ext rpy2.ipython\n','import pickle\n','with open("%s","rb") as f:\n'%strData,'  adata=pickle.load(f)\n','strPath="%s"\n\n'%strPath])
@@ -1372,14 +1232,14 @@ def mergeMeta(data):
   with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
     if not 'cellN' in scD.data.obs:
       raise ValueError('This is not a metacell data!')
-    obs = scD.data.obs.loc[selC,['name_0','cellN']]
+    obs = scD.data.obs.loc[selC,[data['obs_index'],'cellN']]
   ppr.pprint(obs)
   ppr.pprint(obs['cellN'].sum())
   if obs['cellN'].sum() > int(data['METAmax']):
     raise ValueError('The selected meta cells include more than maximum %d cells!'% int(data['METAmax']))
   strPath = re.sub(".h5ad$","",data["h5ad"])
   selCells = []
-  for i in obs['name_0']:
+  for i in obs[data['obs_index']]:
     strOne = strPath+"/"+i+".h5ad"
     if os.path.exists(strOne):
       selCells += [ad.read(strOne)]
@@ -1397,25 +1257,30 @@ def isMeta(data):
   return "TRUE"
 ## in order for the following VIP auto testing work after updating
 ## 1. generating the test data by one of the following steps:
-##    > manually selecting all information on VIP for all plots, and then run 'randomPlot' in the browser console;
+##    > manually selecting all information on VIP or loading a session for all plots, and then run 'randomPlot' in the browser console;
+##    > manually selecting two group of cells, and then run "randomSelGene(grpName)", grpName is a required string of a category name, such as 'cell_type'
 ##    > run 'createTest(grpName)' in the browser console to randomly generate test case, grpName is a string of a category name, such as 'cell_type'
 ## 2. make sure the h5ad file name is listed in vip.env as a variable 'testVIP';
 def testVIPready(data):
   strH5ad = os.path.basename(data["h5ad"])
   if 'testVIP' in data and strH5ad==data["testVIP"]:
-    for one in ['testVIP.js',re.sub("h5ad$","info.txt",strH5ad),re.sub("h5ad$","img.txt",strH5ad)]:
+    for one in [re.sub("h5ad$","info.txt",strH5ad),re.sub("h5ad$","img.txt",strH5ad)]:
       if not os.path.exists(strExePath+"/../common/web/static/testVIP/"+one):
         return "FALSE"
     return "TRUE"
   return "FALSE"
 
 def saveTest(data):
+    strPath = strExePath+"/../common/web/static/testVIP/"
+    if not os.path.exists(strPath):
+        os.makedirs(strPath)
     strH5ad = os.path.basename(data["h5ad"])
+
     if len(data['info'])>100:
-        ppr.pprint(strExePath+"/../common/web/static/testVIP/"+re.sub("h5ad$","info.txt",strH5ad))
-        with open(strExePath+"/../common/web/static/testVIP/"+re.sub("h5ad$","info.txt",strH5ad),'w') as f:
+        #ppr.pprint(strPath+re.sub("h5ad$","info.txt",strH5ad))
+        with open(strPath+re.sub("h5ad$","info.txt",strH5ad),'w') as f:
             f.write(data['info'])
     if len(data['img'])>100:
-        with open(strExePath+"/../common/web/static/testVIP/"+re.sub("h5ad$","img.txt",strH5ad),'w') as f:
+        with open(strPath+re.sub("h5ad$","img.txt",strH5ad),'w') as f:
             f.write(data['img'])
     return 'success'
