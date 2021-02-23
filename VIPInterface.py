@@ -51,6 +51,7 @@ def freeLock(lock):
 def route(data,appConfig):
   #ppr.pprint("current working dir:%s"%os.getcwd())
   data = initialization(data,appConfig)
+  #ppr.pprint(data)
   try:
     getLock(jobLock)
     taskRes = distributeTask(data["method"])(data)
@@ -66,22 +67,18 @@ import server.app.app as app
 def initialization(data,appConfig):
   # obtain the server host information
   data = json.loads(str(data,encoding='utf-8'))
-  if hasattr(appConfig,'server__port'):
-    port = appConfig.server__port
-  else:
-    port = appConfig.server_config.app__port
-  data["url"] = f'http://localhost:{port}/{api_version}'
 
   # update the environment information
   data.update(VIPenv)
 
   # updatting the hosting data information
-  data['h5ad']=appConfig.server_config.single_dataset__datapath
-  if appConfig.server_config.multi_dataset__dataroot is None:
+  if appConfig.is_multi_dataset():
+    data["url_dataroot"]=appConfig.server_config.multi_dataset__dataroot['d']['base_url']
+    data['h5ad']=os.path.join(appConfig.server_config.multi_dataset__dataroot['d']['dataroot'], data["dataset"])
+  else:
     data["url_dataroot"]=None
     data["dataset"]=None
-  else:
-    data["url_dataroot"]=appConfig.server_config.multi_dataset__dataroot['d']['base_url']
+    data['h5ad']=appConfig.server_config.single_dataset__datapath
 
   # setting the plotting options
   if 'figOpt' in data.keys():
@@ -91,7 +88,6 @@ def initialization(data,appConfig):
   with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
     data['obs_index'] = scD.get_schema()["annotations"]["obs"]["index"]
     data['var_index'] = scD.get_schema()["annotations"]["var"]["index"]
-
   return data
 
 def setFigureOpt(opt):
@@ -140,6 +136,8 @@ def collapseGeneSet(data,expr,gNames,cNames,fSparse):
   return Y,gNames
 
 def createData(data):
+
+
   selC = list(data['cells'].values())
   cNames = ["cell%d" %i for i in selC]
 
@@ -609,7 +607,6 @@ def DEG(data):
     deg = res.summary()
     deg = deg.sort_values(by=['qval']).loc[:,['gene','log2fc','pval','qval']]
     deg['log2fc'] = -1 * deg['log2fc']
-
   ## plot in R
   #strF = ('/tmp/DEG%f.csv' % time.time())
   strF = ('%s/DEG%f.csv' % (data["CLItmp"],time.time()))

@@ -1361,7 +1361,7 @@ function checkLoading(){
       return false;
     }
     if (loadingCycle > 300) return true;
-    console.log("Loaded Annotation:"+store.getState().annoMatrix._cache.obs.__columns.length);
+    //console.log("Loaded Annotation:"+store.getState().annoMatrix._cache.obs.__columns.length);
     var annoNum = store.getState().annoMatrix.schema.annotations.obs.columns.length;
     if (Object.keys(store.getState().annoMatrix.schema.annotations.obsByName).includes(store.getState().annoMatrix.schema.annotations.obs.index)) annoNum--;
     if (Object.keys(store.getState().annoMatrix.schema.annotations.obsByName).includes(">Description")) annoNum--;
@@ -1528,7 +1528,7 @@ function addDescription(){
   $.ajax({
         type: "POST",
         url: VIPurl,
-        data:JSON.stringify({'method':"Description"}),
+        data:JSON.stringify({'method':"Description",'dataset': window.store.getState().config.displayNames.dataset+'.h5ad'}),
         contentType: 'application/json;charset=UTF-8',
         success: function(res){
           if(res.length==0){
@@ -1560,7 +1560,7 @@ function enablePreDEG(){
   $.ajax({
         type: "POST",
         url: VIPurl,
-        data:JSON.stringify({'method':"preDEGname"}),
+        data:JSON.stringify({'method':"preDEGname",'dataset': window.store.getState().config.displayNames.dataset+'.h5ad'}),
         contentType: 'application/json;charset=UTF-8',
         success: function(res){
           if(res.length==0) return;
@@ -1583,7 +1583,7 @@ function enableMetaCell(){
   $.ajax({
         type: "POST",
         url: VIPurl,
-        data:JSON.stringify({'method':"isMeta"}),
+        data:JSON.stringify({'method':"isMeta",'dataset': window.store.getState().config.displayNames.dataset+'.h5ad'}),
         contentType: 'application/json;charset=UTF-8',
         success: function(res){
           if(res.length==0) return;
@@ -1600,7 +1600,7 @@ function enableVIPtest(){
   $.ajax({
         type: "POST",
         url: VIPurl,
-        data:JSON.stringify({'method':"testVIPready"}),
+        data:JSON.stringify({'method':"testVIPready",'dataset': window.store.getState().config.displayNames.dataset+'.h5ad'}),
         contentType: 'application/json;charset=UTF-8',
         success: function(res){
           if(res == "TRUE"){
@@ -1771,7 +1771,7 @@ function init(){
         return $.ajax({
           type: "POST",
           url: cur,
-          data:JSON.stringify({'method':"HELLO"}),
+          data:JSON.stringify({'method':"HELLO",'dataset': window.store.getState().config.displayNames.dataset+'.h5ad'}),
           contentType: 'application/json;charset=UTF-8',
           success: function(res, status, req){
             console.log(res + " url: "+this.url);
@@ -3342,6 +3342,7 @@ function DEGfind(){
   $('#DEGnote').text("");
   var genes = getGenes('DEG');
   var D = {'method':'DEG',
+           'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
            'topN':$("#DEGtop").val(),
            'DEmethod':$("#DEGmethod").val(),
            'genes':genes,
