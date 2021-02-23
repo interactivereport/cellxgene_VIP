@@ -128,7 +128,7 @@ function randomSelCell(grpName){
   }
 }
 function randomSelGene(grpName){
-  console.log("Slecting DEGs ...");
+  console.log("Selecting DEGs ...");
   if(window.DEGraw === undefined){
     setTimeout(randomSelGene,1000,grpName);
   }else{
