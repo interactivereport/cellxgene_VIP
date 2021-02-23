@@ -250,6 +250,7 @@ function randomPlot(){
 function randomSave(){
   console.log("Saving ...");
   var D={'method':'saveTest',
+         'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
          'info':encodeURIComponent(JSON.stringify(saveContent())),
          'img':encodeURIComponent(JSON.stringify(imageCreate()))};
   $.ajax({
