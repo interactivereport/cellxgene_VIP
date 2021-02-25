@@ -3558,6 +3558,7 @@ function preDEGmultiplot(eID){
            'figOpt':window.figOpt}
   document.getElementById(eID+"spin").style.visibility="visible";
   $("."+eID+"bt").prop('disabled',true);
+  showImg(eID+'fig',"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=");
   $.ajax({
     type:"POST",
     url: VIPurl,

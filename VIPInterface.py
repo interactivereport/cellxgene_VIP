@@ -1184,15 +1184,22 @@ def getPreDEGbubble(data):
   conn = sqlite3.connect(strF)
   deg = pd.read_sql_query(sql,conn,params=data['compSel']+data['genes']+data['compSel'])
   conn.close()
+  if deg.shape[0]==0:
+    raise ValueError("No data for selected genes ("+", ".join(data['genes'])+") in selected comparison ("+", ".join(data['compSel'])+")!")
 
   ## add selected genes which is not in the database back to the dataframe as NA
   addG = [[i,np.nan,np.nan,np.nan,data['compSel'][0]] for i in data['genes'] if i not in list(deg.gene.unique())]
   if len(addG)>0:
     deg = pd.concat([deg,pd.DataFrame(addG,columns=deg.columns)])
+  ## add selected comparison which is not in the database back to the dataframe as NA
+  addComp = [[data['genes'][0],np.nan,np.nan,np.nan,i] for i in data['compSel'] if i not in list(deg.tag.unique())]
+  if len(addComp)>0:
+    deg = pd.concat([deg,pd.DataFrame(addComp,columns=deg.columns)])
+  #ppr.pprint(deg)
   ## plot in R
   strF = ('%s/DEG%f.csv' % (data["CLItmp"],time.time()))
   deg.to_csv(strF,index=False)
-  #ppr.pprint(' '.join([strExePath+'/bubbleMap.R',strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['scale']]))
+  #ppr.pprint(' '.join([strExePath+'/bubbleMap.R',strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['scale'],data['Rlib']]))
   res = subprocess.run([strExePath+'/bubbleMap.R',strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['scale'],data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
   os.remove(strF)
