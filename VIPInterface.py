@@ -1259,19 +1259,18 @@ def isMeta(data):
   if not os.path.exists(strPath):
     return "FALSE"
   return "TRUE"
-## in order for the following VIP auto testing work after updating
-## 1. generating the test data by one of the following steps:
-##    > manually selecting all information on VIP or loading a session for all plots, and then run 'randomPlot' in the browser console;
-##    > manually selecting two group of cells, and then run "randomSelGene(grpName)", grpName is a required string of a category name, such as 'cell_type'
-##    > run 'createTest(grpName)' in the browser console to randomly generate test case, grpName is a string of a category name, such as 'cell_type'
-## 2. make sure the h5ad file name is listed in vip.env as a variable 'testVIP';
+
+#make sure the h5ad file full name is listed in vip.env as a variable 'testVIP';
 def testVIPready(data):
   strH5ad = os.path.basename(data["h5ad"])
   if 'testVIP' in data and strH5ad==data["testVIP"]:
+    both = True
     for one in [re.sub("h5ad$","info.txt",strH5ad),re.sub("h5ad$","img.txt",strH5ad)]:
-      if not os.path.exists(strExePath+"/../common/web/static/testVIP/"+one):
-        return "FALSE"
-    return "TRUE"
+      both = both and os.path.exists(strExePath+"/../common/web/static/testVIP/"+one)
+    if both:
+      return "SHOW"
+    else:
+      return "TRUE"
   return "FALSE"
 
 def saveTest(data):

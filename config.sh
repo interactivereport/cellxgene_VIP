@@ -133,21 +133,11 @@ make install-dist
 cd ..
 
 ## finished setting up ------
-strPath=$(python -c "import server as _; print(_.__file__.replace('/server/__init__.py',''))")
+strPath="$(python -c 'import site; print(site.getsitepackages()[0])')"
 strweb="${strPath}/server/common/web/static/."
 
 cp VIPInterface.py $strPath/server/app/.
 cp interface.html $strweb
-
-cp jquery.min.js $strweb
-cp -R DataTables $strweb
-cp -R jspanel $strweb
-
-cp jquery-ui.min.js $strweb
-cp color_*.png $strweb
-cp -R ace $strweb
-cp -R stackedbar $strweb
-cp -R d3plot $strweb
 cp volcano.R $strPath/server/app/.
 cp violin.R $strPath/server/app/.
 cp Density2D.R $strPath/server/app/.

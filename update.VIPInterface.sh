@@ -4,7 +4,7 @@ echo "usually update once"
 fi
 
 ## finished setting up ------
-strPath=$(python -c "import server as _; print(_.__file__.replace('/server/__init__.py',''))")
+strPath="$(python -c 'import site; print(site.getsitepackages()[0])')"
 strweb="${strPath}/server/common/web/static/."
 
 cp VIPInterface.py $strPath/server/app/.
@@ -12,10 +12,6 @@ cp interface.html $strweb
 cp vip.env $strPath/server/app/. 2>/dev/null | true
 
 if [ -n "$1" ]; then
-cp -R testVIP $strweb
-cp saveVIP.js $strweb
-cp -R stackedbar $strweb
-cp -R d3plot $strweb
 cp bubbleMap.R $strPath/server/app/.
 cp violin.R $strPath/server/app/.
 cp volcano.R $strPath/server/app/.

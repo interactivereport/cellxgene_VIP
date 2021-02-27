@@ -30,7 +30,7 @@
     <!-- <script src="static/saveVIP.js"></script> -->
     <!-- for testing the VIP -->
     <script src="https://interactivereport.github.io/cellxgene_VIP/static/testVIP.js"></script>
-    <!-- <script src="static/testVIP/testVIP.js"></script> -->
+    <!--  <script src="static/testVIP.js"></script> -->
     <!-- end -->
     <style>
       .dropup,
@@ -499,13 +499,13 @@
       <button class="tablinks" onclick="ABBRall()">Check All Annotations</button>
       <button class="tablinks" onclick="selFun(event, 'BRUSH');">Brush</button>
       <button class="tablinks" onclick="sync();">Sync</button>
-      <button id="VIPtestBT" class="tablinks" onclick="selFun(event, 'tVIP');testVIP('tVIP');">Test</button>
+      <button id="VIPtestBT" class="tablinks" onclick="selFun(event, 'tVIP')">Test</button>
     </div>
   </div>
   <div id="separator" ></div>
   <div id="panel-right" >
 
-    <input id="loadfile" type="file" onchange="load()" style="display:none" files="static/testVIP/info.txt"/>
+    <input id="loadfile" type="file" onchange="load()" style="display:none"/>
     <div id="ABBR" class="tabcontent"> <!-- Abbreviation -->
       <h3>Create a combinatorial annotation</h3>
       <ol type="1">
@@ -1201,10 +1201,10 @@
         </div>
         <p>Annotations:</p><p id="STACBARgrp"></p>
         <p>Color by <select id="STACBARcol"></select></p>
-		<p>Figure width: <input id="STACBARwidth" type="number" step="50" value="800"/> , height: <input id="STACBARheight" type="number" step="40" value="480"/></p>
+		  <p>Figure width: <input id="STACBARwidth" type="number" step="50" value="800"/> , height: <input id="STACBARheight" type="number" step="40" value="480"/></p>
         <p>x-Axis font size: <input id="STACBARxfontsize" type="number" step="2" value="16"/> ,
         label rotate: <input id="STACBARxlabelrotate" type="number" step="5" value="-60"/> ,
-		label shift: <input id="STACBARxlabelshift" type="number" step="2" value="-24"/></p>
+		     label shift: <input id="STACBARxlabelshift" type="number" step="2" value="-24"/></p>
       </div>
 
 
@@ -1333,7 +1333,32 @@
       <div id="CLIresize" style="height: 'auto'; width: 'auto'; padding: 0.5em;"></div>
     </div><!--CLI-->
 
-    <div id="tVIP" class="tabcontent"></div>
+    <div id="tVIP" class="tabcontent">
+      <h3>Test the VIP functionality</h3>
+      <p><button id="tVIPtest" class="tVIPbt" onclick="testVIP('tVIPnote')"><b>Test by the latest case</b></button></p>
+      <fieldset>
+        <legend>Create a test case</legend>
+        <p>by: <select id="tVIPgrp"></select></p>
+        <p><button class="tVIPbt tVIPbtA" onclick="tVIPcreate('random','tVIPnote')">Create</button><br>
+          The prcess will<br>
+          1. Split the annotations of selected category into two groups randomly;<br>
+          2. Select 500 cells from each group;<br>
+          3. Apply DEG for those two groups of cells;<br>
+          4. Select top DEGs randomly in to groups;<br>
+          5. Choose user selections in VIP randomly;<br>
+          6. Perform plotting function one by one;<br>
+          7. Save the test case on the server for future use (overwrite preivous).
+        </p>
+        <p><button class="tVIPbt tVIPbtA" onclick="tVIPcreate('cells','tVIPnote')">Create on selected cells</button><br>
+          The test generation will ignore the first 2 steps in the above process, and run all the rest.
+        </p>
+        <p><button class="tVIPbt tVIPbtA" onclick="tVIPcreate('selections','tVIPnote')">Create on selections</button><br>
+          The user have selected all options on VIP including the genes and gene sets (or loaded previous session).
+          This process will process all VIP plots one by one and save it as a test case on the server (overwrite preivous).
+        </p>
+      </fieldset>
+      <div id="tVIPnote"></div>
+    </div>
   </div>
 
 </div>
@@ -1603,7 +1628,12 @@ function enableVIPtest(){
         data:JSON.stringify({'method':"testVIPready",'dataset': window.store.getState().config.displayNames.dataset+'.h5ad'}),
         contentType: 'application/json;charset=UTF-8',
         success: function(res){
+          $("#tVIPtest").prop('disabled',true);
           if(res == "TRUE"){
+            $("#VIPtestBT").show();
+          }
+          if(res == "SHOW"){
+            $("#tVIPtest").prop('disabled',false);
             $("#VIPtestBT").show();
           }
         },
@@ -1662,6 +1692,7 @@ function init(){
     var densS = document.getElementById("DENSsplit");
     var densG = document.getElementById("DENSgrp");
     var embed = document.getElementById("EMBEDsplit");
+    var tVIP = document.getElementById("tVIPgrp");
 
     for(const one of grps){
       if (one.startsWith(">")) continue;
@@ -1676,6 +1707,7 @@ function init(){
       densS.add(createOpt(one));
       densG.add(createOpt(one));
       embed.add(createOpt(one));
+      tVIP.add(createOpt(one));
     }
     densS.add(createOpt('None'));
     densG.add(createOpt('None'));
@@ -1854,6 +1886,9 @@ function sync(){
   CLIref();
   preDEGVolcanoref("preDEGvolcano");
   preDEGmultiref();
+  if(window.store.getState().colors.colorAccessor != null){
+    $('#tVIPgrp').val(window.store.getState().colors.colorAccessor);
+  }
 }
 function ABBRref(){
 }
@@ -4475,6 +4510,19 @@ function loadexe(content){
   radioLoad(content['radio']);
   numberLoad(content['number']);
   sortableLoad(content['sortable']);
+}
+// test the VIP
+function tVIPcreate(act,eID){
+  $(".tVIPbt").prop('disabled',true);
+  $("#"+eID).html("");
+
+  if(act=='random'){
+    createTest($("#tVIPgrp").val(),'tVIPnote');
+  }else if(act=='cells'){
+    randomInitDEG($("#tVIPgrp").val(),'tVIPnote');
+  }else if(act=='selections'){
+    randomPlot('tVIPnote');
+  }
 }
 // ignore global definition for stackedBar legend circle
 function GetStyle(CLASSname){
