@@ -5,9 +5,7 @@ var testVIPimg, testVIPlist;
 
 function testVIP(eID){
   // if the test has started already
-  if($("#"+eID).html().includes("TESTING VIP")){
-    return;
-  }
+  $(".tVIPbt").prop('disabled',true);
   $("#"+eID).html("");
   testVIPhtmladd(eID,"<h3>TESTING VIP</h3>This might take some time, please be patient.<br>");
 
@@ -19,7 +17,6 @@ function testVIP(eID){
 function testVIPhtmladd(eID,message){
   $("#"+eID).html($("#"+eID).html()+message);
 }
-
 function testVIPgetData(url,callback){
   var args = Array.prototype.slice.call(arguments, 2);
   var xhr = new XMLHttpRequest();
@@ -42,7 +39,6 @@ function testVIPimgGet(eID){
   testVIPlist = Object.keys(testVIPimg);
   testVIPnext(eID);
 }
-
 // The following testing all of them at once cause server 'Segmentation fault'
 // Segmentation fault      (core dumped) cellxgene launch ...
 function testVIPall(eID){
@@ -68,8 +64,8 @@ function testVIPnext(eID){
     if(typeof fn === "function") fn();
     testVIPone(one,eID,0);
   }else{
-    testVIPhtmladd(eID,"=========== Testing complete! ===========<br>");
-    testVIPhtmladd(eID,"<button onclick='$(\"#"+eID+"\").html(\"\");testVIP(\""+eID+"\")'>Retest</button>");
+    testVIPhtmladd(eID,"=========== Testing complete! ===========");
+    $(".tVIPbt").prop("disabled",false);
   }
 }
 function testVIPone(imgID,eID,nTimes){
@@ -94,15 +90,15 @@ function testVIPone(imgID,eID,nTimes){
   }
 }
 
-function createTest(grpName=''){
+// the following are creating a test case
+function createTest(grpName='',eID){
   if(grpName.length==0 || !Object.keys(window.store.getState().categoricalSelection).includes(grpName)){
     annoNames = Object.keys(window.store.getState().categoricalSelection);
     grpName = randomSel(annoNames,1)[0];
   }
-  console.log("Creating test case on "+grpName+", please be patient, this might take a while. A successful message will be shown at the end.");
-  randomSelCell(grpName);
-  DEGfind();
-  setTimeout(randomSelGene,1000,grpName);
+  testVIPhtmladd(eID,"Creating test case on "+grpName+", please be patient, this might take a while. A successful message will be shown at the end.<br>");
+  randomSelCell(grpName,eID);
+  randomInitDEG(grpName,eID);
 }
 
 function randomSel(x,num){
@@ -113,8 +109,8 @@ function randomSel(x,num){
   var sel=ix.map(i=>x[i]);
   return sel;
 }
-function randomSelCell(grpName){
-  console.log("Randomly selecting cells ...");
+function randomSelCell(grpName,eID){
+  testVIPhtmladd(eID,"Randomly selecting cells ...<br>");
   var gUnique = window.store.getState().annoMatrix.schema.annotations.obsByName[grpName].categories;
   var gNames = randomSel(gUnique,~~(gUnique.length/2));
   gNames = [gNames,gUnique.filter(i=>!gNames.includes(i))];
@@ -127,10 +123,15 @@ function randomSelCell(grpName){
     setN++;
   }
 }
-function randomSelGene(grpName){
-  console.log("Selecting DEGs ...");
+function randomInitDEG(grpName,eID){
+  testVIPhtmladd(eID,"Finding DEGs on selected cells ...<br>");
+  DEGfind();
+  setTimeout(randomSelGene,1000,grpName,eID);
+}
+function randomSelGene(grpName,eID){
+  testVIPhtmladd(eID,"Waiting ");
   if(window.DEGraw === undefined){
-    setTimeout(randomSelGene,1000,grpName);
+    setTimeout(randomSelGene,1000,grpName,eID);
   }else{
     var tableD = d3.csvParse(window.DEGraw,function(data){
       return [].concat([data.gene,
@@ -151,28 +152,29 @@ function randomSelGene(grpName){
       window.bioGeneGrp['set'+(1+i)]=gName;
     }
     sync();
-    randomSelOpt(grpName)
+    randomSelOpt(grpName,eID)
   }
 }
-function randomSelOpt(grpName){
-  randomSelBox(grpName);
-  randomSelDropdown(grpName);
-  setTimeout(randomPlot(),500);
+function randomSelOpt(grpName,eID){
+  randomSelBox(grpName,eID);
+  randomSelDropdown(grpName,eID);
+  setTimeout(randomPlot,500,eID);
 }
-function randomSelBox(grpName){
+function randomSelBox(grpName,eID){
   var cIDs = [];
   $('input:checkbox').each(function(){
     if(!!this.className && this.className.length>0){
       cIDs.push(this.className);
     }
   });
+  testVIPhtmladd(eID,"<br>Randomize checkbox group: ");
   for(const cID of [...new Set(cIDs)]){
     if(cID.includes('ABBR') || cID.includes('CLI') || cID.includes('cell')) continue;
-    console.log("Randomize checkbox group "+cID);
+    testVIPhtmladd(eID,cID+"; ");
     $("."+cID).each(function(){
       $(this).prop('checked', false);
     });
-    for(const one of randomSel($("."+cID),Math.max(2,~~(Math.random()*$(".DENS2Dgenes").length/2)))){
+    for(const one of randomSel($("."+cID),Math.max(2,~~(Math.random()*$("."+cID).length/2)))){
       if($(one).prop('disabled')){
         break;
       }else{
@@ -181,10 +183,11 @@ function randomSelBox(grpName){
     }
   }
 }
-function randomSelDropdown(grpName){
+function randomSelDropdown(grpName,eID){
+  testVIPhtmladd(eID,"<br>Randomize dropdown: ");
   $('select').each(function(){
     if(!this.id.includes('geneset') && this.id.length>0){
-      console.log("Randomize dropdown "+this.id);
+      testVIPhtmladd(eID,this.id+"; ");
       var opts=[],preSel=grpName;
       $("#"+this.id+" option").each(function() {
         opts.push($(this).val());
@@ -205,16 +208,18 @@ function randomSelDropdown(grpName){
   sync();
 }
 
-function randomPlotOne(imgID,strBT,nTimes){
+function randomPlotOne(imgID,strBT,nTimes,eID){
   if(nTimes>=120){
-    console.log("Error: Timeout!");
+    testVIPhtmladd(eID,"<p style='color:darkred;'>Error: Timeout!</p>");
+    $(".tVIPbtA").prop("disabled",false);
+    enableVIPtest();
     return;
   }
   if(imgID.length>0 && $('#'+imgID).html().length<100){
-    setTimeout(randomPlotOne,500,imgID,strBT,nTimes+1);
+    setTimeout(randomPlotOne,500,imgID,strBT,nTimes+1,eID);
   }else{
     if(strBT.length==0){
-      setTimeout(randomSave,500);
+      setTimeout(randomSave,500,eID);
     }else{
       var one = strBT.pop();
       var fn = window[one], imgID="";
@@ -228,27 +233,27 @@ function randomPlotOne(imgID,strBT,nTimes){
             }else{
               $("#"+imgID).html('<p id="'+pID+'"></p>');
             }
-            console.log("Executing "+one);
+            testVIPhtmladd(eID,one+"; ");
             $(this).trigger("click");
             return;
           }
         });
       }
-      setTimeout(randomPlotOne,500,imgID,strBT,0);
+      setTimeout(randomPlotOne,500,imgID,strBT,0,eID);
     }
   }
 }
-function randomPlot(){
-  console.log("Starting plotting ...");
+function randomPlot(eID){
+  testVIPhtmladd(eID,"<br>Starting plotting<br>Executing: ");
   var strBT=[];
   $("button[class$='bt']").each(function(){
     strBT.push(this.className);
   });
   strBT = [...new Set(strBT)];
-  setTimeout(randomPlotOne,500,"",strBT,0);
+  setTimeout(randomPlotOne,500,"",strBT,0,eID);
 }
-function randomSave(){
-  console.log("Saving ...");
+function randomSave(eID){
+  testVIPhtmladd(eID,"<br>Saving ...<br>");
   var D={'method':'saveTest',
          'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
          'info':encodeURIComponent(JSON.stringify(saveContent())),
@@ -259,10 +264,14 @@ function randomSave(){
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
-      console.log("Test information was saved successfully!");
+      testVIPhtmladd(eID,"Test information was saved successfully!");
+      $(".tVIPbtA").prop("disabled",false);
+      enableVIPtest();
     },
     error: function(request,status,error){
-      console.log(request.status+request.responseText);
+      testVIPhtmladd(eID,request.status+request.responseText);
+      $(".tVIPbtA").prop("disabled",false);
+      enableVIPtest();
     }
   });
 }
