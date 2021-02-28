@@ -250,6 +250,7 @@ def distributeTask(aTask):
     'isMeta': isMeta,
     'testVIPready':testVIPready,
     'Description':getDesp,
+	'SPATIAL':SPATIAL,
     'saveTest':saveTest
   }.get(aTask,errorTask)
 
@@ -277,6 +278,13 @@ def Msg(msg):
   ax = plt.gca()
   ax.axis('off')
   return iostreamFig(fig)
+
+def SPATIAL(data):
+  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+    #ppr.pprint(vars(scD.data.uns["spatial"]))
+    ppr.pprint((scD.data.uns["spatial"]))
+    #spatial=scD.data.uns["spatial"]
+  return "ok"
 
 def MINX(data):
   with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:

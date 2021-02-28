@@ -493,6 +493,7 @@
       <div id="metaCellBTspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <hr size="1" noshade>
       <button class="tablinks" onclick="selFun(event, 'IMG')">Figure Option</button>
+      <button class="tablinks" onclick="selFun(event, 'SPATIAL')">Spatial Transcriptomics</button>
       <button class="tablinks" onclick="selFun(event, 'ABBR')">Comb. & Abbr.</button>
       <button class="tablinks" onclick="saveLocal()">Save Session</button>
       <button class="tablinks" onclick="inputClick()">Load Session</button>
@@ -1275,8 +1276,16 @@
         <tr><td>Fall</td></tr>
         <tr><td>winter</td></tr>
       </table>
-
     </div><!--IMG-->
+
+    <div id="SPATIAL" class="tabcontent">
+      <button class="SPATIALbt" onclick="SPATIAL()"><b>Get Spatial Image</b></button>
+      <button onclick="ZoomIn('SPATIALresize')">Zoom In</button>
+      <button onclick="ZoomOut('SPATIALresize')">Zoom Out</button>
+      <pre id="SPATIALnote" style="color:red;"></pre>
+      <div id="SPATIALspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+      <div id="SPATIALresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="SPATIALfig"></p></div>
+    </div><!--SPATIAL-->
 
     <div id="BRUSH" class="tabcontent">
       <h3>Brushed ranges</h3>
@@ -2664,6 +2673,56 @@ function hideShow(section, button, label) {
     button.text("−");
   }
 }
+// spatial function
+function SPATIAL(){
+  var state = window.store.getState();
+  if (!state.layoutChoice.current.toLowerCase().includes("spat")) {
+    $('#SPATIALnote').text("The current layout is "+state.layoutChoice.current+". Please select a spatial embedding with 'spat' in the name.");
+    return;
+  }
+  var axis0 = state.layoutChoice.currentDimNames[0];
+  var axis1 = state.layoutChoice.currentDimNames[1];
+  var emb = state.annoMatrix._cache.emb;
+  var spots = {};
+  var x_index = emb.colIndex.index.get(axis0);
+  var y_index = emb.colIndex.index.get(axis1);
+  spots['spot0_x'] = emb.__columns[x_index][0];
+  spots['spot1_x'] = emb.__columns[x_index][1];
+  spots['spot0_y'] = emb.__columns[y_index][0];
+  spots['spot1_y'] = emb.__columns[y_index][1];
+
+  
+  var D = {'method':'SPATIAL',
+            'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+            'spots':spots,
+            'figOpt':window.figOpt};
+console.log(D);
+  $(".SPATIALbt").prop('disabled',true);
+  document.getElementById("SPATIALspin").style.visibility="visible";
+  $.ajax({
+    type:"POST",
+    url: VIPurl,
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',
+    success: function(res){
+      $(".SPATIALbt").prop("disabled",false);
+      document.getElementById("SPATIALspin").style.visibility="hidden";
+      if(res.startsWith('ERROR')){
+        $('#SPATIALnote').text(res);
+        document.getElementById("SPATIALfig").innerHTML = '<img id="SPATIALpng" src="data:image/png;base64," width=100% height="auto"/>';
+        return;
+      }
+//      showImg('SPATIALfig',res);
+    },
+    error: function(request,status,error){
+      $('#SPATIALnote').text(request.status+request.responseText);
+      document.getElementById("SPATIALfig").innerHTML = '<img id="SPATIALpng" src="data:image/png;base64," width=100% height="auto"/>';
+      $(".SPATIALbt").prop("disabled",false);
+      document.getElementById("SPATIALspin").style.visibility="hidden";
+    }
+  });
+}
+
 // plot function
 function GDplot(){
   if(!window.store.getState().differential.celllist1 && !window.store.getState().differential.celllist2){
