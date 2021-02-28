@@ -488,12 +488,12 @@
       <button class="tablinks" onclick="selFun(event, 'DEG')">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')">Pre-Compu. DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
+      <button class="tablinks" onclick="selFun(event, 'SPATIAL')">Spatial Transcriptomics</button>
       <button class="tablinks" onclick="selFun(event, 'CLI')">Command Line Interface</button>
       <button id="metaCellBT" class="tablinks colorButton" onclick="metaSel()">Show MetaCell</button>
       <div id="metaCellBTspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <hr size="1" noshade>
       <button class="tablinks" onclick="selFun(event, 'IMG')">Figure Option</button>
-      <button class="tablinks" onclick="selFun(event, 'SPATIAL')">Spatial Transcriptomics</button>
       <button class="tablinks" onclick="selFun(event, 'ABBR')">Comb. & Abbr.</button>
       <button class="tablinks" onclick="saveLocal()">Save Session</button>
       <button class="tablinks" onclick="inputClick()">Load Session</button>
@@ -1280,11 +1280,15 @@
 
     <div id="SPATIAL" class="tabcontent">
       <button class="SPATIALbt" onclick="SPATIAL()"><b>Get Spatial Image</b></button>
-      <button onclick="ZoomIn('SPATIALresize')">Zoom In</button>
-      <button onclick="ZoomOut('SPATIALresize')">Zoom Out</button>
       <pre id="SPATIALnote" style="color:red;"></pre>
       <div id="SPATIALspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div id="SPATIALresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="SPATIALfig"></p></div>
+      <div id="SPATIALresize" style="height: 'auto'; background-color: lightblue; padding: 0.5em; border: 1px solid #B6B6B6"><p id="SPATIALfig"></p></div>
+      <p>Image on the front:
+        <input type="radio" name="IMGfront" value="Yes" onclick="SpatialIMGfront();" checked>Yes
+        <input type="radio" name="IMGfront" value="No" onclick="SpatialIMGfront();">No </p>
+
+      <p><input type="range" min="0" max="1" value="0.75" step="0.05" id="image_opacity" oninput="SpatialIMGopacity(this.value);"> Image Opacity: <span id="image_opacity_val">0.75</span></p>
+      <p><input type="range" min="0" max="1" value="1" step="0.05" id="embedding_opacity" oninput="SpatialEMBopacity(this.value);"> Embedding Opacity: <span id="embedding_opacity_val">1</span></p>
     </div><!--SPATIAL-->
 
     <div id="BRUSH" class="tabcontent">
@@ -2396,6 +2400,45 @@ function IMGref(){
   $('#IMGscanpybranch').val(window.figOpt['scanpybranch']);
   $('#IMGcolor').val(window.figOpt['colorMap']);
 }
+function SpatialIMGfront() {
+  if ($("input[name='IMGfront']:checked").val() == "Yes") {
+    document.getElementById('lasso-layer').style.zIndex='2';
+    document.getElementsByClassName('graph-canvas')[0].style.zIndex='1';
+    $('#canvas-transformation-group-x').parent()[0].style.zIndex='2';
+
+    document.getElementsByClassName('graph-canvas')[0].style.opacity='1';
+    document.getElementById('embedding_opacity').value=1;
+    $('#embedding_opacity_val').text('1');
+
+//    $('#canvas-transformation-group-x').parent()[0].style.pacity='0.75';
+    $('#spatial-image-layer')[0].style.opacity='0.75';
+    document.getElementById('image_opacity').value=0.75;
+    $('#image_opacity_val').text('0.75');
+  } else {
+    document.getElementById('lasso-layer').style.zIndex='2';
+    document.getElementsByClassName('graph-canvas')[0].style.zIndex='1';
+    $('#canvas-transformation-group-x').parent()[0].style.zIndex='0';
+
+    document.getElementsByClassName('graph-canvas')[0].style.opacity='0.5';
+    document.getElementById('embedding_opacity').value=0.5;
+    $('#embedding_opacity_val').text('0.5');
+
+    $('#spatial-image-layer')[0].style.opacity='1';
+//    $('#canvas-transformation-group-x').parent()[0].style.pacity='1';
+    document.getElementById('image_opacity').value=1;
+    $('#image_opacity_val').text('1');
+  }
+}
+function SpatialIMGopacity(val) {
+  $('#spatial-image-layer')[0].style.opacity=val;
+//  $('#canvas-transformation-group-x').parent()[0].style.opacity=val;
+  $('#image_opacity_val').text(val);
+}
+function SpatialEMBopacity(val) {
+  document.getElementsByClassName('graph-canvas')[0].style.opacity=val;
+  $('#embedding_opacity_val').text(val);
+}
+      
 function IMGset(){
   window.figOpt['scale'] = $("input[name='IMGscale']:checked").val();
   if(window.figOpt['scale'] == "Yes"){
@@ -2680,6 +2723,7 @@ function SPATIAL(){
     $('#SPATIALnote').text("The current layout is "+state.layoutChoice.current+". Please select a spatial embedding with 'spat' in the name.");
     return;
   }
+  $('#SPATIALnote').text(""); 
   var axis0 = state.layoutChoice.currentDimNames[0];
   var axis1 = state.layoutChoice.currentDimNames[1];
   var emb = state.annoMatrix._cache.emb;
@@ -2695,8 +2739,8 @@ function SPATIAL(){
   var D = {'method':'SPATIAL',
             'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'spots':spots,
+            'embedding':state.layoutChoice.current,
             'figOpt':window.figOpt};
-console.log(D);
   $(".SPATIALbt").prop('disabled',true);
   document.getElementById("SPATIALspin").style.visibility="visible";
   $.ajax({
@@ -2712,7 +2756,13 @@ console.log(D);
         document.getElementById("SPATIALfig").innerHTML = '<img id="SPATIALpng" src="data:image/png;base64," width=100% height="auto"/>';
         return;
       }
-//      showImg('SPATIALfig',res);
+      resD = JSON.parse(res);
+      var translatex = -(1+resD[0][0].translatex);
+      var translatey = 1+resD[0][0].translatey;
+      var scale = resD[0][0].scale;
+      document.getElementById("camera-transformation-group").innerHTML = document.getElementById("camera-transformation-group").innerHTML + '<g id="spatial-image-layer" transform="translate(' + translatex + ',' + translatey +')" style="opacity:0.75"><image transform="matrix(' + scale + ',0,0,-' + scale + ',0,0)" href="data:image/png;base64,'+ resD[1] + '"></image></g>';
+
+      showImg('SPATIALfig',resD[1]);
     },
     error: function(request,status,error){
       $('#SPATIALnote').text(request.status+request.responseText);
