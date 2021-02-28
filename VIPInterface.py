@@ -289,12 +289,13 @@ def SPATIAL(data):
     xmin, xmax, ymin, ymax = plt.axis()
     width = abs(xmax-xmin)
     height = abs(ymax-ymin)
+    dpi = 100
     ppr.pprint(width)
     ppr.pprint(height)
-    dpi = 100
+
     fig = plt.gcf()
-    fig.set_dpi(dpi) 
     fig.set_size_inches(width/dpi, height/dpi)
+    fig.set_dpi(dpi)    
     fig.tight_layout()
     plt.subplots_adjust(bottom=0, top=1, left=0, right=1)
     plt.axis('off')
