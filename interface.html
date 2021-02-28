@@ -1282,7 +1282,9 @@
       <button class="SPATIALbt" onclick="SPATIAL()"><b>Get Spatial Image</b></button>
       <pre id="SPATIALnote" style="color:red;"></pre>
       <div id="SPATIALspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div id="SPATIALresize" style="height: 'auto'; background-color: lightblue; padding: 0.5em; border: 1px solid #B6B6B6"><p id="SPATIALfig"></p></div>
+      <div id="SPATIALresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6">
+      <svg id="SPATIALcontrol" style="visibility:hidden;"><rect width="100" height="100" style="fill:none;stroke:black;stroke-width:2;"></svg> 
+      </div>
       <p>Image on the front:
         <input type="radio" name="IMGfront" value="Yes" onclick="SpatialIMGfront();" checked>Yes
         <input type="radio" name="IMGfront" value="No" onclick="SpatialIMGfront();">No </p>
@@ -2419,9 +2421,9 @@ function SpatialIMGfront() {
     document.getElementsByClassName('graph-canvas')[0].style.zIndex='1';
     $('#canvas-transformation-group-x').parent()[0].style.zIndex='0';
 
-    document.getElementsByClassName('graph-canvas')[0].style.opacity='0.5';
-    document.getElementById('embedding_opacity').value=0.5;
-    $('#embedding_opacity_val').text('0.5');
+    document.getElementsByClassName('graph-canvas')[0].style.opacity='0.4';
+    document.getElementById('embedding_opacity').value=0.4;
+    $('#embedding_opacity_val').text('0.4');
 
     $('#spatial-image-layer')[0].style.opacity='1';
 //    $('#canvas-transformation-group-x').parent()[0].style.pacity='1';
@@ -2762,7 +2764,19 @@ function SPATIAL(){
       var scale = resD[0][0].scale;
       document.getElementById("camera-transformation-group").innerHTML = document.getElementById("camera-transformation-group").innerHTML + '<g id="spatial-image-layer" transform="translate(' + translatex + ',' + translatey +')" style="opacity:0.75"><image transform="matrix(' + scale + ',0,0,-' + scale + ',0,0)" href="data:image/png;base64,'+ resD[1] + '"></image></g>';
 
-      showImg('SPATIALfig',resD[1]);
+      document.getElementById("SPATIALcontrol").style.visibility="visible";
+      svgPanZoom('#SPATIALcontrol', {
+        zoomEnabled:true,
+        maxZoom:100,
+        minZoom:0.1,
+        zoomScaleSensitivity:0.1,
+        fit:true,
+        center:true,
+        controlIconsEnabled:true
+      });
+
+
+//      showImg('SPATIALfig',resD[1]);
     },
     error: function(request,status,error){
       $('#SPATIALnote').text(request.status+request.responseText);
@@ -4662,6 +4676,7 @@ GetStyle('circle').style = {};
 <script type="text/javascript" src="https://interactivereport.github.io/cellxgene_VIP/static/stackedbar/endAll.js"></script>
 <script type="text/javascript" src="https://interactivereport.github.io/cellxgene_VIP/static/stackedbar/plot-transform.js"></script>
 <script type="text/javascript" src="https://baohongz.github.io/figureComposer/dist/svg-inject.js"></script>
+<script type="text/javascript" src="https://baohongz.github.io/figureComposer/dist/svg-pan-zoom.js"></script>
 <div id="CLIVignetteCode1" style="display:none;">
 import warnings
 warnings.filterwarnings('ignore')

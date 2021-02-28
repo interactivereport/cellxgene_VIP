@@ -285,24 +285,17 @@ def SPATIAL(data):
     spatial=scD.data.uns["spatial"]
     library_id=list(spatial)[0]
 
-    plt.imshow(np.flipud(spatial[library_id]["images"]["hires"]))
-    xmin, xmax, ymin, ymax = plt.axis()
-    width = abs(xmax-xmin)
-    height = abs(ymax-ymin)
-    dpi = 100
-    ppr.pprint(width)
-    ppr.pprint(height)
-
-    fig = plt.gcf()
-    fig.set_size_inches(width/dpi, height/dpi)
-    fig.set_dpi(dpi)    
-    fig.tight_layout()
-    plt.subplots_adjust(bottom=0, top=1, left=0, right=1)
-    plt.axis('off')
-
-    plt.savefig("/var/www/html/test5.png")
-
+    height, width, depth = spatial[library_id]["images"]["hires"].shape
+    dpi=100
+    
+    figsize = width / float(dpi), height / float(dpi)
+    fig = plt.figure(figsize=figsize)
+    ax = fig.add_axes([0, 0, 1, 1])
+    ax.axis('off')
+    ax.imshow(np.flipud(spatial[library_id]["images"]["hires"]), interpolation='nearest')
+    
     figD = BytesIO()
+    plt.savefig(figD, dpi=dpi)
     ppr.pprint(sys.getsizeof(figD))
     imgD = base64.encodebytes(figD.getvalue()).decode("utf-8")
     figD.close()
