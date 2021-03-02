@@ -1280,11 +1280,9 @@
 
     <div id="SPATIAL" class="tabcontent">
       <button class="SPATIALbt" onclick="SPATIAL()"><b>Get Spatial Image</b></button>
+      <button onclick="SPATIALoverlay()"><b>Overlay Image</b></button>
       <pre id="SPATIALnote" style="color:red;"></pre>
       <div id="SPATIALspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div id="SPATIALresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6">
-      <svg id="SPATIALcontrol" style="visibility:hidden;"><rect width="100" height="100" style="fill:none;stroke:black;stroke-width:2;"></svg> 
-      </div>
       <p>Image on the front:
         <input type="radio" name="IMGfront" value="Yes" onclick="SpatialIMGfront();" checked>Yes
         <input type="radio" name="IMGfront" value="No" onclick="SpatialIMGfront();">No </p>
@@ -1790,6 +1788,8 @@ function init(){
     //          $('#SYNCnote').text(JSON.stringify(window.store.getState().continuousSelection));
           $("div[id^=histogram]").each(function(){showBrush($(this).prop('id'));});
         }
+        if ( (action.type.includes("resize") || action.type.includes("zoom"))) {
+		}
       }
     });
 
@@ -2404,36 +2404,29 @@ function IMGref(){
 }
 function SpatialIMGfront() {
   if ($("input[name='IMGfront']:checked").val() == "Yes") {
-    document.getElementById('lasso-layer').style.zIndex='2';
-    document.getElementsByClassName('graph-canvas')[0].style.zIndex='1';
-    $('#canvas-transformation-group-x').parent()[0].style.zIndex='2';
+    document.getElementById('spatial-layer').style.zIndex='0';
 
     document.getElementsByClassName('graph-canvas')[0].style.opacity='1';
     document.getElementById('embedding_opacity').value=1;
     $('#embedding_opacity_val').text('1');
 
-//    $('#canvas-transformation-group-x').parent()[0].style.pacity='0.75';
-    $('#spatial-image-layer')[0].style.opacity='0.75';
+    $('#spatial-layer')[0].style.opacity='0.75';
     document.getElementById('image_opacity').value=0.75;
     $('#image_opacity_val').text('0.75');
   } else {
-    document.getElementById('lasso-layer').style.zIndex='2';
-    document.getElementsByClassName('graph-canvas')[0].style.zIndex='1';
-    $('#canvas-transformation-group-x').parent()[0].style.zIndex='0';
+    document.getElementById('spatial-layer').style.zIndex='-1';
 
-    document.getElementsByClassName('graph-canvas')[0].style.opacity='0.4';
-    document.getElementById('embedding_opacity').value=0.4;
-    $('#embedding_opacity_val').text('0.4');
+    document.getElementsByClassName('graph-canvas')[0].style.opacity='0.35';
+    document.getElementById('embedding_opacity').value=0.35;
+    $('#embedding_opacity_val').text('0.35');
 
-    $('#spatial-image-layer')[0].style.opacity='1';
-//    $('#canvas-transformation-group-x').parent()[0].style.pacity='1';
+    $('#spatial-layer')[0].style.opacity='1';
     document.getElementById('image_opacity').value=1;
     $('#image_opacity_val').text('1');
   }
 }
 function SpatialIMGopacity(val) {
-  $('#spatial-image-layer')[0].style.opacity=val;
-//  $('#canvas-transformation-group-x').parent()[0].style.opacity=val;
+  $('#spatial-layer')[0].style.opacity=val;
   $('#image_opacity_val').text(val);
 }
 function SpatialEMBopacity(val) {
@@ -2762,19 +2755,12 @@ function SPATIAL(){
       var translatex = -(1+resD[0][0].translatex);
       var translatey = 1+resD[0][0].translatey;
       var scale = resD[0][0].scale;
-      document.getElementById("camera-transformation-group").innerHTML = document.getElementById("camera-transformation-group").innerHTML + '<g id="spatial-image-layer" transform="translate(' + translatex + ',' + translatey +')" style="opacity:0.75"><image transform="matrix(' + scale + ',0,0,-' + scale + ',0,0)" href="data:image/png;base64,'+ resD[1] + '"></image></g>';
 
-      document.getElementById("SPATIALcontrol").style.visibility="visible";
-      svgPanZoom('#SPATIALcontrol', {
-        zoomEnabled:true,
-        maxZoom:100,
-        minZoom:0.1,
-        zoomScaleSensitivity:0.1,
-        fit:true,
-        center:true,
-        controlIconsEnabled:true
-      });
+      var element = $('#canvas-transformation-group-x').parent()[0];
+      var mtx = document.getElementById("camera-transformation-group").getCTM();
+      var trans = 'translate(' +document.getElementById("graph-wrapper").offsetParent.offsetLeft+ ',0) matrix('+mtx.a+','+mtx.b+','+mtx.c+','+mtx.d+','+mtx.e+','+mtx.f+')';
 
+      $("body").append('<svg id="spatial-layer" width="' +element.attributes.width.value+ '" height="' +element.attributes.height.value+ '" pointer-events="none" style="position:relative;opacity:0.75;z-index:0"><g id="spatial-transform-layer" transform="' +trans+ '"><g id="spatial-image-layer" transform="translate(' +translatex+ ',' +translatey+ ')"><image transform="matrix(' +scale+ ',0,0,-' +scale+ ',0,0)" href="data:image/png;base64,' +resD[1]+ '"></image></g></g></svg>');
 
 //      showImg('SPATIALfig',resD[1]);
     },
@@ -2785,6 +2771,11 @@ function SPATIAL(){
       document.getElementById("SPATIALspin").style.visibility="hidden";
     }
   });
+}
+function SPATIALoverlay() {
+  var mtx = document.getElementById("camera-transformation-group").getCTM();
+  var trans = 'translate(' +document.getElementById("graph-wrapper").offsetParent.offsetLeft+ ',0) matrix('+mtx.a+','+mtx.b+','+mtx.c+','+mtx.d+','+mtx.e+','+mtx.f+')';
+  $('#spatial-transform-layer').attr('transform',trans);  
 }
 
 // plot function
@@ -4676,7 +4667,6 @@ GetStyle('circle').style = {};
 <script type="text/javascript" src="https://interactivereport.github.io/cellxgene_VIP/static/stackedbar/endAll.js"></script>
 <script type="text/javascript" src="https://interactivereport.github.io/cellxgene_VIP/static/stackedbar/plot-transform.js"></script>
 <script type="text/javascript" src="https://baohongz.github.io/figureComposer/dist/svg-inject.js"></script>
-<script type="text/javascript" src="https://baohongz.github.io/figureComposer/dist/svg-pan-zoom.js"></script>
 <div id="CLIVignetteCode1" style="display:none;">
 import warnings
 warnings.filterwarnings('ignore')
