@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ## obtain original index_template.html etc.
 cd cellxgene
-git checkout d99aac49564b98a51ebfab114fd59846c693fd62 client/index_template.html client/src/components/leftSidebar/topLeftLogoAndTitle.js client/src/components/leftSidebar/index.js
+git checkout bedbc87ed6178cd00a586feac3e99d4912d1c74e client/index_template.html client/src/components/leftSidebar/topLeftLogoAndTitle.js client/src/components/leftSidebar/index.js
 cd ..
 
 read -d '' insertL << EOF
