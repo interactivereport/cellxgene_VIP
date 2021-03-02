@@ -1577,7 +1577,11 @@ function addDescription(){
           appendDIV.append("<div id='dataDescription'>"+res+"</div>");
           for(const one of res.split("<br>")){
             if(one.startsWith('data') && !one.includes('scale')){
-              window.figOpt['scale'] = "Yes";
+              if(one.includes('scale')){
+                $("input[name='IMGscale'][value='No']").trigger('click');
+              }else{
+                $("input[name='IMGscale'][value='Yes']").trigger('click');
+              }
             }
             if(one.startsWith("embedding")){
               window.store.dispatch({type: "set layout choice", layoutChoice: one.split("by")[1].trim()});
@@ -2433,7 +2437,7 @@ function SpatialEMBopacity(val) {
   document.getElementsByClassName('graph-canvas')[0].style.opacity=val;
   $('#embedding_opacity_val').text(val);
 }
-      
+
 function IMGset(){
   window.figOpt['scale'] = $("input[name='IMGscale']:checked").val();
   if(window.figOpt['scale'] == "Yes"){
@@ -2718,7 +2722,7 @@ function SPATIAL(){
     $('#SPATIALnote').text("The current layout is "+state.layoutChoice.current+". Please select a spatial embedding with 'spat' in the name.");
     return;
   }
-  $('#SPATIALnote').text(""); 
+  $('#SPATIALnote').text("");
   var axis0 = state.layoutChoice.currentDimNames[0];
   var axis1 = state.layoutChoice.currentDimNames[1];
   var emb = state.annoMatrix._cache.emb;
@@ -2730,7 +2734,7 @@ function SPATIAL(){
   spots['spot0_y'] = emb.__columns[y_index][0];
   spots['spot1_y'] = emb.__columns[y_index][1];
 
-  
+
   var D = {'method':'SPATIAL',
             'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'spots':spots,
@@ -2775,7 +2779,7 @@ function SPATIAL(){
 function SPATIALoverlay() {
   var mtx = document.getElementById("camera-transformation-group").getCTM();
   var trans = 'translate(' +document.getElementById("graph-wrapper").offsetParent.offsetLeft+ ',0) matrix('+mtx.a+','+mtx.b+','+mtx.c+','+mtx.d+','+mtx.e+','+mtx.f+')';
-  $('#spatial-transform-layer').attr('transform',trans);  
+  $('#spatial-transform-layer').attr('transform',trans);
 }
 
 // plot function
