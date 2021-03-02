@@ -1801,14 +1801,25 @@ function init(){
     editor.getSession().setValue($("#CLIVignetteCode1").html().trim());
 
 
-	  document.getElementsByClassName('tablinks')[0].click();
 
     var observer = new ResizeObserver(function(entries) {
-      entries.forEach(function(entry) {
         editor.resize();
-      });
     });
     observer.observe(document.getElementById('CLIscript'));
+
+	document.getElementsByClassName('tablinks')[0].click();
+    
+    var targetNode = document.getElementById("canvas-transformation-group-x").parentNode;
+
+    var observer = new MutationObserver(function(entries) {
+      console.log(entries);
+    });
+	observer.observe(targetNode, {
+      attributes: true,
+      subtree: true,  
+      attributeOldValue: true
+    });
+
     console.log("VIP (Visualization in Plugin) is ready on client side.");
 
     var tryurls = [window.location.href.replace(/\/+$/,'')+"/VIP",window.location.origin+"/VIP","/VIP","VIP"];
