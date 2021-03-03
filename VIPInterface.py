@@ -284,6 +284,26 @@ def SPATIAL(data):
     #ppr.pprint(vars(scD.data.uns["spatial"]))
     spatial=scD.data.uns["spatial"]
     library_id=list(spatial)[0]
+    if (data['embedding'] in list(spatial)):
+      library_id=data['embedding']
+
+    embedding = 'X_'+data['embedding']
+    spatialxy = scD.data.obsm[embedding]
+    tissue_hires_scalef = spatial[library_id]['scalefactors']['tissue_hires_scalef']
+    i = data['spots']['spoti_i']
+    scalex = (data['spots']['spot0_x'] - data['spots']['spoti_x']) / (spatialxy[0][0] - spatialxy[i][0])
+    scaley = (data['spots']['spot0_y'] - data['spots']['spoti_y']) / (spatialxy[0][1] - spatialxy[i][1])
+    translatex = (spatialxy[0][0]*scalex - data['spots']['spot0_x']) * 2
+    translatey = (spatialxy[0][1]*scaley - data['spots']['spot0_y']) * 2
+    # Addtional translate in Y due to flipping of the image if needed
+    if (translatey > 0):
+      flip = True
+      translatey = (spatialxy[0][1] - (height/tissue_hires_scalef - spatialxy[0][1])) * scaley / 2 + translatey
+    else:
+      flip = False
+      translatey += 2
+    scale = 1/tissue_hires_scalef * scalex * 2
+    returnD = [{'translatex':translatex,'translatey':translatey,'scale':scale}]
 
     height, width, depth = spatial[library_id]["images"]["hires"].shape
     dpi=100
@@ -292,7 +312,10 @@ def SPATIAL(data):
     fig = plt.figure(figsize=figsize)
     ax = fig.add_axes([0, 0, 1, 1])
     ax.axis('off')
-    ax.imshow(np.flipud(spatial[library_id]["images"]["hires"]), interpolation='nearest')
+    if (flip):
+      ax.imshow(np.flipud(spatial[library_id]["images"]["hires"]), interpolation='nearest')
+    else:
+      ax.imshow(spatial[library_id]["images"]["hires"], interpolation='nearest')
     
     figD = BytesIO()
     plt.savefig(figD, dpi=dpi)
@@ -300,19 +323,6 @@ def SPATIAL(data):
     imgD = base64.encodebytes(figD.getvalue()).decode("utf-8")
     figD.close()
     plt.close(fig)
-
-    embedding = data['embedding']
-    spatialxy = scD.data.obsm[embedding]
-    tissue_hires_scalef = spatial[library_id]['scalefactors']['tissue_hires_scalef']
-    scalex = (data['spots']['spot0_x'] - data['spots']['spot1_x']) / (spatialxy[0][0] - spatialxy[1][0])
-    scaley = (data['spots']['spot0_y'] - data['spots']['spot1_y']) / (spatialxy[0][1] - spatialxy[1][1])
-    translatex = (spatialxy[0][0]*scalex - data['spots']['spot0_x']) * 2
-    translatey = (spatialxy[0][1]*scaley - data['spots']['spot0_y']) * 2
-    # Addtional translate in Y due to flipping of the image
-    translatey = (spatialxy[0][1] - (height/tissue_hires_scalef - spatialxy[0][1])) * scaley / 2 + translatey
-    scale = 1/tissue_hires_scalef * scalex * 2
-    returnD = [{'translatex':translatex,'translatey':translatey,'scale':scale}]
-
   return json.dumps([returnD, imgD])
 
 def MINX(data):
