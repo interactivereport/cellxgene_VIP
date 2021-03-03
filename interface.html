@@ -1283,6 +1283,9 @@
       <button onclick="SPATIALoverlay()"><b>Overlay Image</b></button>
       <pre id="SPATIALnote" style="color:red;"></pre>
       <div id="SPATIALspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+      <p>Move embedding and image together:
+        <input type="radio" name="IMGtogether" value="Yes" checked>Yes
+        <input type="radio" name="IMGtogether" value="No">No </p>
       <p>Image on the front:
         <input type="radio" name="IMGfront" value="Yes" onclick="SpatialIMGfront();" checked>Yes
         <input type="radio" name="IMGfront" value="No" onclick="SpatialIMGfront();">No </p>
@@ -1814,9 +1817,10 @@ function init(){
 	document.getElementsByClassName('tablinks')[0].click();
     
     var targetNode = document.getElementById("canvas-transformation-group-x").parentNode;
-
     var observer = new MutationObserver(function(entries) {
-      console.log(entries);
+      if (document.getElementById("spatial-transform-layer") && $("input[name='IMGtogether']:checked").val() == "Yes") {
+		SPATIALoverlay();
+      } 
     });
 	observer.observe(targetNode, {
       attributes: true,
@@ -2774,6 +2778,8 @@ function SPATIAL(){
       var element = $('#canvas-transformation-group-x').parent()[0];
       var mtx = document.getElementById("camera-transformation-group").getCTM();
       var trans = 'translate(' +document.getElementById("graph-wrapper").offsetParent.offsetLeft+ ',0) matrix('+mtx.a+','+mtx.b+','+mtx.c+','+mtx.d+','+mtx.e+','+mtx.f+')';
+
+      if (document.getElementById("spatial-layer")) document.getElementById("spatial-layer").remove();
 
       $("body").append('<svg id="spatial-layer" width="' +element.attributes.width.value+ '" height="' +element.attributes.height.value+ '" pointer-events="none" style="position:relative;opacity:0.75;z-index:0"><g id="spatial-transform-layer" transform="' +trans+ '"><g id="spatial-image-layer" transform="translate(' +translatex+ ',' +translatey+ ')"><image transform="matrix(' +scale+ ',0,0,-' +scale+ ',0,0)" href="data:image/png;base64,' +resD[1]+ '"></image></g></g></svg>');
 
