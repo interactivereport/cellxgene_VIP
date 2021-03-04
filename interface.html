@@ -1668,18 +1668,16 @@ function addDescription(){
           var appendDIV = $("[data-testclass='category']").parent();
           appendDIV.append("<div id='dataDescription'>"+res+"</div>");
           for(const one of res.split("<br>")){
-            if(one.startsWith('data') && !one.includes('scale')){
-              if(one.includes('scale')){
+            if(one.startsWith("Initial Scale")){
+              if(one.includes('disable')){
                 $("input[name='IMGscale'][value='No']").trigger('click');
-              }else{
-                $("input[name='IMGscale'][value='Yes']").trigger('click');
               }
             }
-            if(one.startsWith("embedding")){
-              window.store.dispatch({type: "set layout choice", layoutChoice: one.split("by")[1].trim()});
+            if(one.startsWith("Initial Embedding")){
+              window.store.dispatch({type: "set layout choice", layoutChoice: one.split(":")[1].trim()});
             }
-            if(one.startsWith("color")){
-              window.store.dispatch({type: "color by categorical metadata", colorAccessor: one.split("by")[1].trim()});
+            if(one.startsWith("Initial Coloring")){
+              window.store.dispatch({type: "color by categorical metadata", colorAccessor: one.split(":")[1].trim()});
             }
           }
           window.store.dispatch({type: "show centroid labels for category", showLabels: true});
