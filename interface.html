@@ -466,6 +466,56 @@
         background-color: #D4D8DE;
         color: black;
       }
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 22px;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 2px;
+        bottom: 2px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+      }
+
+      input:checked + .slider {
+        background-color: #2196F3;
+      }
+
+      input:focus + .slider {
+        box-shadow: 0 0 1px #2196F3;
+      }
+
+      input:checked + .slider:before {
+        -webkit-transform: translateX(18px);
+        -ms-transform: translateX(18px);
+        transform: translateX(18px);
+      }
     </style>
   </head>
 <body>
@@ -718,11 +768,11 @@
           <option value='RdYlBu'>RdYlBu</option>
           <option value='RdYlGn'>RdYlGn</option>
         </select> <button onclick="hideShow($('#PGVcolorhelp'),$(this),'Color Help');">Show Color Help</button></p>
-		<div id="PGVcolorhelp" style="display:none;">
-          <table border=0>
-            <tr valign="top"><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_sequential.png" width="300"></td><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_diverging.png" width="300"></td></tr>
-          </table>
-		</div>
+    		<div id="PGVcolorhelp" style="display:none;">
+              <table border=0>
+                <tr valign="top"><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_sequential.png" width="300"></td><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_diverging.png" width="300"></td></tr>
+              </table>
+    		</div>
       </div>
 
       <button class="PGVbt"  onclick="PGVplot('plot')"><b>Plot</b></button>
@@ -1219,7 +1269,12 @@
     </div><!--STACBAR -->
 
     <div id="IMG" class="tabcontent">
-      <div><p>Scale data to unit variance for plotting:
+      <h3>Global setting for VIP</h3>
+      <p>Selecting cells accumulately:
+        <label class="switch"><input type="checkbox" onclick="IMGcellSel($(this))"><span class="slider"></span></label>
+        &nbsp;&nbsp;&nbsp;&nbsp;<button onclick="IMGcellClear()">Clear</button>Accumulation</p>
+      <div>
+        <p>Scale data to unit variance for plotting:
         <input type="radio" name="IMGscale" value="Yes" onclick="IMGset()">Yes
         <input type="radio" name="IMGscale" value="No" onclick="IMGset()">No
         </p>
@@ -1279,6 +1334,12 @@
     </div><!--IMG-->
 
     <div id="SPATIAL" class="tabcontent">
+      <h3>Overlay Spatial Expression</h3>
+      <p>Choose cell set(s):
+        <label><input class="SPATIALcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
+        <label><input class="SPATIALcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
+      </p>
+
       <button class="SPATIALbt" onclick="SPATIAL()"><b>Get Spatial Image</b></button>
       <button onclick="SPATIALoverlay()"><b>Overlay Image</b></button>
       <button onclick="document.getElementById('spatial-layer').remove();"><b>Remove Image</b></button>
@@ -1544,19 +1605,46 @@ function saveImg(pngID){
   a.click();
 }
 function cellNupdate(){
-  var n1=0,n2=0;
-  if(!!window.store.getState().differential.celllist1){
-    n1 = window.store.getState().differential.celllist1.length;
+  var n={'celllist1':0,'celllist2':0};
+  var curCells = {};
+  for(const one of Object.keys(n)){
+    var curCells = window.store.getState().differential[one] || [];
+    if(window.accumulateCell.cellaccumu){
+      window.accumulateCell[one] = Int32Array.from([...new Set([...window.accumulateCell[one],...curCells])]);
+      n[one] = window.accumulateCell[one].length;
+    }else{
+      n[one] = curCells.length;
+    }
   }
-  if(!!window.store.getState().differential.celllist2){
-    n2 = window.store.getState().differential.celllist2.length;
-  }
+
   $('.cellN1').each(function(){
-    $(this).text(n1);
+    $(this).text(n['celllist1']);
   });
   $('.cellN2').each(function(){
-    $(this).text(n2);
+    $(this).text(n['celllist2']);
   });
+}
+function getCells(eID,sep=false){
+  var cells={'celllist1':[],'celllist2':[]}, cellKey = Object.keys(cells);
+  for(const one of cellKey){
+    if(eID==null || $('.'+eID+'[value="'+one+'"]').prop('checked')){
+      if(window.accumulateCell.cellaccumu){
+        cells[one]=window.accumulateCell[one];
+      }else{
+        cells[one]=window.store.getState().differential[one] || [];
+      }
+    }
+  }
+
+  if(!sep){
+    return [...new Set([...cells[cellKey[0]],...cells[cellKey[1]]])];
+  }
+  for(const one of cellKey){
+    if(cells[one].length==0){
+      delete cells[one];
+    }
+  }
+  return cells;
 }
 
 //Page Initial functions
@@ -1695,6 +1783,7 @@ function init(){
     window.bioCombineCell={};
     window.biogen=[];
     window.bioGeneGrp={};
+    window.accumulateCell={celllist1:[],celllist2:[],cellaccumu:false};
     window.figOpt={scale:'No',scaleZero:'No',clipValue:'Yes',scaleMax:20,dpi:150,img:'png',fontsize:11,vectorFriendly:'Yes',transparent:'No',scanpybranch:'split_show',colorMap:'viridis'};
     //if (grpL[">Description"] !== undefined && grpL[">Description"].categories[0].split(";").length>1 && !grpL[">Description"].categories[0].split(";")[1].includes("scale")) {
     //  window.figOpt['scale'] = "Yes";
@@ -1816,16 +1905,16 @@ function init(){
     observer.observe(document.getElementById('CLIscript'));
 
 	document.getElementsByClassName('tablinks')[0].click();
-    
+
     var targetNode = document.getElementById("canvas-transformation-group-x").parentNode;
     var observer = new MutationObserver(function(entries) {
       if (document.getElementById("spatial-transform-layer") && $("input[name='IMGtogether']:checked").val() == "Yes") {
 		SPATIALoverlay();
-      } 
+      }
     });
 	observer.observe(targetNode, {
       attributes: true,
-      subtree: true,  
+      subtree: true,
       attributeOldValue: true
     });
 
@@ -2422,6 +2511,15 @@ function IMGref(){
   $('#IMGscanpybranch').val(window.figOpt['scanpybranch']);
   $('#IMGcolor').val(window.figOpt['colorMap']);
 }
+function IMGcellSel(ele){
+  window.accumulateCell.cellaccumu=ele.prop('checked');
+  cellNupdate();
+}
+function IMGcellClear(){
+  window.accumulateCell.celllist1=[];
+  window.accumulateCell.celllist2=[];
+  cellNupdate();
+}
 function SpatialIMGfront() {
   if ($("input[name='IMGfront']:checked").val() == "Yes") {
     document.getElementById('spatial-layer').style.zIndex='0';
@@ -2758,8 +2856,9 @@ function SPATIAL(){
       break;
     }
   }
-console.log(spots);
+  console.log(spots);
 
+  var cells = getCells('SPATIALcell');
   var D = {'method':'SPATIAL',
             'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'spots':spots,
@@ -2792,7 +2891,7 @@ console.log(spots);
 
       $("body").append('<svg id="spatial-layer" width="' +element.attributes.width.value+ '" height="' +element.attributes.height.value+ '" pointer-events="none" style="position:relative;opacity:0.75;z-index:0"><g id="spatial-transform-layer" transform="' +trans+ '"><g id="spatial-image-layer" transform="translate(' +translatex+ ',' +translatey+ ')"><image transform="matrix(' +scale+ ',0,0,-' +scale+ ',0,0)" href="data:image/png;base64,' +resD[1]+ '"></image></g></g></svg>');
 
-//      showImg('SPATIALfig',resD[1]);
+      //      showImg('SPATIALfig',resD[1]);
     },
     error: function(request,status,error){
       $('#SPATIALnote').text(request.status+request.responseText);
@@ -2810,17 +2909,12 @@ function SPATIALoverlay() {
 
 // plot function
 function GDplot(){
-  if(!window.store.getState().differential.celllist1 && !window.store.getState().differential.celllist2){
+  var cells = getCells(null,true);
+  if(Object.keys(cells).length==0){
     $('#GDnote').text("Please select cells into group 1 or/and group 2");
     return;
   }
-  var cells = {};
-  if(window.store.getState().differential.celllist1){
-    cells['group1'] = window.store.getState().differential.celllist1;
-  }
-  if(window.store.getState().differential.celllist2){
-    cells['group2'] = window.store.getState().differential.celllist2;
-  }
+
   if(+$('#GDcutoff').prop('min') > +$("#GDcutoff").val()){
     $('#GDnote').text("The minimal expression level is: "+$('#GDcutoff').prop('min'));
     return;
@@ -2860,21 +2954,7 @@ function GDplot(){
 
 }
 function MARKplot(){
-  var cells=[], x = document.getElementsByClassName('MARKcell');
-  for(i=0;i<x.length;i++){
-    if(x[i].checked){
-      if(!!window.store.getState().differential[x[i].value]){
-        if(cells.length==0){
-          cells = window.store.getState().differential[x[i].value];
-        }else{
-          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
-          tmp.set(cells);
-          tmp.set(window.store.getState().differential[x[i].value],cells.length);
-          cells = tmp;
-        }
-      }
-    }
-  }
+  var cells=getCells('MARKcell');
   if(cells.length==0){
     $('#MARKnote').text("Please use selection tools to put cells into groups");
     return;
@@ -2972,22 +3052,7 @@ function SGVplot(acc){
     $('#SGVnote').text("Please select a category to plot");
     return;
   }
-  var cells=[], x = document.getElementsByClassName('SGVcell');
-  for(i=0;i<x.length;i++){
-    if(x[i].checked){
-      if(!!window.store.getState().differential[x[i].value]){
-        if(cells.length==0){
-          cells = window.store.getState().differential[x[i].value];
-        }else{
-          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
-          tmp.set(cells);
-          tmp.set(window.store.getState().differential[x[i].value],cells.length);
-          cells = tmp;
-        }
-      }
-    }
-  }
-
+  var cells=getCells('SGVcell');
   if(cells.length==0){
     $('#SGVnote').text("Please use selection tools to put cells into groups");
     return;
@@ -3067,22 +3132,7 @@ function SGVcompareplot(){
   if($("#SGVcompareorder option:selected").val()!="NA"){
     orderGrp = $("#SGVcompareorder option:selected").val();
   }
-  var cells=[], x = document.getElementsByClassName('SGVcomparecell');
-  for(i=0;i<x.length;i++){
-    if(x[i].checked){
-      if(!!window.store.getState().differential[x[i].value]){
-        if(cells.length==0){
-          cells = window.store.getState().differential[x[i].value];
-        }else{
-          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
-          tmp.set(cells);
-          tmp.set(window.store.getState().differential[x[i].value],cells.length);
-          cells = tmp;
-        }
-      }
-    }
-  }
-
+  var cells=getCells('SGVcomparecell');
   if(cells.length==0){
     $('#SGVcomparenote').text("Please use selection tools to put cells into groups");
     return;
@@ -3173,21 +3223,7 @@ function PGVplot(acc){
     $('#PGVnote').text("Please select a category to plot");
     return;
   }
-  var cells=[], x = document.getElementsByClassName('PGVcell');
-  for(i=0;i<x.length;i++){
-    if(x[i].checked){
-      if(!!window.store.getState().differential[x[i].value]){
-        if(cells.length==0){
-          cells = window.store.getState().differential[x[i].value];
-        }else{
-          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
-          tmp.set(cells);
-          tmp.set(window.store.getState().differential[x[i].value],cells.length);
-          cells = tmp;
-        }
-      }
-    }
-  }
+  var cells=getCells('PGVcell');
   if(cells.length==0){
     $('#PGVnote').text("Please use selection tools to put cells into groups");
     return;
@@ -3268,22 +3304,7 @@ function violinData(){
 }
 function HEATcheck(){
   $('#HEATnote').text("");
-  var cells=[], x = document.getElementsByClassName('HEATcell');
-  for(i=0;i<x.length;i++){
-    if(x[i].checked){
-      if(!!window.store.getState().differential[x[i].value]){
-        if(cells.length==0){
-          cells = window.store.getState().differential[x[i].value];
-        }else{
-          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
-          tmp.set(cells);
-          tmp.set(window.store.getState().differential[x[i].value],cells.length);
-          cells = tmp;
-        }
-      }
-    }
-  }
-
+  var cells=getCells('HEATcell');
   if(cells.length==0){
     $('#HEATnote').text("Please use selection tools to put cells into groups");
     return;
@@ -3532,12 +3553,13 @@ function DEGfind(){
   const [combGrp,combName] = DEGselCells();
   var cells = {};
   if(combName.length!=2){
-    if(!window.store.getState().differential.celllist1 || !window.store.getState().differential.celllist2){
+    var selCells = getCells(null,true);
+    if(Object.keys(selCells).length!=2){
       $('#DEGnote').text("Please select cells into both group 1 and group 2");
       return;
     }else{
-      cells['group1'] = window.store.getState().differential.celllist1;
-      cells['group2'] = window.store.getState().differential.celllist2;
+      cells['group1'] = selCells.celllist1;
+      cells['group2'] = selCells.celllist2;
     }
     D['cells'] = cells;
     D['cellN'] = window.store.getState().annoMatrix.nObs;
@@ -3768,27 +3790,12 @@ function DOTplot(){
   $('#DOTnote').text("");
   var genes =getGenes('DOT');
   var geneSets = getGeneSet('DOT');
-
   if(genes.length==0&&Object.keys(geneSets).length==0){
     $('#DOTnote').text("Please select at least a gene or a gene set to plot");
     return;
   }
 
-  var cells=[], x = document.getElementsByClassName('DOTcell');
-  for(i=0;i<x.length;i++){
-    if(x[i].checked){
-      if(!!window.store.getState().differential[x[i].value]){
-        if(cells.length==0){
-          cells = window.store.getState().differential[x[i].value];
-        }else{
-          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
-          tmp.set(cells);
-          tmp.set(window.store.getState().differential[x[i].value],cells.length);
-          cells = tmp;
-        }
-      }
-    }
-  }
+  var cells=getCells('DOTcell');
   if(cells.length==0){
     $('#DOTnote').text("Please use selection tools to put cells into groups");
     return;
@@ -3864,21 +3871,7 @@ function TRAKplot(){
     return;
   }
 
-  var cells=[], x = document.getElementsByClassName('TRAKcell');
-  for(i=0;i<x.length;i++){
-    if(x[i].checked){
-      if(!!window.store.getState().differential[x[i].value]){
-        if(cells.length==0){
-          cells = window.store.getState().differential[x[i].value];
-        }else{
-          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
-          tmp.set(cells);
-          tmp.set(window.store.getState().differential[x[i].value],cells.length);
-          cells = tmp;
-        }
-      }
-    }
-  }
+  var cells=getCells('TRAKcell');
   if(cells.length==0){
     $('#TRAKnote').text("Please use selection tools to put cells into groups");
     return;
@@ -3936,21 +3929,7 @@ function TRAKplot(){
 }
 function DENSplot(){
   $('#DENSerror').text("");
-  var cells=[], x = document.getElementsByClassName('DENScell');
-  for(i=0;i<x.length;i++){
-    if(x[i].checked){
-      if(!!window.store.getState().differential[x[i].value]){
-        if(cells.length==0){
-          cells = window.store.getState().differential[x[i].value];
-        }else{
-          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
-          tmp.set(cells);
-          tmp.set(window.store.getState().differential[x[i].value],cells.length);
-          cells = tmp;
-        }
-      }
-    }
-  }
+  var cells=getCells('DENScell');
   if(cells.length==0){
     $('#DENSerror').text("Please use selection tools to put cells into groups");
     return;
@@ -4026,21 +4005,7 @@ function DENSplot(){
 }
 function DENS2Dplot(){
   $('#DENS2Dnote').text("");
-  var cells=[], x = document.getElementsByClassName('DENS2Dcell');
-  for(i=0;i<x.length;i++){
-    if(x[i].checked){
-      if(!!window.store.getState().differential[x[i].value]){
-        if(cells.length==0){
-          cells = window.store.getState().differential[x[i].value];
-        }else{
-          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
-          tmp.set(cells);
-          tmp.set(window.store.getState().differential[x[i].value],cells.length);
-          cells = tmp;
-        }
-      }
-    }
-  }
+  var cells=getCells('DENS2Dcell');
   if(cells.length==0){
     $('#DENS2Dnote').text("Please use selection tools to put cells into groups");
     return;
@@ -4098,21 +4063,7 @@ function DENS2Dplot(){
 }
 function EMBEDplot(){
   $('#EMBEDnote').text("");
-  var cells=[], x = document.getElementsByClassName('EMBEDcell');
-  for(i=0;i<x.length;i++){
-    if(x[i].checked){
-      if(!!window.store.getState().differential[x[i].value]){
-        if(cells.length==0){
-          cells = window.store.getState().differential[x[i].value];
-        }else{
-          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
-          tmp.set(cells);
-          tmp.set(window.store.getState().differential[x[i].value],cells.length);
-          cells = tmp;
-        }
-      }
-    }
-  }
+  var cells=getCells('EMBEDcell');
   if(cells.length==0){
     $('#EMBEDnote').text("Please use selection tools to put cells into groups");
     return;
@@ -4188,21 +4139,7 @@ function EMBEDplot(){
 }
 function DUALplot(){
   $('#DUALnote').text("");
-  var cells=[], x = document.getElementsByClassName('DUALcell');
-  for(i=0;i<x.length;i++){
-    if(x[i].checked){
-      if(!!window.store.getState().differential[x[i].value]){
-        if(cells.length==0){
-          cells = window.store.getState().differential[x[i].value];
-        }else{
-          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
-          tmp.set(cells);
-          tmp.set(window.store.getState().differential[x[i].value],cells.length);
-          cells = tmp;
-        }
-      }
-    }
-  }
+  var cells=getCells('DUALcell');
   if(cells.length==0){
     $('#DUALnote').text("Please use selection tools to put cells into groups");
     return;
@@ -4263,21 +4200,7 @@ function DUALplot(){
 }
 function SANKcheck(){
   $('#SANKnote').text("");
-  var cells=[], x = document.getElementsByClassName('SANKcell');
-  for(i=0;i<x.length;i++){
-    if(x[i].checked){
-      if(!!window.store.getState().differential[x[i].value]){
-        if(cells.length==0){
-          cells = window.store.getState().differential[x[i].value];
-        }else{
-          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
-          tmp.set(cells);
-          tmp.set(window.store.getState().differential[x[i].value],cells.length);
-          cells = tmp;
-        }
-      }
-    }
-  }
+  var cells=getCells('SANKcell');
   if(cells.length==0){
     $('#SANKnote').text("Please use selection tools to put cells into groups");
     return;
@@ -4375,21 +4298,7 @@ function SANKimgSave(){
 }
 function STACBARplot(){
   $('#STACBARnote').text("");
-  var cells=[], x = document.getElementsByClassName('STACBARcell');
-  for(i=0;i<x.length;i++){
-    if(x[i].checked){
-      if(!!window.store.getState().differential[x[i].value]){
-        if(cells.length==0){
-          cells = window.store.getState().differential[x[i].value];
-        }else{
-          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
-          tmp.set(cells);
-          tmp.set(window.store.getState().differential[x[i].value],cells.length);
-          cells = tmp;
-        }
-      }
-    }
-  }
+  var cells=getCells('STACBARcell');
   if(cells.length==0){
     $('#STACBARnote').text("Please use selection tools to put cells into groups");
     return;
@@ -4447,21 +4356,7 @@ function STACBARplot(){
 function CLIplot(){
   $('#CLInote').text("");
   $('#CLIsvg').html("");
-  var cells=[], x = document.getElementsByClassName('CLIcell');
-  for(i=0;i<x.length;i++){
-    if(x[i].checked){
-      if(!!window.store.getState().differential[x[i].value]){
-        if(cells.length==0){
-          cells = window.store.getState().differential[x[i].value];
-        }else{
-          var tmp = new Int32Array(cells.length+window.store.getState().differential[x[i].value].length);
-          tmp.set(cells);
-          tmp.set(window.store.getState().differential[x[i].value],cells.length);
-          cells = tmp;
-        }
-      }
-    }
-  }
+  var cells=getCells('CLIcell');
   if(cells.length==0){
     $('#CLInote').text("Please use selection tools to put cells into groups");
     return;

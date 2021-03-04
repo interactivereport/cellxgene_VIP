@@ -136,8 +136,6 @@ def collapseGeneSet(data,expr,gNames,cNames,fSparse):
   return Y,gNames
 
 def createData(data):
-
-
   selC = list(data['cells'].values())
   cNames = ["cell%d" %i for i in selC]
 
@@ -307,7 +305,7 @@ def SPATIAL(data):
 
     height, width, depth = spatial[library_id]["images"]["hires"].shape
     dpi=100
-    
+
     figsize = width / float(dpi), height / float(dpi)
     fig = plt.figure(figsize=figsize)
     ax = fig.add_axes([0, 0, 1, 1])
@@ -316,7 +314,7 @@ def SPATIAL(data):
       ax.imshow(np.flipud(spatial[library_id]["images"]["hires"]), interpolation='nearest')
     else:
       ax.imshow(spatial[library_id]["images"]["hires"], interpolation='nearest')
-    
+
     figD = BytesIO()
     plt.savefig(figD, dpi=dpi)
     ppr.pprint(sys.getsizeof(figD))
@@ -567,7 +565,7 @@ def GD(data):
     if adata is None:
       adata = D
     else:
-      sT =time.time()
+      #sT =time.time()
       adata = adata.concatenate(D)
       #ppr.pprint("Concatenate data cost %f seconds" % (time.time()-sT))
   if adata is None:
