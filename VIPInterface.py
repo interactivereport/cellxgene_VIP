@@ -648,7 +648,15 @@ def DEG(data):
     nm = None
     if data['DEmethod']=='wald':
       nm = 'nb'
-    res = de.test.two_sample(adata,comGrp,test=data['DEmethod'],noise_model=nm)
+    if data['DEmethod']=='wald':
+        res = de.test.wald(adata,formula_loc="~1+"+comGrp,factor_loc_totest=comGrp)
+    elif data['DEmethod']=='t-test':
+        res = de.test.t_test(adata,grouping=comGrp)
+    elif data['DEmethod']=='rank':
+        res = de.test.rank_test(adata,grouping=comGrp)
+    else:
+        raise ValueError('Unknown DE methods:'+data['DEmethod'])
+    #res = de.test.two_sample(adata,comGrp,test=data['DEmethod'],noise_model=nm)
     deg = res.summary()
     deg = deg.sort_values(by=['qval']).loc[:,['gene','log2fc','pval','qval']]
     deg['log2fc'] = -1 * deg['log2fc']
