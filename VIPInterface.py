@@ -285,6 +285,8 @@ def SPATIAL(data):
     if (data['embedding'] in list(spatial)):
       library_id=data['embedding']
 
+    height, width, depth = spatial[library_id]["images"]["hires"].shape
+
     embedding = 'X_'+data['embedding']
     spatialxy = scD.data.obsm[embedding]
     tissue_hires_scalef = spatial[library_id]['scalefactors']['tissue_hires_scalef']
@@ -303,9 +305,7 @@ def SPATIAL(data):
     scale = 1/tissue_hires_scalef * scalex * 2
     returnD = [{'translatex':translatex,'translatey':translatey,'scale':scale}]
 
-    height, width, depth = spatial[library_id]["images"]["hires"].shape
     dpi=100
-
     figsize = width / float(dpi), height / float(dpi)
     fig = plt.figure(figsize=figsize)
     ax = fig.add_axes([0, 0, 1, 1])
