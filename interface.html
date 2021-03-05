@@ -1637,7 +1637,7 @@ function getCells(eID,sep=false){
   }
 
   if(!sep){
-    return [...new Set([...cells[cellKey[0]],...cells[cellKey[1]]])];
+    return Int32Array.from([...new Set([...cells[cellKey[0]],...cells[cellKey[1]]])]);
   }
   for(const one of cellKey){
     if(cells[one].length==0){
@@ -1668,7 +1668,7 @@ function addDescription(){
           var appendDIV = $("[data-testclass='category']").parent();
           appendDIV.append("<div id='dataDescription'>"+res+"</div>");
           for(const one of res.split("<br>")){
-            if(one.startsWith("Initial Scale")){
+            if(one.startsWith("Scaling Default")){
               if(one.includes('disable')){
                 $("input[name='IMGscale'][value='No']").trigger('click');
               }
