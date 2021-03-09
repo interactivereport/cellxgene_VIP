@@ -293,11 +293,13 @@ def SPATIAL(data):
     i = data['spots']['spoti_i']
     x = 0
     y = 1
+    # from original embedding to (0,1) coordinate system (cellxgene embedding)
     scalex = (data['spots']['spot0_x'] - data['spots']['spoti_x']) / (spatialxy[0][x] - spatialxy[i][x])
     scaley = (data['spots']['spot0_y'] - data['spots']['spoti_y']) / (spatialxy[0][y] - spatialxy[i][y])
     translatex = (spatialxy[i][x]*scalex - data['spots']['spoti_x']) * 2
     translatey = (spatialxy[i][y]*scaley - data['spots']['spoti_y']) * 2
     scale = 1/tissue_hires_scalef * scalex * 2
+
     # Addtional translate in Y due to flipping of the image if needed
     ppr.pprint(scalex)
     ppr.pprint(scaley)
@@ -305,10 +307,13 @@ def SPATIAL(data):
     ppr.pprint(translatey)
     if (translatey > -0.1):
       flip = True
-      translatey = height/tissue_hires_scalef * scaley * 2 - 2 - translatey
+      translatey = height * scale - 2 - translatey
     else:
       flip = False
       translatey += 2
+    # from (-1,0,1) (image layer) to (0,1) coordinate system (cellxgene embedding). Overlapping (0,0) origins of both. 
+    translatex = -(1+translatex)
+    translatey += 1
     returnD = [{'translatex':translatex,'translatey':translatey,'scale':scale}]
 
     dpi=100
