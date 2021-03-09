@@ -99,8 +99,24 @@ def getObs(data):
   cNames = ["cell%d" %i for i in selC]
   ## obtain the category annotation
   with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-    obs = scD.data.obs.loc[selC,[data['obs_index']]+data['grp']].astype('str')
-  obs.index = cNames
+    selAnno = [data['obs_index']]+data['grp']
+    dAnno = list(scD.get_obs_keys())
+    anno = []
+    sel = list(set(selAnno)&set(dAnno))
+    if len(sel)>0:
+      tmp = scD.data.obs.loc[selC,sel].astype('str')
+      tmp.index = cNames
+      anno += [tmp]
+    sel = list(set(selAnno)-set(dAnno))
+    if len(sel)>0:
+      annotations = scD.dataset_config.user_annotations
+      if annotations:
+        labels = annotations.read_labels(scD)
+        tmp = labels.loc[list(scD.data.obs.loc[selC,data['obs_index']]),sel]
+        tmp.index = cNames
+        anno += [tmp]
+    obs = pd.concat(anno,axis=1)
+  ppr.pprint(obs)
   ## update the annotation Abbreviation
   combUpdate = cleanAbbr(data)
   if 'abb' in data.keys():
