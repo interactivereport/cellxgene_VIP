@@ -291,18 +291,24 @@ def SPATIAL(data):
     spatialxy = scD.data.obsm[embedding]
     tissue_hires_scalef = spatial[library_id]['scalefactors']['tissue_hires_scalef']
     i = data['spots']['spoti_i']
-    scalex = (data['spots']['spot0_x'] - data['spots']['spoti_x']) / (spatialxy[0][0] - spatialxy[i][0])
-    scaley = (data['spots']['spot0_y'] - data['spots']['spoti_y']) / (spatialxy[0][1] - spatialxy[i][1])
-    translatex = (spatialxy[0][0]*scalex - data['spots']['spot0_x']) * 2
-    translatey = (spatialxy[0][1]*scaley - data['spots']['spot0_y']) * 2
+    x = 0
+    y = 1
+    scalex = (data['spots']['spot0_x'] - data['spots']['spoti_x']) / (spatialxy[0][x] - spatialxy[i][x])
+    scaley = (data['spots']['spot0_y'] - data['spots']['spoti_y']) / (spatialxy[0][y] - spatialxy[i][y])
+    translatex = (spatialxy[i][x]*scalex - data['spots']['spoti_x']) * 2
+    translatey = (spatialxy[i][y]*scaley - data['spots']['spoti_y']) * 2
+    scale = 1/tissue_hires_scalef * scalex * 2
     # Addtional translate in Y due to flipping of the image if needed
-    if (translatey > 0):
+    ppr.pprint(scalex)
+    ppr.pprint(scaley)
+    ppr.pprint(translatex)
+    ppr.pprint(translatey)
+    if (translatey > -0.1):
       flip = True
-      translatey = (spatialxy[0][1] - (height/tissue_hires_scalef - spatialxy[0][1])) * scaley / 2 + translatey
+      translatey = height/tissue_hires_scalef * scaley * 2 - 2 - translatey
     else:
       flip = False
       translatey += 2
-    scale = 1/tissue_hires_scalef * scalex * 2
     returnD = [{'translatex':translatex,'translatey':translatey,'scale':scale}]
 
     dpi=100
