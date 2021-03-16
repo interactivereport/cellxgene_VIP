@@ -113,6 +113,9 @@ sed -i "s|logoRelatedPadding = 50|logoRelatedPadding = 60|" "cellxgene/client/sr
 ## update the cellxgene title to cellxgene VIP
 sed -i "s|title=\"cellxgene\"|title=\"cellxgene VIP\"|" "cellxgene/client/src/components/app.js"
 
+## modify zoom/pan default
+sed -i "s|const *scaleMax *= *[0-9\.]\+|const scaleMax = 50000|; s|const *scaleMin *= *[0-9\.]\+|const scaleMin = 0.1|; s|const *panBound *= *[0-9\.]\+|const panBound = 80|" "cellxgene/client/src/util/camera.js"
+
 ## update the server-side source code of cellxgene for VIP
 ## Please change /tmp if different temporary directory is used in your local environment
 echo '
