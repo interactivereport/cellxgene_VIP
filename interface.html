@@ -561,9 +561,16 @@
       <h3>Create a combinatorial annotation</h3>
       <ol type="1">
         <li><button onclick="ABBRclear()">Uncheck All Annotations</button></li>
-        <li><p>Select the annotations of interest on the left panel of main window, then <button onclick="ABBRcombine();ABBRall()">Create</button> a new annotation named "Custom_combine" includes the following categories: <p id="ABBRcombine"></p>
-		</li>
+        <li><p>Select the annotations of interest on the left panel of main window, then
+          <button onclick="ABBRcombine();ABBRall()">Create</button> a new annotation named "Custom_combine" includes the
+          following categories: <!-- <p id="ABBRcombine"></p> -->
+		    </li>
       </ol>
+      <div id="ABBRcombineList" style="display:none;">
+        <p>Change the order by dragging items up or down:</p>
+        <ul id="ABBRdynList" class="sortable-list"></ul><!--   -->
+      </div>
+
 
       <hr>
       <h3>Create abbreviations of annotations</h3><!-- <button onclick="ABBRsave()">Save to local</button><input id="ABBRfile" type="file" value="Load from local" onchange="ABBRload()"/>-->
@@ -693,9 +700,9 @@
           <p>Choose a gene ('Add Genes' first): <select id="SGVcomparegene"></select></p>
           <p>Expression cutoff: <input id="SGVcomparecutoff" type="number" step="0.1" value="1" min="0"/></p>
           <p>Group by:
-          <select id="SGVcomparegrp"></select></p>
-          <p>Compare by:
           <select id="SGVcompareorder"></select></p>
+          <p>Compare by:
+          <select id="SGVcomparegrp"></select></p>
         </div>
         <button class="SGVcomparebt" onclick="SGVcompareplot()"><b>Plot</b></button> <!-- 'plot' -->
         <!-- <button class="SGVsaveBT" onclick="SGVplot('data')">Get Data</button> -->
@@ -2092,8 +2099,8 @@ function SGVref(){
 }
 function SGVcompareref(){
   dropGene("SGVcompare");
-  addCustomCombine("SGVcomparegrp");
-  addCustomCombine("SGVcompareorder");
+  //addCustomCombine("SGVcomparegrp");
+  //addCustomCombine("SGVcompareorder");
 
   if($('#SGVcomparegene').val() == null){
     $('#SGVcomparenote').text('Please add genes either from the VIP menu or the main window');
@@ -2698,31 +2705,12 @@ function ABBRcombine(){
   }
   window.bioCombine=combGrp;
   window.bioCombineCell = ABBRcombineCell();
-  var combVal = [];
+  var htmlCheck = "";
   for(const one of Object.values(window.bioCombineCell)){
-    combVal.push(one.cName);
+    htmlCheck += "<li data-val='"+one.cName+"'><label>"+one.cName+"</label></li>";
   }
-
-  $('#ABBRcombine').html("<span style='color:red;'><strong>"+combVal.join('; ')+"</strong></span>");
-}
-function ABBRcombineUpdate(){
-  var combGrp = window.bioCombine;
-  var combKey = Object.keys(combGrp);
-  var allGrp = store.getState().annoMatrix.schema.annotations.obsByName;
-  for(var i=0;i<combKey.length;i++){
-    //console.log(allGrp[combKey[i]].categories);
-    var selectionMap = new Map();
-    for(var j=0;j<allGrp[combKey[i]].categories.length;j++){
-      if(combGrp[combKey[i]].includes(allGrp[combKey[i]].categories[j])){
-        selectionMap.set(allGrp[combKey[i]].categories[j], true);
-        //console.log([combKey[i],allGrp[combKey[i]].categories[j]]);
-      } else {
-        selectionMap.set(allGrp[combKey[i]].categories[j], false);
-      }
-    }
-    window.store.dispatch({type: "categorical metadata filter select", metadataField: combKey[i], labelSelectionState: selectionMap});
-  }
-  return;
+  $("#ABBRdynList").html(htmlCheck);
+  $("#ABBRcombineList").show();
 }
 // process genes
 function ADDGadd(){
@@ -2963,12 +2951,12 @@ function MARKplot(){
     return;
   }
   var grp = [$("#MARKgrp option:selected").val()];
-  var combGrp = [];
+  var combGrp = [],combGrpOrder=[];
   if(grp[0]=="Custom_combine"){
     grp = Object.keys(window.bioCombine);
     combGrp = window.bioCombine;
+    combGrpOrder = $("#ABBRdynList").sortable('toArray',{ attribute: 'data-val' });
   }
-
 
   $(".MARKbt").prop("disabled",true);
   $(".MARKpngBT").prop('disabled',true);
@@ -2982,6 +2970,7 @@ function MARKplot(){
             'geneN':$("#MARKn").val(),
             'abb':window.bioAbbr,
             'combine':combGrp,
+            'combineOrder':combGrpOrder,
             'figOpt':window.figOpt};
   $.ajax({
     type:"POST",
@@ -3061,10 +3050,11 @@ function SGVplot(acc){
   }
   //$('#SGVnote').text("Plotting on "+cells.length+" selected cells");
   var grp = [$("#SGVgrp").val()];
-  var combGrp = [];
+  var combGrp = [],combGrpOrder=[];
   if(grp[0]=="Custom_combine"){
     grp = Object.keys(window.bioCombine);
     combGrp = window.bioCombine;
+    combGrpOrder = $("#ABBRdynList").sortable('toArray',{ attribute: 'data-val' });
   }
 
   var D = {'method':'SGV',
@@ -3075,6 +3065,7 @@ function SGVplot(acc){
             'abb':window.bioAbbr,
             'cutoff':$("#SGVcutoff").val(),
             'combine':combGrp,
+            'combineOrder':combGrpOrder,
             'figOpt':window.figOpt};
   if(acc=='data') D['method']='VIOdata';
   $(".SGVbt").prop("disabled",true);
@@ -3126,10 +3117,6 @@ function SGVcompareplot(){
     $('#SGVcomparenote').text("Please select a category to plot");
     return;
   }
-  var orderGrp = $("#SGVcomparegrp option:selected").val();
-  if($("#SGVcompareorder option:selected").val()!="NA"){
-    orderGrp = $("#SGVcompareorder option:selected").val();
-  }
   var cells=getCells('SGVcomparecell');
   if(cells.length==0){
     $('#SGVcomparenote').text("Please use selection tools to put cells into groups");
@@ -3140,12 +3127,15 @@ function SGVcompareplot(){
     return;
   }
   //$('#SGVnote').text("Plotting on "+cells.length+" selected cells");
-  let grp = [...new Set([$("#SGVcomparegrp").val(),orderGrp])];
-  var combGrp = [];
-  if(grp[0]=="Custom_combine"){
-    grp = Object.keys(window.bioCombine);
-    combGrp = window.bioCombine;
-  }
+  let grp = [...new Set([$("#SGVcompareorder").val(),$("#SGVcomparegrp").val()])];
+
+
+  //var combGrp = [],combGrpOrder=[];
+  //if(grp[0]=="Custom_combine"){
+  //  grp = Object.keys(window.bioCombine);
+  //  combGrp = window.bioCombine;
+  //  combGrpOrder = $("#ABBRdynList").sortable('toArray',{ attribute: 'data-val' });
+  //}
 
   var D = {'method':'SGVcompare',
             'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
@@ -3154,7 +3144,8 @@ function SGVcompareplot(){
             'grp':grp,
             'abb':window.bioAbbr,
             'cutoff':$("#SGVcomparecutoff").val(),
-            'combine':combGrp,
+            //'combine':combGrp,
+            //'combineOrder':combGrpOrder,
             'figOpt':window.figOpt};
   //if(acc=='data') D['method']='VIOdata';
   $(".SGVcomparebt").prop("disabled",true);
@@ -3232,10 +3223,11 @@ function PGVplot(acc){
   }
 
   var grp = [$("#PGVgrp").val()];
-  var combGrp = [];
+  var combGrp = [],combGrpOrder=[];
   if(grp[0]=="Custom_combine"){
     grp = Object.keys(window.bioCombine);
     combGrp = window.bioCombine;
+    combGrpOrder = $("#ABBRdynList").sortable('toArray',{ attribute: 'data-val' });
   }
   var geneGrpColl = $("input[name='PGVgeneGrpColl']:checked").val()
   if( geneGrpColl== 'Yes'){
@@ -3255,6 +3247,7 @@ function PGVplot(acc){
             'abb':window.bioAbbr,
             'cutoff':$("#PGVcutoff").val(),
             'combine':combGrp,
+            'combineOrder':combGrpOrder,
             'figOpt':window.figOpt};
   if(acc=='data') D['method']='VIOdata';
   $(".PGVbt").prop('disabled',true);
@@ -3331,11 +3324,12 @@ function HEATcheck(){
     grps.push(orderGrp);
   }
 
-  var grp=[],combGrp = [];
+  var grp=[],combGrp = [],combGrpOrder=[];
   if(orderGrp=="Custom_combine" || grps.includes("Custom_combine")){
     grp = grps.filter(function(e) { return e !== 'Custom_combine' });
     grps = [...new Set(grp.concat(Object.keys(window.bioCombine)))];
     combGrp = window.bioCombine;
+    combGrpOrder = $("#ABBRdynList").sortable('toArray',{ attribute: 'data-val' });
   }
 
   if(grps.length==0){
@@ -3355,6 +3349,7 @@ function HEATcheck(){
             'grp':grps,
             'abb':window.bioAbbr,
             'combine':combGrp,
+            'combineOrder':combGrpOrder,
             'addGrp':grp,
             'figOpt':window.figOpt};
   return D;
@@ -3805,10 +3800,11 @@ function DOTplot(){
   }
 
   var grp = [$("#DOTgrp").val()];
-  var combGrp = [];
+  var combGrp = [],combGrpOrder=[];
   if(grp[0]=="Custom_combine"){
     grp = Object.keys(window.bioCombine);
     combGrp = window.bioCombine;
+    combGrpOrder = $("#ABBRdynList").sortable('toArray',{ attribute: 'data-val' });
   }
   var geneGrpColl = $("input[name='DOTgeneGrpColl']:checked").val()
   if( geneGrpColl== 'Yes'){
@@ -3825,6 +3821,7 @@ function DOTplot(){
             'grp':grp,
             'abb':window.bioAbbr,
             'combine':combGrp,
+            'combineOrder':combGrpOrder,
             'geneGrp':geneSets,
             'geneGrpColl':geneGrpColl,
             'cutoff':$("#DOTcutoff").val(),
@@ -3876,10 +3873,11 @@ function TRAKplot(){
   }
 
   var grp = [$("#TRAKgrp").val()];
-  var combGrp = [];
+  var combGrp = [],combGrpOrder=[];
   if(grp[0]=="Custom_combine"){
     grp = Object.keys(window.bioCombine);
     combGrp = window.bioCombine;
+    combGrpOrder = $("#ABBRdynList").sortable('toArray',{ attribute: 'data-val' });
   }
   var geneGrpColl = $("input[name='TRAKgeneGrpColl']:checked").val()
   if( geneGrpColl== 'Yes'){
@@ -3893,6 +3891,7 @@ function TRAKplot(){
             'grp':grp,
             'abb':window.bioAbbr,
             'combine':combGrp,
+            'combineOrder':combGrpOrder,
             'geneGrp':geneSets,
             'geneGrpColl':geneGrpColl,
             'figOpt':window.figOpt};
@@ -3949,10 +3948,11 @@ function DENSplot(){
   }
   var category = [$("#DENSsplit").val(),$("#DENSgrp").val()];
   var combGrp = [];
-  var grp= [];
+  var grp= [],combGrpOrder=[];
   if(category.includes("Custom_combine")){
     grp = Object.keys(window.bioCombine);
     combGrp = window.bioCombine;
+    combGrpOrder = $("#ABBRdynList").sortable('toArray',{ attribute: 'data-val' });
   }
   if($("#DENSsplit").val()!="Custom_combine" && $("#DENSsplit").val()!='None'){
     grp.push($("#DENSsplit").val())
@@ -3971,6 +3971,7 @@ function DENSplot(){
             'category':category,
             'abb':window.bioAbbr,
             'combine':combGrp,
+            'combineOrder':combGrpOrder,
             'figOpt':window.figOpt};
   $(".DENSbt").prop('disabled',true);
   document.getElementById("DENSspin").style.visibility="visible";

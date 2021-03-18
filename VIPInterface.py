@@ -116,7 +116,7 @@ def getObs(data):
         tmp.index = cNames
         anno += [tmp]
     obs = pd.concat(anno,axis=1)
-  ppr.pprint(obs)
+  #ppr.pprint(obs)
   ## update the annotation Abbreviation
   combUpdate = cleanAbbr(data)
   if 'abb' in data.keys():
@@ -208,7 +208,8 @@ def createData(data):
     expr = expr[selC]
     for i in embed.keys():
       embed[i] = embed[i][selC]
-    obs = obs[selC]
+    obs = obs[selC].astype('category')
+    obs[newGrp].cat.set_categories(data['combineOrder'],inplace=True)
     data['grp'] = [newGrp]
 
   obs = obs.astype('category')
@@ -228,6 +229,9 @@ def cleanAbbr(data):
           for anName in data['abb'][cate].keys():
             if not anName in data['combine'][cate]:
               data['abb'][cate][anName] = "Other";
+            else:
+              if not data['abb'][cate][anName]==anName:
+                data['combineOrder'] = [one.replace(anName,data['abb'][cate][anName]) for one in data['combineOrder']]
         else:
           data['abb'][cate] = {key:"Other" for key in data['abb'][cate].keys()}
   return updated
@@ -327,7 +331,7 @@ def SPATIAL(data):
     else:
       flip = False
       translatey += 2
-    # from (-1,0,1) (image layer) to (0,1) coordinate system (cellxgene embedding). Overlapping (0,0) origins of both. 
+    # from (-1,0,1) (image layer) to (0,1) coordinate system (cellxgene embedding). Overlapping (0,0) origins of both.
     translatex = -(1+translatex)
     translatey += 1
     returnD = [{'translatex':translatex,'translatey':translatey,'scale':scale}]
@@ -493,9 +497,10 @@ def pHeatmap(data):
   exprOrder = True
   if data['order']!="Expression":
     exprOrder = False;
-    s = adata.obs[data['order']]
-    ix = sorted(range(len(s)), key=lambda k: s[k])
-    adata = adata[ix,]
+    adata = adata[adata.obs.sort_values(data['order']).index,]
+    #s = adata.obs[data['order']]
+    #ix = sorted(range(len(s)), key=lambda k: s[k])
+    #adata = adata[ix,]
   colCounter = 0
   colName =['Set1','Set3']
   grpCol = list()
@@ -890,7 +895,7 @@ def DENS(data):
   adata = createData(data)
   #ppr.pprint("read data cost: %f seconds" % (time.time()-sT))
   #sT = time.time()
-  adata.obs['None'] = 'all'
+  adata.obs['None'] = pd.Categorical(['all']*adata.shape[0])
   bw=float(data['bw'])
   sGrp = data['category'][0]
   cGrp = data['category'][1]
@@ -899,9 +904,11 @@ def DENS(data):
   if 'figOpt' in data.keys():
     defaultFontsize = float(data['figOpt']['fontsize'])
   subSize = 4
-  split = list(adata.obs[sGrp].unique())
+  #split = list(adata.obs[sGrp].unique())
+  split = list(adata.obs[sGrp].cat.categories)
   genes = list(adata.var.index)
-  colGrp = list(adata.obs[cGrp].unique())
+  #colGrp = list(adata.obs[cGrp].unique())
+  colGrp = list(adata.obs[cGrp].cat.categories)
   legendCol = math.ceil(len(colGrp)/(len(split)*11))
   fig = plt.figure(figsize=(len(genes)*subSize,len(split)*(subSize-1)))
   plt.xlabel("Expression",labelpad=20,fontsize=defaultFontsize+1)
