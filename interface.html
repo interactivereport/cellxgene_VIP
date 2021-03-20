@@ -2866,8 +2866,6 @@ function SPATIAL(){
         return;
       }
       resD = JSON.parse(res);
-      var translatex = -(1+resD[0][0].translatex);
-      var translatey = 1+resD[0][0].translatey;
       var scale = resD[0][0].scale;
 
       var element = $('#canvas-transformation-group-x').parent()[0];
@@ -2875,7 +2873,7 @@ function SPATIAL(){
       var trans = 'translate(' +document.getElementById("graph-wrapper").offsetParent.offsetLeft+ ',0) matrix('+mtx.a+','+mtx.b+','+mtx.c+','+mtx.d+','+mtx.e+','+mtx.f+')';
 
 
-      $("body").append('<svg id="spatial-layer" width="' +element.attributes.width.value+ '" height="' +element.attributes.height.value+ '" pointer-events="none" style="position:relative;opacity:0.75;z-index:0"><g id="spatial-transform-layer" transform="' +trans+ '"><g id="spatial-image-layer" transform="translate(' +translatex+ ',' +translatey+ ')"><image transform="matrix(' +scale+ ',0,0,-' +scale+ ',0,0)" href="data:image/png;base64,' +resD[1]+ '"></image></g></g></svg>');
+      $("body").append('<svg id="spatial-layer" width="' +element.attributes.width.value+ '" height="' +element.attributes.height.value+ '" pointer-events="none" style="position:relative;opacity:0.75;z-index:0"><g id="spatial-transform-layer" transform="' +trans+ '"><g id="spatial-image-layer" transform="translate(' +resD[0][0].translatex+ ',' +resD[0][0].translatey+ ')"><image transform="matrix(' +scale+ ',0,0,-' +scale+ ',0,0)" href="data:image/png;base64,' +resD[1]+ '"></image></g></g></svg>');
 
       //      showImg('SPATIALfig',resD[1]);
     },
