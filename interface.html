@@ -1341,7 +1341,7 @@
     </div><!--IMG-->
 
     <div id="SPATIAL" class="tabcontent">
-      <h3>Overlay Spatial Expression</h3>
+      <h3>Spatial Functions</h3>
       <p>Choose cell set(s):
         <label><input class="SPATIALcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
         <label><input class="SPATIALcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
@@ -1352,6 +1352,9 @@
       <button onclick="document.getElementById('spatial-layer').remove();"><b>Remove Image</b></button>
       <pre id="SPATIALnote" style="color:red;"></pre>
       <div id="SPATIALspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+      <p>Image resolution:
+        <input type="radio" name="IMGresolution" value="hires" checked>High
+        <input type="radio" name="IMGresolution" value="lowres">Low </p>
       <p>Move embedding and image together:
         <input type="radio" name="IMGtogether" value="Yes" checked>Yes
         <input type="radio" name="IMGtogether" value="No">No </p>
@@ -2849,6 +2852,7 @@ function SPATIAL(){
             'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'spots':spots,
             'embedding':state.layoutChoice.current,
+            'resolution': $("input[name='IMGresolution']:checked").val(),
             'figOpt':window.figOpt};
   $(".SPATIALbt").prop('disabled',true);
   document.getElementById("SPATIALspin").style.visibility="visible";
