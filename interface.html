@@ -1350,6 +1350,7 @@
       <button class="SPATIALbt" onclick="SPATIAL()"><b>Get Spatial Image</b></button>
       <button onclick="SPATIALoverlay()"><b>Overlay Image</b></button>
       <button onclick="document.getElementById('spatial-layer').remove();"><b>Remove Image</b></button>
+      <button onclick="SPATIALarrange()"><b>Arrange Slides</b></button>
       <pre id="SPATIALnote" style="color:red;"></pre>
       <div id="SPATIALspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <p>Image resolution:
@@ -2828,31 +2829,11 @@ function SPATIAL(){
   $('#SPATIALnote').text("");
   if (document.getElementById("spatial-layer")) document.getElementById("spatial-layer").remove();
 
-  var axis0 = state.layoutChoice.currentDimNames[0];
-  var axis1 = state.layoutChoice.currentDimNames[1];
-  var emb = state.annoMatrix._cache.emb;
-  var spots = {};
-  var x_index = emb.colIndex.index.get(axis0);
-  var y_index = emb.colIndex.index.get(axis1);
-  spots['spot0_x'] = emb.__columns[x_index][0];
-  spots['spot0_y'] = emb.__columns[y_index][0];
-
-  for (var i=1;i<emb.length;i++) {
-    if (Math.abs(emb.__columns[y_index][0] - emb.__columns[y_index][i]) > 0.001) {
-      spots['spoti_i'] = i;
-      spots['spoti_x'] = emb.__columns[x_index][i];
-      spots['spoti_y'] = emb.__columns[y_index][i];
-      break;
-    }
-  }
-  console.log(spots);
-
-  var cells = getCells('SPATIALcell');
   var D = {'method':'SPATIAL',
             'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
-            'spots':spots,
+            'spots':SPATIALspots(state.layoutChoice.current),
             'embedding':state.layoutChoice.current,
-            'resolution': $("input[name='IMGresolution']:checked").val(),
+            'resolution':$("input[name='IMGresolution']:checked").val(),
             'figOpt':window.figOpt};
   $(".SPATIALbt").prop('disabled',true);
   document.getElementById("SPATIALspin").style.visibility="visible";
@@ -2869,17 +2850,14 @@ function SPATIAL(){
         document.getElementById("SPATIALfig").innerHTML = '<img id="SPATIALpng" src="data:image/png;base64," width=100% height="auto"/>';
         return;
       }
-      resD = JSON.parse(res);
+      var resD = JSON.parse(res);
       var scale = resD[0][0].scale;
-
+    
       var element = $('#canvas-transformation-group-x').parent()[0];
       var mtx = document.getElementById("camera-transformation-group").getCTM();
       var trans = 'translate(' +document.getElementById("graph-wrapper").offsetParent.offsetLeft+ ',0) matrix('+mtx.a+','+mtx.b+','+mtx.c+','+mtx.d+','+mtx.e+','+mtx.f+')';
-
-
+    
       $("body").append('<svg id="spatial-layer" width="' +element.attributes.width.value+ '" height="' +element.attributes.height.value+ '" pointer-events="none" style="position:relative;opacity:0.75;z-index:0"><g id="spatial-transform-layer" transform="' +trans+ '"><g id="spatial-image-layer" transform="translate(' +resD[0][0].translatex+ ',' +resD[0][0].translatey+ ')"><image transform="matrix(' +scale+ ',0,0,-' +scale+ ',0,0)" href="data:image/png;base64,' +resD[1]+ '"></image></g></g></svg>');
-
-      //      showImg('SPATIALfig',resD[1]);
     },
     error: function(request,status,error){
       $('#SPATIALnote').text(request.status+request.responseText);
@@ -2889,6 +2867,33 @@ function SPATIAL(){
     }
   });
 }
+
+function SPATIALarranhge() {
+}
+
+function SPATIALspots(embedding){
+  var state = window.store.getState();
+
+  var axis0 = state.annoMatrix.schema.layout.obsByName[embedding].dims[0];
+  var axis1 = state.annoMatrix.schema.layout.obsByName[embedding].dims[1];
+  var emb = state.annoMatrix._cache.emb;
+  var spots = {};
+  var x_index = emb.colIndex.index.get(axis0);
+  var y_index = emb.colIndex.index.get(axis1);
+  spots['spot0_x'] = emb.__columns[x_index][0];
+  spots['spot0_y'] = emb.__columns[y_index][0];
+
+  for (var i=1;i<emb.length;i++) {
+    if (Math.abs(emb.__columns[y_index][0] - emb.__columns[y_index][i]) > 0.001) {
+      spots['spoti_i'] = i;
+      spots['spoti_x'] = emb.__columns[x_index][i];
+      spots['spoti_y'] = emb.__columns[y_index][i];
+      break;
+    }
+  }
+  return spots;
+}
+
 function SPATIALoverlay() {
   var mtx = document.getElementById("camera-transformation-group").getCTM();
   var trans = 'translate(' +document.getElementById("graph-wrapper").offsetParent.offsetLeft+ ',0) matrix('+mtx.a+','+mtx.b+','+mtx.c+','+mtx.d+','+mtx.e+','+mtx.f+')';
