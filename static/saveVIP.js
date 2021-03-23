@@ -151,3 +151,31 @@ function imageSave(){
   hiddenE.download='cellxgene.'+window.store.getState().config.displayNames.dataset+'.img.txt';
   hiddenE.click();
 }
+
+// function save specific eID
+function eIDsave(eIDs){
+  var v={};
+  for(const one of eIDs){
+    switch(one){
+      case 'GSEAenable':
+      case "IMGcumuCK":
+      case "GSEAcollapse":
+        v[one]=$("#"+one).prop('checked');
+        break;
+    }
+  }
+  return v;
+}
+function eIDload(v){
+  for(const one in v){
+    switch(one){
+      case 'GSEAenable':
+      case "IMGcumuCK":
+      case "GSEAcollapse":
+        if(v[one]!=$("#"+one).prop('checked')){
+          $("#"+one).trigger('click')
+        }
+        break;
+    }
+  }
+}
