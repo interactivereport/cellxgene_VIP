@@ -306,11 +306,11 @@ def SPATIAL(data):
     if (data['embedding'] in list(spatial)):
       library_id=data['embedding']
 
-    height, width, depth = spatial[library_id]["images"]["hires"].shape
+    height, width, depth = spatial[library_id]["images"][data['resolution']].shape
 
     embedding = 'X_'+data['embedding']
     spatialxy = scD.data.obsm[embedding]
-    tissue_hires_scalef = spatial[library_id]['scalefactors']['tissue_hires_scalef']
+    tissue_hires_scalef = spatial[library_id]['scalefactors']['tissue_' + data['resolution'] + '_scalef']
     i = data['spots']['spoti_i']
     x = 0
     y = 1
@@ -319,7 +319,7 @@ def SPATIAL(data):
     scaley = (data['spots']['spot0_y'] - data['spots']['spoti_y']) / (spatialxy[0][y] - spatialxy[i][y])
     translatex = (spatialxy[i][x]*scalex - data['spots']['spoti_x']) * 2
     translatey = (spatialxy[i][y]*scaley - data['spots']['spoti_y']) * 2
-    scale = 1/tissue_hires_scalef * scalex * 2
+    scale = 1/tissue_scalef * scalex * 2
 
     # Addtional translate in Y due to flipping of the image if needed
     ppr.pprint(scalex)
@@ -343,9 +343,9 @@ def SPATIAL(data):
     ax = fig.add_axes([0, 0, 1, 1])
     ax.axis('off')
     if (flip):
-      ax.imshow(np.flipud(spatial[library_id]["images"]["hires"]), interpolation='nearest')
+      ax.imshow(np.flipud(spatial[library_id]["images"][data['resolution']]), interpolation='nearest')
     else:
-      ax.imshow(spatial[library_id]["images"]["hires"], interpolation='nearest')
+      ax.imshow(spatial[library_id]["images"][data['resolution']], interpolation='nearest')
 
     figD = BytesIO()
     plt.savefig(figD, dpi=dpi)
