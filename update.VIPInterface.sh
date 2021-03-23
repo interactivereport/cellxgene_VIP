@@ -11,6 +11,7 @@ cp VIPInterface.py $strPath/server/app/.
 cp interface.html $strweb
 cp vip.env $strPath/server/app/. 2>/dev/null | true
 
+cp fgsea.R $strPath/server/app/.
 mkdir -p $strPath/server/app/gsea
 cp gsea/*gmt $strPath/server/app/gsea
 

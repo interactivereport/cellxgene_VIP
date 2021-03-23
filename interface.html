@@ -31,7 +31,7 @@
     <!-- for testing the VIP -->
     <script src="https://interactivereport.github.io/cellxgene_VIP/static/testVIP.js"></script>
     <!--  <script src="static/testVIP.js"></script> -->
-    <!--  end -->
+    <!-- end -->
     <style>
       .dropup,
       .dropdown {
@@ -535,7 +535,7 @@
       <button class="tablinks" onclick="selFun(event, 'SANK')">Sankey Diagram</button>
       <button class="tablinks" onclick="selFun(event, 'STACBAR')">Stacked Barplot</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
-      <button class="tablinks" onclick="selFun(event, 'DEG')">DEG</button>
+      <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1')">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')">Pre-Compu. DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
       <button class="tablinks" onclick="selFun(event, 'SPATIAL')">Spatial Transcriptomics</button>
@@ -1071,78 +1071,115 @@
     </div><!--SANK-->
 
     <div id="DEG" class="tabcontent">
-      <div id="DEGinput">
-        <h3>Find differentially expressed genes</h3>
-        <p>Group 1 (<span class="cellN1" style="color:red;">0</span>) cells and group 2 (<span class="cellN2" style="color:red;">0</span>) cells</p>
-        <p>Differentially expressed genes will be detected between the two cell gorups defined above, unless two categories of the 'Custom_combine' annotation are selected,
-        which enables DE analysis between those two:</p>
-        <p id="DEGgrp"></p>
-        <p>Select the number of top DEG:
-        <select id="DEGtop">
-          <option value=200>200</option>
-          <option value=500>500</option>
-          <option value=1000>1000</option>
-          <option value=5000>5000</option>
-          <option value='All'>All</option>
-        </select></p>
-        <p>Select the method:
-        <select id="DEGmethod">
-          <option value='default'>Welch's t-test (cellxgene)</option>
-          <option value='t-test'>Welch’s t-test (diffxpy)</option>
-          <option value='rank'>Wilcoxon rank sum (diffxpy)</option>
-          <option value='wald'>Wald test (diffxpy)</option>
-        </select></p>
-        <p>Select genes to be marked in the volcano plot:
-        <input type="checkbox" onclick="$('.DEGgenes').prop('checked', this.checked);">Uncheck / Check All</p>
-        <p id="DEGgene"></p>
-        <p>Define the significance in FDR &#62; <input id="DEGsigFDR" type="number" step="0.001" value="0.05" min="0" max="1"/>
-          and absolute logFC &#62; <input id="DEGsigLogfc" type="number" step="0.1" value="1" min="0"/> </p>
-        <p>Remove genes in volcano plot with the absolute log2(FC) larger than: <input id="DEGlogfcCut" type="number" step="1" value="10" min="0"/></p>
+      <div class="topTab">
+        <button id="DEGtopBT1" class="DEGtoplinks" onclick="selTop(event, 'DEGtop1','DEGtop')">DEG</button>
+        <button id="DEGtopBT2" class="DEGtoplinks" onclick="selTop(event, 'DEGtop2','DEGtop')">GSEA</button>
       </div>
 
-      <button class="DEGbt" onclick="DEGfind()"><b>Find</b></button>
-      <button onclick="hideShow($('#DEGinput'),$(this));">Hide Input</button>
-      <button id="DEGinteractiveBtn" onclick="hideShow($('#DEGfinal'),$(this),'Interactive');">Hide Interactive</button>
-      <pre id="DEGnote" style="color:red;">Note: Unscaled data is used. Scaling control in the Figure Option does not apply to DEG.</pre>
-      <label id='DEGinfo'></label>
-      <div id="DEGspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+      <div id="DEGtop1" class="DEGtopcontent">
+        <div id="DEGinput">
+          <h3>Find differentially expressed genes</h3>
+          <p>Group 1 (<span class="cellN1" style="color:red;">0</span>) cells and group 2 (<span class="cellN2" style="color:red;">0</span>) cells</p>
+          <p>Differentially expressed genes will be detected between the two cell gorups defined above, unless two categories of the 'Custom_combine' annotation are selected,
+          which enables DE analysis between those two:</p>
+          <p id="DEGgrp"></p>
+          <p>Select the number of top DEG:
+          <select id="DEGtop">
+            <option value=200>200</option>
+            <option value=500>500</option>
+            <option value=1000>1000</option>
+            <option value=5000>5000</option>
+            <option value='All'>All</option>
+          </select></p>
+          <p>Select the method:
+          <select id="DEGmethod">
+            <option value='default'>Welch's t-test (cellxgene)</option>
+            <option value='t-test'>Welch’s t-test (diffxpy)</option>
+            <option value='rank'>Wilcoxon rank sum (diffxpy)</option>
+            <option value='wald'>Wald test (diffxpy)</option>
+          </select></p>
+          <p>Select genes to be marked in the volcano plot:
+          <input type="checkbox" onclick="$('.DEGgenes').prop('checked', this.checked);">Uncheck / Check All</p>
+          <p id="DEGgene"></p>
+          <p>Define the significance in FDR &#62; <input id="DEGsigFDR" type="number" step="0.001" value="0.05" min="0" max="1"/>
+            and absolute logFC &#62; <input id="DEGsigLogfc" type="number" step="0.1" value="1" min="0"/> </p>
+          <p>Remove genes in volcano plot with the absolute log2(FC) larger than: <input id="DEGlogfcCut" type="number" step="1" value="10" min="0"/></p>
+          <fieldset>
+            <legend>Gene Set Enrichment Analysis:
+              <label class="switch"><input type="checkbox" id="GSEAenable" onclick="if($(this).prop('checked')){$('#GSEAopt').show()}else{$('#GSEAopt').hide()}">
+                <span class="slider"></span></label></legend>
+            <div id="GSEAopt" style="display:none;">
+              Please select the gene sets: <select id="GSEAgs" style="width:150px;"></select>
+              <a href="http://www.gsea-msigdb.org/gsea/msigdb/collections.jsp" target="_blank">Gene set definitions and more.</a>
+              <br>The gene sets with minimal size: <input id="GSEAminSize" type="number" step="1" value="15" min="1" />
+                and maximal size: <input id="GSEAmaxSize" type="number" step="1" value="500" min="1"/>
+              <br>The significant padj cutoff in the plot: <input id="GSEApadjCutoff" type="number" step="0.001" value="0.05" min="0" max="1"/>
+              <br>Plot the significant top (ranked by pval) up: <select id="GSEAupN">
+                <option value='0'>0</option><option value='5'>5</option><option value='10' selected>10</option><option value='50'>50</option></select>
+              and down: <select id="GSEAdnN">
+                <option value='0'>0</option><option value='5'>5</option><option value='10' selected>10</option><option value='50'>50</option></select>
+              <br>Collapse similar gene sets in the plot: <label class="switch"><input type="checkbox" id="GSEAcollapse" checked><span class="slider"></span></label>
+            </div>
+          </fieldset>
 
-      <div id="DEGfinal">
-        <select id="DEGplotBy">
-          <option value='color'>Color by</option>
-          <option value='label'>Label by</option>
-        </select>
-        <input type="radio" name="DEGcolorBy" value="significance" onclick="$('#DEGplotBySig').show();$('#DEGplotByGinfo').hide();$('#DEGplotByGsel').hide();" checked>Significance
-        <input type="radio" name="DEGcolorBy" value="geneInfo" onclick="$('#DEGplotBySig').hide();$('#DEGplotByGinfo').show();$('#DEGplotByGsel').hide();">Gene Information
-        <input type="radio" name="DEGcolorBy" value="selGene" onclick="$('#DEGplotBySig').hide();$('#DEGplotByGinfo').hide();$('#DEGplotByGsel').show();">Gene Selection
-        <div id="DEGplotBySig">
-          FDR: <input id="DEGfdr" type="number" step="0.001" value="0.05" min="0" max="1"/>
-          Asolute logFC: <input id="DEGlogfc" type="number" step="0.1" value="1" min="0"/>
         </div>
-        <div id="DEGplotByGinfo">
-          <select id="DEGplotByGinfoSel"></select>
-          <input type="radio" name="DEGplotByGinfoRd" value=">">Larger than
-          <input type="radio" name="DEGplotByGinfoRd" value="=" checked>Equal to
-          <input type="radio" name="DEGplotByGinfoRd" value="<">smaller than
-          <input id="DEGplotByGinfoVal" type="text"/>
+
+        <button class="DEGbt" onclick="DEGfind()"><b>Find</b></button>
+        <button onclick="hideShow($('#DEGinput'),$(this));">Hide Input</button>
+        <button id="DEGinteractiveBtn" onclick="hideShow($('#DEGfinal'),$(this),'Interactive');">Hide Interactive</button>
+        <pre id="DEGnote" style="color:red;">Note: Unscaled data is used. Scaling control in the Figure Option does not apply to DEG.</pre>
+        <label id='DEGinfo'></label>
+        <div id="DEGspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+
+        <div id="DEGfinal">
+          <select id="DEGplotBy">
+            <option value='color'>Color by</option>
+            <option value='label'>Label by</option>
+          </select>
+          <input type="radio" name="DEGcolorBy" value="significance" onclick="$('#DEGplotBySig').show();$('#DEGplotByGinfo').hide();$('#DEGplotByGsel').hide();" checked>Significance
+          <input type="radio" name="DEGcolorBy" value="geneInfo" onclick="$('#DEGplotBySig').hide();$('#DEGplotByGinfo').show();$('#DEGplotByGsel').hide();">Gene Information
+          <input type="radio" name="DEGcolorBy" value="selGene" onclick="$('#DEGplotBySig').hide();$('#DEGplotByGinfo').hide();$('#DEGplotByGsel').show();">Gene Selection
+          <div id="DEGplotBySig">
+            FDR: <input id="DEGfdr" type="number" step="0.001" value="0.05" min="0" max="1"/>
+            Asolute logFC: <input id="DEGlogfc" type="number" step="0.1" value="1" min="0"/>
+          </div>
+          <div id="DEGplotByGinfo">
+            <select id="DEGplotByGinfoSel"></select>
+            <input type="radio" name="DEGplotByGinfoRd" value=">">Larger than
+            <input type="radio" name="DEGplotByGinfoRd" value="=" checked>Equal to
+            <input type="radio" name="DEGplotByGinfoRd" value="<">smaller than
+            <input id="DEGplotByGinfoVal" type="text"/>
+          </div>
+          <div id="DEGplotByGsel">
+            <input type="checkbox" onclick="$('.DEGselgenes').prop('checked', this.checked);">Uncheck / Check All
+            <p id="DEGselgene"></p>
+          </div>
+          <div>
+            <button id="DEGfigReset">Reset Axes</button>
+            <button onclick="DEGplot('DEG')">Replot</button>
+            <p id="DEGinteractive" style="height: 500px; width:500px; padding: 0.5em; border: 1px solid #B6B6B6"></p>
+          </div>
         </div>
-        <div id="DEGplotByGsel">
-          <input type="checkbox" onclick="$('.DEGselgenes').prop('checked', this.checked);">Uncheck / Check All
-          <p id="DEGselgene"></p>
-        </div>
-        <div>
-          <button id="DEGfigReset">Reset Axes</button>
-          <button onclick="DEGplot('DEG')">Replot</button>
-          <p id="DEGinteractive" style="height: 500px; width:500px; padding: 0.5em; border: 1px solid #B6B6B6"></p>
+
+        <table id="DEGtable" class="display"></table>
+        <button onclick="ZoomIn('DEGresize')">Zoom In</button>
+        <button onclick="ZoomOut('DEGresize')">Zoom Out</button>
+        <button class="DEGpngBT" onclick="saveImg('DEGimg')" disabled>Save</button>
+        <div id="DEGresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6">
+          <p id="DEGfig"></p>
         </div>
       </div>
-      <table id="DEGtable" class="display"></table>
-      <button onclick="ZoomIn('DEGresize')">Zoom In</button>
-      <button onclick="ZoomOut('DEGresize')">Zoom Out</button>
-      <button class="DEGpngBT" onclick="saveImg('DEGimg')" disabled>Save</button>
-      <div id="DEGresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6">
-        <p id="DEGfig"></p>
+      <div id="DEGtop2" class="DEGtopcontent">
+        <h3>Gene Set Enrichment Analysis <span style="font-size:10px">by <a href="https://bioconductor.org/packages/release/bioc/html/fgsea.html" target="_blank">fgsea</a></span></h3>
+        <table id="GSEAtable" class="display"></table>
+        <button onclick="ZoomIn('GSEAresize')">Zoom In</button>
+        <button onclick="ZoomOut('GSEAresize')">Zoom Out</button>
+        <div id="GSEAresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6">
+          <p id="GSEAfig"></p>
+        </div>
+        <table id="GSEAtable" class="display"></table>
       </div>
+
     </div><!--DEG-->
 
     <div id="preDEGpanel" class="tabcontent">
@@ -1341,7 +1378,7 @@
     </div><!--IMG-->
 
     <div id="SPATIAL" class="tabcontent">
-      <h3>Spatial Functions</h3>
+      <h3>Overlay Spatial Expression</h3>
       <p>Choose cell set(s):
         <label><input class="SPATIALcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
         <label><input class="SPATIALcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
@@ -1352,9 +1389,6 @@
       <button onclick="document.getElementById('spatial-layer').remove();"><b>Remove Image</b></button>
       <pre id="SPATIALnote" style="color:red;"></pre>
       <div id="SPATIALspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <p>Image resolution:
-        <input type="radio" name="IMGresolution" value="hires" checked>High
-        <input type="radio" name="IMGresolution" value="lowres">Low </p>
       <p>Move embedding and image together:
         <input type="radio" name="IMGtogether" value="Yes" checked>Yes
         <input type="radio" name="IMGtogether" value="No">No </p>
@@ -1600,6 +1634,9 @@ function ZoomOut(strDiv){
   $("#"+strDiv).width(Math.max(10,r)+'%');
 }
 function showImg(eID,data){
+  if(data.length<5){
+    data = "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAEklEQVQYGWP4jwUwYBH7T6EgAG8TY53uGzeKAAAAAElFTkSuQmCC";
+  }
   if (['SGVfig','HEATfig'].includes(eID)) {
     document.getElementById(eID).innerHTML = '<img id="'+eID.replace('fig','img')+'" src="data:image/'+window.figOpt['img'].replace('svg','svg+xml')+';base64,'+data+'" width="100%" height="100%"/>';
   } else {
@@ -1695,6 +1732,24 @@ function addDescription(){
         },
         error: function(request,status,error){
           console.log(request.status+': cannot get description ...');
+        }
+      });
+}
+function getGSEA(){
+  $.ajax({
+        type: "POST",
+        url: VIPurl,
+        data:JSON.stringify({'method':"GSEAgs",'dataset': window.store.getState().config.displayNames.dataset+'.h5ad'}),
+        contentType: 'application/json;charset=UTF-8',
+        success: function(res){
+          if(res.length==0) return;
+          resD = JSON.parse(res);
+          for(const one of resD){
+            $('#GSEAgs').append(createOpt(one));
+          }
+        },
+        error: function(request,status,error){
+          console.log(request.status+': cannot get gsea information ...');
         }
       });
 }
@@ -1958,6 +2013,9 @@ function init(){
       //Add Description
       addDescription();
 
+      //get GSEA Information
+      getGSEA();
+
       //for pre-computed DEG
       enablePreDEG();
 
@@ -1966,6 +2024,7 @@ function init(){
 
       //for VIP test
       enableVIPtest();
+
 
     });
     window.bioInit=true;
@@ -2852,7 +2911,6 @@ function SPATIAL(){
             'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'spots':spots,
             'embedding':state.layoutChoice.current,
-            'resolution': $("input[name='IMGresolution']:checked").val(),
             'figOpt':window.figOpt};
   $(".SPATIALbt").prop('disabled',true);
   document.getElementById("SPATIALspin").style.visibility="visible";
@@ -2870,6 +2928,8 @@ function SPATIAL(){
         return;
       }
       resD = JSON.parse(res);
+      var translatex = -(1+resD[0][0].translatex);
+      var translatey = 1+resD[0][0].translatey;
       var scale = resD[0][0].scale;
 
       var element = $('#canvas-transformation-group-x').parent()[0];
@@ -2877,7 +2937,7 @@ function SPATIAL(){
       var trans = 'translate(' +document.getElementById("graph-wrapper").offsetParent.offsetLeft+ ',0) matrix('+mtx.a+','+mtx.b+','+mtx.c+','+mtx.d+','+mtx.e+','+mtx.f+')';
 
 
-      $("body").append('<svg id="spatial-layer" width="' +element.attributes.width.value+ '" height="' +element.attributes.height.value+ '" pointer-events="none" style="position:relative;opacity:0.75;z-index:0"><g id="spatial-transform-layer" transform="' +trans+ '"><g id="spatial-image-layer" transform="translate(' +resD[0][0].translatex+ ',' +resD[0][0].translatey+ ')"><image transform="matrix(' +scale+ ',0,0,-' +scale+ ',0,0)" href="data:image/png;base64,' +resD[1]+ '"></image></g></g></svg>');
+      $("body").append('<svg id="spatial-layer" width="' +element.attributes.width.value+ '" height="' +element.attributes.height.value+ '" pointer-events="none" style="position:relative;opacity:0.75;z-index:0"><g id="spatial-transform-layer" transform="' +trans+ '"><g id="spatial-image-layer" transform="translate(' +translatex+ ',' +translatey+ ')"><image transform="matrix(' +scale+ ',0,0,-' +scale+ ',0,0)" href="data:image/png;base64,' +resD[1]+ '"></image></g></g></svg>');
 
       //      showImg('SPATIALfig',resD[1]);
     },
@@ -3544,6 +3604,14 @@ function DEGfind(){
            'logFC':$("#DEGlogfcCut").val(),
            'sigFDR':$("#DEGsigFDR").val(),
            'sigFC':$("#DEGsigLogfc").val(),
+           'gsea':{'enable':$('#GSEAenable').prop('checked'),
+                   'gs':$('#GSEAgs').val(),
+                   'gsMin':$('#GSEAminSize').val(),
+                   'gsMax':$('#GSEAmaxSize').val(),
+                   'padj':$('#GSEApadjCutoff').val(),
+                   'up':$('#GSEAupN').val(),
+                   'dn':$('#GSEAdnN').val(),
+                   'collapse':$('#GSEAcollapse').prop('checked')},
            'figOpt':window.figOpt}
   const [combGrp,combName] = DEGselCells();
   var cells = {};
@@ -3571,6 +3639,11 @@ function DEGfind(){
   document.getElementById("DEGspin").style.visibility="visible";
   $(".DEGbt").prop('disabled',true);
   $(".DEGpngBT").prop('disabled',true);
+  $('#DEGtable').empty();
+  $('#GSEAtable').empty();
+  showImg('DEGfig',"");
+  showImg('GSEAfig',"");
+  $("#DEGinteractive").html("");
   $.ajax({
     type:"POST",
     url: VIPurl,
@@ -3580,7 +3653,6 @@ function DEGfind(){
       document.getElementById("DEGspin").style.visibility="hidden";
       $(".DEGbt").prop("disabled",false);
       $(".DEGpngBT").prop('disabled',false);
-      $('#DEGtable').empty();
 
       if(res.startsWith('ERROR')){
         $('#DEGnote').text(res);
@@ -3620,14 +3692,13 @@ function DEGfind(){
       var table = $('#DEGtable').DataTable({
         destroy: true,
         dom:'Blfrtip',
-        lengthMenu:[[10,50,100,200,-1],[10,50,100,200,"All"]],
+        lengthMenu:[[10,50,100,200],[10,50,100,200]],
         order:[[3,"asc"]],
         buttons:['csv'],
         data:tableD,
         columns:tableTitle
       });
       showImg('DEGfig',resD[1]);
-
       $('#DEGtable tbody').on('click',"tr",function(){
         var data = table.row(this).data();
         //alert('Your clicked on '+data[0]+" row");
@@ -3639,10 +3710,33 @@ function DEGfind(){
         }
         $('#DEGnote').text("Selected genes: "+genes.join(", "));
       });
+
+      // process GSEA
+      showImg('GSEAfig',resD[3]);
+      var gseaTable = d3.csvParse(resD[2],function(data){
+        return [].concat([data.pathway,
+                  data.pval.length===0? 1:(+data.pval).toExponential(2),
+                  data.padj.length===0? 1:(+data.padj).toExponential(2),
+                  data.ES.length===0? 'NaN':(+data.ES).toFixed(2),
+                  data.NES.length===0? 'NaN':(+data.NES).toFixed(2)],
+                  Object.values(data).slice(5));
+      });
+      var gseaTitle = [];
+      [].concat(resD[2].substring(0,500).
+        split("\n")[0].split(',').
+        forEach(function(d){gseaTitle=gseaTitle.concat({title:d.replace('pval','p value').replace('padj','adjusted p value')})}));
+      var gTable = $('#GSEAtable').DataTable({
+        destroy: true,
+        dom:'Blfrtip',
+        lengthMenu:[[10,50,100,200],[10,50,100,200]],
+        order:[[1,"asc"]],
+        buttons:['csv'],
+        data:gseaTable,
+        columns:gseaTitle
+      });
     },
     error: function(request,status,error){
       $('#DEGnote').text(request.status+request.responseText);
-      $('#DEGtable').empty();
       document.getElementById("DEGspin").style.visibility="hidden";
       $(".DEGbt").prop("disabled",false);
     }
