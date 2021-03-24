@@ -310,7 +310,7 @@ def SPATIAL(data):
 
     embedding = 'X_'+data['embedding']
     spatialxy = scD.data.obsm[embedding]
-    tissue_hires_scalef = spatial[library_id]['scalefactors']['tissue_' + data['resolution'] + '_scalef']
+    tissue_scalef = spatial[library_id]['scalefactors']['tissue_' + data['resolution'] + '_scalef']
     i = data['spots']['spoti_i']
     x = 0
     y = 1
