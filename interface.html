@@ -30,7 +30,7 @@
     <!-- <script src="static/saveVIP.js"></script> -->
     <!-- for testing the VIP -->
     <script src="https://interactivereport.github.io/cellxgene_VIP/static/testVIP.js"></script>
-    <!--  <script src="static/testVIP.js"></script> -->
+    <!--  <script src="static/testVIP.js"></script>-->
     <!--  end -->
     <style>
       .dropup,
@@ -546,7 +546,7 @@
       <button class="tablinks" onclick="selFun(event, 'IMG')">Figure Option</button>
       <button class="tablinks" onclick="selFun(event, 'ABBR')">Comb. & Abbr.</button>
       <button class="tablinks" onclick="saveLocal()">Save Session</button>
-      <button class="tablinks" onclick="inputClick()">Load Session</button>
+      <button class="tablinks" onclick="selFun(event, 'LOAD')">Load Session</button>
       <button class="tablinks" onclick="ABBRall()">Check All Annotations</button>
       <button class="tablinks" onclick="selFun(event, 'BRUSH');">Brush</button>
       <button class="tablinks" onclick="sync();">Sync</button>
@@ -556,7 +556,6 @@
   <div id="separator" ></div>
   <div id="panel-right" >
 
-    <input id="loadfile" type="file" onchange="load()" style="display:none"/>
     <div id="ABBR" class="tabcontent"> <!-- Abbreviation -->
       <h3>Create a combinatorial annotation</h3>
       <ol type="1">
@@ -1106,7 +1105,7 @@
           <p>Remove genes in volcano plot with the absolute log2(FC) larger than: <input id="DEGlogfcCut" type="number" step="1" value="10" min="0"/></p>
           <fieldset>
             <legend>Gene Set Enrichment Analysis:
-              <label class="switch"><input type="checkbox" id="GSEAenable" onclick="if($(this).prop('checked')){$('#GSEAopt').show()}else{$('#GSEAopt').hide()}">
+              <label class="switch"><input type="checkbox" id="GSEAenable" onclick="if($(this).prop('checked')){$('#GSEAopt').show()}else{$('#GSEAopt').hide()}"/>
                 <span class="slider"></span></label></legend>
             <div id="GSEAopt" style="display:none;">
               Please select the gene sets: <select id="GSEAgs" style="width:150px;"></select>
@@ -1289,7 +1288,7 @@
           <label><input class="STACBARcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="STACBARcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose two genes ('Add Genes' first):</p>
+        <p>Choose two from genes and annotations ('Add Genes' first):</p>
         <p id="STACBARgene"></p>
         <div id='STACBARgeneSel'>
           <p>Number of equally divided gene expression ranges: <input id="STACBARbin" type="number" step="1" value="5"/></p>
@@ -1315,7 +1314,7 @@
     <div id="IMG" class="tabcontent">
       <h3>Global setting for VIP</h3>
       <p>Selecting cells cumulatively:
-        <label class="switch"><input type="checkbox" onclick="IMGcellSel($(this))"><span class="slider"></span></label>
+        <label class="switch"><input type="checkbox" id="IMGcumuCK" onclick="IMGcellSel($(this))"><span class="slider"></span></label>
         &nbsp;&nbsp;&nbsp;&nbsp;<button onclick="IMGcellClear()">Clear</button>Cumulation</p>
       <div>
         <p>Scale data to unit variance for plotting:
@@ -1485,15 +1484,30 @@
       </fieldset>
       <div id="tVIPnote"></div>
     </div>
-  </div>
 
+    <div id="LOAD" class="tabcontent">
+      <h3>Load saved session</h3>
+      Load from a url?
+      <label class="switch"><input type="checkbox" id="LOADurlCK" onclick="if($(this).prop('checked')){$('#LOADurlDIV').show()}else{$('#LOADurlDIV').hide()}"/>
+        <span class="slider"></span></label>
+      <div id='LOADurlDIV' style="display:none;">
+        <input type="url" id="LOADurl" size=80/>
+        <input id="loadfile" type="file" onchange="load()" style="display:none"/>
+      </div>
+      <br>Run plotting after loading?
+      <label class="switch"><input type="checkbox" id="LOADplotCK"/>
+        <span class="slider"></span></label>
+      <br><button onclick="loadClick()">load</button>
+      <div id="LOADnote"></div>
+    </div>
+  </div>
 </div>
 
 <script type="text/javascript">
 var heatCell = 10000;
 var editor;
 var VIPurl = '';
-var uniqID = 'oyoung';
+var uniqID = 'VIPtesting';
 var loadingCycle = 0;
 
 function printNotebook(){
@@ -1729,6 +1743,9 @@ function addDescription(){
             }
             if(one.startsWith("Initial Coloring")){
               window.store.dispatch({type: "color by categorical metadata", colorAccessor: one.split(":")[1].trim()});
+            }
+            if(one.startsWith("Initial Session")){
+              $("#LOADurl").val(one.split(/:(.+)/)[1].trim());
             }
           }
           window.store.dispatch({type: "show centroid labels for category", showLabels: true});
@@ -4614,6 +4631,7 @@ function saveContent(){
   content['radio'] = radioSave();
   content['number'] = numberSave();
   content['sortable'] = sortableSave();
+  content['eID'] = eIDsave(['GSEAenable','IMGcumuCK','GSEAcollapse']);
   return content;
 }
 function saveLocal(){
@@ -4624,15 +4642,33 @@ function saveLocal(){
   hiddenE.download='cellxgene.'+window.store.getState().config.displayNames.dataset+'.info.txt';
   hiddenE.click();
 }
-function inputClick(){
-  sync();
-  $("#loadfile").trigger('click');
+function loadClick(){
+  if($("#LOADurlCK").prop('checked')){
+    testVIPgetData($("#LOADurl").val(),urlload);
+  }else{
+    $("#loadfile").trigger('click');
+  }
+}
+function urlload(){
+  var content = JSON.parse(decodeURIComponent(this.responseText));
+  loadexe(content);
+  $("#LOADnote").html("Session was loaded<br>");
+  if($("#LOADplotCK").prop('checked')){
+    DEGfind();
+    randomPlot('LOADnote',bSaved=false);
+  }
 }
 function load(){
   var reader = new FileReader();
   reader.onload=function(ev){
     var content = JSON.parse(decodeURIComponent(ev.target.result));
     loadexe(content);
+    $("#LOADnote").html("Session was loaded<br>");
+    $("#loadfile").val('');
+    if($("#LOADplotCK").prop('checked')){
+      DEGfind();
+      randomPlot('LOADnote',bSaved=false);
+    }
   };
   reader.readAsText($("#loadfile")[0].files[0]);
 }
@@ -4650,6 +4686,7 @@ function loadexe(content){
   radioLoad(content['radio']);
   numberLoad(content['number']);
   sortableLoad(content['sortable']);
+  eIDload(content['eID']);
 }
 // test the VIP
 function tVIPcreate(act,eID){
