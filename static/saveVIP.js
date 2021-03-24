@@ -66,11 +66,14 @@ function checkSave(){
 }
 function checkLoad(v){
   for(const cID of Object.keys(v)){
+    $("."+cID).prop("checked",false);
     for(const one of $("."+cID)){
-      if(v[cID].includes(one.value)){
-        one.checked=false;
-      }else{
-        one.checked=true;
+      if(!v[cID].includes(one.value)){
+        if($(one).prop('disabled')){
+          break;
+        }else{
+          $(one).trigger('click');
+        }
       }
     }
   }

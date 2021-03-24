@@ -219,6 +219,7 @@ function randomPlotOne(imgID,strBT,nTimes,eID,bSaved){
     setTimeout(randomPlotOne,500,imgID,strBT,nTimes+1,eID,bSaved);
   }else{
     if(strBT.length==0){
+      testVIPhtmladd(eID,"<br>Plotting is completed<br>");
       if(bSaved){
         setTimeout(randomSave,500,eID);
       }
