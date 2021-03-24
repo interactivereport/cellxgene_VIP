@@ -12,6 +12,9 @@
         }
       }
     </script>
+    <link rel="stylesheet" type="text/css" href="https://interactivereport.github.io/cellxgene_VIP/static/gridstack/gridstack.min.css">
+    <link rel="stylesheet" type="text/css" href="https://interactivereport.github.io/cellxgene_VIP/static/gridstack/gridstack-extra.min.css">
+    <script src="https://interactivereport.github.io/cellxgene_VIP/static/gridstack/gridstack-h5.js"></script>
     <!-- for datatables -->
     <link rel="stylesheet" type="text/css" href="https://interactivereport.github.io/cellxgene_VIP/static/DataTables/datatables.min.css">
     <script src="https://interactivereport.github.io/cellxgene_VIP/static/jquery-ui.min.js"></script>
@@ -515,6 +518,14 @@
         -webkit-transform: translateX(18px);
         -ms-transform: translateX(18px);
         transform: translateX(18px);
+      }
+      .grid-stack {
+        background: #FAFAD2;
+      }
+      .grid-stack-item-content {
+        color: #2c3e50;
+        text-align: center;
+        background-color: #18bc9c;
       }
     </style>
   </head>
@@ -1401,6 +1412,7 @@
 
       <p><input type="range" min="0" max="1" value="0.75" step="0.05" id="image_opacity" oninput="SpatialIMGopacity(this.value);"> Image Opacity: <span id="image_opacity_val">0.75</span></p>
       <p><input type="range" min="0" max="1" value="1" step="0.05" id="embedding_opacity" oninput="SpatialEMBopacity(this.value);"> Embedding Opacity: <span id="embedding_opacity_val">1</span></p>
+      <div class="grid-stack"></div>
     </div><!--SPATIAL-->
 
     <div id="BRUSH" class="tabcontent">
@@ -2946,7 +2958,21 @@ function SPATIAL(){
   });
 }
 
-function SPATIALarranhge() {
+function SPATIALarrange() {
+  let grid = GridStack.init({minRow: 1, cellHeight: 200,resizable: {autoHide: true, handles: 'none'},float: true});
+  grid.column(6, 'moveScale');
+  grid.removeAll();
+  for (i=0;i<6;i++) {
+      n= {};
+      n.x = i*1;
+      n.y = 0;
+      n.w = 1;
+      n.h = 1;
+      n.text = 'dsdsdhhds_dsdsd_hello1';
+      n.content = '<button onClick="grid.removeWidget(this.parentNode.parentNode)">X</button><br><div style="word-break:break-all;">' + (n.text ? n.text : '') + '</div><img src="https://umap-learn.readthedocs.io/en/latest/_images/clustering_6_1.png" width=100% height=80%>';
+console.log(n);
+      grid.addWidget(n);
+  }
 }
 
 function SPATIALspots(embedding){
