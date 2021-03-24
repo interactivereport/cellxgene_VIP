@@ -268,6 +268,7 @@ def distributeTask(aTask):
     'isMeta': isMeta,
     'testVIPready':testVIPready,
     'Description':getDesp,
+    'GSEAgs':getGSEA,
 	'SPATIAL':SPATIAL,
     'saveTest':saveTest
   }.get(aTask,errorTask)
@@ -309,7 +310,7 @@ def SPATIAL(data):
 
     embedding = 'X_'+data['embedding']
     spatialxy = scD.data.obsm[embedding]
-    tissue_scalef = spatial[library_id]['scalefactors']['tissue_' + data['resolution'] + '_scalef']
+    tissue_hires_scalef = spatial[library_id]['scalefactors']['tissue_' + data['resolution'] + '_scalef']
     i = data['spots']['spoti_i']
     x = 0
     y = 1
@@ -624,6 +625,10 @@ def GD(data):
   sc.pl.violin(adata,cutOff,groupby='cellGrp',ax=fig.gca(),show=False,rotation=0,size=2)
   return iostreamFig(fig)
 
+def getGSEA(data):
+  strGSEA = '%s/gsea/'%strExePath
+  return json.dumps(sorted([os.path.basename(i).replace(".symbols.gmt","") for i in glob.glob(strGSEA+"*.symbols.gmt")]))
+
 def DEG(data):
   adata = None;
   genes = data['genes']
@@ -698,11 +703,34 @@ def DEG(data):
   deg.to_csv(strF,index=False)
   #ppr.pprint([strExePath+'/volcano.R',strF,'"%s"'%';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]])
   res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],str(data['sigFDR']),str(data['sigFC']),data['Rlib']],capture_output=True)#
-  img = res.stdout.decode('utf-8')
-  os.remove(strF)
   if 'Error' in res.stderr.decode('utf-8'):
-    raise SyntaxError("in R: "+res.stderr.decode('utf-8'))
+    raise SyntaxError("in volcano.R: "+res.stderr.decode('utf-8'))
+  img = res.stdout.decode('utf-8')
 
+  # GSEA
+  GSEAimg=""
+  GSEAtable=pd.DataFrame()
+  if data['gsea']['enable']:
+    res = subprocess.run([strExePath+'/fgsea.R',
+                          strF,
+                          '%s/gsea/%s.symbols.gmt'%(strExePath,data['gsea']['gs']),
+                          str(data['gsea']['gsMin']),
+                          str(data['gsea']['gsMax']),
+                          str(data['gsea']['padj']),
+                          data['gsea']['up'],
+                          data['gsea']['dn'],
+                          str(data['gsea']['collapse']),
+                          data['figOpt']['img'],
+                          str(data['figOpt']['fontsize']),
+                          str(data['figOpt']['dpi']),
+                          data['Rlib']],capture_output=True)#
+    if 'Error' in res.stderr.decode('utf-8'):
+        raise SyntaxError("in fgsea.R: "+res.stderr.decode('utf-8'))
+    GSEAimg = res.stdout.decode('utf-8')
+    GSEAtable = pd.read_csv(strF)
+    GSEAtable['leadingEdge'] = GSEAtable['leadingEdge'].apply(lambda x:'|'.join(x.split('|')[:10]))
+
+  os.remove(strF)
   #####
   gInfo = getVar(data)
   deg.index = deg['gene']
@@ -714,8 +742,9 @@ def DEG(data):
   #deg.loc[:,'log2fc'] = deg.loc[:,'log2fc'].apply(lambda x: '%.2f'%x)
   #deg.loc[:,'pval'] = deg.loc[:,'pval'].apply(lambda x: '%.4E'%x)
   #deg.loc[:,'qval'] = deg.loc[:,'qval'].apply(lambda x: '%.4E'%x)
-
-  return json.dumps([deg.to_csv(),img])#json.dumps([deg.values.tolist(),img])
+  #ppr.pprint(GSEAtable)
+  #ppr.pprint(GSEAtable.sort_values('pval'))
+  return json.dumps([deg.to_csv(),img,GSEAtable.to_csv(index=False),GSEAimg])#json.dumps([deg.values.tolist(),img])
 
 def DOT(data):
   #ppr.pprint("DOT, starting ...")
