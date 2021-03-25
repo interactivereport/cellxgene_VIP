@@ -72,8 +72,8 @@ R -q -e 'if(!require(Seurat)) devtools::install_version("Seurat",version="3.2.3"
 R -q -e 'if(!require(rmarkdown)) devtools::install_version("rmarkdown",version="2.5",repos = "http://cran.us.r-project.org")'
 R -q -e 'if(!require(tidyverse)) devtools::install_version("tidyverse",version="1.3.0",repos = "http://cran.us.r-project.org")'
 R -q -e 'if(!require(viridis)) devtools::install_version("viridis",version="0.5.1",repos = "http://cran.us.r-project.org")'
-R -q -e 'if(!require(BiocManager)) devtools::install_version("BiocManager",version="1.30.10",repos = "http://cran.us.r-project.org”)’
-R -q -e 'if(!require(fgsea)) BiocManager::install("fgsea")’
+R -q -e 'if(!require(BiocManager)) devtools::install_version("BiocManager",version="1.30.10",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(fgsea)) BiocManager::install("fgsea")'
 
 # These should be already installed as dependencies of above packages
 R -q -e 'if(!require(dbplyr)) devtools::install_version("dbplyr",version="1.0.2",repos = "http://cran.us.r-project.org")'
