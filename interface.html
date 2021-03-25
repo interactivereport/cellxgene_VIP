@@ -2962,6 +2962,29 @@ function SPATIALarrange() {
   let grid = GridStack.init({minRow: 1, cellHeight: 200,resizable: {autoHide: true, handles: 'none'},float: true});
   grid.column(6, 'moveScale');
   grid.removeAll();
+
+  var D = {'method':'SPATIAL',
+            'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+            'embedding': 'get_spatial_list',
+            'figOpt':window.figOpt};
+  $.ajax({
+    type:"POST",
+    url: VIPurl,
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',
+    success: function(res){
+      if(res.startsWith('ERROR')){
+        $('#SPATIALnote').text(res);
+        return;
+      }
+      var resD = JSON.parse(res);
+console.log(resD);
+    },
+    error: function(request,status,error){
+      $('#SPATIALnote').text(request.status+request.responseText);
+    }
+  });
+/*
   for (i=0;i<6;i++) {
       n= {};
       n.x = i*1;
@@ -2973,6 +2996,7 @@ function SPATIALarrange() {
 console.log(n);
       grid.addWidget(n);
   }
+*/
 }
 
 function SPATIALspots(embedding){

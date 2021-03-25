@@ -302,6 +302,8 @@ def SPATIAL(data):
   with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
     #ppr.pprint(vars(scD.data.uns["spatial"]))
     spatial=scD.data.uns["spatial"]
+    if (data['embedding'] == "get_spatial_list"):
+      return json.dumps({'list':list(spatial)})
     library_id=list(spatial)[0]
     if (data['embedding'] in list(spatial)):
       library_id=data['embedding']
