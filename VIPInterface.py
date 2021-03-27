@@ -1367,7 +1367,7 @@ def mergeMeta(data):
       selCells += [ad.read(strOne)]
   strOut = data['METAtmp']+"/"+os.path.basename(strPath)+"_"+data['metaPostfix']+".h5ad"
   ad.concat(selCells).write(strOut)
-  return data['METAurl']+"/d/"+os.path.basename(strOut)
+  return data['METAurl']+"/d/"+os.path.basename(strOut)+"/"
 
 def isMeta(data):
   with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
