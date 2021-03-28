@@ -1419,9 +1419,9 @@
         <p><input type="range" min="0" max="1" value="1" step="0.05" id="embedding_opacity" oninput="SpatialEMBopacity(this.value);"> Embedding Opacity: <span id="embedding_opacity_val">1</span></p>
       </div>
       <div id="SPATIALlayoutV" class="SPATIALcontent">
-        <button onclick="SPATIALarrange()"><b>Arrange Slides</b></button>
+        <button class="SPATIALbt" onclick="SPATIALarrange()"><b>Arrange Slides</b></button>
         <button onclick="saveLayout()"><b>Save Layout</b></button>
-        <p>Click to select a image: <span id="selected_image"></span></p>
+        <p>Click on an image to operate: <span id="selected_image"></span></p>
         <p><input type="checkbox" id="flipx" onclick="SpatialIMGman();"> Flip X
            <input type="checkbox" id="flipy" onclick="SpatialIMGman();"> Flip Y
            <input type="range" style="width:50;" min="0" max="270" value="0" step="90" id="image_rotate" oninput="SpatialIMGman();"> Rotate: <span id="image_rotate_val">0</span> degree</p>
@@ -2983,6 +2983,9 @@ function SPATIALarrange() {
   grid.column(6, 'moveScale');
   grid.removeAll();
 
+  $(".SPATIALbt").prop('disabled',true);
+  document.getElementById("SPATIALspin").style.visibility="visible";
+
   var D = {'method':'SPATIAL',
             'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'embedding': 'get_spatial_list',
@@ -3012,8 +3015,6 @@ function SPATIALarrange() {
                     'row':i,
                     'col':j,
                     'figOpt':window.figOpt};
-          $(".SPATIALbt").prop('disabled',true);
-          document.getElementById("SPATIALspin").style.visibility="visible";
           $.ajax({
             type:"POST",
             url: VIPurl,
@@ -3027,11 +3028,10 @@ function SPATIALarrange() {
                 return;
               }
               var resD = JSON.parse(res);
-console.log(JSON.parse(this.data));
               var input = JSON.parse(this.data);
               var n={};
-              n.x=input.row;
-              n.y=input.col;
+              n.x=input.col;
+              n.y=input.row;
               n.w=1;
               n.h=1;
               n.text=input.embedding.replace("spatial_","");
@@ -3039,7 +3039,6 @@ console.log(JSON.parse(this.data));
               var el = grid.addWidget(n);
               $('#'+n.text + '_content').click (function(){
                 var trans =  $('#'+ n.text + '_img')[0].style.transform;
-console.log(trans);
                 trans.match(/scaleX/) ? $("#flipx").prop( "checked", true ) : $("#flipx").prop( "checked", false ) ;
                 trans.match(/scaleY/) ? $("#flipy").prop( "checked", true ) : $("#flipy").prop( "checked", false ) ;
                 if (trans.match(/([0-9]+)deg/)) {
@@ -4768,7 +4767,13 @@ function saveLayout(){
 
   var content = '{"total":' + nodes.length + ',"layout":[';
   for (var i=0; i<nodes.length; i++) {
-    content += '{"name":"' + nodes[i].text +'","x":'+nodes[i].x+',"y":'+nodes[i].y+'},';
+    content += '{"name":"' + nodes[i].text +'","x":'+nodes[i].x+',"y":'+nodes[i].y+',';
+    var trans =  $('#'+ nodes[i].text + '_img')[0].style.transform;
+    trans.match(/scaleX/) ? content += '"flipx":1,' : content += '"flipx":0,' ;
+    trans.match(/scaleY/) ? content += '"flipy":1,' : content += '"flipy":0,' ;
+    var rot=0;
+    if (trans.match(/([0-9]+)deg/)) var rot = RegExp.$1;
+    content += '"rotate":' +rot+ '},';
   }
   content = content.slice(0,-1) + ']}';
   console.log(JSON.parse(content));
