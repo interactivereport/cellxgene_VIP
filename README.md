@@ -43,7 +43,7 @@ whole or sliced single cell dataset.
 bash ~/Downloads/Anaconda3-2020.02-Linux-x86_64.sh
 ```
 
-## 2. create and enable conda environment
+## 2. Create and enable conda environment
 ``` bash
 git clone https://github.com/interactivereport/cellxgene_VIP.git
 cd cellxgene_VIP
@@ -61,7 +61,7 @@ source activate <env name>
 ## 4. Install R packages
 ```bash
 export LIBARROW_MINIMAL=false
-#  ensure that the right installation of R is used. e.g. system-wide: /bin/R or /usr/bin/R ; local R under conda: ~/.conda/envs/VIP_conda_R/bin/R
+#  ensure that the right instance of R is used. e.g. system-wide: /bin/R or /usr/bin/R ; local R under conda: ~/.conda/envs/VIP_conda_R/bin/R
 which R
 
 R -q -e 'if(!require(devtools)) install.packages("devtools",repos = "http://cran.us.r-project.org")'
