@@ -92,7 +92,6 @@ dependencies:
     - boto3==1.14.39
     - botocore==1.17.44
     - brotli==1.0.9
-    - cellxgene==0.16.7
     - cffi==1.14.4
     - chardet==4.0.0
     - click==7.1.2
