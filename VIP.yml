@@ -1,4 +1,4 @@
-name: scPortal_py3.8
+name: VIP_py3.8_pandoc
 channels:
   - conda-forge
   - defaults
@@ -8,8 +8,12 @@ dependencies:
   - backports=1.0
   - backports.functools_lru_cache=1.6.1
   - ca-certificates=2020.12.5
+  - cairo=1.16.0
   - certifi=2020.12.5
   - decorator=4.4.2
+  - fontconfig=2.13.1
+  - freetype=2.10.4
+  - glib=2.68.0
   - gmp=6.2.1
   - icu=64.2
   - ipykernel=5.4.3
@@ -20,37 +24,62 @@ dependencies:
   - jupyter_client=6.1.11
   - jupyter_core=4.7.1
   - ld_impl_linux-64=2.33.1
+  - leidenalg=0.8.3
   - libedit=3.1.20191231
   - libffi=3.3
   - libgcc-ng=9.1.0
+  - libgfortran-ng=7.5.0
+  - libgfortran4=7.5.0
+  - libiconv=1.16
+  - libpng=1.6.37
   - libsodium=1.0.18
   - libstdcxx-ng=9.1.0
+  - libuuid=2.32.1
   - libuv=1.34.0
+  - libxcb=1.13
+  - libxml2=2.9.10
   - ncurses=6.2
   - nodejs=13.13.0
   - oniguruma=6.9.6
   - openssl=1.1.1h
   - pandoc=2.5
   - parso=0.8.1
+  - pcre=8.44
   - pexpect=4.8.0
   - pickleshare=0.7.5
   - pip=20.3.3
+  - pixman=0.38.0
   - prompt-toolkit=3.0.14
+  - pthread-stubs=0.4
   - ptyprocess=0.7.0
+  - pycairo=1.20.0
   - pygments=2.7.4
   - python=3.8.5
   - python-dateutil=2.8.1
+  - python-igraph=0.8.2
   - python_abi=3.8
   - pyzmq=20.0.0
   - readline=8.1
   - setuptools=52.0.0
   - six=1.15.0
   - sqlite=3.33.0
+  - texttable=1.6.3
   - tk=8.6.10
   - tornado=6.1
   - traitlets=5.0.5
   - wcwidth=0.2.5
   - wheel=0.36.2
+  - xorg-kbproto=1.0.7
+  - xorg-libice=1.0.10
+  - xorg-libsm=1.2.3
+  - xorg-libx11=1.6.12
+  - xorg-libxau=1.0.9
+  - xorg-libxdmcp=1.1.3
+  - xorg-libxext=1.3.4
+  - xorg-libxrender=0.9.10
+  - xorg-renderproto=0.11.1
+  - xorg-xextproto=7.3.0
+  - xorg-xproto=7.0.31
   - xz=5.2.5
   - zeromq=4.3.3
   - zlib=1.2.11
@@ -63,7 +92,7 @@ dependencies:
     - boto3==1.14.39
     - botocore==1.17.44
     - brotli==1.0.9
-    - cellxgene==0.16.4
+    - cellxgene==0.16.7
     - cffi==1.14.4
     - chardet==4.0.0
     - click==7.1.2

@@ -44,6 +44,7 @@ dependencies:
   - jupyter_core=4.7.1
   - krb5=1.17.2
   - ld_impl_linux-64=2.33.1
+  - leidenalg=0.8.3
   - libblas=3.9.0
   - libcblas=3.9.0
   - libcurl=7.71.1
@@ -88,10 +89,12 @@ dependencies:
   - prompt-toolkit=3.0.14
   - pthread-stubs=0.4
   - ptyprocess=0.7.0
+  - pycairo=1.20.0
   - pycparser=2.20
   - pygments=2.7.4
   - python=3.8.5
   - python-dateutil=2.8.1
+  - python-igraph=0.8.2
   - python_abi=3.8
   - pyzmq=20.0.0
   - r-base=3.6.3
@@ -102,6 +105,7 @@ dependencies:
   - simplegeneric=0.8.1
   - six=1.15.0
   - sqlite=3.33.0
+  - texttable=1.6.3
   - tk=8.6.10
   - tktable=2.10
   - tornado=6.1
@@ -127,13 +131,14 @@ dependencies:
   - pip:
     - aniso8601==8.1.1
     - anndata==0.7.4
+    - async-generator==1.10
     - attrs==20.3.0
     - batchglm==0.7.4
     - bleach==3.2.3
     - boto3==1.14.39
     - botocore==1.17.44
     - brotli==1.0.9
-    - cellxgene==0.16.4
+    - cellxgene==0.16.7
     - chardet==4.0.0
     - click==7.1.2
     - cycler==0.10.0
@@ -162,6 +167,7 @@ dependencies:
     - jmespath==0.10.0
     - joblib==1.0.0
     - jsonschema==3.2.0
+    - jupyterlab-pygments==0.1.2
     - jupytext==1.6.0
     - kiwisolver==1.3.1
     - legacy-api-wrap==1.2
@@ -170,8 +176,10 @@ dependencies:
     - matplotlib==3.3.4
     - mistune==0.8.4
     - natsort==7.1.1
+    - nbclient==0.5.2
     - nbconvert==5.6.1
     - nbformat==5.1.2
+    - nest-asyncio==1.5.1
     - networkx==2.5
     - numba==0.52.0
     - numexpr==2.7.2
