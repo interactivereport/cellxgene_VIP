@@ -178,11 +178,19 @@ function stackedBar(aID,dataSet1){
 	    points.exit().remove();
 	    Object.defineProperties(plotArea.series.components.values.points, d3v3._CB_selection_destructure);
 	
+// Baohong
 		svg.selectAll(".x.axis .tick text").style("text-anchor", "end").attr("dx",$('#STACBARxlabelshift').val()+"px").attr("transform", "rotate("+$('#STACBARxlabelrotate').val()+")").style("font-size",$('#STACBARxfontsize').val()+"px");;
-	
+        svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text(offsetSelect.value());	
+       
 	    gX.transition().call(xAxis);
 	    gY.transition().call(yAxis);
-	
+
 	    function mouseOver(pointData, pointIndex, groupIndex) {
 // console.log(["in", pointIndex].join("\t"));
 	        var selectedYear = pointData.year,
