@@ -208,7 +208,7 @@ function randomSelDropdown(grpName,eID){
   sync();
 }
 
-function randomPlotOne(imgID,strBT,nTimes,eID){
+function randomPlotOne(imgID,strBT,nTimes,eID,bSaved){
   if(nTimes>=120){
     testVIPhtmladd(eID,"<p style='color:darkred;'>Error: Timeout!</p>");
     $(".tVIPbtA").prop("disabled",false);
@@ -216,10 +216,13 @@ function randomPlotOne(imgID,strBT,nTimes,eID){
     return;
   }
   if(imgID.length>0 && $('#'+imgID).html().length<100){
-    setTimeout(randomPlotOne,500,imgID,strBT,nTimes+1,eID);
+    setTimeout(randomPlotOne,500,imgID,strBT,nTimes+1,eID,bSaved);
   }else{
     if(strBT.length==0){
-      setTimeout(randomSave,500,eID);
+      testVIPhtmladd(eID,"<br>Plotting is completed<br>");
+      if(bSaved){
+        setTimeout(randomSave,500,eID);
+      }
     }else{
       var one = strBT.pop();
       var fn = window[one], imgID="";
@@ -239,18 +242,18 @@ function randomPlotOne(imgID,strBT,nTimes,eID){
           }
         });
       }
-      setTimeout(randomPlotOne,500,imgID,strBT,0,eID);
+      setTimeout(randomPlotOne,500,imgID,strBT,0,eID,bSaved);
     }
   }
 }
-function randomPlot(eID){
+function randomPlot(eID,bSaved=true){
   testVIPhtmladd(eID,"<br>Starting plotting<br>Executing: ");
   var strBT=[];
   $("button[class$='bt']").each(function(){
     strBT.push(this.className);
   });
   strBT = [...new Set(strBT)];
-  setTimeout(randomPlotOne,500,"",strBT,0,eID);
+  setTimeout(randomPlotOne,500,"",strBT,0,eID,bSaved);
 }
 function randomSave(eID){
   testVIPhtmladd(eID,"<br>Saving ...<br>");
