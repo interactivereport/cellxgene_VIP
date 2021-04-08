@@ -26,7 +26,7 @@ function stackedBar(aID,dataSet1){
 	        onchange: function() {
 	            update(dataSet1)
 	        },
-	        data: ["count", "proportion", "silhouette"]
+	        data: [{text: "count", value: "zero"}, {text: "proportion", value: "expand"}, {text: "streamgraph", value: "silhouette"}]
 	    }),
 	    orderSelect  = d3v3.ui.select({
 	        base: vis,
@@ -101,7 +101,7 @@ function stackedBar(aID,dataSet1){
 	
 	    xScale.domain(years);
 	    yAxisScale.reset = function(){
-	        this.domain([0, offsetSelect.value() == "proportion" ? 1 : maxY])
+	        this.domain([0, offsetSelect.value() == "expand" ? 1 : maxY])
 	            .range([yRangeHeight, 0])
 	            .ticks(10)
 	    };
@@ -193,7 +193,7 @@ function stackedBar(aID,dataSet1){
 	            point         = plotArea.series.components.values.points.nodes[groupIndex][pointIndex];
 	
 	        // if the plot is not normalised, fly-in the axis on the selected year
-	        if(offsetSelect.value() != "proportion") {
+	        if(offsetSelect.value() != "expand") {
 	            yAxisScale.reset();
 	            // get the zero offset for the fly-in axis
 	            var pMin        = d3v3.min(currentYear, function(s) {
@@ -219,7 +219,7 @@ function stackedBar(aID,dataSet1){
 	            points.transition("points")
 	                .attr("y", alignY(seriesData[pointIndex].p0, groupIndex))
 	                .call(endAll, toolTip)
-	        } else window.setTimeout(toolTip, 0);  // if not proportion
+	        } else window.setTimeout(toolTip, 0);  // if not expand
 	
 	        // manage the highlighting
 	        //  points highlighting
@@ -349,10 +349,10 @@ function stackedBar(aID,dataSet1){
 	        // highlight it
 	        var labelText = plotArea.series.components.labels.nodes[groupIndex][0].select("text"),
 	            seriesData = plotArea.series.components.values.data[groupIndex],
-	            fmt           = [">8,.0f", ">8.0%"][(offsetSelect.value() == "proportion") * 1];
+	            fmt           = [">8,.0f", ">8.0%"][(offsetSelect.value() == "expand") * 1];
 	        labelText.classed("highlight", true);
 	        labelText.text(labelText.datum().value + ": " + d3v3.format(fmt)(
-	                offsetSelect.value() != "proportion" ?
+	                offsetSelect.value() != "expand" ?
 	                d3v3.sum(seriesData, stack.y()) :
 	                d3v3.sum(seriesData, function(s) {
 	                    var totalSales = d3v3.sum(d3v3.values(yearlyTotals));
