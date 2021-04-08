@@ -180,13 +180,6 @@ function stackedBar(aID,dataSet1){
 	
 // Baohong
 		svg.selectAll(".x.axis .tick text").style("text-anchor", "end").attr("dx",$('#STACBARxlabelshift').val()+"px").attr("transform", "rotate("+$('#STACBARxlabelrotate').val()+")").style("font-size",$('#STACBARxfontsize').val()+"px");;
-        svg.append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 0 - margin.left)
-        .attr("x",0 - (height / 2))
-        .attr("dy", "1em")
-        .style("text-anchor", "middle")
-        .text(offsetSelect.value());	
        
 	    gX.transition().call(xAxis);
 	    gY.transition().call(yAxis);
