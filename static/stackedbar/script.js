@@ -78,7 +78,7 @@ function stackedBar(aID,dataSet1){
 	function update(dataSet) {
 	    // create an array of normalised layers and
 	    // add the normalised values onto the data
-	    var normData     = stack.offset("proportion")(dataSet)
+	    var normData     = stack.offset("expand")(dataSet)
 	            .map(stack.values())
 	            .map(function(s) {
 	                return s.map(function(p) {return p.yNorm = p.y})
