@@ -584,7 +584,7 @@
 
       <hr>
       <h3>Create abbreviations of annotations</h3><!-- <button onclick="ABBRsave()">Save to local</button><input id="ABBRfile" type="file" value="Load from local" onchange="ABBRload()"/>-->
-      <p>Choose annotations:</p>
+      <p>Choose annotation(s)s:</p>
       <p id="ABBRgrp"></p>
       <p id="ABBRtable"></p>
     </div><!--ABBR-->
@@ -624,8 +624,8 @@
 
     <div id="GD" class=tabcontent>
       <div id="GDinput">
-        <h3>Genes detected in selected groups of cells </h3>
-        <p>In group 1 (<span class="cellN1" style="color:red;">0</span>) cells and group 2 (<span class="cellN2" style="color:red;">0</span>) cells</p>
+        <h3>Genes detected in cell selections</h3>
+        <p>In selection 1 (<span class="cellN1" style="color:red;">0</span>) cells and selection 2 (<span class="cellN2" style="color:red;">0</span>) cells</p>
         <p>Expression cutoff:
         <input id="GDcutoff" type="number" step="0.1" value="1"/></p>
       </div>
@@ -643,9 +643,9 @@
     <div id="MARK" class="tabcontent">
       <div id="MARKinput">
         <h3>Marker genes of annotation categories on selected cells</h3>
-        <p>Choose cell set(s):
-          <label><input class="MARKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
-          <label><input class="MARKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
+        <p>Choose cell selection(s):
+          <label><input class="MARKcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="MARKcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
         <p>Select an annotation:
         <select id="MARKgrp"></select></p>
@@ -680,9 +680,9 @@
       <div id="SGVsingleV" class="SGVcontent">
         <h3>Violin plot of a gene on selected cells</h3>
         <div id="SGVinput">
-          <p>Choose cell set(s):
-            <label><input class="SGVcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
-            <label><input class="SGVcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
+          <p>Choose cell selection(s):
+            <label><input class="SGVcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
+            <label><input class="SGVcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
           </p>
           <p>Choose a gene ('Add Genes' first): <select id="SGVgene"></select></p>
           <p>Expression cutoff: <input id="SGVcutoff" type="number" step="0.1" value="1" min="0"/></p>
@@ -699,15 +699,13 @@
         <div id="SGVspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
         <div id="SGVresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="SGVfig"></p></div>
       </div> <!-- SGVsingleV -->
-        <button onclick="SPATIALarrange()"><b>Arrange Slides</b></button>
-        <button onclick="saveLayout()"><b>Save Layout</b></button>
 
       <div id="SGVcompareV" class="SGVcontent">
         <h3>Plot the grouped violin</h3>
         <div id="SGVcompareinput">
-          <p>Choose cell set(s):
-            <label><input class="SGVcomparecell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
-            <label><input class="SGVcomparecell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
+          <p>Choose cell selection(s):
+            <label><input class="SGVcomparecell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
+            <label><input class="SGVcomparecell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
           </p>
           <p>Choose a gene ('Add Genes' first): <select id="SGVcomparegene"></select></p>
           <p>Expression cutoff: <input id="SGVcomparecutoff" type="number" step="0.1" value="1" min="0"/></p>
@@ -734,9 +732,9 @@
     <div id="PGV" class="tabcontent">
       <div id="PGVinput">
         <h3>Stacked violin plot of genes on selected cells</h3>
-        <p>Choose cell set(s):
-          <label><input class="PGVcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
-          <label><input class="PGVcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
+        <p>Choose cell selection(s):
+          <label><input class="PGVcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="PGVcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
         <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.PGVgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="PGVgene"></p>
@@ -808,15 +806,15 @@
     <div id="HEAT" class="tabcontent">
       <div id="HEATinput">
         <h3>Heatmap on selected cells and genes</h3>
-        <p>Choose cell set(s):
-          <label><input class="HEATcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
-          <label><input class="HEATcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
+        <p>Choose cell selection(s):
+          <label><input class="HEATcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="HEATcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
         <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.HEATgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="HEATgene"></p>
         <p>Cluster by:
         <select id="HEATorder"></select></p>
-        <p>Choose annotation:</p>
+        <p>Choose annotation(s):</p>
         <p id="HEATgrp"></p>
         <p>Select plotting value:
         <select id="HEATnorm">
@@ -840,9 +838,9 @@
     <div id="DOT" class="tabcontent">
       <div id="DOTinput">
         <h3>Dot plot shows per group, the fraction of cells expressing a gene (dot size) and the mean expression of the gene in those cell (color scale)</h3>
-        <p>Choose cell set(s):
-          <label><input class="DOTcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
-          <label><input class="DOTcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
+        <p>Choose cell selection(s):
+          <label><input class="DOTcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="DOTcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
         <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.DOTgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="DOTgene"></p>
@@ -913,11 +911,11 @@
     <div id="EMBED" class="tabcontent">
       <div id="EMBEDinput">
         <h3>Embedding plots on selected genes and annotations</h3>
-        <p>Choose cell set(s):
-          <label><input class="EMBEDcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
-          <label><input class="EMBEDcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
+        <p>Choose cell selection(s):
+          <label><input class="EMBEDcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="EMBEDcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose annotation groups:</p>
+        <p>Choose annotation(s):</p>
         <p id="EMBEDgrp"></p>
         <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.EMBEDgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="EMBEDgene"></p>
@@ -946,9 +944,9 @@
     <div  id="TRAK" class="tabcontent">
       <div id="TRAKinput">
         <h3>Track plot shows the gene expression represented by height</h3>
-        <p>Choose cell set(s):
-          <label><input class="TRAKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
-          <label><input class="TRAKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
+        <p>Choose cell selection(s):
+          <label><input class="TRAKcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="TRAKcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
         <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.TRAKgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="TRAKgene"></p>
@@ -980,9 +978,9 @@
     <div  id="DENS" class="tabcontent">
       <div id="DENSinput">
         <h3>Density plots of selected genes</h3>
-        <p>Choose cell set(s):
-          <label><input class="DENScell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
-          <label><input class="DENScell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
+        <p>Choose cell selection(s):
+          <label><input class="DENScell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="DENScell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
         <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.DENSgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="DENSgene"></p>
@@ -1006,9 +1004,9 @@
     <div  id="DENS2D" class="tabcontent">
       <div id="DENS2Dinput">
         <h3>2D density plot to show expression relationship of two genes</h3>
-        <p>Choose cell set(s):
-          <label><input class="DENS2Dcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
-          <label><input class="DENS2Dcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
+        <p>Choose cell selection(s):
+          <label><input class="DENS2Dcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="DENS2Dcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
         <p>Choose two genes ('Add Genes' first):</p>
         <p id="DENS2Dgene"></p>
@@ -1029,9 +1027,9 @@
     <div  id="DUAL" class="tabcontent">
       <div id="DUALinput">
         <h3>Embedding plot of two genes on selected cells</h3>
-        <p>Choose cell set(s):
-          <label><input class="DUALcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
-          <label><input class="DUALcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
+        <p>Choose cell selection(s):
+          <label><input class="DUALcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="DUALcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
         <p id="DUALgene"></p>
         <p>Expression cutoff: <input id="DUALcutoff" type="number" step="0.1" value="1"/></p>
@@ -1054,15 +1052,15 @@
     <div  id="SANK" class="tabcontent">
       <div id="SANKinput">
         <h3>Interactive sankey diagram of annotations and/or genes on selected cells</h3>
-        <p>Choose cell set(s):
-          <label><input class="SANKcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
-          <label><input class="SANKcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
+        <p>Choose cell selection(s):
+          <label><input class="SANKcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="SANKcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.SANKgenes').prop('checked', this.checked);">Uncheck / Check All</p>
+        <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.SANKgenes').prop('checked', this.checked); SANKorderUpdate()">Uncheck / Check All</p>
         <p id="SANKgene"></p>
         <!-- <p>Choose user-defined gene sets:</p><p id="SANKgeneGrp"></p> -->
         <p>Number of equally divided gene expression ranges: <input id="sankBin" type="number" step="1" value="5"/></p>
-        <p>Choose annotation:</p><p id="SANKgrp"></p>
+        <p>Choose annotation(s):</p><p id="SANKgrp"></p>
         <p>Change the order by dragging items up and down:
         <button id="SANKorderBTs" onclick="SANKorderShow()" style="padding:2px;border-radius:45%"><b>&#43;</b></button>
         <button id="SANKorderBTh" onclick="SANKorderHide()" style="padding:2px;border-radius:40%"><b>&#8722;</b></button>
@@ -1091,7 +1089,7 @@
       <div id="DEGtop1" class="DEGtopcontent">
         <div id="DEGinput">
           <h3>Find differentially expressed genes</h3>
-          <p>Group 1 (<span class="cellN1" style="color:red;">0</span>) cells and group 2 (<span class="cellN2" style="color:red;">0</span>) cells</p>
+          <p>Selection 1 (<span class="cellN1" style="color:red;">0</span>) cells and selection 2 (<span class="cellN2" style="color:red;">0</span>) cells</p>
           <p>Differentially expressed genes will be detected between the two cell gorups defined above, unless two categories of the 'Custom_combine' annotation are selected,
           which enables DE analysis between those two:</p>
           <p id="DEGgrp"></p>
@@ -1297,9 +1295,9 @@
     <div id='STACBAR' class='tabcontent'>
       <div id="STACBARinput">
         <h3>Interactive stacked barplot of cell distribution of selected cells over two annotations and/or genes</h3>
-        <p>Choose cell set(s):
-          <label><input class="STACBARcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
-          <label><input class="STACBARcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
+        <p>Choose cell selection(s):
+          <label><input class="STACBARcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="STACBARcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
         <p>Choose two from genes and annotations ('Add Genes' first):</p>
         <p id="STACBARgene"></p>
@@ -1396,9 +1394,9 @@
       </div>
       <div id="SPATIALspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="SPATIALimageV" class="SPATIALcontent">
-        <p>Choose cell set(s):
-          <label><input class="SPATIALcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
-          <label><input class="SPATIALcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
+        <p>Choose cell selection(s):
+          <label><input class="SPATIALcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="SPATIALcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
   
         <button class="SPATIALbt" onclick="SPATIAL()"><b>Get Spatial Image</b></button>
@@ -1440,13 +1438,15 @@
 
     <div id="CLI" class="tabcontent">
       <div id="CLIinput">
-        <p>Choose cell set(s):
-          <label><input class="CLIcell" type="checkbox" value="celllist1" checked/>Group 1 (<span class="cellN1" style="color:red">0</span>)</label>
-          <label><input class="CLIcell" type="checkbox" value="celllist2" checked/>Group 2 (<span class="cellN2" style="color:red">0</span>)</label>
+        <p>Choose cell selection(s):
+          <label><input class="CLIcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
+
+
+          <label><input class="CLIcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
         <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.CLIgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="CLIgene"></p>
-        <p>Choose annotation:</p><p id="CLIgrp"></p>
+        <p>Choose annotation(s):</p><p id="CLIgrp"></p>
         <p>Choose layout:</p><p id="CLIlayout"></p>
         <div id="CLIscript" style="height:380px;" ></div>
       </div>
@@ -1491,7 +1491,7 @@
         <legend>Create a test case</legend>
         <p>by: <select id="tVIPgrp"></select></p>
         <p><button class="tVIPbt tVIPbtA" onclick="tVIPcreate('random','tVIPnote')">Create</button><br>
-          The prcess will<br>
+          The process will<br>
           1. Split the annotations of selected category into two groups randomly;<br>
           2. Select 500 cells from each group;<br>
           3. Apply DEG for those two groups of cells;<br>
@@ -1988,9 +1988,13 @@ function init(){
     const unsubscribe = window.store.subscribe(() => {
       if (window.store.getState()["@@undoable/filterState"].prevAction) {
         var action = window.store.getState()["@@undoable/filterState"].prevAction;
+        if (action.type.includes("color by continuous metadata")) {
+          initBrush('histogram_'+action.colorAccessor);
+        }
         if (action.type.includes("user defined gene success") || action.type.includes("store current cell selection as differential set")) {
           sync();
         }
+
         if (action.type.includes("continuous metadata histogram")) {
     //          $('#SYNCnote').text(JSON.stringify(window.store.getState().continuousSelection));
           $("div[id^=histogram]").each(function(){showBrush($(this).prop('id'));});
@@ -2016,6 +2020,7 @@ function init(){
 
 	document.getElementsByClassName('tablinks')[0].click();
 
+    // sync image with embedding when zoom in/out
     var targetNode = document.getElementById("canvas-transformation-group-x").parentNode;
     var observer = new MutationObserver(function(entries) {
       if (document.getElementById("spatial-transform-layer") && $("input[name='IMGtogether']:checked").val() == "Yes") {
@@ -3102,7 +3107,7 @@ function SPATIALoverlay() {
 function GDplot(){
   var cells = getCells(null,true);
   if(Object.keys(cells).length==0){
-    $('#GDnote').text("Please select cells into group 1 or/and group 2");
+    $('#GDnote').text("Please select cells into selection 1 or/and selection 2");
     return;
   }
 
@@ -3147,7 +3152,7 @@ function GDplot(){
 function MARKplot(){
   var cells=getCells('MARKcell');
   if(cells.length==0){
-    $('#MARKnote').text("Please use selection tools to put cells into groups");
+    $('#MARKnote').text("Please use selection tools to put cells into selection bins");
     return;
   }
 
@@ -3246,7 +3251,7 @@ function SGVplot(acc){
   }
   var cells=getCells('SGVcell');
   if(cells.length==0){
-    $('#SGVnote').text("Please use selection tools to put cells into groups");
+    $('#SGVnote').text("Please use selection tools to put cells into selection bins");
     return;
   }
   if(+$("#SGVcutoff").val() < +$("#SGVcutoff").prop('min')){
@@ -3324,7 +3329,7 @@ function SGVcompareplot(){
   }
   var cells=getCells('SGVcomparecell');
   if(cells.length==0){
-    $('#SGVcomparenote').text("Please use selection tools to put cells into groups");
+    $('#SGVcomparenote').text("Please use selection tools to put cells into selection bins");
     return;
   }
   if(+$("#SGVcomparecutoff").val() < +$("#SGVcomparecutoff").prop('min')){
@@ -3419,7 +3424,7 @@ function PGVplot(acc){
   }
   var cells=getCells('PGVcell');
   if(cells.length==0){
-    $('#PGVnote').text("Please use selection tools to put cells into groups");
+    $('#PGVnote').text("Please use selection tools to put cells into selection bins");
     return;
   }
   if(+$("#PGVcutoff").val()< +$("#PGVcutoff").prop('min')){
@@ -3502,7 +3507,7 @@ function HEATcheck(){
   $('#HEATnote').text("");
   var cells=getCells('HEATcell');
   if(cells.length==0){
-    $('#HEATnote').text("Please use selection tools to put cells into groups");
+    $('#HEATnote').text("Please use selection tools to put cells into selection bins");
     return;
   }
 
@@ -3761,7 +3766,7 @@ function DEGfind(){
   if(combName.length!=2){
     var selCells = getCells(null,true);
     if(Object.keys(selCells).length!=2){
-      $('#DEGnote').text("Please select cells into both group 1 and group 2");
+      $('#DEGnote').text("Please select cells into both selection 1 and selection 2");
       return;
     }else{
       cells['group1'] = selCells.celllist1;
@@ -4029,7 +4034,7 @@ function DOTplot(){
 
   var cells=getCells('DOTcell');
   if(cells.length==0){
-    $('#DOTnote').text("Please use selection tools to put cells into groups");
+    $('#DOTnote').text("Please use selection tools to put cells into selection bins");
     return;
   }
 
@@ -4107,7 +4112,7 @@ function TRAKplot(){
 
   var cells=getCells('TRAKcell');
   if(cells.length==0){
-    $('#TRAKnote').text("Please use selection tools to put cells into groups");
+    $('#TRAKnote').text("Please use selection tools to put cells into selection bins");
     return;
   }
 
@@ -4167,7 +4172,7 @@ function DENSplot(){
   $('#DENSerror').text("");
   var cells=getCells('DENScell');
   if(cells.length==0){
-    $('#DENSerror').text("Please use selection tools to put cells into groups");
+    $('#DENSerror').text("Please use selection tools to put cells into selection bins");
     return;
   }
 
@@ -4245,7 +4250,7 @@ function DENS2Dplot(){
   $('#DENS2Dnote').text("");
   var cells=getCells('DENS2Dcell');
   if(cells.length==0){
-    $('#DENS2Dnote').text("Please use selection tools to put cells into groups");
+    $('#DENS2Dnote').text("Please use selection tools to put cells into selection bins");
     return;
   }
 
@@ -4303,7 +4308,7 @@ function EMBEDplot(){
   $('#EMBEDnote').text("");
   var cells=getCells('EMBEDcell');
   if(cells.length==0){
-    $('#EMBEDnote').text("Please use selection tools to put cells into groups");
+    $('#EMBEDnote').text("Please use selection tools to put cells into selection bins");
     return;
   }
 
@@ -4379,7 +4384,7 @@ function DUALplot(){
   $('#DUALnote').text("");
   var cells=getCells('DUALcell');
   if(cells.length==0){
-    $('#DUALnote').text("Please use selection tools to put cells into groups");
+    $('#DUALnote').text("Please use selection tools to put cells into selection bins");
     return;
   }
 
@@ -4440,7 +4445,7 @@ function SANKcheck(){
   $('#SANKnote').text("");
   var cells=getCells('SANKcell');
   if(cells.length==0){
-    $('#SANKnote').text("Please use selection tools to put cells into groups");
+    $('#SANKnote').text("Please use selection tools to put cells into selection bins");
     return;
   }
   var genes =getGenes('SANK');
@@ -4538,7 +4543,7 @@ function STACBARplot(){
   $('#STACBARnote').text("");
   var cells=getCells('STACBARcell');
   if(cells.length==0){
-    $('#STACBARnote').text("Please use selection tools to put cells into groups");
+    $('#STACBARnote').text("Please use selection tools to put cells into selection bins");
     return;
   }
   var genes =getGenes('STACBAR');
@@ -4596,7 +4601,7 @@ function CLIplot(){
   $('#CLIsvg').html("");
   var cells=getCells('CLIcell');
   if(cells.length==0){
-    $('#CLInote').text("Please use selection tools to put cells into groups");
+    $('#CLInote').text("Please use selection tools to put cells into selection bins");
     return;
   }
 
