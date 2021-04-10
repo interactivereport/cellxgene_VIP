@@ -756,7 +756,7 @@
           <option value="Columns">Columns</option>
         </select>
         </p>
-        <p>Color: <input id="PGVcolor_r" type="checkbox">Reverse
+        <p>Color: 
         <select id="PGVcolor">
           <option value='Purples'>Purples</option>
           <option value='Blues'>Blues</option>
@@ -784,7 +784,7 @@
           <option value='RdBu'>RdBu</option>
           <option value='RdYlBu'>RdYlBu</option>
           <option value='RdYlGn'>RdYlGn</option>
-        </select> <button onclick="hideShow($('#PGVcolorhelp'),$(this),'Color Help');">Show Color Help</button></p>
+        </select> <input id="PGVcolor_r" type="checkbox">Reverse <button onclick="hideShow($('#PGVcolorhelp'),$(this),'Color Help');">Show Color Help</button></p>
     		<div id="PGVcolorhelp" style="display:none;">
               <table border=0>
                 <tr valign="top"><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_sequential.png" width="300"></td><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_diverging.png" width="300"></td></tr>
@@ -1533,6 +1533,8 @@
 var heatCell = 10000;
 var editor;
 var VIPurl = '';
+var VIPCellSelectionMsg = "Please use selection tools to put cells into selection bins";
+var VIPGeneSelectionMsg = "Please choose a gene to plot";
 var uniqID = 'VIPtesting';
 var loadingCycle = 0;
 
@@ -3107,7 +3109,7 @@ function SPATIALoverlay() {
 function GDplot(){
   var cells = getCells(null,true);
   if(Object.keys(cells).length==0){
-    $('#GDnote').text("Please select cells into selection 1 or/and selection 2");
+    $('#GDnote').text(VIPCellSelectionMsg);
     return;
   }
 
@@ -3152,7 +3154,7 @@ function GDplot(){
 function MARKplot(){
   var cells=getCells('MARKcell');
   if(cells.length==0){
-    $('#MARKnote').text("Please use selection tools to put cells into selection bins");
+    $('#MARKnote').text(VIPCellSelectionMsg);
     return;
   }
 
@@ -3241,8 +3243,8 @@ function MARKplot(){
 }
 function SGVplot(acc){
   $('#SGVnote').text("");
-  if($("#SGVgene option:selected").val()=="NA"){
-    $('#SGVnote').text("Please select a gene to plot");
+  if($("#SGVgene").val()==null){
+    $('#SGVnote').text(VIPGeneSelectionMsg);
     return;
   }
   if($("#SGVgrp option:selected").val()=="NA"){
@@ -3251,7 +3253,7 @@ function SGVplot(acc){
   }
   var cells=getCells('SGVcell');
   if(cells.length==0){
-    $('#SGVnote').text("Please use selection tools to put cells into selection bins");
+    $('#SGVnote').text(VIPCellSelectionMsg);
     return;
   }
   if(+$("#SGVcutoff").val() < +$("#SGVcutoff").prop('min')){
@@ -3320,7 +3322,7 @@ function SGVplot(acc){
 function SGVcompareplot(){
   $('#SGVcomparenote').text("");
   if($("#SGVcomparegene option:selected").val()=="NA"){
-    $('#SGVcomparenote').text("Please select a gene to plot");
+    $('#SGVcomparenote').text(VIPGeneSelectionMsg);
     return;
   }
   if($("#SGVcomparegrp option:selected").val()=="NA"){
@@ -3329,7 +3331,7 @@ function SGVcompareplot(){
   }
   var cells=getCells('SGVcomparecell');
   if(cells.length==0){
-    $('#SGVcomparenote').text("Please use selection tools to put cells into selection bins");
+    $('#SGVcomparenote').text(VIPCellSelectionMsg);
     return;
   }
   if(+$("#SGVcomparecutoff").val() < +$("#SGVcomparecutoff").prop('min')){
@@ -3424,7 +3426,7 @@ function PGVplot(acc){
   }
   var cells=getCells('PGVcell');
   if(cells.length==0){
-    $('#PGVnote').text("Please use selection tools to put cells into selection bins");
+    $('#PGVnote').text(VIPCellSelectionMsg);
     return;
   }
   if(+$("#PGVcutoff").val()< +$("#PGVcutoff").prop('min')){
@@ -3507,7 +3509,7 @@ function HEATcheck(){
   $('#HEATnote').text("");
   var cells=getCells('HEATcell');
   if(cells.length==0){
-    $('#HEATnote').text("Please use selection tools to put cells into selection bins");
+    $('#HEATnote').text(VIPCellSelectionMsg);
     return;
   }
 
@@ -3543,7 +3545,7 @@ function HEATcheck(){
   }
 
   if(grps.length==0){
-    $('#HEATnote').text("Please select groups to plot");
+    $('#HEATnote').text("Please select annotations to plot");
     return;
   }
   document.getElementById("HEATspin").style.visibility="visible";
@@ -4034,7 +4036,7 @@ function DOTplot(){
 
   var cells=getCells('DOTcell');
   if(cells.length==0){
-    $('#DOTnote').text("Please use selection tools to put cells into selection bins");
+    $('#DOTnote').text(VIPCellSelectionMsg);
     return;
   }
 
@@ -4112,7 +4114,7 @@ function TRAKplot(){
 
   var cells=getCells('TRAKcell');
   if(cells.length==0){
-    $('#TRAKnote').text("Please use selection tools to put cells into selection bins");
+    $('#TRAKnote').text(VIPCellSelectionMsg);
     return;
   }
 
@@ -4172,7 +4174,7 @@ function DENSplot(){
   $('#DENSerror').text("");
   var cells=getCells('DENScell');
   if(cells.length==0){
-    $('#DENSerror').text("Please use selection tools to put cells into selection bins");
+    $('#DENSerror').text(VIPCellSelectionMsg);
     return;
   }
 
@@ -4250,7 +4252,7 @@ function DENS2Dplot(){
   $('#DENS2Dnote').text("");
   var cells=getCells('DENS2Dcell');
   if(cells.length==0){
-    $('#DENS2Dnote').text("Please use selection tools to put cells into selection bins");
+    $('#DENS2Dnote').text(VIPCellSelectionMsg);
     return;
   }
 
@@ -4308,13 +4310,13 @@ function EMBEDplot(){
   $('#EMBEDnote').text("");
   var cells=getCells('EMBEDcell');
   if(cells.length==0){
-    $('#EMBEDnote').text("Please use selection tools to put cells into selection bins");
+    $('#EMBEDnote').text(VIPCellSelectionMsg);
     return;
   }
 
   var genes = getGenes('EMBED');
   if(genes.length==0){
-    $('#EMBEDnote').text("Please select a gene to plot");
+    $('#EMBEDnote').text(VIPGeneSelectionMsg);
     return;
   }
 
@@ -4324,10 +4326,6 @@ function EMBEDplot(){
     if(x[i].checked){
       grps.push(x[i].value);
     }
-  }
-  if(grps.length==0){
-    $('#EMBEDnote').text("Please select groups to plot");
-    return;
   }
   if($('#EMBEDslot').val()<2){
     $('#EMBEDnote').text("The minimal number of plots per row is 2");
@@ -4384,7 +4382,7 @@ function DUALplot(){
   $('#DUALnote').text("");
   var cells=getCells('DUALcell');
   if(cells.length==0){
-    $('#DUALnote').text("Please use selection tools to put cells into selection bins");
+    $('#DUALnote').text(VIPCellSelectionMsg);
     return;
   }
 
@@ -4445,7 +4443,7 @@ function SANKcheck(){
   $('#SANKnote').text("");
   var cells=getCells('SANKcell');
   if(cells.length==0){
-    $('#SANKnote').text("Please use selection tools to put cells into selection bins");
+    $('#SANKnote').text(VIPCellSelectionMsg);
     return;
   }
   var genes =getGenes('SANK');
@@ -4543,7 +4541,7 @@ function STACBARplot(){
   $('#STACBARnote').text("");
   var cells=getCells('STACBARcell');
   if(cells.length==0){
-    $('#STACBARnote').text("Please use selection tools to put cells into selection bins");
+    $('#STACBARnote').text(VIPCellSelectionMsg);
     return;
   }
   var genes =getGenes('STACBAR');
@@ -4601,7 +4599,7 @@ function CLIplot(){
   $('#CLIsvg').html("");
   var cells=getCells('CLIcell');
   if(cells.length==0){
-    $('#CLInote').text("Please use selection tools to put cells into selection bins");
+    $('#CLInote').text(VIPCellSelectionMsg);
     return;
   }
 
