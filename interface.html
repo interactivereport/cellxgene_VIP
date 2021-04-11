@@ -910,13 +910,15 @@
 
     <div id="EMBED" class="tabcontent">
       <div id="EMBEDinput">
-        <h3>Embedding plots on selected genes and annotations</h3>
+        <h3>Embedding plots on selected genes and/or annotations</h3>
         <p>Choose cell selection(s):
           <label><input class="EMBEDcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="EMBEDcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose annotation(s):</p>
+        <p>Choose categorical annotation(s):</p>
         <p id="EMBEDgrp"></p>
+        <p>Choose continuous annotation(s):</p>
+        <p id="EMBEDmeta"></p>
         <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.EMBEDgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="EMBEDgene"></p>
         <p>Split by:
@@ -1953,10 +1955,18 @@ function init(){
     }
     //HEAT, EMBED, SANK, STACBAR, CLI
     $('#HEATgrp').html(htmlCheck.replace(/eID/g,'HEAT'));
-    $('#EMBEDgrp').html(htmlCheck.replace(/eID/g,'EMBED'));
     $('#CLIgrp').html(htmlCheck.replace(/eID/g,'CLI'));
+    $('#EMBEDgrp').html(htmlCheck.replace(/eID/g,'EMBED'));
     $('#SANKgrp').html(htmlCheck.replace(/eID/g,'SANK').replace(/value/g,'onchange="SANKorderUpdate()" value'));
     $('#STACBARgrp').html(htmlCheck.replace(/eID/g,'STACBAR').replace(/value/g,'onchange="STACBARref()" value'));
+
+    //Continuous metadata
+    htmlCheck= "";
+    var names = window.store.getState().annoMatrix.schema.annotations.obsByName;
+    for(const one of Object.keys(names).filter(function(e) { return names[e].type != "categorical" && names[e].type != "string" ;})) {
+      htmlCheck += '<label id="eIDmetasCK'+one+'"><input class="eIDmetas" type="checkbox" value="'+one+'"/> '+one+'</label>';
+    }
+    $('#EMBEDmeta').html(htmlCheck.replace(/eID/g,'EMBED'));
 
 
     //SANK
@@ -4315,10 +4325,6 @@ function EMBEDplot(){
   }
 
   var genes = getGenes('EMBED');
-  if(genes.length==0){
-    $('#EMBEDnote').text(VIPGeneSelectionMsg);
-    return;
-  }
 
   var grps = [];
   x = document.getElementsByClassName('EMBEDgrps');
@@ -4327,6 +4333,18 @@ function EMBEDplot(){
       grps.push(x[i].value);
     }
   }
+
+  if(genes.length==0) {
+    if (grps.length==0){
+      $('#EMBEDnote').text("Select an annotation and/or a gene");
+      return;
+    }
+    if ($("#EMBEDsplit").val()!="NONE") {
+      $('#EMBEDnote').text("Splitting only apply to genes");
+      $("#EMBEDsplit").val("NONE");
+    } 
+  }
+
   if($('#EMBEDslot').val()<2){
     $('#EMBEDnote').text("The minimal number of plots per row is 2");
     return;
@@ -4344,9 +4362,9 @@ function EMBEDplot(){
             'grp':grps,
             'ncol':$('#EMBEDslot').val(),
             'layout':$("#EMBEDlayout").val(),
-            'abb':window.bioAbbr,
+//            'abb':window.bioAbbr,
             'figOpt':window.figOpt};
-  if($("#EMBEDsplit").val()!="NONE"){
+  if($("#EMBEDsplit").val()!="NONE" && genes.length>0){
     D['splitGrp'] = $("#EMBEDsplit").val();
     grps.push($("#EMBEDsplit").val());
     D['grp'] = [...new Set(grps)];
