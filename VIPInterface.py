@@ -124,6 +124,20 @@ def getObs(data):
       obs[i] = obs[i].map(data['abb'][i])
   return combUpdate, obs
 
+def getObsNum(data):
+  selC = list(data['cells'].values())
+  cNames = ["cell%d" %i for i in selC]
+  ## obtain the category annotation
+  obs = pd.DataFrame()
+  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+    selAnno = data['grpNum']
+    dAnno = list(scD.get_obs_keys())
+    sel = list(set(selAnno)&set(dAnno))
+    if len(sel)>0:
+      obs = scD.data.obs.loc[selC,sel]
+      obs.index = cNames
+  return obs
+
 def getVar(data):
   ## obtain the gene annotation
   with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
@@ -786,6 +800,9 @@ def DOT(data):
 
 def EMBED(data):
   adata = createData(data)
+  if len(data['grpNum'])>0:
+    adata.obs = pd.concat([adata.obs,getObsNum(data)],axis=1)
+    data['genes'] = data['grpNum'] + data['genes']
   subSize = 4
   ncol = int(data['ncol'])
   ngrp = len(data['grp'])

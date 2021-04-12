@@ -756,7 +756,7 @@
           <option value="Columns">Columns</option>
         </select>
         </p>
-        <p>Color: 
+        <p>Color:
         <select id="PGVcolor">
           <option value='Purples'>Purples</option>
           <option value='Blues'>Blues</option>
@@ -1400,7 +1400,7 @@
           <label><input class="SPATIALcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="SPATIALcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
-  
+
         <button class="SPATIALbt" onclick="SPATIAL()"><b>Get Spatial Image</b></button>
         <button onclick="SPATIALoverlay()"><b>Overlay Image</b></button>
         <button onclick="document.getElementById('spatial-layer').remove();"><b>Remove Image</b></button>
@@ -1414,7 +1414,7 @@
         <p>Image on the front:
           <input type="radio" name="IMGfront" value="Yes" onclick="SpatialIMGfront();" checked>Yes
           <input type="radio" name="IMGfront" value="No" onclick="SpatialIMGfront();">No </p>
-  
+
         <p><input type="range" min="0" max="1" value="0.75" step="0.05" id="image_opacity" oninput="SpatialIMGopacity(this.value);"> Image Opacity: <span id="image_opacity_val">0.75</span></p>
         <p><input type="range" min="0" max="1" value="1" step="0.05" id="embedding_opacity" oninput="SpatialEMBopacity(this.value);"> Embedding Opacity: <span id="embedding_opacity_val">1</span></p>
       </div>
@@ -3061,11 +3061,11 @@ function SPATIALarrange() {
                 if (trans.match(/([0-9]+)deg/)) {
                   var rot = RegExp.$1;
                   $('#image_rotate_val').text(rot);
-                  $('#image_rotate').val(rot); 
+                  $('#image_rotate').val(rot);
                 } else {
                   $('#image_rotate_val').text(0);
-                  $('#image_rotate').val(0); 
-                } 
+                  $('#image_rotate').val(0);
+                }
                 $('#selected_image').text(n.text);
               });
             },
@@ -4326,23 +4326,18 @@ function EMBEDplot(){
 
   var genes = getGenes('EMBED');
 
-  var grps = [];
-  x = document.getElementsByClassName('EMBEDgrps');
-  for(i=0;i<x.length;i++){
-    if(x[i].checked){
-      grps.push(x[i].value);
-    }
-  }
+  var grps = $(".EMBEDgrps:checked").map(function(){return this.value;}).get();
+  var grpMeta = $(".EMBEDmetas:checked").map(function(){return this.value;}).get();
 
   if(genes.length==0) {
-    if (grps.length==0){
+    if ((grps.length+grpMeta.length)==0){
       $('#EMBEDnote').text("Select an annotation and/or a gene");
       return;
     }
     if ($("#EMBEDsplit").val()!="NONE") {
       $('#EMBEDnote').text("Splitting only apply to genes");
       $("#EMBEDsplit").val("NONE");
-    } 
+    }
   }
 
   if($('#EMBEDslot').val()<2){
@@ -4360,9 +4355,10 @@ function EMBEDplot(){
             'cells':cells,
             'genes':genes,
             'grp':grps,
+            'grpNum':grpMeta,
             'ncol':$('#EMBEDslot').val(),
             'layout':$("#EMBEDlayout").val(),
-//            'abb':window.bioAbbr,
+            //'abb':window.bioAbbr,
             'figOpt':window.figOpt};
   if($("#EMBEDsplit").val()!="NONE" && genes.length>0){
     D['splitGrp'] = $("#EMBEDsplit").val();
@@ -4798,7 +4794,7 @@ function saveLayout(){
   }
   content = content.slice(0,-1) + ']}';
   console.log(JSON.parse(content));
-  
+
   var hiddenE = document.createElement('a');
   hiddenE.href="data:attachment/text,"+encodeURIComponent(content);
   hiddenE.target='_blank';
