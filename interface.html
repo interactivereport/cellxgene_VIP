@@ -1494,20 +1494,20 @@
         <p>by: <select id="tVIPgrp"></select></p>
         <p><button class="tVIPbt tVIPbtA" onclick="tVIPcreate('random','tVIPnote')">Create</button><br>
           The process will<br>
-          1. Split the annotations of selected category into two groups randomly;<br>
+          1. Split cells with selected annotation into two groups randomly;<br>
           2. Select 500 cells from each group;<br>
-          3. Apply DEG for those two groups of cells;<br>
-          4. Select top DEGs randomly in to groups;<br>
-          5. Choose user selections in VIP randomly;<br>
+          3. Apply DEG (Differentially Expressed Genes) method to those two groups of cells;<br>
+          4. Select top DEGs randomly into groups;<br>
+          5. Choose plotting options in VIP randomly;<br>
           6. Perform plotting function one by one;<br>
-          7. Save the test case on the server for future use (overwrite preivous).
+          7. Save the test case on the server for future use (overwrite previous).
         </p>
         <p><button class="tVIPbt tVIPbtA" onclick="tVIPcreate('cells','tVIPnote')">Create on selected cells</button><br>
-          The test generation will ignore the first 2 steps in the above process, and run all the rest.
+          The test generation will ignore the first 2 steps in the above process and run the rest.
         </p>
         <p><button class="tVIPbt tVIPbtA" onclick="tVIPcreate('selections','tVIPnote')">Create on selections</button><br>
-          The user have selected all options on VIP including the genes and gene sets (or loaded previous session).
-          This process will process all VIP plots one by one and save it as a test case on the server (overwrite preivous).
+          The user has selected all options on VIP including the genes and gene sets (or loaded previous session).
+          This process will process all VIP plots one by one and save it as a test case on the server (overwrite previous).
         </p>
       </fieldset>
       <div id="tVIPnote"></div>
