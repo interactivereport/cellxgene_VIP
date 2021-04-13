@@ -802,17 +802,16 @@ def EMBED(data):
   adata = createData(data)
   if len(data['grpNum'])>0:
     adata.obs = pd.concat([adata.obs,getObsNum(data)],axis=1)
-    data['genes'] = data['grpNum'] + data['genes']
   subSize = 4
   ncol = int(data['ncol'])
   ngrp = len(data['grp'])
+  ngrpNum = len(data['grpNum'])
   ngene = len(data['genes'])
-  nrow = ngrp+math.ceil(ngene/ncol)
+  nrow = ngrp+math.ceil(ngrpNum/ncol)+math.ceil(ngene/ncol)
   if 'splitGrp' in data.keys():
     splitName = list(adata.obs[data['splitGrp']].unique())
     nsplitRow = math.ceil(len(splitName)/ncol)
-    nrow = ngrp+ngene*nsplitRow
-
+    nrow = ngrp+math.ceil(ngrpNum/ncol)+ngene*nsplitRow
   step =11
   grpCol = {gID:math.ceil(len(list(adata.obs[gID].unique()))/step) for gID in data['grp']}
 
@@ -820,11 +819,18 @@ def EMBED(data):
   fig = plt.figure(figsize=(ncol*subSize,subSize*nrow))
   gs = fig.add_gridspec(nrow,ncol,wspace=0.2)
   for i in range(ngrp):
-      ax = sc.pl.embedding(adata,data['layout'],color=data['grp'][i],ax=fig.add_subplot(gs[i,0]),show=False)#,wspace=0.25
-      if grpCol[data['grp'][i]]>1:
-          ax.legend(ncol=grpCol[data['grp'][i]],loc=6,bbox_to_anchor=(1,0.5),frameon=False)
-      ax.set_xlabel('%s1'%data['layout'])
-      ax.set_ylabel('%s2'%data['layout'])
+    ax = sc.pl.embedding(adata,data['layout'],color=data['grp'][i],ax=fig.add_subplot(gs[i,0]),show=False)#,wspace=0.25
+    if grpCol[data['grp'][i]]>1:
+      ax.legend(ncol=grpCol[data['grp'][i]],loc=6,bbox_to_anchor=(1,0.5),frameon=False)
+    ax.set_xlabel('%s1'%data['layout'])
+    ax.set_ylabel('%s2'%data['layout'])
+
+  for i in range(ngrpNum):
+    x = int(i/ncol)+ngrp
+    y = i % ncol
+    ax = sc.pl.embedding(adata,data['layout'],color=data['grpNum'][i],ax=fig.add_subplot(gs[x,y]),show=False)#,wspace=0.25
+    ax.set_xlabel('%s1'%data['layout'])
+    ax.set_ylabel('%s2'%data['layout'])
 
   if 'splitGrp' in data.keys():
     vMax = adata.to_df().apply(lambda x: max(x))
@@ -832,7 +838,7 @@ def EMBED(data):
     dotSize = 120000 / adata.n_obs
     for i in range(ngene):
       for j in range(len(splitName)):
-        x = ngrp + i*nsplitRow+int(j/ncol)
+        x = ngrp + math.ceil(ngrpNum/ncol) + i*nsplitRow+int(j/ncol)
         y = j % ncol
         ax = sc.pl.embedding(adata,data['layout'],ax=fig.add_subplot(gs[x,y]),show=False)#color=data['genes'][i],wspace=0.25,
         ax = sc.pl.embedding(adata[adata.obs[data['splitGrp']]==splitName[j]],data['layout'],color=data['genes'][i],
@@ -842,11 +848,11 @@ def EMBED(data):
         ax.set_ylabel('%s2'%data['layout'])
   else:
     for i in range(ngene):
-        x = int(i/ncol)+ngrp
-        y = i % ncol
-        ax = sc.pl.embedding(adata,data['layout'],color=data['genes'][i],ax=fig.add_subplot(gs[x,y]),show=False)
-        ax.set_xlabel('%s1'%data['layout'])
-        ax.set_ylabel('%s2'%data['layout'])
+      x = int(i/ncol)+ngrp+math.ceil(ngrpNum/ncol)
+      y = i % ncol
+      ax = sc.pl.embedding(adata,data['layout'],color=data['genes'][i],ax=fig.add_subplot(gs[x,y]),show=False)
+      ax.set_xlabel('%s1'%data['layout'])
+      ax.set_ylabel('%s2'%data['layout'])
 
   return iostreamFig(fig)
 
