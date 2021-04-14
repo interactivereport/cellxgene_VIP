@@ -819,7 +819,16 @@ def EMBED(data):
   fig = plt.figure(figsize=(ncol*subSize,subSize*nrow))
   gs = fig.add_gridspec(nrow,ncol,wspace=0.2)
   for i in range(ngrp):
-    ax = sc.pl.embedding(adata,data['layout'],color=data['grp'][i],ax=fig.add_subplot(gs[i,0]),show=False)#,wspace=0.25
+    grpName = adata.obs[data['grp'][i]].value_counts().to_dict()
+    grpPalette = None
+    plotOrder = None
+    dotSize = None
+    if len(grpName)==2 and max(grpName.values())/min(grpName.values())>10:
+      grpPalette = {max(grpName,key=grpName.get):'#c0c0c030',min(grpName,key=grpName.get):'#de2d26ff'}
+      plotOrder = min(grpName,key=grpName.get) #list(grpPalette.keys()) #
+      grpPalette = [grpPalette[k] for k in list(adata.obs[data['grp'][i]].cat.categories)]
+      dotSize = adata.obs.apply(lambda x: 360000/adata.shape[1] if x['HIVcell']==plotOrder else 120000/adata.shape[1],axis=1).tolist()
+    ax = sc.pl.embedding(adata,data['layout'],color=data['grp'][i],ax=fig.add_subplot(gs[i,0]),show=False,palette=grpPalette,groups=plotOrder,size=dotSize)
     if grpCol[data['grp'][i]]>1:
       ax.legend(ncol=grpCol[data['grp'][i]],loc=6,bbox_to_anchor=(1,0.5),frameon=False)
     ax.set_xlabel('%s1'%data['layout'])
