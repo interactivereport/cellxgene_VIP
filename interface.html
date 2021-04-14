@@ -1329,6 +1329,11 @@
       <p>Selecting cells cumulatively:
         <label class="switch"><input type="checkbox" id="IMGcumuCK" onclick="IMGcellSel($(this))"><span class="slider"></span></label>
         &nbsp;&nbsp;&nbsp;&nbsp;<button onclick="IMGcellClear()">Clear</button>Cumulation</p>
+      <div id='IMGrandomCellDiv' style='display:none'>
+        <label><input name="IMGcell" type="radio" value="celllist1" checked />Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
+        <label><input name="IMGcell" type="radio" value="celllist2"/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
+        From selected cell group, <input id="IMGcellRandomN" type="number" step="1" min="1" style="width: 50px;" /> cells will be randomly <button onclick="IMGcellRandomChoose()">Chosen</button>
+      </div>
       <div>
         <p>Scale data to unit variance for plotting:
         <input type="radio" name="IMGscale" value="Yes" onclick="IMGset()">Yes
@@ -2643,12 +2648,29 @@ function IMGref(){
   $('#IMGcolor').val(window.figOpt['colorMap']);
 }
 function IMGcellSel(ele){
+  $("#IMGrandomCellDiv").hide();
+  if(ele.prop('checked')){
+    $("#IMGrandomCellDiv").show();
+  }
   window.accumulateCell.cellaccumu=ele.prop('checked');
   cellNupdate();
 }
 function IMGcellClear(){
   window.accumulateCell.celllist1=[];
   window.accumulateCell.celllist2=[];
+  cellNupdate();
+}
+function IMGcellRandomChoose(){
+  var cGrp = $("input[name='IMGcell']:checked").val();
+  var cNum = $('#IMGcellRandomN').val();
+  if(window.accumulateCell[cGrp].length<cNum || cNum==0){
+    alert("Cannot randomly select "+cNum+" cells from "+window.accumulateCell[cGrp].length+" cells");
+    return;
+  }
+  var sel=[... new Set(Array.from({length: cNum*2}, () => Math.floor(Math.random() * window.accumulateCell[cGrp].length)))];
+  sel = sel.slice(0,Math.min(cNum,sel.length));
+  window.accumulateCell[cGrp] = Int32Array.from(sel.map(i=>window.accumulateCell[cGrp][i]));
+  window.store.dispatch({type: "store current cell selection as differential set "+cGrp.slice(-1),data:window.accumulateCell[cGrp]});
   cellNupdate();
 }
 function SpatialIMGfront() {
