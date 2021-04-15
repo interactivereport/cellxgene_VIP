@@ -762,7 +762,7 @@ def DEG(data):
   #deg.loc[:,'qval'] = deg.loc[:,'qval'].apply(lambda x: '%.4E'%x)
   #ppr.pprint(GSEAtable)
   #ppr.pprint(GSEAtable.sort_values('pval'))
-  return json.dumps([deg.to_csv(),img,GSEAtable.to_csv(index=False),GSEAimg])#json.dumps([deg.values.tolist(),img])
+  return json.dumps([deg.to_csv(index=False),img,GSEAtable.to_csv(index=False),GSEAimg])#json.dumps([deg.values.tolist(),img])
 
 def DOT(data):
   #ppr.pprint("DOT, starting ...")
@@ -1323,7 +1323,7 @@ def getPreDEGvolcano(data):
   #deg.loc[:,'pval'] = deg.loc[:,'pval'].apply(lambda x: '%.4E'%x)
   #deg.loc[:,'qval'] = deg.loc[:,'qval'].apply(lambda x: '%.4E'%x)
 
-  return json.dumps([deg.to_csv(),img])#json.dumps([deg.values.tolist(),img])
+  return json.dumps([deg.to_csv(index=False),img])#json.dumps([deg.values.tolist(),img])
 
 def getPreDEGbubble(data):
   #data={'compSel':['MS.vs.Control::EN.L4','MS.vs.Control::Endo.cells','MS.vs.Control::EN.PYR'],'genes':['RASGEF1B','SLC26A3','UNC5C','AHI1','CD9']}

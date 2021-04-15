@@ -3851,7 +3851,7 @@ function DEGfind(){
         window.DEGsel[$(this).val()]=selOpt;
       });
       // gene information
-      var gInfo = resD[0].split("\n")[0].split(',').slice(5);
+      var gInfo = resD[0].split("\n")[0].split(',').slice(4);
       gInfo.forEach(function(d){
         $('#DEGplotByGinfoSel').append('<option value="'+d+'">'+d+'</option>')
       });
@@ -3867,7 +3867,7 @@ function DEGfind(){
                   (+data.log2fc).toFixed(2),
                   (+data.pval).toExponential(2),
                   (+data.qval).toExponential(2)],
-                  Object.values(data).slice(5));
+                  Object.values(data).slice(4));
         });
       var tableTitle = [];
       [].concat(['Gene',"Log Fold Change","p-value","padj"],gInfo).forEach(function(d){tableTitle = tableTitle.concat({title:d})});
@@ -3875,15 +3875,14 @@ function DEGfind(){
         destroy: true,
         dom:'Blfrtip',
         lengthMenu:[[10,50,100,200],[10,50,100,200]],
-        order:[[3,"asc"]],
+        order:[3,"asc"],
         buttons:['csv'],
         data:tableD,
         columns:tableTitle
       });
-      showImg('DEGfig',resD[1]);
       $('#DEGtable tbody').on('click',"tr",function(){
         var data = table.row(this).data();
-        //alert('Your clicked on '+data[0]+" row");
+        alert('Your clicked on '+data[0]+" row");
         var genes =  window.biogen;
         if(genes.includes(data[0])){
           genes.splice(genes.indexOf(data[0]),1);
@@ -3892,30 +3891,33 @@ function DEGfind(){
         }
         $('#DEGnote').text("Selected genes: "+genes.join(", "));
       });
+      showImg('DEGfig',resD[1]);
 
       // process GSEA
-      showImg('GSEAfig',resD[3]);
-      var gseaTable = d3.csvParse(resD[2],function(data){
-        return [].concat([data.pathway,
-                  data.pval.length===0? 1:(+data.pval).toExponential(2),
-                  data.padj.length===0? 1:(+data.padj).toExponential(2),
-                  data.ES.length===0? 'NaN':(+data.ES).toFixed(2),
-                  data.NES.length===0? 'NaN':(+data.NES).toFixed(2)],
-                  Object.values(data).slice(5));
-      });
-      var gseaTitle = [];
-      [].concat(resD[2].substring(0,500).
-        split("\n")[0].split(',').
-        forEach(function(d){gseaTitle=gseaTitle.concat({title:d.replace('pval','p value').replace('padj','adjusted p value')})}));
-      var gTable = $('#GSEAtable').DataTable({
-        destroy: true,
-        dom:'Blfrtip',
-        lengthMenu:[[10,50,100,200],[10,50,100,200]],
-        order:[[1,"asc"]],
-        buttons:['csv'],
-        data:gseaTable,
-        columns:gseaTitle
-      });
+      if(resD[2].length>10){
+        showImg('GSEAfig',resD[3]);
+        var gseaTable = d3.csvParse(resD[2],function(data){
+          return [].concat([data.pathway,
+                    data.pval.length===0? 1:(+data.pval).toExponential(2),
+                    data.padj.length===0? 1:(+data.padj).toExponential(2),
+                    data.ES.length===0? 'NaN':(+data.ES).toFixed(2),
+                    data.NES.length===0? 'NaN':(+data.NES).toFixed(2)],
+                    Object.values(data).slice(5));
+        });
+        var gseaTitle = [];
+        [].concat(resD[2].substring(0,500).
+          split("\n")[0].split(',').
+          forEach(function(d){gseaTitle=gseaTitle.concat({title:d.replace('pval','p value').replace('padj','adjusted p value')})}));
+        var gTable = $('#GSEAtable').DataTable({
+          destroy: true,
+          dom:'Blfrtip',
+          lengthMenu:[[10,50,100,200],[10,50,100,200]],
+          order:[[1,"asc"]],
+          buttons:['csv'],
+          data:gseaTable,
+          columns:gseaTitle
+        });
+      }
     },
     error: function(request,status,error){
       $('#DEGnote').text(request.status+request.responseText);
