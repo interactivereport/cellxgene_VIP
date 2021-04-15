@@ -3856,7 +3856,7 @@ function DEGfind(){
         $('#DEGplotByGinfoSel').append('<option value="'+d+'">'+d+'</option>')
       });
       // raw DEG table
-      window.DEGraw = resD[0];
+      //window.DEGraw = resD[0];
       DEGplot('DEG');
       $("#DEGfinal").show();
       $("#DEGinteractiveBtn").prop('disabled', false);
@@ -3882,7 +3882,7 @@ function DEGfind(){
       });
       $('#DEGtable tbody').on('click',"tr",function(){
         var data = table.row(this).data();
-        alert('Your clicked on '+data[0]+" row");
+        //alert('Your clicked on '+data[0]+" row");
         var genes =  window.biogen;
         if(genes.includes(data[0])){
           genes.splice(genes.indexOf(data[0]),1);
