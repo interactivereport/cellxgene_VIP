@@ -58,8 +58,8 @@ function testVIPnext(eID){
     var fn = window[one.replace('img','plot')];
     if(one=="DEGimg"){
       fn = window["DEGfind"];
-    }else if(one=="preDEGVolcanoimg"){
-      fn = window["preDEGVolcanofind"];
+    }else if(one=="preDEGvolcanoimg"){
+      fn = window["preDEGvolcanofind"];
     }
     if(typeof fn === "function"){
       $("#"+one).remove();
