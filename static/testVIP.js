@@ -55,14 +55,24 @@ function testVIPall(eID){
 function testVIPnext(eID){
   if(testVIPlist.length>0){
     var one = testVIPlist.pop();
-    $("#"+one).remove();
-    testVIPhtmladd(eID,"Testing "+one.replace('img','')+" ...<br>");
     var fn = window[one.replace('img','plot')];
-    if(one.includes("DEG")){
+    if(one=="DEGimg"){
       fn = window["DEGfind"];
+    }else if(one=="preDEGVolcanoimg"){
+      fn = window["preDEGVolcanofind"];
     }
-    if(typeof fn === "function") fn();
-    testVIPone(one,eID,0);
+    if(typeof fn === "function"){
+      $("#"+one).remove();
+      testVIPhtmladd(eID,"Testing "+one.replace('img','')+" ...<br>");
+      if(one=="preDEGVolcanoimg"){
+        fn('preDEGvolcano');
+      }else{
+        fn();
+      }
+      testVIPone(one,eID,0);
+    }else{
+      testVIPnext(eID);
+    }
   }else{
     testVIPhtmladd(eID,"=========== Testing complete! ===========");
     $(".tVIPbt").prop("disabled",false);
