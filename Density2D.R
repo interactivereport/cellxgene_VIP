@@ -26,7 +26,9 @@ colMap <- switch(args[5],"B",magma="A",inferno="B",plasma="C",viridis="D")
 fontsize <- as.numeric(args[6])
 dpi <- as.numeric(args[7])
 
-expr <- read.csv(strCSV,row.names=1,as.is=T,check.names=F)
+expr <- read.csv(strCSV,row.names=1,as.is=T,check.names=F)#
+axisLab <- colnames(expr)
+expr <- data.frame(expr,check.names=T)
 #minExpr <- apply(expr,2,min)
 expr <- expr[apply(expr,1,function(x)return(sum(x>minExpr)))>0,]
 if(nrow(expr)<50) stop("Less than 50 cells expression above minimal value in at least one of two genes!")
@@ -38,12 +40,13 @@ D <- expr %>% dplyr::mutate(density=get_density(expr[,1],expr[,2],h=h,n=min(100,
 
 p <- ggplot(D, aes_string(x = colnames(D)[1], y = colnames(D)[2], color = 'density')) +
   geom_point(size = 0.4) + theme_classic() + ggtitle(paste("Density on",nrow(expr),"cells")) +
-  geom_vline(xintercept = 0, color = "red", linetype = 2) + 
-  geom_hline(yintercept = 0, color = "red", linetype = 2) + 
+  xlab(axisLab[1])+ylab(axisLab[2])+
+  geom_vline(xintercept = 0, color = "red", linetype = 2) +
+  geom_hline(yintercept = 0, color = "red", linetype = 2) +
   theme(axis.text = element_text(face = "bold"),
         text=element_text(size=fontsize)) +
-  viridis::scale_color_viridis(option = colMap) +  
-  scale_shape_identity() 
+  viridis::scale_color_viridis(option = colMap) +
+  scale_shape_identity()
 
 strImg <- gsub("csv$",strFun,strCSV)
 f <- get(strFun)
@@ -57,4 +60,3 @@ a <- dev.off()
 fig = base64enc::dataURI(file = strImg)
 cat(gsub("data:;base64,","",fig))
 a <- file.remove(strImg)
-

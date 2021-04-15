@@ -1178,7 +1178,7 @@ def DENS2D(data):
   adata = createData(data)
 
   ## plot in R
-  strF = ('/tmp/DEG%f.csv' % time.time())
+  strF = ('/tmp/DENS2D%f.csv' % time.time())
   adata.to_df().to_csv(strF)#
   res = subprocess.run([strExePath+'/Density2D.R',strF,data['figOpt']['img'],str(data['cutoff']),str(data['bandwidth']),data['figOpt']['colorMap'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')

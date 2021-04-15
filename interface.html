@@ -32,8 +32,8 @@
     <script src="https://interactivereport.github.io/cellxgene_VIP/static/saveVIP.js"></script>
     <!-- <script src="static/saveVIP.js"></script> -->
     <!-- for testing the VIP -->
-    <script src="https://interactivereport.github.io/cellxgene_VIP/static/testVIP.js"></script>
-    <!--  <script src="static/testVIP.js"></script>-->
+    <!--  <script src="https://interactivereport.github.io/cellxgene_VIP/static/testVIP.js"></script>-->
+    <script src="static/testVIP.js"></script>
     <!--  end -->
     <style>
       .dropup,
@@ -4291,12 +4291,12 @@ function DENS2Dplot(){
     return;
   }
 
-  var genes = [];
-  $(".DENS2Dgenes").each(function(){
-    if($(this).prop("checked")){
-      genes.push($(this).val());
-    }
-  })
+  var genes = getGenes('DENS2D');
+  //$(".DENS2Dgenes").each(function(){
+  //  if($(this).prop("checked")){
+  //    genes.push($(this).val());
+  //  }
+  //})
   if(genes.length!=2){
     $('#DENS2Dnote').text("Please select two genes to plot");
     return;
