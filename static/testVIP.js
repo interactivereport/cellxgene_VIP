@@ -139,7 +139,7 @@ function randomInitDEG(grpName,eID){
   setTimeout(randomSelGene,1000,grpName,eID);
 }
 function randomSelGene(grpName,eID){
-  testVIPhtmladd(eID,"Waiting ");
+  testVIPhtmladd(eID,". ");
   if(window.DEGraw === undefined){
     setTimeout(randomSelGene,1000,grpName,eID);
   }else{
@@ -182,7 +182,9 @@ function randomSelBox(grpName,eID){
     if(cID.includes('ABBR') || cID.includes('CLI') || cID.includes('cell')) continue;
     testVIPhtmladd(eID,cID+"; ");
     $("."+cID).each(function(){
-      $(this).prop('checked', false);
+      if($(this).prop('checked')){
+        $(this).trigger('click');
+      }
     });
     for(const one of randomSel($("."+cID),Math.max(2,~~(Math.random()*$("."+cID).length/2)))){
       if($(one).prop('disabled')){
