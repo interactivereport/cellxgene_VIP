@@ -3184,6 +3184,7 @@ function GDplot(){
 
 }
 function MARKplot(){
+  $('#MARKnote').text("");
   var cells=getCells('MARKcell');
   if(cells.length==0){
     $('#MARKnote').text(VIPCellSelectionMsg);
@@ -3856,7 +3857,7 @@ function DEGfind(){
         $('#DEGplotByGinfoSel').append('<option value="'+d+'">'+d+'</option>')
       });
       // raw DEG table
-      //window.DEGraw = resD[0];
+      window.DEGraw = resD[0];
       DEGplot('DEG');
       $("#DEGfinal").show();
       $("#DEGinteractiveBtn").prop('disabled', false);
