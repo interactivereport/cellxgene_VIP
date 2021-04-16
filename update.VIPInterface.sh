@@ -16,6 +16,7 @@ mkdir -p $strPath/server/app/gsea
 cp gsea/*gmt $strPath/server/app/gsea
 
 if [ -n "$1" ]; then
+cp Density2D.R $strPath/server/app/.
 cp bubbleMap.R $strPath/server/app/.
 cp violin.R $strPath/server/app/.
 cp volcano.R $strPath/server/app/.
