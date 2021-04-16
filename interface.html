@@ -1327,7 +1327,8 @@
     <div id="IMG" class="tabcontent">
       <h3>Global setting for VIP</h3>
       <p>Selecting cells cumulatively:
-        <label class="switch"><input type="checkbox" id="IMGcumuCK" onclick="IMGcellSel($(this))"><span class="slider"></span></label>
+        <input type="radio" name="IMGcumuRd" value="Yes" onclick="IMGcellSel()">Yes
+        <input type="radio" name="IMGcumuRd" value="No" onclick="IMGcellSel()" checked>No
         &nbsp;&nbsp;&nbsp;&nbsp;<button onclick="IMGcellClear()">Clear</button>Cumulation</p>
       <div id='IMGrandomCellDiv' style='display:none'>
         <label><input name="IMGcell" type="radio" value="celllist1" checked />Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
@@ -1520,16 +1521,18 @@
 
     <div id="LOAD" class="tabcontent">
       <h3>Load saved session</h3>
-      Load from a url?
-      <label class="switch"><input type="checkbox" id="LOADurlCK" onclick="if($(this).prop('checked')){$('#LOADurlDIV').show()}else{$('#LOADurlDIV').hide()}"/>
-        <span class="slider"></span></label>
+      <p>Load from a url?
+        <input type="radio" name="LOADurlRd" value="Yes" onclick="$('#LOADurlDIV').show()">Yes
+        <input type="radio" name="LOADurlRd" value="No" onclick="$('#LOADurlDIV').hide()" checked>No
+      </p>
       <div id='LOADurlDIV' style="display:none;">
         <input type="url" id="LOADurl" size=80/>
         <input id="loadfile" type="file" onchange="load()" style="display:none"/>
       </div>
-      <br>Run plotting after loading?
-      <label class="switch"><input type="checkbox" id="LOADplotCK"/>
-        <span class="slider"></span></label>
+      <p>Run plotting after loading?
+        <input type="radio" name="LOADplotRd" value="Yes">Yes
+        <input type="radio" name="LOADplotRd" value="No" checked>No
+      </p>
       <br><button onclick="loadClick()">load</button>
       <div id="LOADnote"></div>
     </div>
@@ -2647,12 +2650,13 @@ function IMGref(){
   $('#IMGscanpybranch').val(window.figOpt['scanpybranch']);
   $('#IMGcolor').val(window.figOpt['colorMap']);
 }
-function IMGcellSel(ele){
+function IMGcellSel(){
+  //IMGcumuRd
+  window.accumulateCell.cellaccumu=$("input[name='IMGcumuRd']:checked").val()=='Yes';
   $("#IMGrandomCellDiv").hide();
-  if(ele.prop('checked')){
+  if(window.accumulateCell.cellaccumu){
     $("#IMGrandomCellDiv").show();
   }
-  window.accumulateCell.cellaccumu=ele.prop('checked');
   cellNupdate();
 }
 function IMGcellClear(){
@@ -4793,7 +4797,7 @@ function saveContent(){
   content['radio'] = radioSave();
   content['number'] = numberSave();
   content['sortable'] = sortableSave();
-  content['eID'] = eIDsave(['GSEAenable','IMGcumuCK','GSEAcollapse']);
+  content['eID'] = eIDsave(['GSEAenable','GSEAcollapse']);//
   return content;
 }
 function saveLocal(){
@@ -4827,7 +4831,7 @@ function saveLayout(){
   hiddenE.click();
 }
 function loadClick(){
-  if($("#LOADurlCK").prop('checked')){
+  if($("input[name='LOADurlRd']:checked").val()=='Yes'){
     testVIPgetData($("#LOADurl").val(),urlload);
   }else{
     $("#loadfile").trigger('click');
@@ -4836,8 +4840,8 @@ function loadClick(){
 function urlload(){
   var content = JSON.parse(decodeURIComponent(this.responseText));
   loadexe(content);
-  $("#LOADnote").html("Session was loaded<br>");
-  if($("#LOADplotCK").prop('checked')){
+  $("#LOADnote").html("Session was loaded<br>");//LOADplotRd
+  if($("input[name='LOADplotRd']:checked").val()=='Yes'){
     DEGfind();
     randomPlot('LOADnote',bSaved=false);
   }
@@ -4849,7 +4853,7 @@ function load(){
     loadexe(content);
     $("#LOADnote").html("Session was loaded<br>");
     $("#loadfile").val('');
-    if($("#LOADplotCK").prop('checked')){
+    if($("input[name='LOADplotRd']:checked").val()=='Yes'){
       DEGfind();
       randomPlot('LOADnote',bSaved=false);
     }
