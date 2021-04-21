@@ -180,7 +180,7 @@ def createData(data):
         fSparse = True
       if len(data['genes'])>0:
         fullG = list(scD.data.var[data['var_index']])
-        selG = [fullG.index(i) for i in data['genes']]
+        selG = sorted([fullG.index(i) for i in data['genes']]) #when data loaded backed, incremental is required
         X = scD.data.X[:,selG]
         gNames = data['genes']
       else:
@@ -195,7 +195,7 @@ def createData(data):
     expr = pd.DataFrame(X,columns=gNames,index=cNames)
 
   expr,gNames = collapseGeneSet(data,expr,gNames,cNames,fSparse)
-
+  #ppr.pprint("finished expression ...")
   ## obtain the embedding
   embed = {}
   if 'layout' in data.keys():
@@ -206,7 +206,7 @@ def createData(data):
       for one in layout:
         with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
           embed['X_%s'%one] = pd.DataFrame(scD.data.obsm['X_%s'%one][selC][:,[0,1]],columns=['%s1'%one,'%s2'%one],index=cNames)
-
+  #ppr.pprint("finished layout ...")
   ## obtain the category annotation
   combUpdate, obs = getObs(data)
 
@@ -230,6 +230,7 @@ def createData(data):
   ## empty selection
   if expr.shape[0]==0 or expr.shape[1]==0:
     return []
+  #ppr.pprint("finished obv ...")
 
   return sc.AnnData(expr,obs,var=pd.DataFrame([],index=gNames),obsm={layout:embed[layout].to_numpy() for layout in embed.keys()})
 
@@ -468,7 +469,7 @@ def updateGene(data):
 
 def PGV(data):
   # figure width and heights depends on number of unique categories
-  # characters of category names, gene number
+  # characters of category names, gene number #pecam1 pdpn
   updateGene(data)
   #ppr.pprint("PGV: creating data ...")
   adata = createData(data)
