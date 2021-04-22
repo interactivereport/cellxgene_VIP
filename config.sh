@@ -149,6 +149,7 @@ cp fgsea.R $strPath/server/app/.
 mkdir -p $strPath/server/app/gsea
 cp gsea/*gmt $strPath/server/app/gsea
 cp vip.env $strPath/server/app/. 2>/dev/null | true
+sed -i "s|MAX_LAYOUTS *= *[0-9]\+|MAX_LAYOUTS = 300|" "$strPath/server/common/constants.py"
 find ./cellxgene/server/ -name "decode_fbs.py" -exec cp {} $strPath/server/app/. \;
 
 echo -e "\nls -l $strweb\n"

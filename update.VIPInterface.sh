@@ -21,6 +21,7 @@ cp bubbleMap.R $strPath/server/app/.
 cp violin.R $strPath/server/app/.
 cp volcano.R $strPath/server/app/.
 sed -i "s|route(request.data,current_app.app_config, \"/tmp\")|route(request.data,current_app.app_config)|" "$strPath/server/app/app.py"
+sed -i "s|MAX_LAYOUTS *= *[0-9]\+|MAX_LAYOUTS = 300|" "$strPath/server/common/constants.py"
 find ./cellxgene/server/ -name "decode_fbs.py" -exec cp {} $strPath/server/app/. \;
 fi
 

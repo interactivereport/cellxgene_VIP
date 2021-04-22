@@ -22,7 +22,12 @@ strCSV = args[1]
 strFun <- args[2]
 minExpr <- as.numeric(args[3])
 bandwidth <- as.numeric(args[4])
-colMap <- switch(args[5],"B",magma="A",inferno="B",plasma="C",viridis="D")
+if (grepl( "_r", args[5], fixed = TRUE)) {
+  dir <- -1
+} else {
+  dir <- 1
+}
+colMap <- switch(sub("_r",'',args[5]),"B",magma="A",inferno="B",plasma="C",viridis="D")
 fontsize <- as.numeric(args[6])
 dpi <- as.numeric(args[7])
 
@@ -45,7 +50,7 @@ p <- ggplot(D, aes_string(x = colnames(D)[1], y = colnames(D)[2], color = 'densi
   geom_hline(yintercept = 0, color = "red", linetype = 2) +
   theme(axis.text = element_text(face = "bold"),
         text=element_text(size=fontsize)) +
-  viridis::scale_color_viridis(option = colMap) +
+  viridis::scale_color_viridis(option = colMap, direction = dir) +
   scale_shape_identity()
 
 strImg <- gsub("csv$",strFun,strCSV)
