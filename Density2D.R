@@ -10,6 +10,7 @@ if(nchar(libPath)>3){
   .libPaths(c(addPath,.libPaths()))
 }
 if(!require(ggplot2,quietly=T) || !require(MASS,quietly=T) || !require(dplyr,quietly=T,warn.conflicts=F)) stop("ggplot2, dplyr and MASS are required R package!")
+options(bitmapType='cairo')
 
 get_density = function(x, y, ...) {
   dens <- MASS::kde2d(x, y, ...)

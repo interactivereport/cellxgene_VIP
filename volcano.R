@@ -11,6 +11,7 @@ if(nchar(libPath)>3){
 library(ggplot2)
 library(ggrepel)
 library(ggrastr)
+options(bitmapType='cairo')
 
 strCSV = args[1]
 genes <- unlist(strsplit(args[2],";"))

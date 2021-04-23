@@ -10,6 +10,7 @@ if(nchar(libPath)>3){
 suppressMessages(suppressWarnings(require(fgsea)))
 suppressMessages(suppressWarnings(require(data.table)))
 suppressMessages(suppressWarnings(require(ggplot2)))
+options(bitmapType='cairo')
 set.seed(0)
 strCSV <- args[1]
 strGMT <- args[2]

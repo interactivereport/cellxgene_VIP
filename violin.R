@@ -16,6 +16,7 @@ loadPackages <- function(){
   require(gridExtra)
 }
 suppressMessages(suppressWarnings(loadPackages()))
+options(bitmapType='cairo')
 
 violinPlot <- function(X,cutoff=0){
   #X[cells,(gene.name,grouping,subgrouping)]
