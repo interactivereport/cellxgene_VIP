@@ -2058,53 +2058,41 @@ function init(){
     console.log("VIP (Visualization in Plugin) is ready on client side.");
 
     var tryurls = [window.location.href.replace(/\/+$/,'')+"/VIP",window.location.origin+"/VIP","/VIP","VIP"];
-    var results = [];
-    tryurls.reduce(function(prev, cur, index, arr) {
-      return prev.then(function(data) {
-        return $.ajax({
-          type: "POST",
-          url: cur,
-          data:JSON.stringify({'method':"HELLO",'dataset': window.store.getState().config.displayNames.dataset+'.h5ad'}),
-          contentType: 'application/json;charset=UTF-8',
-          success: function(res, status, req){
-            console.log(res + " url: "+this.url);
-            results.push(this.url);
-          },
-          error: function(request,status,error){
-            //console.log(request.status+': handshake failed, keep trying ...');
+    for (var i=0;i<tryurls.length; i++) {
+      $.ajax({
+        type: "POST",
+        url: tryurls[i],
+        data:JSON.stringify({'method':"HELLO",'dataset': window.store.getState().config.displayNames.dataset+'.h5ad'}),
+        contentType: 'application/json;charset=UTF-8',
+        success: function(res, status, req){
+          console.log(res + " url: "+this.url);
+          if (!('bioInit' in window)) {
+            window.bioInit=true;
+            VIPurl = this.url;
+            console.log("VIP ("+VIPurl+") is ready on server side."); 
+            //Add Description
+            addDescription();
+        
+            //get GSEA Information
+            getGSEA();
+        
+            //for pre-computed DEG
+            enablePreDEG();
+        
+            //for metaCell
+            enableMetaCell();
+        
+            //for VIP test
+            enableVIPtest();
+        
           }
-        }).then(function(data) {
-          //console.log("URL " + index);
-        }).catch(function(jqXhr) {
-        });
-      })
-    }, $().promise()).done(function() {
-      // last ajax call done
-      // all results are in the results array
-      console.log(results);
-      VIPurl = results[0];
-
-      //Add Description
-      addDescription();
-
-      //get GSEA Information
-      getGSEA();
-
-      //for pre-computed DEG
-      enablePreDEG();
-
-      //for metaCell
-      enableMetaCell();
-
-      //for VIP test
-      enableVIPtest();
-
-
-    });
-    window.bioInit=true;
-
+        },
+        error: function(request,status,error){
+          //console.log(request.status+': handshake failed, keep trying ...');
+        }
+      });
+    }
   }
-  return true;
 }
 function initBrush(aID){
   for(const i of ["left","right"]){

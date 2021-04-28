@@ -289,7 +289,7 @@ def distributeTask(aTask):
   }.get(aTask,errorTask)
 
 def HELLO(data):
-  return 'Hi, VIP is ready on server side.'
+  return 'Hi, connected.'
 
 def iostreamFig(fig):
   #getLock(iosLock)
