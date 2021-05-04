@@ -20,7 +20,7 @@
 #echo "Done with conda env setup"
 #
 
-
+set -o errexit
 
 pythonV="$(python --version)"
 if [[ $pythonV != *"Python 3.7"* && $pythonV != *"Python 3.8"* ]]; then
