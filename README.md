@@ -90,7 +90,7 @@ R -q -e 'if(!require(data.table)) devtools::install_version("data.table",version
 ```bash
 ps -ef | grep cellxgene
 Rscript -e 'reticulate::py_config()'
-# Run the following command if the output of the above command is not pointing to the python in your env.
+# Run the following command if the output of the above command doesn't point to the Python in your env.
 export RETICULATE_PYTHON=`which python`
 cellxgene launch --host <xxx> --port <xxx> --disable-annotations --verbose <h5ad file>
 ```
