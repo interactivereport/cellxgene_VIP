@@ -34,7 +34,8 @@ fi
 rm -rf cellxgene
 git clone https://github.com/chanzuckerberg/cellxgene.git
 cd cellxgene
-git checkout bedbc87ed6178cd00a586feac3e99d4912d1c74e # v 0.16.7  # 735eb11eb78b5e6c35ba84438970d0ce369604e1 (v0.15.0)
+#git checkout bedbc87ed6178cd00a586feac3e99d4912d1c74e # v 0.16.7  # 735eb11eb78b5e6c35ba84438970d0ce369604e1 (v0.15.0)
+git checkout bdfd9fe0a5462a0c139675fe10356765d2bbd95b
 sed -i .bak 's|anndata>=0.7.0|anndata>=0.7.4|' 'server/requirements.txt'
 sed -i .bak 's|scanpy==1.4.6|scanpy==1.6.1|' 'server/requirements.txt'
 cd ..
