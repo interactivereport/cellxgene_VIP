@@ -1,42 +1,47 @@
+import sys, getopt
+
+def parseArgs(argv):
+    inputfile = ''
+    outputfile = ''
+    dim = ''
+    try:
+        opts, args = getopt.getopt(argv,"d:hi:o:r:",["input=","dimension=","output=","res="])
+    except getopt.GetoptError:
+        print('Usage: st_sample_merge.py -i <inputfile> -o <outputfile> [-d <dimention>]')
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == '-h':
+            print('Usage: st_sample_merge.py -i <inputfile> -o <outputfile> [-d <dimention>]')
+            sys.exit()
+        elif opt in ("-i", "--input"):
+            inputfile = arg
+        elif opt in ("-d", "--dimension"):
+            dim = arg
+        elif opt in ("-o", "--output"):
+            outputfile = arg
+    if inputfile == '':
+        print('Usage: st_sample_merge.py -i <inputfile> -o <outputfile> [-d <dimention>]')
+        sys.exit()
+    print('Input pattern is "',inputfile,'"')
+    print('dimension is "',dim,'"')
+    print('Output file is "',outputfile,'"')
+    return(inputfile, outputfile, dim)
+
+(inputfile, outputfile, dim) = parseArgs(sys.argv[1:])
+
 import scanpy as sc
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import copy
-import sys, getopt
 import numpy as np
 from PIL import Image, ImageOps
 
-def parseArgs(argv):
-    inputfolder = ''
-    outputfile = ''
-    path = ''
-    try:
-        opts, args = getopt.getopt(argv,"hi:p:o:",["input=","path=","output="])
-    except getopt.GetoptError:
-        print('merge_multiple_ST_image_and_spatial_coordinates.py -i <inputfolder pattern> -p <path> -o <outputfile>')
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt == '-h':
-            print('merge_multiple_ST_image_and_spatial_coordinates.py -i <inputfolder pattern> -p <path> -o <outputfile>')
-            sys.exit()
-        elif opt in ("-i", "--input"):
-            inputfolder = arg
-        elif opt in ("-p", "--path"):
-            path = arg
-        elif opt in ("-o", "--output"):
-            outputfile = arg
-    print('Input pattern is "',inputfolder,'"')
-    print('path file is "',path,'"')
-    print('Output file is "',outputfile,'"')
-    return(inputfolder, path, outputfile)
-
-(inputfolder, path, outputfile) = parseArgs(sys.argv[1:])
-
 #sc.logging.print_versions()
 
-import glob
-samples = glob.glob(path+"/"+inputfolder)
+
+samples = pd.read_csv(inputfile, header = None)[0]
+
 print(samples)
 
 def read_each(i):
@@ -105,19 +110,28 @@ samples = list()
 for f in list(adata_merge.obsm):
     if "spatial_" in f: # search for the pattern
         library_id=f.replace("X_spatial_","") # parse the string and get the sample id
-        library_id=library_id.replace("V1_","")
+        #library_id=library_id.replace("V1_","")
         samples.append(library_id)
 
 from PIL import Image
 spatial=adata_merge.uns["spatial"]
+
+import math
+if dim=='':
+    height = math.ceil(math.sqrt(len(samples)))
+    width = math.ceil(len(samples)/height)
+else:
+    width,height = dim.split('x')
+
 idx = 0
 size=700
 #creates a new empty image, RGB mode, and size 1400 by 1400.
-new_im = Image.new('RGB', (size*2,size*2))
-for i in range(0,size*2,size):
-    for j in range(0,size*2,size):
+new_im = Image.new('RGB', (size*width,size*height))
+for i in range(0,size*width,size):
+    for j in range(0,size*height,size):
         # load the image from the object
-        im = Image.fromarray((spatial["spatial_V1_"+samples[idx]]["images"]["lowres"]* 255).round().astype(np.uint8)) # found a solution to covert float32 to unit8
+        #im = Image.fromarray((spatial["spatial_V1_"+samples[idx]]["images"]["lowres"]* 255).round().astype(np.uint8)) # found a solution to covert float32 to unit8
+        im = Image.fromarray((spatial["spatial_"+samples[idx]]["images"]["lowres"]* 255).round().astype(np.uint8)) # found a solution to covert float32 to unit8
         # paste images together
         new_im.paste(im, (j,i))
         idx = idx+1
@@ -135,16 +149,16 @@ adata_merge.uns['spatial']['spatial_Merged']['scalefactors']['tissue_hires_scale
 # add back the spatial coordinates as separate embeddings
 idx = 0
 adata_merge.obsm['X_spatial_Merged'] = adata_merge.obsm['spatial']
-for i in range(0,size*2,size):
-    for j in range(0,size*2,size):
-        library_id='spatial_V1_'+samples[idx] # parse the string and get the sample id
+for i in range(0,size*width,size):
+    for j in range(0,size*height,size):
+        #library_id='spatial_V1_'+samples[idx] # parse the string and get the sample id
+        library_id='spatial_'+samples[idx] # parse the string and get the sample id
         print(library_id)
         tissue_lowres_scalef = spatial[library_id]['scalefactors']['tissue_lowres_scalef']
         adata_merge.obsm['X_spatial_Merged'][np.where(adata_merge.obs['sample']==str(idx))] = copy.deepcopy(adatals[idx].obsm['spatial'])
         adata_merge.obsm['X_spatial_Merged'][np.where(adata_merge.obs['sample']==str(idx)),1] = adatals[idx].obsm['spatial'][:,1]*tissue_lowres_scalef - i
         adata_merge.obsm['X_spatial_Merged'][np.where(adata_merge.obs['sample']==str(idx)),0] = adatals[idx].obsm['spatial'][:,0]*tissue_lowres_scalef + j
         idx = idx+1    
-
 
 ## plotting out how the image and coordinates look
 ## note, in python the image and coordinates are NOT overlapping, but when load in VIP, they would. Reason Y coordinate values are negative

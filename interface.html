@@ -642,7 +642,7 @@
 
     <div id="MARK" class="tabcontent">
       <div id="MARKinput">
-        <h3>Marker genes of annotation categories on selected cells</h3>
+        <h3>Marker genes of annotation categories from selected cells</h3>
         <p>Choose cell selection(s):
           <label><input class="MARKcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="MARKcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
@@ -674,11 +674,11 @@
     <div id="SGV" class="tabcontent">
       <div class="topTab">
         <button id="SGVsingle" class="SGVlinks" onclick="selTop(event, 'SGVsingleV','SGV')">Plot Violin</button>
-        <button id="SGVcompare" class="SGVlinks" onclick="selTop(event, 'SGVcompareV','SGV')">Group Violin</button>
+        <button id="SGVcompare" class="SGVlinks" onclick="selTop(event, 'SGVcompareV','SGV')">Grouped Violin</button>
       </div>
 
       <div id="SGVsingleV" class="SGVcontent">
-        <h3>Violin plot of a gene on selected cells</h3>
+        <h3>Violin plot of a gene from selected cells</h3>
         <div id="SGVinput">
           <p>Choose cell selection(s):
             <label><input class="SGVcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
@@ -731,7 +731,7 @@
 
     <div id="PGV" class="tabcontent">
       <div id="PGVinput">
-        <h3>Stacked violin plot of genes on selected cells</h3>
+        <h3>Stacked violin plot of genes from selected cells</h3>
         <p>Choose cell selection(s):
           <label><input class="PGVcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="PGVcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
@@ -805,7 +805,7 @@
 
     <div id="HEAT" class="tabcontent">
       <div id="HEATinput">
-        <h3>Heatmap on selected cells and genes</h3>
+        <h3>Heatmap of selected cells and genes</h3>
         <p>Choose cell selection(s):
           <label><input class="HEATcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="HEATcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
@@ -910,7 +910,7 @@
 
     <div id="EMBED" class="tabcontent">
       <div id="EMBEDinput">
-        <h3>Embedding plots on selected genes and/or annotations</h3>
+        <h3>Embedding plots of selected genes and/or annotations</h3>
         <p>Choose cell selection(s):
           <label><input class="EMBEDcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="EMBEDcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
@@ -945,7 +945,7 @@
 
     <div  id="TRAK" class="tabcontent">
       <div id="TRAKinput">
-        <h3>Track plot shows the gene expression represented by height</h3>
+        <h3>Track plot represents the gene expression by height</h3>
         <p>Choose cell selection(s):
           <label><input class="TRAKcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="TRAKcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
@@ -990,7 +990,7 @@
         <select id="DENSsplit"></select></p>
         <p>Color by:
         <select id="DENSgrp"></select></p>
-        <p>Bandwidth: <input id="DENSprec" type="number" step="0.1" value="0.5" min="0.1"/> controls how tightly the curve is fit to the data, much like the bin size in a histogram.</p>
+        <p>Bandwidth: <input id="DENSprec" type="number" step="0.1" value="0.5" min="0.1"/> controls how tightly the curve fits to the data, like the bin size in a histogram.</p>
       </div>
       <button class="DENSbt" onclick="DENSplot()"><b>Plot</b></button>
       <button class="DENSbt" onclick="ZoomIn('DENSresize')">Zoom In</button>
@@ -1005,7 +1005,7 @@
 
     <div  id="DENS2D" class="tabcontent">
       <div id="DENS2Dinput">
-        <h3>2D density plot to show expression relationship of two genes</h3>
+        <h3>2D density plot shows the expression relationship of two genes</h3>
         <p>Choose cell selection(s):
           <label><input class="DENS2Dcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="DENS2Dcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
@@ -1028,7 +1028,7 @@
 
     <div  id="DUAL" class="tabcontent">
       <div id="DUALinput">
-        <h3>Embedding plot of two genes on selected cells</h3>
+        <h3>Embedding plot of two genes from selected cells</h3>
         <p>Choose cell selection(s):
           <label><input class="DUALcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="DUALcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
@@ -1053,7 +1053,7 @@
 
     <div  id="SANK" class="tabcontent">
       <div id="SANKinput">
-        <h3>Interactive sankey diagram of annotations and/or genes on selected cells</h3>
+        <h3>Interactive sankey diagram of annotations and/or genes from selected cells</h3>
         <p>Choose cell selection(s):
           <label><input class="SANKcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="SANKcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
@@ -1114,7 +1114,7 @@
           <input type="checkbox" onclick="$('.DEGgenes').prop('checked', this.checked);">Uncheck / Check All</p>
           <p id="DEGgene"></p>
           <p>Define the significance in FDR &#62; <input id="DEGsigFDR" type="number" step="0.001" value="0.05" min="0" max="1"/>
-            and absolute logFC &#62; <input id="DEGsigLogfc" type="number" step="0.1" value="1" min="0"/> </p>
+            and absolute log2(FC) &#62; <input id="DEGsigLogfc" type="number" step="0.1" value="1" min="0"/> </p>
           <p>Remove genes in volcano plot with the absolute log2(FC) larger than: <input id="DEGlogfcCut" type="number" step="1" value="10" min="0"/></p>
           <fieldset>
             <legend>Gene Set Enrichment Analysis:
@@ -1153,7 +1153,7 @@
           <input type="radio" name="DEGcolorBy" value="selGene" onclick="$('#DEGplotBySig').hide();$('#DEGplotByGinfo').hide();$('#DEGplotByGsel').show();">Gene Selection
           <div id="DEGplotBySig">
             FDR: <input id="DEGfdr" type="number" step="0.001" value="0.05" min="0" max="1"/>
-            Asolute logFC: <input id="DEGlogfc" type="number" step="0.1" value="1" min="0"/>
+            Asolute log2(FC): <input id="DEGlogfc" type="number" step="0.1" value="1" min="0"/>
           </div>
           <div id="DEGplotByGinfo">
             <select id="DEGplotByGinfoSel"></select>
@@ -1215,7 +1215,7 @@
             <option value='All'>All</option>
           </select></p>
         <p>Define the significance in FDR &#60; <input id="preDEGvolcanoFDR" type="number" step="0.001" value="0.05" min="0" max="1"/>
-            and absolute logFC &#62; <input id="preDEGvolcanoLogfc" type="number" step="0.1" value="1" min="0"/> </p>
+            and absolute log2(FC) &#62; <input id="preDEGvolcanoLogfc" type="number" step="0.1" value="1" min="0"/> </p>
 
         <p hidden>Remove genes in volcano plot with the absolute log2(FC) larger than: <input id="preDEGvolcanologfcCut" type="number" step="1" value="100" min="0"/></p>
         <button class="preDEGvolcanobt" onclick="preDEGVolcanofind('preDEGvolcano')"><b>Plot</b></button>
@@ -1234,7 +1234,7 @@
           <input type="radio" name="preDEGvolcanocolorBy" value="selGene" onclick="$('#preDEGvolcanoplotBySig').hide();$('#preDEGvolcanoplotByGinfo').hide();$('#preDEGvolcanoplotByGsel').show();">Gene Selection
           <div id="preDEGvolcanoplotBySig">
             FDR: <input id="preDEGvolcanofdr" type="number" step="0.001" value="0.05" min="0" max="1"/>
-            Asolute logFC: <input id="preDEGvolcanologfc" type="number" step="0.1" value="1" min="0"/>
+            Asolute log2(FC): <input id="preDEGvolcanologfc" type="number" step="0.1" value="1" min="0"/>
           </div>
           <div id="preDEGvolcanoplotByGinfo">
             <select id="preDEGvolcanoplotByGinfoSel"></select>
@@ -1495,7 +1495,7 @@
     </div><!--CLI-->
 
     <div id="tVIP" class="tabcontent">
-      <h3>Test the VIP functionality</h3>
+      <h3>Test VIP functionalities</h3>
       <p><button id="tVIPtest" class="tVIPbt" onclick="testVIP('tVIPnote')"><b>Test by the latest case</b></button></p>
       <fieldset>
         <legend>Create a test case</legend>
@@ -1504,10 +1504,10 @@
           The process will<br>
           1. Split cells with selected annotation into two groups randomly;<br>
           2. Select 500 cells from each group;<br>
-          3. Apply DEG (Differentially Expressed Genes) method to those two groups of cells;<br>
+          3. Perform DEG (Differentially Expressed Genes) method to those two groups of cells;<br>
           4. Select top DEGs randomly into groups;<br>
           5. Choose plotting options in VIP randomly;<br>
-          6. Perform plotting function one by one;<br>
+          6. Perform plotting functions one by one;<br>
           7. Save the test case on the server for future use (overwrite previous).
         </p>
         <p><button class="tVIPbt tVIPbtA" onclick="tVIPcreate('cells','tVIPnote')">Create on selected cells</button><br>
