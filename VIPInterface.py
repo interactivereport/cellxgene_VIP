@@ -182,7 +182,7 @@ def createData(data):
         fullG = list(scD.data.var[data['var_index']])
         selG = sorted([fullG.index(i) for i in data['genes']]) #when data loaded backed, incremental is required
         X = scD.data.X[:,selG]
-        gNames = data['genes']
+        gNames = [fullG[i] for i in selG] #data['genes']
       else:
         X = scD.data.X
         gNames = list(scD.data.var[data['var_index']])
