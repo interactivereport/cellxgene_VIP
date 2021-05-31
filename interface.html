@@ -547,7 +547,7 @@
       <button class="tablinks" onclick="selFun(event, 'STACBAR')">Stacked Barplot</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1')">DEG</button>
-      <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')">Pre-Compu. DEG</button>
+      <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')">Pre-Computed DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
       <button class="tablinks" onclick="selFun(event, 'SPATIAL');defaultTopSel('SPATIAL','SPATIALimage')">Spatial Transcriptomics</button>
       <button class="tablinks" onclick="selFun(event, 'CLI')">Command Line Interface</button>
@@ -597,12 +597,12 @@
       <p>The following genes were added (click on a gene name to remove): <span id="ADDGsel"></span></p>
       <p>The following genes are not in the data: <span id="ADDGdel" style="color:red"></span></p>
 
-      <h3>The user-defined gene sets:</h3>
+      <h3>User-defined gene sets:</h3>
       <p id="ADDGsets"></p>
 
       <h3>Add gene sets of interest manually</h3>
       <p>Gene set name: <input id="Geneset_Name0" type="text" size=10/>
-        Gene names:<input id="Geneset_Genes0" type="text" size=35/>
+        Gene names: <input id="Geneset_Genes0" type="text" size=35/>
         <button onclick="ADDGsetAdd(0)"><b>Add</b></button>
       </p>
 
@@ -673,8 +673,8 @@
 
     <div id="SGV" class="tabcontent">
       <div class="topTab">
-        <button id="SGVsingle" class="SGVlinks" onclick="selTop(event, 'SGVsingleV','SGV')">Plot Violin</button>
-        <button id="SGVcompare" class="SGVlinks" onclick="selTop(event, 'SGVcompareV','SGV')">Grouped Violin</button>
+        <button id="SGVsingle" class="SGVlinks" onclick="selTop(event, 'SGVsingleV','SGV')">Basic Violin</button>
+        <button id="SGVcompare" class="SGVlinks" onclick="selTop(event, 'SGVcompareV','SGV')">Sub-grouped Violin</button>
       </div>
 
       <div id="SGVsingleV" class="SGVcontent">
@@ -701,7 +701,7 @@
       </div> <!-- SGVsingleV -->
 
       <div id="SGVcompareV" class="SGVcontent">
-        <h3>Plot the grouped violin</h3>
+        <h3>Plot sub-grouped violin</h3>
         <div id="SGVcompareinput">
           <p>Choose cell selection(s):
             <label><input class="SGVcomparecell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
@@ -711,7 +711,7 @@
           <p>Expression cutoff: <input id="SGVcomparecutoff" type="number" step="0.1" value="1" min="0"/></p>
           <p>Group by:
           <select id="SGVcompareorder"></select></p>
-          <p>Compare by:
+          <p>Sub-group by:
           <select id="SGVcomparegrp"></select></p>
         </div>
         <button class="SGVcomparebt" onclick="SGVcompareplot()"><b>Plot</b></button> <!-- 'plot' -->
@@ -896,7 +896,7 @@
               </table>
     		</div>
 
-        <pre id="DOTnote" style="color:red;">Note: Unscaled data is used as the visualiztion is hard to interpret for scaled or corrected matrices in which zero counts had been replaced by other values. Scaling control in the Figure Option does not apply to Dot plot</pre>
+        <pre id="DOTnote" style="color:red;">Note: Unscaled data is used as the visualiztion is hard to interpret for scaled or corrected matrices in which zero counts had been replaced by other values. Scaling option in Global Setting does not apply to Dot plot</pre>
       </div>
       <button class="DOTbt" onclick="DOTplot()"><b>Plot</b></button>
       <button class="DOTbt" onclick="ZoomIn('DOTresize')">Zoom In</button>
@@ -1139,7 +1139,7 @@
         <button class="DEGbt" onclick="DEGfind()"><b>Find</b></button>
         <button onclick="hideShow($('#DEGinput'),$(this));">Hide Input</button>
         <button id="DEGinteractiveBtn" onclick="hideShow($('#DEGfinal'),$(this),'Interactive');">Hide Interactive</button>
-        <pre id="DEGnote" style="color:red;">Note: Unscaled data is used. Scaling control in the Figure Option does not apply to DEG.</pre>
+        <pre id="DEGnote" style="color:red;">Note: Unscaled data is used. Scaling option in Global Setting does not apply to DEG.</pre>
         <label id='DEGinfo'></label>
         <div id="DEGspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
 
@@ -2037,6 +2037,7 @@ function init(){
     editor.getSession().setMode("ace/mode/python");
     editor.getSession().setUseWrapMode(true);
     editor.setFontSize("14px");
+    editor.setShowPrintMargin(false);
     editor.getSession().setValue($("#CLIVignetteCode1").html().trim());
 
 
