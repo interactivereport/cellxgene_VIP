@@ -692,7 +692,7 @@ def DEG(data):
     if sum(mask[0]==True)<10 or sum(mask[1]==True)<10:
       raise ValueError('Less than 10 cells in a group!')
     with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-      res = diffDefault.diffexp_ttest(scD,mask[0].to_numpy(),mask[1].to_numpy(),scD.data.shape[0])
+      res = diffDefault.diffexp_ttest(scD,mask[0].to_numpy(),mask[1].to_numpy(),scD.data.shape[1])# shape[cells as rows, genes as columns]
       gNames = list(scD.data.var[data['var_index']])
     deg = pd.DataFrame(res,columns=['gID','log2fc','pval','qval'])
     gName = pd.Series([gNames[i] for i in deg['gID']],name='gene')
