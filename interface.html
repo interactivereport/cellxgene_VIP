@@ -685,7 +685,7 @@
             <label><input class="SGVcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
           </p>
           <p>Choose a gene ('Add Genes' first): <select id="SGVgene"></select></p>
-          <p>Expression cutoff: <input id="SGVcutoff" type="number" step="0.1" value="1" min="0"/></p>
+          <p>Expression cutoff for cell filtering: <input id="SGVcutoff" type="number" step="0.1" value="1" min="0"/></p>
           <p>Group by:
           <select id="SGVgrp"></select></p>
         </div>
@@ -738,7 +738,7 @@
         </p>
         <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.PGVgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="PGVgene"></p>
-        <p>Expression cutoff: <input id="PGVcutoff" type="number" step="0.1" value="1"/></p>
+        <p>Expression cutoff for cell filtering: <input id="PGVcutoff" type="number" step="0.1" value="1"/></p>
         <p>Select user-defined gene sets:</p><p id="PGVgeneGrp"></p>
         <div id="PVGgeneGrpCollapsing">
           <p>Collapsing the above gene sets:
@@ -844,7 +844,7 @@
         </p>
         <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.DOTgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="DOTgene"></p>
-        <p>Expression cutoff: <input id="DOTcutoff" type="number" step="0.1" value="1"/></p>
+        <p>Expression cutoff for cell fraction (dot size): <input id="DOTcutoff" type="number" step="0.1" value="1"/></p>
         <p>Expression is averaged only over cells expressing a given gene above the cutoff: <input type="radio" name="mean_only_expressed" value="Yes">Yes<input type="radio" name="mean_only_expressed" value="No" checked>No</p>
 
         <p>Select user-defined gene sets:</p><p id="DOTgeneGrp"></p>
@@ -1573,7 +1573,7 @@ function checkLoading(){
       if (columns[i].type === "categorical" && columns[i].categories.length<2) continue;
       annoNum ++;
     }
-   
+
     if (Object.keys(store.getState().annoMatrix.schema.annotations.obsByName).includes(store.getState().annoMatrix.schema.annotations.obs.index)) annoNum--;
     if (Object.keys(store.getState().annoMatrix.schema.annotations.obsByName).includes(">Description")) annoNum--;
 	if (store.getState().annoMatrix._cache.obs.__columns.length < annoNum) {
@@ -2076,22 +2076,22 @@ function init(){
           if (!('bioInit' in window)) {
             window.bioInit=true;
             VIPurl = this.url;
-            console.log("VIP ("+VIPurl+") is ready on server side."); 
+            console.log("VIP ("+VIPurl+") is ready on server side.");
             //Add Description
             addDescription();
-        
+
             //get GSEA Information
             getGSEA();
-        
+
             //for pre-computed DEG
             enablePreDEG();
-        
+
             //for metaCell
             enableMetaCell();
-        
+
             //for VIP test
             enableVIPtest();
-        
+
           }
         },
         error: function(request,status,error){
