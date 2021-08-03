@@ -48,6 +48,7 @@ bash ~/Downloads/Anaconda3-2020.02-Linux-x86_64.sh
 git clone https://github.com/interactivereport/cellxgene_VIP.git
 cd cellxgene_VIP
 
+source <path to Anaconda3>/etc/profile.d/conda.sh (Default: /opt/anaconda3/etc/profile.d/conda.sh)
 conda config --set channel_priority flexible
 conda env create -n <env name, such as: VIP> -f VIP.yml (system-wide R) or VIP_conda_R.yml (local R under conda, no root privilege needed)
 conda activate <env name, such as: VIP>
