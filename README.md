@@ -51,6 +51,9 @@ cd cellxgene_VIP
 source <path to Anaconda3>/etc/profile.d/conda.sh (Default: /opt/anaconda3/etc/profile.d/conda.sh)
 conda config --set channel_priority flexible
 conda env create -n <env name, such as: VIP> -f VIP.yml (system-wide R) or VIP_conda_R.yml (local R under conda, no root privilege needed)
+
+For Mac User, conda env create -n <env name, such as: VIP> -f VIP.macOS.yml
+
 conda activate <env name, such as: VIP>
 or
 source activate <env name>
@@ -58,6 +61,7 @@ source activate <env name>
 ## 3. Install cellxgene by running config.sh in "cellxgene_VIP" directory
 ```bash
 ./config.sh
+For Mac User, ./config.macOS.sh
 ```
 ## 4. Install R packages
 ```bash
