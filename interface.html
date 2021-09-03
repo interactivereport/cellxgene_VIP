@@ -1340,12 +1340,12 @@
 -->
       </div>
       <div>
-        <p>Scale data to unit variance for plotting:
+        <p>Scale gene expression to unit variance and zero mean
         <input type="radio" name="IMGscale" value="Yes" onclick="IMGset()">Yes
         <input type="radio" name="IMGscale" value="No" onclick="IMGset()">No
         <div id="IMGscaleShow">
           <Blockquote>
-            <input id="IMGscaleZero" type="checkbox" onclick="IMGset()"/> Retain zero-centering variables and set value to 0<br>
+            <input id="IMGscaleZero" type="checkbox" onclick="IMGset()"/> Genes with no variation are retained and set expression values to 0 during this operation<br>
             <input id="IMGclipValue" type="checkbox" onclick="IMGset()"/> Clip to a maximum value of <input id="IMGscaleMax" type="number" step="0.1" onchange="IMGset()"/>
           </Blockquote>
         </div>
@@ -3949,7 +3949,6 @@ function preDEGVolcanofind(eID){
   //var genes = getGenes(eID);
   var D = {'method':eID,
            'topN':$("#"+eID+"top").val(),
-           'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
            'compSel':$("#"+eID+"Tab").val(),
            'genes':getGenes(eID),
            'logFC':10,
@@ -4047,7 +4046,6 @@ function preDEGmultiplot(eID){
   }
   var D = {'method':eID,
            'genes':genes,
-           'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
            'compSel':selComp,
            'scale':$("#"+eID+"FigureScale").val(),
            'figOpt':window.figOpt}
