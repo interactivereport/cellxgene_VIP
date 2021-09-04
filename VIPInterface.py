@@ -1315,11 +1315,11 @@ def getPreDEGvolcano(data):
   #####
   gInfo = getVar(data)
   deg.index = deg['gene']
-  deg = pd.concat([deg,gInfo],axis=1,sort=False)
+  deg = pd.concat([deg,gInfo],axis=1,join='inner',sort=False)
   #return deg.to_csv()
 
   if not data['topN']=='All':
-    deg = deg.iloc[range(int(data['topN'])),]
+    deg = deg.iloc[range(min(deg.shape[0],int(data['topN']))),]
   #deg.loc[:,'log2fc'] = deg.loc[:,'log2fc'].apply(lambda x: '%.2f'%x)
   #deg.loc[:,'pval'] = deg.loc[:,'pval'].apply(lambda x: '%.4E'%x)
   #deg.loc[:,'qval'] = deg.loc[:,'qval'].apply(lambda x: '%.4E'%x)
