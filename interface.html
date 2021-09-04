@@ -3949,6 +3949,7 @@ function preDEGVolcanofind(eID){
   //var genes = getGenes(eID);
   var D = {'method':eID,
            'topN':$("#"+eID+"top").val(),
+           'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
            'compSel':$("#"+eID+"Tab").val(),
            'genes':getGenes(eID),
            'logFC':10,
@@ -4046,6 +4047,7 @@ function preDEGmultiplot(eID){
   }
   var D = {'method':eID,
            'genes':genes,
+           'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
            'compSel':selComp,
            'scale':$("#"+eID+"FigureScale").val(),
            'figOpt':window.figOpt}
