@@ -821,6 +821,40 @@
           <option value="X">Expression</option>
           <option value="zscore">Expression Z-score</option>
         </select></p>
+        <p>Color:
+        <select id="HEATcolor">
+          <option value='Purples'>Purples</option>
+          <option value='Blues'>Blues</option>
+          <option value='Greens'>Greens</option>
+          <option value='Oranges'>Oranges</option>
+          <option value='Reds' selected>Reds</option>
+          <option value='YlOrBr'>YlOrBr</option>
+          <option value='YlOrRd'>YlOrRd</option>
+          <option value='OrRd'>OrRd</option>
+          <option value='PuRd'>PuRd</option>
+          <option value='RdPu'>RdPu</option>
+          <option value='BuPu'>BuPu</option>
+          <option value='PuBu'>PuBu</option>
+          <option value='PuBuGn'>PuBuGn</option>
+          <option value='BuGn'>BuGn</option>
+          <option value='GnBu'>GnBu</option>
+          <option value='YlGnBu'>YlGnBu</option>
+          <option value='YlGn'>YlGn</option>
+          <option value='Spectral'>Spectral</option>
+          <option value='PiYG'>PiYG</option>
+          <option value='PRGn'>PRGn</option>
+          <option value='BrBG'>BrBG</option>
+          <option value='PuOr'>PuOr</option>
+          <option value='RdGy'>RdGy</option>
+          <option value='RdBu'>RdBu</option>
+          <option value='RdYlBu'>RdYlBu</option>
+          <option value='RdYlGn'>RdYlGn</option>
+        </select> <input id="HEATcolor_r" type="checkbox">Reverse <button onclick="hideShow($('#HEATcolorhelp'),$(this),'Color Help');">Show Color Help</button></p>
+    		<div id="HEATcolorhelp" style="display:none;">
+              <table border=0>
+                <tr valign="top"><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_sequential.png" width="300"></td><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_diverging.png" width="300"></td></tr>
+              </table>
+    		</div>
       </div>
       <button class="HEATbt"  onclick="HEATplot()"><b>Plot</b></button>
       <button class="HEATsaveBT" onclick="HEATdata()" disabled>Get Data</button>
@@ -3603,6 +3637,8 @@ function HEATcheck(){
   $(".HEATbt").prop('disabled',true);
   $(".HEATpngBT").prop('disabled',true);
   $(".HEATsaveBT").prop('disabled',true);
+  var color = $("#HEATcolor").val();
+  if ($("#HEATcolor_r")[0].checked) color += '_r';
   var D = {'method':'HEAT',
             'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'cells':cells,
@@ -3610,6 +3646,7 @@ function HEATcheck(){
             'order':orderGrp,
             'norm':$("#HEATnorm option:selected").val(),
             'grp':grps,
+            'color':color,
             'abb':window.bioAbbr,
             'combine':combGrp,
             'combineOrder':combGrpOrder,

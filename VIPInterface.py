@@ -546,12 +546,12 @@ def pHeatmap(data):
 
   w += 2
   Zscore=None
-  heatCol=None
+  heatCol=data['color']
   heatCenter=None
   colTitle="Expression"
   if data['norm']=='zscore':
     Zscore=1
-    heatCol="vlag"
+    #heatCol="vlag"
     heatCenter=0
     colTitle="Z-score"
   #ppr.pprint('HEAT data preparing cost %f seconds' % (time.time()-sT) )
