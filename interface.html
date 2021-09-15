@@ -2826,7 +2826,7 @@ function ABBRlist(){
 }
 function ABBRupdate(eID){
   for(var i=0;i<eID.length;i++){
-    eID[i] = eID[i].replace(/;;/g," ");
+    eID[i] = (eID[i].replace(/;;/g," ")).replace(/\./g,"\\.");
   }
   window.bioAbbr[eID[0]][eID[1]] = $('#'+eID.join("\\|").replace(/ /g,"\\ ")).val();
 }
