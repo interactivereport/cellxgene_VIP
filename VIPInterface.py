@@ -971,10 +971,10 @@ def DENS(data):
     defaultFontsize = float(data['figOpt']['fontsize'])
   subSize = 4
   #split = list(adata.obs[sGrp].unique())
-  split = list(adata.obs[sGrp].cat.categories)
-  genes = list(adata.var.index)
+  split = sorted(list(adata.obs[sGrp].cat.categories))
+  genes = sorted(list(adata.var.index))
   #colGrp = list(adata.obs[cGrp].unique())
-  colGrp = list(adata.obs[cGrp].cat.categories)
+  colGrp = sorted(list(adata.obs[cGrp].cat.categories))
   legendCol = math.ceil(len(colGrp)/(len(split)*11))
   fig = plt.figure(figsize=(len(genes)*subSize,len(split)*(subSize-1)))
   plt.xlabel("Expression",labelpad=20,fontsize=defaultFontsize+1)
