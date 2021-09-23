@@ -1,4 +1,4 @@
-# cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells
+# cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq and spatial transcriptomics data in the scale of millions of cells
 
 
 Since the first single-cell RNA sequencing (scRNA-seq) study was debuted in 2009[1], over 1050 scRNA-seq studies have been published to date. At least 25 studies reported profiles in 200k or more cells[2]. The largest scRNA-seq study reported 2.5 million mouse cells[3]. It is foreseen that there will be a trend of increasing cell size of 500k or more in scRNA-seq studies. The sheer amount of data had brought a challenge in visualizing and interactively exploring such big data set for scientists, even computational savvy specialists.
