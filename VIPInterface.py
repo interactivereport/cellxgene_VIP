@@ -663,7 +663,7 @@ def DEG(data):
             obs[comGrp] += ":"+obs[i]
       mask = [obs[comGrp].isin([data['comGrp'][i]]) for i in [0,1]]
     else:
-      data['figOpt']['scale'] = 'false'
+      data['figOpt']['scale'] = 'No'
       adata = createData(data)
       comGrp = data['grp'][0]
       adata = adata[adata.obs[comGrp].isin(data['comGrp'])]
@@ -674,11 +674,11 @@ def DEG(data):
       oneD['cells'] = data['cells'][one]
       oneD['genes'] = []
       oneD['grp'] = []
-      oneD['figOpt']['scale']='false'
+      oneD['figOpt']['scale']='No'
       #oneD = {'cells':data['cells'][one],
       #        'genes':[],
       #        'grp':[],
-      #        'figOpt':{'scale':'false'},
+      #        'figOpt':{'scale':'No'},
       #        'url':data['url']}
 
       D = createData(oneD)
@@ -769,7 +769,7 @@ def DOT(data):
   #ppr.pprint("DOT, starting ...")
   updateGene(data)
   # Dot plot, The dotplot visualization provides a compact way of showing per group, the fraction of cells expressing a gene (dot size) and the mean expression of the gene in those cell (color scale). The use of the dotplot is only meaningful when the counts matrix contains zeros representing no gene counts. dotplot visualization does not work for scaled or corrected matrices in which zero counts had been replaced by other values, see http://scanpy-tutorials.readthedocs.io/en/multiomics/visualizing-marker-genes.html
-  data['figOpt']['scale'] = 'false';
+  data['figOpt']['scale'] = 'No';
   #ppr.pprint("DOT: creating data ...")
   adata = createData(data)
   #ppr.pprint("DOT: data created!")
