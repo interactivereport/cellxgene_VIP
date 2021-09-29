@@ -1,9 +1,4 @@
----
-title: "Cellxgene VIP"
-repo: https://github.com/interactivereport/cellxgene_VIP
-author: " Kejie Li, Zhengyu Ouyang,  Dongdong Lin,  Michael Mingueneau, Will Chen, David Sexton, Baohong Zhang"
-date: "`r Sys.Date()`"
----
+
 # Getting started with cellxgene VIP
 
 This is a cellxgene VIP tutorial book written in **Markdown**. 
@@ -13,12 +8,14 @@ This is a cellxgene VIP tutorial book written in **Markdown**.
 
 ## Getting Set up
 ### Execute anaconda
-```{r eval=FALSE}
+
+```r
 bash ~/Downloads/Anaconda3-2020.02-Linux-x86_64.sh
 ```
 If anaconda is not installed on server, you can install it following anaconda documentation (https://docs.anaconda.com/anaconda/install/linux/)
 ### Create and enable conda environment
-```{r eval=FALSE}
+
+```r
 # clone repo from cellxgene VIP github
 git clone https://github.com/interactivereport/cellxgene_VIP.git
 cd cellxgene_VIP
@@ -33,12 +30,14 @@ source activate <env name>
 ```
 ### Cellxgene installation
 Install cellxgene by running config.sh in "cellxgene_VIP" directory
-```{r eval=FALSE}
+
+```r
 ./config.sh
 ```
 ### R dependencies
 Install all required R packages on linux:
-```{r eval=FALSE}
+
+```r
 export LIBARROW_MINIMAL=false
 #  ensure that the right instance of R is used. e.g. system-wide: /bin/R or /usr/bin/R ; local R under conda: ~/.conda/envs/VIP_conda_R/bin/R
 which R
@@ -68,7 +67,8 @@ R -q -e 'if(!require(data.table)) devtools::install_version("data.table",version
 ### Run cellxgene by h5ad file
 You can aslo run cellxgene by specifying a h5ad file, which stores scRNA-seq data along with a host and a port. 
 Use 'ps' to find used ports to spare. Please see <https://chanzuckerberg.github.io/cellxgene/posts/launch> for details
-```{r eval=FALSE}
+
+```r
 ps -ef | grep cellxgene
 Rscript -e 'reticulate::py_config()'
 # Run the following command if the output of the above command doesn't point to the Python in your env.
@@ -80,9 +80,4 @@ chrome is preferred, version 87.0.4280.88 or 87.0.4280.141 is used. Users can ac
 Following screenshot is what you should be able to see in console of chrome developer tools.
 ![Alt text](cellonweb.png)
 
-```{r include=FALSE}
-# automatically create a bib database for R packages
-knitr::write_bib(c(
-  .packages(), 'bookdown', 'knitr', 'rmarkdown'
-), 'packages.bib')
-```
+
