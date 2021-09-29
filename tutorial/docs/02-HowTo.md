@@ -157,7 +157,7 @@ Note: The data used by DEG is unscaled (please refer to description of the datas
 ## VIP	– Marker	Genes
 This functional module allows user to identify marker genes in the selected group(s) (more than 2, if 2 groups, please use DEG) of cells by annotation categories.
 
-Four methods are provided for detecting marker genes including logreg, t-test, Wilcoxon, and t422 testoverest_var. For each identified marker gene, the gene name, scores (the z-score underlying the computation of a p-value for each gene for each group) and assigned group are listed in the output table.
+Four methods are provided for detecting marker genes including logreg, t-test, Wilcoxon, and t-testoverest_var. For each identified marker gene, the gene name, scores (the z-score underlying the computation of a p-value for each gene for each group) and assigned group are listed in the output table.
 
 In each annotation category, top ranked marker genes (this example shows top 2) will be plotted by score in comparison to the rest of the categories.
 

@@ -1,7 +1,8 @@
 ---
 title: "Cellxgene VIP"
 repo: https://github.com/interactivereport/cellxgene_VIP
-author: " Kejie Li, Zhengyu Ouyang,  Dongdong Lin,  Michael Mingueneau, Will Chen, David Sexton, Baohong Zhang"
+author: " Kejie Li, Zhengyu Ouyang,  Dongdong Lin,  Michael Mingueneau, 
+          Will Chen, David Sexton, Baohong Zhang"
 date: "2021-09-29"
 ---
 # Getting started with cellxgene VIP
@@ -9,18 +10,18 @@ date: "2021-09-29"
 This is a cellxgene VIP tutorial book written in **Markdown**. 
 
 ## Why use cellxgene VIP?
-
+To meet the growing demands from scientists to effectively extract deep insights from single cell RNA-seq datasets, we developed cellxgene VIP, a frontend interactive visualization plugin to cellxgene framework, which directly interacts with in-memory data to generate a comprehensive set of plots in high resolution, perform advanced analysis, and make data downloadable for further analysis. It makes large scale scRNA-seq data visualization and analysis more accessible and reproducible with the potential to become an ecosystem for the scientific community to contribute even more modules to the Swiss knife of scRNA-seq data exploration tool.
 
 ## Getting Set up
 ### Execute anaconda
 
-```r
+```bash
 bash ~/Downloads/Anaconda3-2020.02-Linux-x86_64.sh
 ```
 If anaconda is not installed on server, you can install it following anaconda documentation (https://docs.anaconda.com/anaconda/install/linux/)
 ### Create and enable conda environment
 
-```r
+```bash
 # clone repo from cellxgene VIP github
 git clone https://github.com/interactivereport/cellxgene_VIP.git
 cd cellxgene_VIP
@@ -42,7 +43,7 @@ Install cellxgene by running config.sh in "cellxgene_VIP" directory
 ### R dependencies
 Install all required R packages on linux:
 
-```r
+```bash
 export LIBARROW_MINIMAL=false
 #  ensure that the right instance of R is used. e.g. system-wide: /bin/R or /usr/bin/R ; local R under conda: ~/.conda/envs/VIP_conda_R/bin/R
 which R
@@ -73,7 +74,7 @@ R -q -e 'if(!require(data.table)) devtools::install_version("data.table",version
 You can aslo run cellxgene by specifying a h5ad file, which stores scRNA-seq data along with a host and a port. 
 Use 'ps' to find used ports to spare. Please see <https://chanzuckerberg.github.io/cellxgene/posts/launch> for details
 
-```r
+```bash
 ps -ef | grep cellxgene
 Rscript -e 'reticulate::py_config()'
 # Run the following command if the output of the above command doesn't point to the Python in your env.

@@ -222,39 +222,136 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="client-side-integration-by-a-jspanel-window-vip" class="section level2 unnumbered">
 <h2>Client-side Integration by a jsPanel Window (VIP)</h2>
 <p>Following section in config.sh file.</p>
-<p>NEED sh code</p>
+<p><strong>
+Could I have config.sh here?
+</strong></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"></code></pre></div>
 <p>All functional VIP HTML and JavaScript code will be in “interface.html” that is independent of cellxgene code bases.</p>
 </div>
 <div id="server-side-integration" class="section level2 unnumbered">
 <h2>Server-side Integration</h2>
-<p>Following section in config.sh file.
-(NEED sh code)</p>
+<p>Following section in config.sh file.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="methods.html#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&#39;</span></span>
+<span id="cb7-2"><a href="methods.html#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="st">from server.app.biogenInterface import route  </span></span>
+<span id="cb7-3"><a href="methods.html#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="st">@webbp.route(&quot;/biogen&quot;, methods=[&quot;POST&quot;]) </span></span>
+<span id="cb7-4"><a href="methods.html#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="st">def biogen():</span></span>
+<span id="cb7-5"><a href="methods.html#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="st">  return route(request.data,current_app.app_config)&#39;</span> <span class="op">&gt;&gt;</span> cellxgene/server/app/app.py</span>
+<span id="cb7-6"><a href="methods.html#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span></span>
+<span id="cb7-7"><a href="methods.html#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span></span>
+<span id="cb7-8"><a href="methods.html#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span></span>
+<span id="cb7-9"><a href="methods.html#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="methods.html#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="va">strPath=</span><span class="st">&quot;</span><span class="va">$(</span><span class="ex">python</span> <span class="at">-c</span> <span class="st">&#39;import site; print(site.getsitepackages())&#39;</span><span class="va">)</span><span class="st">&quot;</span></span>
+<span id="cb7-11"><a href="methods.html#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="va">strPath=${strPath</span><span class="op">//</span><span class="st">&quot;[&#39;&quot;</span><span class="op">/</span><span class="va">}</span></span>
+<span id="cb7-12"><a href="methods.html#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="va">strPath=${strPath</span><span class="op">//</span><span class="st">&quot;&#39;]&quot;</span><span class="op">/</span><span class="va">}</span></span>
+<span id="cb7-13"><a href="methods.html#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="va">strweb=</span><span class="st">&quot;</span><span class="va">${strPath}</span><span class="st">/server/common/web/static/.&quot;</span></span>
+<span id="cb7-14"><a href="methods.html#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$strweb</span></span>
+<span id="cb7-15"><a href="methods.html#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> interface.html <span class="va">$strweb</span></span>
+<span id="cb7-16"><a href="methods.html#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> jquery.min.js <span class="va">$strweb</span></span>
+<span id="cb7-17"><a href="methods.html#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> color_map.png <span class="va">$strweb</span></span>
+<span id="cb7-18"><a href="methods.html#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="methods.html#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-R</span> DataTables <span class="va">$strweb</span></span>
+<span id="cb7-20"><a href="methods.html#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-R</span> jspanel <span class="va">$strweb</span></span>
+<span id="cb7-21"><a href="methods.html#cb7-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-22"><a href="methods.html#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> cellxgene/server/test/decode_fbs.py <span class="va">$strPath</span>/server/app/.</span>
+<span id="cb7-23"><a href="methods.html#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> VIPInterface.py <span class="va">$strPath</span>/server/app/.</span></code></pre></div>
 </div>
 <div id="communication-between-vip-and-cellxgene-web-gui" class="section level2 unnumbered">
 <h2>Communication between VIP and cellxgene web GUI</h2>
 <p>Cellxgene client utilizes React Redux that is the official React binding for Redux. It lets your React components read data from a Redux store, and dispatch actions to the store to update data.</p>
 <p>So, this line of code is appended to the end of client/src/reducers/index.js of cellxgene source code to expose the store to the browser.</p>
-<p>(NEED sh code)</p>
+<p>[
+<strong>
+Java? R code chunck seems ok?
+</strong>]</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="methods.html#cb8-1" aria-hidden="true" tabindex="-1"></a>window.store <span class="ot">=</span> store;</span></code></pre></div>
 <p>By doing this, Redux store holding client data and user selections are visible to VIP to access variables and dispatch actions to control cellxgene user interface. For example,</p>
 <ul>
 <li>Unselect / select a feature. GUI is refreshed automatically after dispatching.</li>
 </ul>
-<p>(NEED sh code)</p>
+<p>[
+<strong>
+Java? R code chunck seems ok?
+</strong>]</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="methods.html#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">window.store.dispatch</span>({type<span class="sc">:</span> <span class="st">&quot;categorical metadata filter deselect&quot;</span>, metadataField<span class="sc">:</span> <span class="st">&quot;louvain&quot;</span>, categoryIndex<span class="sc">:</span> <span class="dv">5</span>})</span>
+<span id="cb9-2"><a href="methods.html#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">window.store.dispatch</span>({type<span class="sc">:</span> <span class="st">&quot;categorical metadata filter select&quot;</span>, metadataField<span class="sc">:</span> <span class="st">&quot;louvain&quot;</span>, categoryIndex<span class="sc">:</span> <span class="dv">5</span>})</span></code></pre></div>
 <ul>
 <li>Get state of just finished action and synchronize gene input and cell selections from main window to VIP if corresponding action was performed.</li>
 </ul>
-<p>(NEED sh code)</p>
+<p>[
+<strong>
+Java? R code chunck seems ok?
+</strong>]</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="methods.html#cb10-1" aria-hidden="true" tabindex="-1"></a>const unsubscribe <span class="ot">=</span> <span class="fu">window.store.subscribe</span>(() <span class="ot">=&gt;</span> {</span>
+<span id="cb10-2"><a href="methods.html#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">window.store.getState</span>()[<span class="st">&quot;@@undoable/filterState&quot;</span>].prevAction) {</span>
+<span id="cb10-3"><a href="methods.html#cb10-3" aria-hidden="true" tabindex="-1"></a>    actionType <span class="ot">=</span> <span class="fu">window.store.getState</span>()[<span class="st">&quot;@@undoable/filterState&quot;</span>].prevAction.type;</span>
+<span id="cb10-4"><a href="methods.html#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">actionType.includes</span>(<span class="st">&quot;user defined gene success&quot;</span>) <span class="sc">||</span></span>
+<span id="cb10-5"><a href="methods.html#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">actionType.includes</span>(<span class="st">&quot;store current cell selection as differential set&quot;</span>)) {</span>
+<span id="cb10-6"><a href="methods.html#cb10-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">sync</span>();</span>
+<span id="cb10-7"><a href="methods.html#cb10-7" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb10-8"><a href="methods.html#cb10-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb10-9"><a href="methods.html#cb10-9" aria-hidden="true" tabindex="-1"></a>});</span></code></pre></div>
 </div>
 <div id="diffxpy-integration" class="section level2 unnumbered">
 <h2>Diffxpy Integration</h2>
 <p>This is the sample pseudocode, please see VIPInterface.py for actual implementation.</p>
-<p>(PY CODE)</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="methods.html#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scanpy <span class="im">as</span> sc</span>
+<span id="cb11-2"><a href="methods.html#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb11-3"><a href="methods.html#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> diffxpy.api <span class="im">as</span> app</span>
+<span id="cb11-4"><a href="methods.html#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># set 1 of cells as cell1; set 2 of cells as cell2</span></span>
+<span id="cb11-5"><a href="methods.html#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="methods.html#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="methods.html#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> app.get_data_adaptor() <span class="im">as</span> data_adaptor:</span>
+<span id="cb11-8"><a href="methods.html#cb11-8" aria-hidden="true" tabindex="-1"></a>  X1 <span class="op">=</span> data_adaptor.data.X[cell1]</span>
+<span id="cb11-9"><a href="methods.html#cb11-9" aria-hidden="true" tabindex="-1"></a>  X2 <span class="op">=</span> data_adaptor.data.X[cell2]</span>
+<span id="cb11-10"><a href="methods.html#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="methods.html#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-12"><a href="methods.html#cb11-12" aria-hidden="true" tabindex="-1"></a>adata <span class="op">=</span> sc.AnnData(pd.concat([X1,X2]),pd.DataFrame([<span class="st">&#39;grp1&#39;</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(X1.shape[<span class="dv">0</span>])]<span class="op">+</span>[<span class="st">&#39;grp2&#39;</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(X2.shape[<span class="dv">0</span>])],columns<span class="op">=</span>[<span class="st">&#39;comGrp&#39;</span>]))</span>
+<span id="cb11-13"><a href="methods.html#cb11-13" aria-hidden="true" tabindex="-1"></a>deg <span class="op">=</span> de.test.two_sample(adata,<span class="st">&#39;comGrp&#39;</span>).summary()</span>
+<span id="cb11-14"><a href="methods.html#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co">#deg is a dataframe contains the folloing columns [&#39;gene&#39;,&#39;log2fc&#39;,&#39;pval&#39;,&#39;qval&#39;]</span></span></code></pre></div>
 </div>
 <div id="create-h5ad-file-from-seurat-object" class="section level2" number="4.1">
 <h2><span class="header-section-number">4.1</span> Create h5ad file from Seurat object</h2>
-<p>First, export the following from Seurat object in R: expression matrix (assume normalized), metadata and coordinates (pca, tsne, umap) as separate txt files.</p>
+<p>First, export the following from Seurat object in R: <strong>expression matrix (assume normalized), metadata and coordinates (pca, tsne, umap) as separate txt files.</strong></p>
 <p>Next in Python, create an AnnData object from 10x (scanpy.read_h5ad function) as a starting point. Then replace the expression matrix, meta data and coordinates as following, a h5ad file would be generated.</p>
-<p>(PY CODE)</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="methods.html#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb12-2"><a href="methods.html#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scanpy <span class="im">as</span> sc</span>
+<span id="cb12-3"><a href="methods.html#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb12-4"><a href="methods.html#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb12-5"><a href="methods.html#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb12-6"><a href="methods.html#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> numpy <span class="im">import</span> ndarray, unique</span>
+<span id="cb12-7"><a href="methods.html#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.sparse.csc <span class="im">import</span> csc_matrix</span>
+<span id="cb12-8"><a href="methods.html#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="methods.html#cb12-9" aria-hidden="true" tabindex="-1"></a>adata<span class="op">=</span> sc.read_h5ad(<span class="st">&quot;previous generated .h5ad&quot;</span>)</span>
+<span id="cb12-10"><a href="methods.html#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="methods.html#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co"># read clustering res</span></span>
+<span id="cb12-12"><a href="methods.html#cb12-12" aria-hidden="true" tabindex="-1"></a>xpca <span class="op">=</span> pd.read_csv(“.<span class="op">/</span>data<span class="op">/</span>harmony_clustered.h5ad.pca_coordinates.txt<span class="st">&quot;, sep=&#39;</span><span class="ch">\t</span><span class="st">&#39;, encoding=&#39;utf-8&#39;)</span></span>
+<span id="cb12-13"><a href="methods.html#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="st">xtsne = pd.read_csv(“./data/harmony_clustered.h5ad.tsne_coordinates.txt&quot;</span>, sep<span class="op">=</span><span class="st">&#39;</span><span class="ch">\t</span><span class="st">&#39;</span>, encoding<span class="op">=</span><span class="st">&#39;utf-8&#39;</span>)</span>
+<span id="cb12-14"><a href="methods.html#cb12-14" aria-hidden="true" tabindex="-1"></a>xumap <span class="op">=</span> pd.read_csv(“.<span class="op">/</span>data<span class="op">/</span>harmony_clustered.h5ad.umap_coordinates.txt<span class="st">&quot;, sep=&#39;</span><span class="ch">\t</span><span class="st">&#39;, encoding=&#39;utf-8&#39;)</span></span>
+<span id="cb12-15"><a href="methods.html#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="st">xobs = pd.read_csv(“./data/harmony_clustered.h5ad.meta_data.txt&quot;</span>, sep<span class="op">=</span><span class="st">&#39;</span><span class="ch">\t</span><span class="st">&#39;</span>, encoding<span class="op">=</span><span class="st">&#39;utf-8&#39;</span>)</span>
+<span id="cb12-16"><a href="methods.html#cb12-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-17"><a href="methods.html#cb12-17" aria-hidden="true" tabindex="-1"></a>xpca.set_index(<span class="st">&#39;index&#39;</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-18"><a href="methods.html#cb12-18" aria-hidden="true" tabindex="-1"></a>xtsne.set_index(<span class="st">&#39;index&#39;</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-19"><a href="methods.html#cb12-19" aria-hidden="true" tabindex="-1"></a>xumap.set_index(<span class="st">&#39;index&#39;</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-20"><a href="methods.html#cb12-20" aria-hidden="true" tabindex="-1"></a>xobs.set_index(<span class="st">&#39;index&#39;</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-21"><a href="methods.html#cb12-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-22"><a href="methods.html#cb12-22" aria-hidden="true" tabindex="-1"></a>adata.obsm[<span class="st">&#39;X_pca&#39;</span>] <span class="op">=</span> np.array(xpca.loc[adataRaw.obs.index])</span>
+<span id="cb12-23"><a href="methods.html#cb12-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-24"><a href="methods.html#cb12-24" aria-hidden="true" tabindex="-1"></a>adata.obsm[<span class="st">&#39;X_tsne&#39;</span>] <span class="op">=</span> np.array(xtsne.loc[adataRaw.obs.index])</span>
+<span id="cb12-25"><a href="methods.html#cb12-25" aria-hidden="true" tabindex="-1"></a>adata.obsm[<span class="st">&#39;X_umap&#39;</span>] <span class="op">=</span> np.array(xumap.loc[adataRaw.obs.index])</span>
+<span id="cb12-26"><a href="methods.html#cb12-26" aria-hidden="true" tabindex="-1"></a>adata.obs <span class="op">=</span> xobs.loc[adataRaw.obs.index] <span class="co"># this is a pandas dataframe</span></span>
+<span id="cb12-27"><a href="methods.html#cb12-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-28"><a href="methods.html#cb12-28" aria-hidden="true" tabindex="-1"></a><span class="co"># read in expression matrix as numpy.ndarray as following:</span></span>
+<span id="cb12-29"><a href="methods.html#cb12-29" aria-hidden="true" tabindex="-1"></a>exp_mat <span class="op">=</span> np.loadtxt(fname <span class="op">=</span>”expression matrix .txt<span class="st">&quot;)</span></span>
+<span id="cb12-30"><a href="methods.html#cb12-30" aria-hidden="true" tabindex="-1"></a><span class="st">adata.X = exp_mat</span></span>
+<span id="cb12-31"><a href="methods.html#cb12-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-32"><a href="methods.html#cb12-32" aria-hidden="true" tabindex="-1"></a><span class="st"># convert dense matrix into sparse matrix to save storage space and memory usage</span></span>
+<span id="cb12-33"><a href="methods.html#cb12-33" aria-hidden="true" tabindex="-1"></a><span class="st">adata.X = csc_matrix(adata.X)_matrix</span></span>
+<span id="cb12-34"><a href="methods.html#cb12-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-35"><a href="methods.html#cb12-35" aria-hidden="true" tabindex="-1"></a><span class="st"># add short description and initial graph settings. “|” and “by” are delimiters for VIP to parse the initial settings. Please follow the same rule for your own h5ad files.</span></span>
+<span id="cb12-36"><a href="methods.html#cb12-36" aria-hidden="true" tabindex="-1"></a><span class="st">adata.obs[&#39;&gt;Description&#39;] = [&#39;Human brain snRNAseq 46k cells (MS Nature 2019 Schirmer et al.); data normalized, log transformed and scaled UMI; platform - 10X v2 chemistry | embedding by umap; color by cell_type&#39;]*adata.n_obs</span></span>
+<span id="cb12-37"><a href="methods.html#cb12-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-38"><a href="methods.html#cb12-38" aria-hidden="true" tabindex="-1"></a><span class="st"># Then last step to save h5ad:</span></span>
+<span id="cb12-39"><a href="methods.html#cb12-39" aria-hidden="true" tabindex="-1"></a><span class="st">adata.write_h5ad(&quot;</span>final output.h5ad<span class="st">&quot;)</span></span></code></pre></div>
 
 </div>
 </div>
@@ -307,7 +404,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": null,
+"download": ["_main.pdf"],
 "search": {
 "engine": "lunr",
 "options": null
