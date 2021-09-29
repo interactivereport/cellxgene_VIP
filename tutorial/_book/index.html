@@ -24,7 +24,7 @@
 <meta name="author" content="Yirui Chen" />
 
 
-<meta name="date" content="2021-08-24" />
+<meta name="date" content="2021-09-28" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,7 +32,8 @@
   
   
 
-<link rel="next" href="hello-bookdown.html"/>
+<link rel="next" href="install-instruction.html"/>
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -55,25 +56,27 @@
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -82,9 +85,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -117,6 +120,28 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
@@ -134,31 +159,44 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="./">A Minimal Book Example</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> About</a><ul>
-<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#usage"><i class="fa fa-check"></i><b>1.1</b> Usage</a></li>
-<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#render-book"><i class="fa fa-check"></i><b>1.2</b> Render book</a></li>
-<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#preview-book"><i class="fa fa-check"></i><b>1.3</b> Preview book</a></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Getting started with cellxgene VIP</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#why-use-cellxgene-vip"><i class="fa fa-check"></i><b>1.1</b> Why use cellxgene VIP?</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#getting-set-up"><i class="fa fa-check"></i><b>1.2</b> Getting Set up</a>
+<ul>
+<li class="chapter" data-level="1.2.1" data-path="index.html"><a href="index.html#execute-anaconda"><i class="fa fa-check"></i><b>1.2.1</b> Execute anaconda</a></li>
+<li class="chapter" data-level="1.2.2" data-path="index.html"><a href="index.html#cellxgene-installation"><i class="fa fa-check"></i><b>1.2.2</b> Cellxgene installation</a></li>
+<li class="chapter" data-level="1.2.3" data-path="index.html"><a href="index.html#r-dependencies"><i class="fa fa-check"></i><b>1.2.3</b> R dependencies</a></li>
+<li class="chapter" data-level="1.2.4" data-path="index.html"><a href="index.html#run-cellxgene-by-h5ad-file"><i class="fa fa-check"></i><b>1.2.4</b> Run cellxgene by h5ad file</a></li>
+<li class="chapter" data-level="1.2.5" data-path="index.html"><a href="index.html#cellxgene-on-web-browser"><i class="fa fa-check"></i><b>1.2.5</b> Cellxgene on web browser</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="hello-bookdown.html"><a href="hello-bookdown.html"><i class="fa fa-check"></i><b>2</b> Hello bookdown</a><ul>
-<li class="chapter" data-level="2.1" data-path="hello-bookdown.html"><a href="hello-bookdown.html#a-section"><i class="fa fa-check"></i><b>2.1</b> A section</a><ul>
-<li class="chapter" data-level="" data-path="hello-bookdown.html"><a href="hello-bookdown.html#an-unnumbered-section"><i class="fa fa-check"></i>An unnumbered section</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="install-instruction.html"><a href="install-instruction.html"><i class="fa fa-check"></i><b>2</b> Install instruction</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="install-instruction.html"><a href="install-instruction.html#install-anaconda-if-not-avaiable-on-server"><i class="fa fa-check"></i><b>2.1</b> Install anaconda if not avaiable on server</a>
+<ul>
+<li class="chapter" data-level="" data-path="install-instruction.html"><a href="install-instruction.html#an-unnumbered-section"><i class="fa fa-check"></i>An unnumbered section</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="cross.html"><a href="cross.html"><i class="fa fa-check"></i><b>3</b> Cross-references</a><ul>
+<li class="chapter" data-level="3" data-path="cross.html"><a href="cross.html"><i class="fa fa-check"></i><b>3</b> Cross-references</a>
+<ul>
 <li class="chapter" data-level="3.1" data-path="cross.html"><a href="cross.html#chapters-and-sub-chapters"><i class="fa fa-check"></i><b>3.1</b> Chapters and sub-chapters</a></li>
 <li class="chapter" data-level="3.2" data-path="cross.html"><a href="cross.html#captioned-figures-and-tables"><i class="fa fa-check"></i><b>3.2</b> Captioned figures and tables</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="parts.html"><a href="parts.html"><i class="fa fa-check"></i><b>4</b> Parts</a></li>
-<li class="chapter" data-level="5" data-path="footnotes-and-citations.html"><a href="footnotes-and-citations.html"><i class="fa fa-check"></i><b>5</b> Footnotes and citations</a><ul>
+<li class="chapter" data-level="5" data-path="footnotes-and-citations.html"><a href="footnotes-and-citations.html"><i class="fa fa-check"></i><b>5</b> Footnotes and citations</a>
+<ul>
 <li class="chapter" data-level="5.1" data-path="footnotes-and-citations.html"><a href="footnotes-and-citations.html#footnotes"><i class="fa fa-check"></i><b>5.1</b> Footnotes</a></li>
 <li class="chapter" data-level="5.2" data-path="footnotes-and-citations.html"><a href="footnotes-and-citations.html#citations"><i class="fa fa-check"></i><b>5.2</b> Citations</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="blocks.html"><a href="blocks.html"><i class="fa fa-check"></i><b>6</b> Blocks</a><ul>
+<li class="chapter" data-level="6" data-path="blocks.html"><a href="blocks.html"><i class="fa fa-check"></i><b>6</b> Blocks</a>
+<ul>
 <li class="chapter" data-level="6.1" data-path="blocks.html"><a href="blocks.html#equations"><i class="fa fa-check"></i><b>6.1</b> Equations</a></li>
 <li class="chapter" data-level="6.2" data-path="blocks.html"><a href="blocks.html#theorems-and-proofs"><i class="fa fa-check"></i><b>6.2</b> Theorems and proofs</a></li>
 <li class="chapter" data-level="6.3" data-path="blocks.html"><a href="blocks.html#callout-blocks"><i class="fa fa-check"></i><b>6.3</b> Callout blocks</a></li>
 </ul></li>
-<li class="chapter" data-level="7" data-path="sharing-your-book.html"><a href="sharing-your-book.html"><i class="fa fa-check"></i><b>7</b> Sharing your book</a><ul>
+<li class="chapter" data-level="7" data-path="sharing-your-book.html"><a href="sharing-your-book.html"><i class="fa fa-check"></i><b>7</b> Sharing your book</a>
+<ul>
 <li class="chapter" data-level="7.1" data-path="sharing-your-book.html"><a href="sharing-your-book.html#publishing"><i class="fa fa-check"></i><b>7.1</b> Publishing</a></li>
 <li class="chapter" data-level="7.2" data-path="sharing-your-book.html"><a href="sharing-your-book.html#pages"><i class="fa fa-check"></i><b>7.2</b> 404 pages</a></li>
 <li class="chapter" data-level="7.3" data-path="sharing-your-book.html"><a href="sharing-your-book.html#metadata-for-sharing"><i class="fa fa-check"></i><b>7.3</b> Metadata for sharing</a></li>
@@ -187,33 +225,84 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="header">
 <h1 class="title">Cellxgene VIP</h1>
 <p class="author"><em>Yirui Chen</em></p>
-<p class="date"><em>2021-08-24</em></p>
+<p class="date"><em>2021-09-28</em></p>
 </div>
-<div id="about" class="section level1">
-<h1><span class="header-section-number">Chapter 1</span> About</h1>
-<p>Cellxgene is a leading open source scRNA-Seq data visualization tool recommended in a recent evaluation, which scales well in millions of cells and scores high in user experience by leveraging modern web techniques with interactive features.</p>
-<div id="usage" class="section level2">
-<h2><span class="header-section-number">1.1</span> Usage</h2>
-<p>Each <strong>bookdown</strong> chapter is an .Rmd file, and each .Rmd file can contain one (and only one) chapter. A chapter <em>must</em> start with a first-level heading: <code># A good chapter</code>, and can contain one (and only one) first-level heading.</p>
-<p>Use second-level and higher headings within chapters like: <code>## A short section</code> or <code>### An even shorter section</code>.</p>
-<p>The <code>index.Rmd</code> file is required, and is also your first book chapter. It will be the homepage when you render the book.</p>
+<div id="getting-started-with-cellxgene-vip" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Getting started with cellxgene VIP</h1>
+<p>This is a cellxgene VIP tutorial book written in <strong>Markdown</strong>.</p>
+<div id="why-use-cellxgene-vip" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Why use cellxgene VIP?</h2>
 </div>
-<div id="render-book" class="section level2">
-<h2><span class="header-section-number">1.2</span> Render book</h2>
-<p>You can render the HTML version of this example book without changing anything:</p>
-<ol style="list-style-type: decimal">
-<li><p>Find the <strong>Build</strong> pane in the RStudio IDE, and</p></li>
-<li><p>Click on <strong>Build Book</strong>, then select your output format, or select “All formats” if you’d like to use multiple formats from the same book source files.</p></li>
-</ol>
-<p>Or build the book from the R console:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">bookdown<span class="op">::</span><span class="kw">render_book</span>()</a></code></pre></div>
-<p>To render this example to PDF as a <code>bookdown::pdf_book</code>, you’ll need to install XeLaTeX. You are recommended to install TinyTeX (which includes XeLaTeX): <a href="https://yihui.org/tinytex/" class="uri">https://yihui.org/tinytex/</a>.</p>
+<div id="getting-set-up" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> Getting Set up</h2>
+<div id="execute-anaconda" class="section level3" number="1.2.1">
+<h3><span class="header-section-number">1.2.1</span> Execute anaconda</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="index.html#cb1-1" aria-hidden="true" tabindex="-1"></a>bash <span class="sc">~</span><span class="er">/</span>Downloads<span class="sc">/</span>Anaconda3<span class="fl">-2020.02</span><span class="sc">-</span>Linux<span class="sc">-</span>x86_64.sh</span></code></pre></div>
+<p>If anaconda is not installed on server, you can install it following anaconda documentation (<a href="https://docs.anaconda.com/anaconda/install/linux/" class="uri">https://docs.anaconda.com/anaconda/install/linux/</a>)
+### Create and enable conda environment</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="index.html#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># clone repo from cellxgene VIP github</span></span>
+<span id="cb2-2"><a href="index.html#cb2-2" aria-hidden="true" tabindex="-1"></a>git clone https<span class="sc">:</span><span class="er">//</span>github.com<span class="sc">/</span>interactivereport<span class="sc">/</span>cellxgene_VIP.git</span>
+<span id="cb2-3"><a href="index.html#cb2-3" aria-hidden="true" tabindex="-1"></a>cd cellxgene_VIP</span>
+<span id="cb2-4"><a href="index.html#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="index.html#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># conda environment</span></span>
+<span id="cb2-6"><a href="index.html#cb2-6" aria-hidden="true" tabindex="-1"></a>source <span class="sc">&lt;</span>path to Anaconda3<span class="sc">&gt;</span><span class="er">/</span>etc<span class="sc">/</span>profile.d<span class="sc">/</span><span class="fu">conda.sh</span> (Default<span class="sc">:</span> <span class="er">/</span>opt<span class="sc">/</span>anaconda3<span class="sc">/</span>etc<span class="sc">/</span>profile.d<span class="sc">/</span>conda.sh)</span>
+<span id="cb2-7"><a href="index.html#cb2-7" aria-hidden="true" tabindex="-1"></a>conda config <span class="sc">--</span>set channel_priority flexible</span>
+<span id="cb2-8"><a href="index.html#cb2-8" aria-hidden="true" tabindex="-1"></a>conda env create <span class="sc">-</span>n <span class="sc">&lt;</span>env name, such as<span class="sc">:</span> VIP<span class="sc">&gt;</span> <span class="sc">-</span>f <span class="fu">VIP.yml</span> (system<span class="sc">-</span>wide R) or <span class="fu">VIP_conda_R.yml</span> (local R under conda, no root privilege needed)</span>
+<span id="cb2-9"><a href="index.html#cb2-9" aria-hidden="true" tabindex="-1"></a>conda activate <span class="sc">&lt;</span>env name, such as<span class="sc">:</span> VIP<span class="sc">&gt;</span></span>
+<span id="cb2-10"><a href="index.html#cb2-10" aria-hidden="true" tabindex="-1"></a>or</span>
+<span id="cb2-11"><a href="index.html#cb2-11" aria-hidden="true" tabindex="-1"></a>source activate <span class="sc">&lt;</span>env name<span class="sc">&gt;</span></span></code></pre></div>
 </div>
-<div id="preview-book" class="section level2">
-<h2><span class="header-section-number">1.3</span> Preview book</h2>
-<p>As you work, you may start a local server to live preview this HTML book. This preview will update as you edit the book when you save individual .Rmd files. You can start the server in a work session by using the RStudio add-in “Preview book”, or from the R console:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">bookdown<span class="op">::</span><span class="kw">serve_book</span>()</a></code></pre></div>
+<div id="cellxgene-installation" class="section level3" number="1.2.2">
+<h3><span class="header-section-number">1.2.2</span> Cellxgene installation</h3>
+<p>Install cellxgene by running config.sh in “cellxgene_VIP” directory</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="index.html#cb3-1" aria-hidden="true" tabindex="-1"></a>.<span class="sc">/</span>config.sh</span></code></pre></div>
+</div>
+<div id="r-dependencies" class="section level3" number="1.2.3">
+<h3><span class="header-section-number">1.2.3</span> R dependencies</h3>
+<p>Install all required R packages on linux:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="index.html#cb4-1" aria-hidden="true" tabindex="-1"></a>export LIBARROW_MINIMAL<span class="ot">=</span>false</span>
+<span id="cb4-2"><a href="index.html#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#  ensure that the right instance of R is used. e.g. system-wide: /bin/R or /usr/bin/R ; local R under conda: ~/.conda/envs/VIP_conda_R/bin/R</span></span>
+<span id="cb4-3"><a href="index.html#cb4-3" aria-hidden="true" tabindex="-1"></a>which R</span>
+<span id="cb4-4"><a href="index.html#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="index.html#cb4-5" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(devtools)) install.packages(&quot;devtools&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb4-6"><a href="index.html#cb4-6" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(Cairo)) devtools::install_version(&quot;Cairo&quot;,version=&quot;1.5-12&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb4-7"><a href="index.html#cb4-7" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(foreign)) devtools::install_version(&quot;foreign&quot;,version=&quot;0.8-76&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb4-8"><a href="index.html#cb4-8" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(ggpubr)) devtools::install_version(&quot;ggpubr&quot;,version=&quot;0.3.0&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb4-9"><a href="index.html#cb4-9" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(ggrastr)) devtools::install_version(&quot;ggrastr&quot;,version=&quot;0.1.9&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb4-10"><a href="index.html#cb4-10" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(arrow)) devtools::install_version(&quot;arrow&quot;,version=&quot;2.0.0&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb4-11"><a href="index.html#cb4-11" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(Seurat)) devtools::install_version(&quot;Seurat&quot;,version=&quot;3.2.3&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb4-12"><a href="index.html#cb4-12" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(rmarkdown)) devtools::install_version(&quot;rmarkdown&quot;,version=&quot;2.5&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb4-13"><a href="index.html#cb4-13" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(tidyverse)) devtools::install_version(&quot;tidyverse&quot;,version=&quot;1.3.0&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb4-14"><a href="index.html#cb4-14" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(viridis)) devtools::install_version(&quot;viridis&quot;,version=&quot;0.5.1&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb4-15"><a href="index.html#cb4-15" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(BiocManager)) devtools::install_version(&quot;BiocManager&quot;,version=&quot;1.30.10&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb4-16"><a href="index.html#cb4-16" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(fgsea)) BiocManager::install(&quot;fgsea&quot;)&#39;</span></span>
+<span id="cb4-17"><a href="index.html#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="index.html#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co"># These should be already installed as dependencies of above packages</span></span>
+<span id="cb4-19"><a href="index.html#cb4-19" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(dbplyr)) devtools::install_version(&quot;dbplyr&quot;,version=&quot;1.0.2&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb4-20"><a href="index.html#cb4-20" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(RColorBrewer)) devtools::install_version(&quot;RColorBrewer&quot;,version=&quot;1.1-2&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb4-21"><a href="index.html#cb4-21" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(glue)) devtools::install_version(&quot;glue&quot;,version=&quot;1.4.2&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb4-22"><a href="index.html#cb4-22" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(gridExtra)) devtools::install_version(&quot;gridExtra&quot;,version=&quot;2.3&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb4-23"><a href="index.html#cb4-23" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(ggrepel)) devtools::install_version(&quot;ggrepel&quot;,version=&quot;0.8.2&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb4-24"><a href="index.html#cb4-24" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(MASS)) devtools::install_version(&quot;MASS&quot;,version=&quot;7.3-51.6&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb4-25"><a href="index.html#cb4-25" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(data.table)) devtools::install_version(&quot;data.table&quot;,version=&quot;1.13.0&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span></code></pre></div>
+</div>
+<div id="run-cellxgene-by-h5ad-file" class="section level3" number="1.2.4">
+<h3><span class="header-section-number">1.2.4</span> Run cellxgene by h5ad file</h3>
+<p>You can aslo run cellxgene by specifying a h5ad file, which stores scRNA-seq data along with a host and a port.
+Use ‘ps’ to find used ports to spare. Please see <a href="https://chanzuckerberg.github.io/cellxgene/posts/launch" class="uri">https://chanzuckerberg.github.io/cellxgene/posts/launch</a> for details</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="index.html#cb5-1" aria-hidden="true" tabindex="-1"></a>ps <span class="sc">-</span>ef <span class="sc">|</span> grep cellxgene</span>
+<span id="cb5-2"><a href="index.html#cb5-2" aria-hidden="true" tabindex="-1"></a>Rscript <span class="sc">-</span>e <span class="st">&#39;reticulate::py_config()&#39;</span></span>
+<span id="cb5-3"><a href="index.html#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the following command if the output of the above command doesn&#39;t point to the Python in your env.</span></span>
+<span id="cb5-4"><a href="index.html#cb5-4" aria-hidden="true" tabindex="-1"></a>export RETICULATE_PYTHON<span class="ot">=</span><span class="st">`</span><span class="at">which python</span><span class="st">`</span></span>
+<span id="cb5-5"><a href="index.html#cb5-5" aria-hidden="true" tabindex="-1"></a>cellxgene launch <span class="sc">--</span>host <span class="sc">&lt;</span>xxx<span class="sc">&gt;</span> <span class="sc">--</span>port <span class="sc">&lt;</span>xxx<span class="sc">&gt;</span> <span class="sc">--</span>disable<span class="sc">-</span>annotations <span class="sc">--</span>verbose <span class="sc">&lt;</span>h5ad file<span class="sc">&gt;</span></span></code></pre></div>
+</div>
+<div id="cellxgene-on-web-browser" class="section level3" number="1.2.5">
+<h3><span class="header-section-number">1.2.5</span> Cellxgene on web browser</h3>
+<p>chrome is preferred, version 87.0.4280.88 or 87.0.4280.141 is used. Users can access .
+Following screenshot is what you should be able to see in console of chrome developer tools.
+<img src="cellonweb.png" alt="Alt text" /></p>
 
+</div>
 </div>
 </div>
             </section>
@@ -222,7 +311,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         </div>
       </div>
 
-<a href="hello-bookdown.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="install-instruction.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
