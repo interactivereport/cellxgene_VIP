@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Cellxgene VIP</title>
-  <meta name="description" content="Cellxgene VIP" />
+  <title>Chapter 4 Methods | Cellxgene VIP</title>
+  <meta name="description" content="Chapter 4 Methods | Cellxgene VIP" />
   <meta name="generator" content="bookdown 0.23 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Cellxgene VIP" />
+  <meta property="og:title" content="Chapter 4 Methods | Cellxgene VIP" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Cellxgene VIP" />
+  <meta name="twitter:title" content="Chapter 4 Methods | Cellxgene VIP" />
   
   
   
@@ -31,8 +31,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="web-source.html"/>
+<link rel="prev" href="how-to-use-cellxgene-vip.html"/>
+<link rel="next" href="helpful-tips.html"/>
 <script src="libs/header-attrs-2.10/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -217,87 +217,45 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Cellxgene VIP</h1>
-<p class="author"><em>Kejie Li, Zhengyu Ouyang, Dongdong Lin, Michael Mingueneau, Will Chen, David Sexton, Baohong Zhang</em></p>
-<p class="date"><em>2021-09-29</em></p>
+<div id="methods" class="section level1" number="4">
+<h1><span class="header-section-number">Chapter 4</span> Methods</h1>
+<div id="client-side-integration-by-a-jspanel-window-vip" class="section level2 unnumbered">
+<h2>Client-side Integration by a jsPanel Window (VIP)</h2>
+<p>Following section in config.sh file.</p>
+<p>NEED sh code</p>
+<p>All functional VIP HTML and JavaScript code will be in “interface.html” that is independent of cellxgene code bases.</p>
 </div>
-<div id="getting-started-with-cellxgene-vip" class="section level1" number="1">
-<h1><span class="header-section-number">Chapter 1</span> Getting started with cellxgene VIP</h1>
-<p>This is a cellxgene VIP tutorial book written in <strong>Markdown</strong>.</p>
-<div id="why-use-cellxgene-vip" class="section level2" number="1.1">
-<h2><span class="header-section-number">1.1</span> Why use cellxgene VIP?</h2>
+<div id="server-side-integration" class="section level2 unnumbered">
+<h2>Server-side Integration</h2>
+<p>Following section in config.sh file.
+(NEED sh code)</p>
 </div>
-<div id="getting-set-up" class="section level2" number="1.2">
-<h2><span class="header-section-number">1.2</span> Getting Set up</h2>
-<div id="execute-anaconda" class="section level3" number="1.2.1">
-<h3><span class="header-section-number">1.2.1</span> Execute anaconda</h3>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="index.html#cb1-1" aria-hidden="true" tabindex="-1"></a>bash <span class="sc">~</span><span class="er">/</span>Downloads<span class="sc">/</span>Anaconda3<span class="fl">-2020.02</span><span class="sc">-</span>Linux<span class="sc">-</span>x86_64.sh</span></code></pre></div>
-<p>If anaconda is not installed on server, you can install it following anaconda documentation (<a href="https://docs.anaconda.com/anaconda/install/linux/" class="uri">https://docs.anaconda.com/anaconda/install/linux/</a>)
-### Create and enable conda environment</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="index.html#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># clone repo from cellxgene VIP github</span></span>
-<span id="cb2-2"><a href="index.html#cb2-2" aria-hidden="true" tabindex="-1"></a>git clone https<span class="sc">:</span><span class="er">//</span>github.com<span class="sc">/</span>interactivereport<span class="sc">/</span>cellxgene_VIP.git</span>
-<span id="cb2-3"><a href="index.html#cb2-3" aria-hidden="true" tabindex="-1"></a>cd cellxgene_VIP</span>
-<span id="cb2-4"><a href="index.html#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="index.html#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># conda environment</span></span>
-<span id="cb2-6"><a href="index.html#cb2-6" aria-hidden="true" tabindex="-1"></a>source <span class="sc">&lt;</span>path to Anaconda3<span class="sc">&gt;</span><span class="er">/</span>etc<span class="sc">/</span>profile.d<span class="sc">/</span><span class="fu">conda.sh</span> (Default<span class="sc">:</span> <span class="er">/</span>opt<span class="sc">/</span>anaconda3<span class="sc">/</span>etc<span class="sc">/</span>profile.d<span class="sc">/</span>conda.sh)</span>
-<span id="cb2-7"><a href="index.html#cb2-7" aria-hidden="true" tabindex="-1"></a>conda config <span class="sc">--</span>set channel_priority flexible</span>
-<span id="cb2-8"><a href="index.html#cb2-8" aria-hidden="true" tabindex="-1"></a>conda env create <span class="sc">-</span>n <span class="sc">&lt;</span>env name, such as<span class="sc">:</span> VIP<span class="sc">&gt;</span> <span class="sc">-</span>f <span class="fu">VIP.yml</span> (system<span class="sc">-</span>wide R) or <span class="fu">VIP_conda_R.yml</span> (local R under conda, no root privilege needed)</span>
-<span id="cb2-9"><a href="index.html#cb2-9" aria-hidden="true" tabindex="-1"></a>conda activate <span class="sc">&lt;</span>env name, such as<span class="sc">:</span> VIP<span class="sc">&gt;</span></span>
-<span id="cb2-10"><a href="index.html#cb2-10" aria-hidden="true" tabindex="-1"></a>or</span>
-<span id="cb2-11"><a href="index.html#cb2-11" aria-hidden="true" tabindex="-1"></a>source activate <span class="sc">&lt;</span>env name<span class="sc">&gt;</span></span></code></pre></div>
+<div id="communication-between-vip-and-cellxgene-web-gui" class="section level2 unnumbered">
+<h2>Communication between VIP and cellxgene web GUI</h2>
+<p>Cellxgene client utilizes React Redux that is the official React binding for Redux. It lets your React components read data from a Redux store, and dispatch actions to the store to update data.</p>
+<p>So, this line of code is appended to the end of client/src/reducers/index.js of cellxgene source code to expose the store to the browser.</p>
+<p>(NEED sh code)</p>
+<p>By doing this, Redux store holding client data and user selections are visible to VIP to access variables and dispatch actions to control cellxgene user interface. For example,</p>
+<ul>
+<li>Unselect / select a feature. GUI is refreshed automatically after dispatching.</li>
+</ul>
+<p>(NEED sh code)</p>
+<ul>
+<li>Get state of just finished action and synchronize gene input and cell selections from main window to VIP if corresponding action was performed.</li>
+</ul>
+<p>(NEED sh code)</p>
 </div>
-<div id="cellxgene-installation" class="section level3" number="1.2.2">
-<h3><span class="header-section-number">1.2.2</span> Cellxgene installation</h3>
-<p>Install cellxgene by running config.sh in “cellxgene_VIP” directory</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="index.html#cb3-1" aria-hidden="true" tabindex="-1"></a>.<span class="sc">/</span>config.sh</span></code></pre></div>
+<div id="diffxpy-integration" class="section level2 unnumbered">
+<h2>Diffxpy Integration</h2>
+<p>This is the sample pseudocode, please see VIPInterface.py for actual implementation.</p>
+<p>(PY CODE)</p>
 </div>
-<div id="r-dependencies" class="section level3" number="1.2.3">
-<h3><span class="header-section-number">1.2.3</span> R dependencies</h3>
-<p>Install all required R packages on linux:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="index.html#cb4-1" aria-hidden="true" tabindex="-1"></a>export LIBARROW_MINIMAL<span class="ot">=</span>false</span>
-<span id="cb4-2"><a href="index.html#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#  ensure that the right instance of R is used. e.g. system-wide: /bin/R or /usr/bin/R ; local R under conda: ~/.conda/envs/VIP_conda_R/bin/R</span></span>
-<span id="cb4-3"><a href="index.html#cb4-3" aria-hidden="true" tabindex="-1"></a>which R</span>
-<span id="cb4-4"><a href="index.html#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="index.html#cb4-5" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(devtools)) install.packages(&quot;devtools&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-6"><a href="index.html#cb4-6" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(Cairo)) devtools::install_version(&quot;Cairo&quot;,version=&quot;1.5-12&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-7"><a href="index.html#cb4-7" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(foreign)) devtools::install_version(&quot;foreign&quot;,version=&quot;0.8-76&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-8"><a href="index.html#cb4-8" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(ggpubr)) devtools::install_version(&quot;ggpubr&quot;,version=&quot;0.3.0&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-9"><a href="index.html#cb4-9" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(ggrastr)) devtools::install_version(&quot;ggrastr&quot;,version=&quot;0.1.9&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-10"><a href="index.html#cb4-10" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(arrow)) devtools::install_version(&quot;arrow&quot;,version=&quot;2.0.0&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-11"><a href="index.html#cb4-11" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(Seurat)) devtools::install_version(&quot;Seurat&quot;,version=&quot;3.2.3&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-12"><a href="index.html#cb4-12" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(rmarkdown)) devtools::install_version(&quot;rmarkdown&quot;,version=&quot;2.5&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-13"><a href="index.html#cb4-13" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(tidyverse)) devtools::install_version(&quot;tidyverse&quot;,version=&quot;1.3.0&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-14"><a href="index.html#cb4-14" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(viridis)) devtools::install_version(&quot;viridis&quot;,version=&quot;0.5.1&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-15"><a href="index.html#cb4-15" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(BiocManager)) devtools::install_version(&quot;BiocManager&quot;,version=&quot;1.30.10&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-16"><a href="index.html#cb4-16" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(fgsea)) BiocManager::install(&quot;fgsea&quot;)&#39;</span></span>
-<span id="cb4-17"><a href="index.html#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-18"><a href="index.html#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co"># These should be already installed as dependencies of above packages</span></span>
-<span id="cb4-19"><a href="index.html#cb4-19" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(dbplyr)) devtools::install_version(&quot;dbplyr&quot;,version=&quot;1.0.2&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-20"><a href="index.html#cb4-20" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(RColorBrewer)) devtools::install_version(&quot;RColorBrewer&quot;,version=&quot;1.1-2&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-21"><a href="index.html#cb4-21" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(glue)) devtools::install_version(&quot;glue&quot;,version=&quot;1.4.2&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-22"><a href="index.html#cb4-22" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(gridExtra)) devtools::install_version(&quot;gridExtra&quot;,version=&quot;2.3&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-23"><a href="index.html#cb4-23" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(ggrepel)) devtools::install_version(&quot;ggrepel&quot;,version=&quot;0.8.2&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-24"><a href="index.html#cb4-24" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(MASS)) devtools::install_version(&quot;MASS&quot;,version=&quot;7.3-51.6&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-25"><a href="index.html#cb4-25" aria-hidden="true" tabindex="-1"></a>R <span class="sc">-</span>q <span class="sc">-</span>e <span class="st">&#39;if(!require(data.table)) devtools::install_version(&quot;data.table&quot;,version=&quot;1.13.0&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span></code></pre></div>
-</div>
-<div id="run-cellxgene-by-h5ad-file" class="section level3" number="1.2.4">
-<h3><span class="header-section-number">1.2.4</span> Run cellxgene by h5ad file</h3>
-<p>You can aslo run cellxgene by specifying a h5ad file, which stores scRNA-seq data along with a host and a port.
-Use ‘ps’ to find used ports to spare. Please see <a href="https://chanzuckerberg.github.io/cellxgene/posts/launch" class="uri">https://chanzuckerberg.github.io/cellxgene/posts/launch</a> for details</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="index.html#cb5-1" aria-hidden="true" tabindex="-1"></a>ps <span class="sc">-</span>ef <span class="sc">|</span> grep cellxgene</span>
-<span id="cb5-2"><a href="index.html#cb5-2" aria-hidden="true" tabindex="-1"></a>Rscript <span class="sc">-</span>e <span class="st">&#39;reticulate::py_config()&#39;</span></span>
-<span id="cb5-3"><a href="index.html#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the following command if the output of the above command doesn&#39;t point to the Python in your env.</span></span>
-<span id="cb5-4"><a href="index.html#cb5-4" aria-hidden="true" tabindex="-1"></a>export RETICULATE_PYTHON<span class="ot">=</span><span class="st">`</span><span class="at">which python</span><span class="st">`</span></span>
-<span id="cb5-5"><a href="index.html#cb5-5" aria-hidden="true" tabindex="-1"></a>cellxgene launch <span class="sc">--</span>host <span class="sc">&lt;</span>xxx<span class="sc">&gt;</span> <span class="sc">--</span>port <span class="sc">&lt;</span>xxx<span class="sc">&gt;</span> <span class="sc">--</span>disable<span class="sc">-</span>annotations <span class="sc">--</span>verbose <span class="sc">&lt;</span>h5ad file<span class="sc">&gt;</span></span></code></pre></div>
-</div>
-<div id="cellxgene-on-web-browser" class="section level3" number="1.2.5">
-<h3><span class="header-section-number">1.2.5</span> Cellxgene on web browser</h3>
-<p>chrome is preferred, version 87.0.4280.88 or 87.0.4280.141 is used. Users can access .
-Following screenshot is what you should be able to see in console of chrome developer tools.
-<img src="cellonweb.png" alt="Alt text" /></p>
+<div id="create-h5ad-file-from-seurat-object" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Create h5ad file from Seurat object</h2>
+<p>First, export the following from Seurat object in R: expression matrix (assume normalized), metadata and coordinates (pca, tsne, umap) as separate txt files.</p>
+<p>Next in Python, create an AnnData object from 10x (scanpy.read_h5ad function) as a starting point. Then replace the expression matrix, meta data and coordinates as following, a h5ad file would be generated.</p>
+<p>(PY CODE)</p>
 
-</div>
 </div>
 </div>
             </section>
@@ -305,8 +263,8 @@ Following screenshot is what you should be able to see in console of chrome deve
           </div>
         </div>
       </div>
-
-<a href="web-source.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="how-to-use-cellxgene-vip.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="helpful-tips.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

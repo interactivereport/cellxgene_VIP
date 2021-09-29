@@ -9,7 +9,7 @@ github-repo: https://github.com/interactivereport/cellxgene_VIP
 author: " Kejie Li, Zhengyu Ouyang,  Dongdong Lin,  Michael Mingueneau, Will Chen, David Sexton, Baohong Zhang"
 date: "`r Sys.Date()`"
 output_dir: docs
-rmd_files: ["index.Rmd", "01-intro.Rmd"]
+rmd_files: ["index.Rmd", "01-WebSource.Rmd", "02-HowTo.Rmd", "03-Methods.Rmd", "04-Tips.Rmd"]
 clean: [packages.bib, book.bib]
 new_session: yes
 

@@ -1,4 +1,9 @@
-
+---
+title: "Cellxgene VIP"
+repo: https://github.com/interactivereport/cellxgene_VIP
+author: " Kejie Li, Zhengyu Ouyang,  Dongdong Lin,  Michael Mingueneau, Will Chen, David Sexton, Baohong Zhang"
+date: "2021-09-29"
+---
 # Getting started with cellxgene VIP
 
 This is a cellxgene VIP tutorial book written in **Markdown**. 
