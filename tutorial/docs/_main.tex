@@ -36,8 +36,8 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \hypersetup{
-  pdftitle={Cellxgene VIP},
-  pdfauthor={Kejie Li, Zhengyu Ouyang, Dongdong Lin, Michael Mingueneau, Will Chen, David Sexton, Baohong Zhang},
+  pdftitle={Supplementary Materials: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells},
+  pdfauthor={Kejie Li; Zhengyu Ouyang; Dongdong Lin; Michael Mingueneau; Will Chen; David Sexton; Baohong Zhang*},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
@@ -109,15 +109,62 @@
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{5}
+\usepackage{booktabs}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{a4paper,left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage[version=4]{mhchem}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{threeparttable}
+\usepackage{float}
+\usepackage{textcomp}
+\usepackage{bm}
+\usepackage{authblk}
+\usepackage{listings}
+\usepackage{fvextra}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  frame=single,
+  breaklines=true,
+  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+}
+
+                                             
+% \title{\textbf{Supplementary Materials}: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells}
+% % 
+% \author[1]{Kejie Li}
+% \author[2]{Zhengyu Ouyang}
+% \author[1]{Dongdong Lin}
+% \author[1]{Michael Mingueneau}
+% \author[1]{Will Chen}
+% \author[1]{David Sexton}
+% \author[1]{Baohong Zhang\thanks{Corresponding Author: baohong.zhang@biogen.com}}
+% 
+% \affil[1]{Research Department, Biogen, Inc., 225 Binney St, Cambridge, MA 02142, USA}
+% \affil[2]{BioInfoRx, Inc, 510 Charmany Dr, Suite 275A, Madison, WI 53719, USA}
 \ifluatex
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
+\usepackage[]{natbib}
+\bibliographystyle{plainnat}
 
-\title{Cellxgene VIP}
-\author{Kejie Li, Zhengyu Ouyang, Dongdong Lin, Michael Mingueneau, Will Chen, David Sexton, Baohong Zhang}
-\date{2021-09-29}
+\title{Supplementary Materials: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells}
+\author{Kejie Li\footnote{Biogen, \href{mailto:kejie.li@biogen.com}{\nolinkurl{kejie.li@biogen.com}}} \and Zhengyu Ouyang\footnote{Bioinforx, \href{mailto:oyoung@bioinforx.org}{\nolinkurl{oyoung@bioinforx.org}}} \and Dongdong Lin\footnote{Biogen, \href{mailto:dongdong.lin@biogen.com}{\nolinkurl{dongdong.lin@biogen.com}}} \and Michael Mingueneau\footnote{Biogen, \href{mailto:michael.mingueneau@biogen.com}{\nolinkurl{michael.mingueneau@biogen.com}}} \and Will Chen\footnote{Biogen, \href{mailto:wwchen@post.harvard.edu}{\nolinkurl{wwchen@post.harvard.edu}}} \and David Sexton\footnote{Biogen, \href{mailto:david.sexton@biogen.com}{\nolinkurl{david.sexton@biogen.com}}} \and Baohong Zhang*\footnote{Biogen, \href{mailto:baohong.zhang@biogen.com}{\nolinkurl{baohong.zhang@biogen.com}}}}
+\date{}
 
 \begin{document}
+\maketitle
+
 \maketitle
 
 {
@@ -159,8 +206,21 @@ If anaconda is not installed on server, you can install it following anaconda do
 \BuiltInTok{source} \OperatorTok{\textless{}}\NormalTok{path to Anaconda3}\OperatorTok{\textgreater{}}\NormalTok{/etc/profile.d/conda.sh }\ErrorTok{(}\ExtensionTok{Default:}\NormalTok{ /opt/anaconda3/etc/profile.d/conda.sh}\KeywordTok{)}
 \ExtensionTok{conda}\NormalTok{ config }\AttributeTok{{-}{-}set}\NormalTok{ channel\_priority flexible}
 \ExtensionTok{conda}\NormalTok{ env create }\AttributeTok{{-}n} \OperatorTok{\textless{}}\NormalTok{env name, such as: VIP}\OperatorTok{\textgreater{}}\NormalTok{ {-}f VIP.yml }\ErrorTok{(}\ExtensionTok{system{-}wide}\NormalTok{ R}\KeywordTok{)} \ExtensionTok{or}\NormalTok{ VIP\_conda\_R.yml }\ErrorTok{(}\BuiltInTok{local} \VariableTok{R} \VariableTok{under} \VariableTok{conda}\NormalTok{, }\VariableTok{no} \VariableTok{root} \VariableTok{privilege} \VariableTok{needed}\KeywordTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Activate conda environment
+
+\begin{Shaded}
+\begin{Highlighting}[]
 \ExtensionTok{conda}\NormalTok{ activate }\OperatorTok{\textless{}}\NormalTok{env name, such as: VIP}\OperatorTok{\textgreater{}}
-\ExtensionTok{or}
+\end{Highlighting}
+\end{Shaded}
+
+or
+
+\begin{Shaded}
+\begin{Highlighting}[]
 \BuiltInTok{source}\NormalTok{ activate }\OperatorTok{\textless{}}\NormalTok{env name}\OperatorTok{\textgreater{}}
 \end{Highlighting}
 \end{Shaded}
@@ -172,7 +232,7 @@ Install cellxgene by running config.sh in ``cellxgene\_VIP'' directory
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{.}\SpecialCharTok{/}\NormalTok{config.sh}
+\ExtensionTok{./config.sh}
 \end{Highlighting}
 \end{Shaded}
 
@@ -648,13 +708,81 @@ There are other convenient functions available to user, such as `Save' or `Load'
 
 Following section in config.sh file.
 
-\textbf{
-Could I have config.sh here?
-}
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{\textless{}}\NormalTok{script }\VariableTok{src=}\StringTok{"static/jquery.min.js"}\OperatorTok{\textgreater{}\textless{}}\NormalTok{/script}\OperatorTok{\textgreater{}}
+\OperatorTok{\textless{}}\NormalTok{link }\VariableTok{href=}\StringTok{\textquotesingle{}static/jspanel/dist/jspanel.css\textquotesingle{}} \VariableTok{rel=}\StringTok{\textquotesingle{}stylesheet\textquotesingle{}}\OperatorTok{\textgreater{}}
+\OperatorTok{\textless{}}\NormalTok{script }\VariableTok{src=}\StringTok{\textquotesingle{}static/jspanel/dist/jspanel.js\textquotesingle{}}\OperatorTok{\textgreater{}\textless{}}\NormalTok{/script}\OperatorTok{\textgreater{}}
+\OperatorTok{\textless{}}\NormalTok{script }\VariableTok{src=}\StringTok{\textquotesingle{}static/jspanel/dist/extensions/modal/jspanel.modal.js\textquotesingle{}}\OperatorTok{\textgreater{}\textless{}}\NormalTok{/script}\OperatorTok{\textgreater{}}
+\OperatorTok{\textless{}}\NormalTok{script }\VariableTok{src=}\StringTok{\textquotesingle{}static/jspanel/dist/extensions/tooltip/jspanel.tooltip.js\textquotesingle{}}\OperatorTok{\textgreater{}\textless{}}\NormalTok{/script}\OperatorTok{\textgreater{}}
+\OperatorTok{\textless{}}\NormalTok{script }\VariableTok{src=}\StringTok{\textquotesingle{}static/jspanel/dist/extensions/hint/jspanel.hint.js\textquotesingle{}}\OperatorTok{\textgreater{}\textless{}}\NormalTok{/script}\OperatorTok{\textgreater{}}
+\OperatorTok{\textless{}}\NormalTok{script }\VariableTok{src=}\StringTok{\textquotesingle{}static/jspanel/dist/extensions/layout/jspanel.layout.js\textquotesingle{}}\OperatorTok{\textgreater{}\textless{}}\NormalTok{/script}\OperatorTok{\textgreater{}}
+\OperatorTok{\textless{}}\NormalTok{script }\VariableTok{src=}\StringTok{\textquotesingle{}static/jspanel/dist/extensions/contextmenu/jspanel.contextmenu.js\textquotesingle{}}\OperatorTok{\textgreater{}\textless{}}\NormalTok{/script}\OperatorTok{\textgreater{}}
+\OperatorTok{\textless{}}\NormalTok{script }\VariableTok{src=}\StringTok{\textquotesingle{}static/jspanel/dist/extensions/dock/jspanel.dock.js\textquotesingle{}}\OperatorTok{\textgreater{}\textless{}}\NormalTok{/script}\OperatorTok{\textgreater{}}
+\end{Highlighting}
+\end{Shaded}
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\OperatorTok{\textless{}}\NormalTok{script}\OperatorTok{\textgreater{}}
+  \CommentTok{// execute JavaScript code in panel content}
+  \KeywordTok{var}\NormalTok{ setInnerHTML }\OperatorTok{=} \KeywordTok{function}\NormalTok{(elm}\OperatorTok{,}\NormalTok{ html) \{}
+\NormalTok{    elm}\OperatorTok{.}\AttributeTok{innerHTML} \OperatorTok{=}\NormalTok{ html}\OperatorTok{;}
+    \BuiltInTok{Array}\OperatorTok{.}\FunctionTok{from}\NormalTok{(elm}\OperatorTok{.}\FunctionTok{querySelectorAll}\NormalTok{(}\StringTok{\textquotesingle{}script\textquotesingle{}}\NormalTok{))}\OperatorTok{.}\FunctionTok{forEach}\NormalTok{( oldScript }\KeywordTok{=\textgreater{}}\NormalTok{ \{}
+      \KeywordTok{const}\NormalTok{ newScript }\OperatorTok{=} \BuiltInTok{document}\OperatorTok{.}\FunctionTok{createElement}\NormalTok{(}\StringTok{\textquotesingle{}script\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+      \BuiltInTok{Array}\OperatorTok{.}\FunctionTok{from}\NormalTok{(oldScript}\OperatorTok{.}\AttributeTok{attributes}\NormalTok{)}
+      \OperatorTok{.}\FunctionTok{forEach}\NormalTok{( attr }\KeywordTok{=\textgreater{}}\NormalTok{ newScript}\OperatorTok{.}\FunctionTok{setAttribute}\NormalTok{(attr}\OperatorTok{.}\AttributeTok{name}\OperatorTok{,}\NormalTok{ attr}\OperatorTok{.}\AttributeTok{value}\NormalTok{) )}\OperatorTok{;}
+\NormalTok{      newScript}\OperatorTok{.}\FunctionTok{appendChild}\NormalTok{(}\BuiltInTok{document}\OperatorTok{.}\FunctionTok{createTextNode}\NormalTok{(oldScript}\OperatorTok{.}\AttributeTok{innerHTML}\NormalTok{))}\OperatorTok{;}
+\NormalTok{      oldScript}\OperatorTok{.}\AttributeTok{parentNode}\OperatorTok{.}\FunctionTok{replaceChild}\NormalTok{(newScript}\OperatorTok{,}\NormalTok{ oldScript)}\OperatorTok{;}
+\NormalTok{    \})}\OperatorTok{;}
+\NormalTok{  \}}
+  \KeywordTok{var}\NormalTok{ plotPanel }\OperatorTok{=}\NormalTok{ jsPanel}\OperatorTok{.}\FunctionTok{create}\NormalTok{(\{}
+    \DataTypeTok{panelSize}\OperatorTok{:} \StringTok{\textquotesingle{}190 0\textquotesingle{}}\OperatorTok{,}
+    \DataTypeTok{position}\OperatorTok{:} \StringTok{\textquotesingle{}left{-}top 160 6\textquotesingle{}}\OperatorTok{,}
+    \DataTypeTok{dragit}\OperatorTok{:}\NormalTok{ \{ }\DataTypeTok{containment}\OperatorTok{:}\NormalTok{ [}\OperatorTok{{-}}\DecValTok{10}\OperatorTok{,} \OperatorTok{{-}}\DecValTok{2000}\OperatorTok{,} \OperatorTok{{-}}\DecValTok{4000}\OperatorTok{,} \OperatorTok{{-}}\DecValTok{2000}\NormalTok{] \}}\OperatorTok{,} \CommentTok{// set dragging range of VIP window}
+    \DataTypeTok{boxShadow}\OperatorTok{:} \DecValTok{1}\OperatorTok{,}
+    \DataTypeTok{border}\OperatorTok{:} \StringTok{"solid \#D4DBDE thin"}\OperatorTok{,}
+    \DataTypeTok{contentOverflow}\OperatorTok{:} \StringTok{\textquotesingle{}scroll scroll\textquotesingle{}}\OperatorTok{,} \CommentTok{// adding scrolling bars}
+    \DataTypeTok{headerControls}\OperatorTok{:}\NormalTok{\{}
+      \DataTypeTok{close}\OperatorTok{:} \StringTok{\textquotesingle{}remove\textquotesingle{}}\OperatorTok{,}
+      \DataTypeTok{minimize}\OperatorTok{:} \StringTok{\textquotesingle{}remove\textquotesingle{}}\OperatorTok{,}
+      \DataTypeTok{maximize}\OperatorTok{:} \StringTok{\textquotesingle{}remove\textquotesingle{}}
+\NormalTok{    \}}\OperatorTok{,}
+    \DataTypeTok{headerTitle}\OperatorTok{:} \KeywordTok{function}\NormalTok{ () \{}\ControlFlowTok{return} \StringTok{\textquotesingle{}\textless{}strong\textgreater{}Visualization in Plugin\textless{}/strong\textgreater{}\textquotesingle{}}\NormalTok{\}}\OperatorTok{,}
+    \DataTypeTok{contentAjax}\OperatorTok{:}\NormalTok{ \{}
+      \DataTypeTok{url}\OperatorTok{:} \StringTok{\textquotesingle{}static/interface.html\textquotesingle{}}\OperatorTok{,}
+      \DataTypeTok{done}\OperatorTok{:} \KeywordTok{function}\NormalTok{ (panel) \{}
+            \FunctionTok{setInnerHTML}\NormalTok{(panel}\OperatorTok{.}\AttributeTok{content}\OperatorTok{,} \KeywordTok{this}\OperatorTok{.}\AttributeTok{responseText}\NormalTok{)}\OperatorTok{;}
+\NormalTok{      \}}
+\NormalTok{    \}}\OperatorTok{,}
+    \DataTypeTok{onwindowresize}\OperatorTok{:} \KeywordTok{function}\NormalTok{(}\BuiltInTok{event}\OperatorTok{,}\NormalTok{ panel) \{}
+      \KeywordTok{var}\NormalTok{ jptop }\OperatorTok{=} \PreprocessorTok{parseInt}\NormalTok{(}\KeywordTok{this}\OperatorTok{.}\AttributeTok{currentData}\OperatorTok{.}\AttributeTok{top}\NormalTok{)}\OperatorTok{;}
+      \KeywordTok{var}\NormalTok{ jpleft }\OperatorTok{=} \PreprocessorTok{parseInt}\NormalTok{(}\KeywordTok{this}\OperatorTok{.}\AttributeTok{currentData}\OperatorTok{.}\AttributeTok{left}\NormalTok{)}\OperatorTok{;}
+      
+      \ControlFlowTok{if}\NormalTok{ (jptop}\OperatorTok{\textless{}{-}}\DecValTok{10} \OperatorTok{||} \BuiltInTok{window}\OperatorTok{.}\AttributeTok{innerHeight}\OperatorTok{{-}}\NormalTok{jptop}\OperatorTok{\textless{}}\DecValTok{10} \OperatorTok{||} \BuiltInTok{window}\OperatorTok{.}\AttributeTok{innerWidth}\OperatorTok{{-}}\NormalTok{jpleft}\OperatorTok{\textless{}}\DecValTok{10} \OperatorTok{||}
+\NormalTok{      jpleft}\OperatorTok{+}\PreprocessorTok{parseInt}\NormalTok{(}\KeywordTok{this}\OperatorTok{.}\AttributeTok{currentData}\OperatorTok{.}\AttributeTok{width}\NormalTok{)}\OperatorTok{\textless{}}\DecValTok{10}\NormalTok{) \{}
+        \KeywordTok{this}\OperatorTok{.}\FunctionTok{reposition}\NormalTok{(}\StringTok{"left{-}top 160 6"}\NormalTok{)}\OperatorTok{;}
+\NormalTok{      \}}
+\NormalTok{    \}}\OperatorTok{,}
+    \DataTypeTok{onunsmallified}\OperatorTok{:} \KeywordTok{function}\NormalTok{ (panel}\OperatorTok{,}\NormalTok{ status) \{}
+      \KeywordTok{this}\OperatorTok{.}\FunctionTok{reposition}\NormalTok{(}\StringTok{\textquotesingle{}center{-}top {-}370 180\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+      \KeywordTok{this}\OperatorTok{.}\FunctionTok{resize}\NormalTok{(\{ }\DataTypeTok{width}\OperatorTok{:} \DecValTok{740}\OperatorTok{,} \DataTypeTok{height}\OperatorTok{:} \KeywordTok{function}\NormalTok{() \{ }\ControlFlowTok{return} \BuiltInTok{Math}\OperatorTok{.}\FunctionTok{min}\NormalTok{(}\DecValTok{480}\OperatorTok{,} \BuiltInTok{window}\OperatorTok{.}\AttributeTok{innerHeight}\OperatorTok{*}\FloatTok{0.6}\NormalTok{)}\OperatorTok{;}\NormalTok{\} \})}\OperatorTok{;}
+\NormalTok{    \}}\OperatorTok{,}
+    \DataTypeTok{onsmallified}\OperatorTok{:} \KeywordTok{function}\NormalTok{ (panel}\OperatorTok{,}\NormalTok{ status) \{}
+      \KeywordTok{this}\OperatorTok{.}\FunctionTok{reposition}\NormalTok{(}\StringTok{\textquotesingle{}left{-}top 160 6\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+      \KeywordTok{this}\OperatorTok{.}\AttributeTok{style}\OperatorTok{.}\AttributeTok{width} \OperatorTok{=} \StringTok{\textquotesingle{}190px\textquotesingle{}}\OperatorTok{;}
+\NormalTok{    \}}
+\NormalTok{  \})}\OperatorTok{.}\FunctionTok{smallify}\NormalTok{()}\OperatorTok{;}
+\NormalTok{  plotPanel}\OperatorTok{.}\AttributeTok{headerbar}\OperatorTok{.}\AttributeTok{style}\OperatorTok{.}\AttributeTok{background} \OperatorTok{=} \StringTok{"\#D4DBDE"}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{\textless{}}\NormalTok{/script}\OperatorTok{\textgreater{}}
+\ExtensionTok{EOF}
+\VariableTok{insertL=$(}\FunctionTok{sed} \AttributeTok{{-}e} \StringTok{\textquotesingle{}s/[\&\textbackslash{}\textbackslash{}/]/\textbackslash{}\textbackslash{}\&/g; s/|/\textbackslash{}\textbackslash{}|/g; s/$/\textbackslash{}\textbackslash{}/;\textquotesingle{}} \AttributeTok{{-}e} \StringTok{\textquotesingle{}$s/\textbackslash{}\textbackslash{}$//\textquotesingle{}} \OperatorTok{\textless{}\textless{}\textless{}}\StringTok{"}\VariableTok{$insertL}\StringTok{"}\VariableTok{)}
+\FunctionTok{sed} \AttributeTok{{-}i} \StringTok{"s|\textless{}div id=}\DataTypeTok{\textbackslash{}"}\StringTok{root}\DataTypeTok{\textbackslash{}"}\StringTok{\textgreater{}\textless{}/div\textgreater{}|}\VariableTok{$insertL}\StringTok{\textbackslash{}n\&|"} \StringTok{"cellxgene/client/index\_template.html"}
 \end{Highlighting}
 \end{Shaded}
 
@@ -702,14 +830,9 @@ Cellxgene client utilizes React Redux that is the official React binding for Red
 
 So, this line of code is appended to the end of client/src/reducers/index.js of cellxgene source code to expose the store to the browser.
 
-{[}
-\textbf{
-Java? R code chunck seems ok?
-}{]}
-
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{window.store }\OtherTok{=}\NormalTok{ store;}
+\BuiltInTok{window}\OperatorTok{.}\AttributeTok{store} \OperatorTok{=}\NormalTok{ store}\OperatorTok{;}
 \end{Highlighting}
 \end{Shaded}
 
@@ -721,15 +844,10 @@ By doing this, Redux store holding client data and user selections are visible t
   Unselect / select a feature. GUI is refreshed automatically after dispatching.
 \end{itemize}
 
-{[}
-\textbf{
-Java? R code chunck seems ok?
-}{]}
-
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{window.store.dispatch}\NormalTok{(\{type}\SpecialCharTok{:} \StringTok{"categorical metadata filter deselect"}\NormalTok{, metadataField}\SpecialCharTok{:} \StringTok{"louvain"}\NormalTok{, categoryIndex}\SpecialCharTok{:} \DecValTok{5}\NormalTok{\})}
-\FunctionTok{window.store.dispatch}\NormalTok{(\{type}\SpecialCharTok{:} \StringTok{"categorical metadata filter select"}\NormalTok{, metadataField}\SpecialCharTok{:} \StringTok{"louvain"}\NormalTok{, categoryIndex}\SpecialCharTok{:} \DecValTok{5}\NormalTok{\})}
+\BuiltInTok{window}\OperatorTok{.}\AttributeTok{store}\OperatorTok{.}\FunctionTok{dispatch}\NormalTok{(\{}\DataTypeTok{type}\OperatorTok{:} \StringTok{"categorical metadata filter deselect"}\OperatorTok{,} \DataTypeTok{metadataField}\OperatorTok{:} \StringTok{"louvain"}\OperatorTok{,} \DataTypeTok{categoryIndex}\OperatorTok{:} \DecValTok{5}\NormalTok{\})}
+\BuiltInTok{window}\OperatorTok{.}\AttributeTok{store}\OperatorTok{.}\FunctionTok{dispatch}\NormalTok{(\{}\DataTypeTok{type}\OperatorTok{:} \StringTok{"categorical metadata filter select"}\OperatorTok{,} \DataTypeTok{metadataField}\OperatorTok{:} \StringTok{"louvain"}\OperatorTok{,} \DataTypeTok{categoryIndex}\OperatorTok{:} \DecValTok{5}\NormalTok{\})}
 \end{Highlighting}
 \end{Shaded}
 
@@ -739,22 +857,17 @@ Java? R code chunck seems ok?
   Get state of just finished action and synchronize gene input and cell selections from main window to VIP if corresponding action was performed.
 \end{itemize}
 
-{[}
-\textbf{
-Java? R code chunck seems ok?
-}{]}
-
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{const unsubscribe }\OtherTok{=} \FunctionTok{window.store.subscribe}\NormalTok{(() }\OtherTok{=}\ErrorTok{\textgreater{}}\NormalTok{ \{}
-  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{window.store.getState}\NormalTok{()[}\StringTok{"@@undoable/filterState"}\NormalTok{].prevAction) \{}
-\NormalTok{    actionType }\OtherTok{=} \FunctionTok{window.store.getState}\NormalTok{()[}\StringTok{"@@undoable/filterState"}\NormalTok{].prevAction.type;}
-    \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{actionType.includes}\NormalTok{(}\StringTok{"user defined gene success"}\NormalTok{) }\SpecialCharTok{||}
-    \FunctionTok{actionType.includes}\NormalTok{(}\StringTok{"store current cell selection as differential set"}\NormalTok{)) \{}
-      \FunctionTok{sync}\NormalTok{();}
+\KeywordTok{const}\NormalTok{ unsubscribe }\OperatorTok{=} \BuiltInTok{window}\OperatorTok{.}\AttributeTok{store}\OperatorTok{.}\FunctionTok{subscribe}\NormalTok{(() }\KeywordTok{=\textgreater{}}\NormalTok{ \{}
+  \ControlFlowTok{if}\NormalTok{ (}\BuiltInTok{window}\OperatorTok{.}\AttributeTok{store}\OperatorTok{.}\FunctionTok{getState}\NormalTok{()[}\StringTok{"@@undoable/filterState"}\NormalTok{]}\OperatorTok{.}\AttributeTok{prevAction}\NormalTok{) \{}
+\NormalTok{    actionType }\OperatorTok{=} \BuiltInTok{window}\OperatorTok{.}\AttributeTok{store}\OperatorTok{.}\FunctionTok{getState}\NormalTok{()[}\StringTok{"@@undoable/filterState"}\NormalTok{]}\OperatorTok{.}\AttributeTok{prevAction}\OperatorTok{.}\AttributeTok{type}\OperatorTok{;}
+    \ControlFlowTok{if}\NormalTok{ (actionType}\OperatorTok{.}\FunctionTok{includes}\NormalTok{(}\StringTok{"user defined gene success"}\NormalTok{) }\OperatorTok{||}
+\NormalTok{    actionType}\OperatorTok{.}\FunctionTok{includes}\NormalTok{(}\StringTok{"store current cell selection as differential set"}\NormalTok{)) \{}
+      \FunctionTok{sync}\NormalTok{()}\OperatorTok{;}
 \NormalTok{      \}}
 \NormalTok{  \}}
-\NormalTok{\});}
+\NormalTok{\})}\OperatorTok{;}
 \end{Highlighting}
 \end{Shaded}
 

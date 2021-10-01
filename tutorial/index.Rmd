@@ -1,9 +1,13 @@
 ---
-title: "Cellxgene VIP"
-repo: https://github.com/interactivereport/cellxgene_VIP
-author: " Kejie Li, Zhengyu Ouyang,  Dongdong Lin,  Michael Mingueneau, 
-          Will Chen, David Sexton, Baohong Zhang"
-date: "`r Sys.Date()`"
+title: "Supplementary Materials: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells"
+author:
+- Kejie Li^[Biogen, kejie.li@biogen.com]
+- Zhengyu Ouyang^[Bioinforx, oyoung@bioinforx.org]
+- Dongdong Lin^[Biogen, dongdong.lin@biogen.com]
+- Michael Mingueneau^[Biogen, michael.mingueneau@biogen.com]
+- Will Chen^[Biogen, wwchen@post.harvard.edu]
+- David Sexton^[Biogen, david.sexton@biogen.com]
+- Baohong Zhang*^[Biogen, baohong.zhang@biogen.com]
 ---
 # Getting started with cellxgene VIP
 
@@ -14,12 +18,12 @@ To meet the growing demands from scientists to effectively extract deep insights
 
 ## Getting Set up
 ### Execute anaconda
-```{bash eval=FALSE}
+```{bash, eval=FALSE}
 bash ~/Downloads/Anaconda3-2020.02-Linux-x86_64.sh
 ```
 If anaconda is not installed on server, you can install it following anaconda documentation (https://docs.anaconda.com/anaconda/install/linux/)
 ### Create and enable conda environment
-```{bash eval=FALSE}
+```{bash,eval = FALSE}
 # clone repo from cellxgene VIP github
 git clone https://github.com/interactivereport/cellxgene_VIP.git
 cd cellxgene_VIP
@@ -28,13 +32,18 @@ cd cellxgene_VIP
 source <path to Anaconda3>/etc/profile.d/conda.sh (Default: /opt/anaconda3/etc/profile.d/conda.sh)
 conda config --set channel_priority flexible
 conda env create -n <env name, such as: VIP> -f VIP.yml (system-wide R) or VIP_conda_R.yml (local R under conda, no root privilege needed)
+```
+Activate conda environment
+```{bash,eval = FALSE}
 conda activate <env name, such as: VIP>
-or
+```
+or 
+```{bash,eval = FALSE}
 source activate <env name>
 ```
 ### Cellxgene installation
 Install cellxgene by running config.sh in "cellxgene_VIP" directory
-```{r eval=FALSE}
+```{bash eval=FALSE}
 ./config.sh
 ```
 ### R dependencies

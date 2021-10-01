@@ -1,9 +1,13 @@
 ---
-title: "Cellxgene VIP"
-repo: https://github.com/interactivereport/cellxgene_VIP
-author: " Kejie Li, Zhengyu Ouyang,  Dongdong Lin,  Michael Mingueneau, 
-          Will Chen, David Sexton, Baohong Zhang"
-date: "2021-09-29"
+title: "Supplementary Materials: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells"
+author:
+- Kejie Li^[Biogen, kejie.li@biogen.com]
+- Zhengyu Ouyang^[Bioinforx, oyoung@bioinforx.org]
+- Dongdong Lin^[Biogen, dongdong.lin@biogen.com]
+- Michael Mingueneau^[Biogen, michael.mingueneau@biogen.com]
+- Will Chen^[Biogen, wwchen@post.harvard.edu]
+- David Sexton^[Biogen, david.sexton@biogen.com]
+- Baohong Zhang*^[Biogen, baohong.zhang@biogen.com]
 ---
 # Getting started with cellxgene VIP
 
@@ -30,14 +34,21 @@ cd cellxgene_VIP
 source <path to Anaconda3>/etc/profile.d/conda.sh (Default: /opt/anaconda3/etc/profile.d/conda.sh)
 conda config --set channel_priority flexible
 conda env create -n <env name, such as: VIP> -f VIP.yml (system-wide R) or VIP_conda_R.yml (local R under conda, no root privilege needed)
+```
+Activate conda environment
+
+```bash
 conda activate <env name, such as: VIP>
-or
+```
+or 
+
+```bash
 source activate <env name>
 ```
 ### Cellxgene installation
 Install cellxgene by running config.sh in "cellxgene_VIP" directory
 
-```r
+```bash
 ./config.sh
 ```
 ### R dependencies

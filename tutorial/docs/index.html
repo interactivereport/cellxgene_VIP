@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Cellxgene VIP</title>
-  <meta name="description" content="Cellxgene VIP" />
+  <title>Supplementary Materials: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells</title>
+  <meta name="description" content="Supplementary Materials: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells" />
   <meta name="generator" content="bookdown 0.23 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Cellxgene VIP" />
+  <meta property="og:title" content="Supplementary Materials: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells" />
   <meta property="og:type" content="book" />
   
   
@@ -16,15 +16,20 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Cellxgene VIP" />
+  <meta name="twitter:title" content="Supplementary Materials: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells" />
   
   
   
 
-<meta name="author" content="Kejie Li, Zhengyu Ouyang, Dongdong Lin, Michael Mingueneau, Will Chen, David Sexton, Baohong Zhang" />
+<meta name="author" content="Kejie Li" />
+<meta name="author" content="Zhengyu Ouyang" />
+<meta name="author" content="Dongdong Lin" />
+<meta name="author" content="Michael Mingueneau" />
+<meta name="author" content="Will Chen" />
+<meta name="author" content="David Sexton" />
+<meta name="author" content="Baohong Zhang*" />
 
 
-<meta name="date" content="2021-09-29" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -209,7 +214,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Cellxgene VIP</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Supplementary Materials: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells</a>
           </h1>
         </div>
 
@@ -218,9 +223,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
             <section class="normal" id="section-">
 <div id="header">
-<h1 class="title">Cellxgene VIP</h1>
-<p class="author"><em>Kejie Li, Zhengyu Ouyang, Dongdong Lin, Michael Mingueneau, Will Chen, David Sexton, Baohong Zhang</em></p>
-<p class="date"><em>2021-09-29</em></p>
+<h1 class="title">Supplementary Materials: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells</h1>
+<p class="author"><em>Kejie Li<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></em></p>
+<p class="author"><em>Zhengyu Ouyang<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></em></p>
+<p class="author"><em>Dongdong Lin<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a></em></p>
+<p class="author"><em>Michael Mingueneau<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a></em></p>
+<p class="author"><em>Will Chen<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a></em></p>
+<p class="author"><em>David Sexton<a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a></em></p>
+<p class="author"><em>Baohong Zhang*<a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a></em></p>
 </div>
 <div id="getting-started-with-cellxgene-vip" class="section level1" number="1">
 <h1><span class="header-section-number">Chapter 1</span> Getting started with cellxgene VIP</h1>
@@ -243,54 +253,55 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-5"><a href="index.html#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># conda environment</span></span>
 <span id="cb2-6"><a href="index.html#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> <span class="op">&lt;</span>path to Anaconda3<span class="op">&gt;</span>/etc/profile.d/conda.sh <span class="er">(</span><span class="ex">Default:</span> /opt/anaconda3/etc/profile.d/conda.sh<span class="kw">)</span></span>
 <span id="cb2-7"><a href="index.html#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> config <span class="at">--set</span> channel_priority flexible</span>
-<span id="cb2-8"><a href="index.html#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> env create <span class="at">-n</span> <span class="op">&lt;</span>env name, such as: VIP<span class="op">&gt;</span> -f VIP.yml <span class="er">(</span><span class="ex">system-wide</span> R<span class="kw">)</span> <span class="ex">or</span> VIP_conda_R.yml <span class="er">(</span><span class="bu">local</span> <span class="va">R</span> <span class="va">under</span> <span class="va">conda</span>, <span class="va">no</span> <span class="va">root</span> <span class="va">privilege</span> <span class="va">needed</span><span class="kw">)</span></span>
-<span id="cb2-9"><a href="index.html#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate <span class="op">&lt;</span>env name, such as: VIP<span class="op">&gt;</span></span>
-<span id="cb2-10"><a href="index.html#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="ex">or</span></span>
-<span id="cb2-11"><a href="index.html#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> activate <span class="op">&lt;</span>env name<span class="op">&gt;</span></span></code></pre></div>
+<span id="cb2-8"><a href="index.html#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> env create <span class="at">-n</span> <span class="op">&lt;</span>env name, such as: VIP<span class="op">&gt;</span> -f VIP.yml <span class="er">(</span><span class="ex">system-wide</span> R<span class="kw">)</span> <span class="ex">or</span> VIP_conda_R.yml <span class="er">(</span><span class="bu">local</span> <span class="va">R</span> <span class="va">under</span> <span class="va">conda</span>, <span class="va">no</span> <span class="va">root</span> <span class="va">privilege</span> <span class="va">needed</span><span class="kw">)</span></span></code></pre></div>
+<p>Activate conda environment</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="index.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate <span class="op">&lt;</span>env name, such as: VIP<span class="op">&gt;</span></span></code></pre></div>
+<p>or</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="index.html#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> activate <span class="op">&lt;</span>env name<span class="op">&gt;</span></span></code></pre></div>
 </div>
 <div id="cellxgene-installation" class="section level3" number="1.2.2">
 <h3><span class="header-section-number">1.2.2</span> Cellxgene installation</h3>
 <p>Install cellxgene by running config.sh in “cellxgene_VIP” directory</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="index.html#cb3-1" aria-hidden="true" tabindex="-1"></a>.<span class="sc">/</span>config.sh</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="index.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./config.sh</span></span></code></pre></div>
 </div>
 <div id="r-dependencies" class="section level3" number="1.2.3">
 <h3><span class="header-section-number">1.2.3</span> R dependencies</h3>
 <p>Install all required R packages on linux:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="index.html#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">LIBARROW_MINIMAL=</span>false</span>
-<span id="cb4-2"><a href="index.html#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#  ensure that the right instance of R is used. e.g. system-wide: /bin/R or /usr/bin/R ; local R under conda: ~/.conda/envs/VIP_conda_R/bin/R</span></span>
-<span id="cb4-3"><a href="index.html#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> R</span>
-<span id="cb4-4"><a href="index.html#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="index.html#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(devtools)) install.packages(&quot;devtools&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-6"><a href="index.html#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(Cairo)) devtools::install_version(&quot;Cairo&quot;,version=&quot;1.5-12&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-7"><a href="index.html#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(foreign)) devtools::install_version(&quot;foreign&quot;,version=&quot;0.8-76&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-8"><a href="index.html#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(ggpubr)) devtools::install_version(&quot;ggpubr&quot;,version=&quot;0.3.0&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-9"><a href="index.html#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(ggrastr)) devtools::install_version(&quot;ggrastr&quot;,version=&quot;0.1.9&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-10"><a href="index.html#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(arrow)) devtools::install_version(&quot;arrow&quot;,version=&quot;2.0.0&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-11"><a href="index.html#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(Seurat)) devtools::install_version(&quot;Seurat&quot;,version=&quot;3.2.3&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-12"><a href="index.html#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(rmarkdown)) devtools::install_version(&quot;rmarkdown&quot;,version=&quot;2.5&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-13"><a href="index.html#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(tidyverse)) devtools::install_version(&quot;tidyverse&quot;,version=&quot;1.3.0&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-14"><a href="index.html#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(viridis)) devtools::install_version(&quot;viridis&quot;,version=&quot;0.5.1&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-15"><a href="index.html#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(BiocManager)) devtools::install_version(&quot;BiocManager&quot;,version=&quot;1.30.10&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-16"><a href="index.html#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(fgsea)) BiocManager::install(&quot;fgsea&quot;)&#39;</span></span>
-<span id="cb4-17"><a href="index.html#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-18"><a href="index.html#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co"># These should be already installed as dependencies of above packages</span></span>
-<span id="cb4-19"><a href="index.html#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(dbplyr)) devtools::install_version(&quot;dbplyr&quot;,version=&quot;1.0.2&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-20"><a href="index.html#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(RColorBrewer)) devtools::install_version(&quot;RColorBrewer&quot;,version=&quot;1.1-2&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-21"><a href="index.html#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(glue)) devtools::install_version(&quot;glue&quot;,version=&quot;1.4.2&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-22"><a href="index.html#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(gridExtra)) devtools::install_version(&quot;gridExtra&quot;,version=&quot;2.3&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-23"><a href="index.html#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(ggrepel)) devtools::install_version(&quot;ggrepel&quot;,version=&quot;0.8.2&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-24"><a href="index.html#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(MASS)) devtools::install_version(&quot;MASS&quot;,version=&quot;7.3-51.6&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
-<span id="cb4-25"><a href="index.html#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(data.table)) devtools::install_version(&quot;data.table&quot;,version=&quot;1.13.0&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="index.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">LIBARROW_MINIMAL=</span>false</span>
+<span id="cb6-2"><a href="index.html#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#  ensure that the right instance of R is used. e.g. system-wide: /bin/R or /usr/bin/R ; local R under conda: ~/.conda/envs/VIP_conda_R/bin/R</span></span>
+<span id="cb6-3"><a href="index.html#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> R</span>
+<span id="cb6-4"><a href="index.html#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="index.html#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(devtools)) install.packages(&quot;devtools&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb6-6"><a href="index.html#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(Cairo)) devtools::install_version(&quot;Cairo&quot;,version=&quot;1.5-12&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb6-7"><a href="index.html#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(foreign)) devtools::install_version(&quot;foreign&quot;,version=&quot;0.8-76&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb6-8"><a href="index.html#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(ggpubr)) devtools::install_version(&quot;ggpubr&quot;,version=&quot;0.3.0&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb6-9"><a href="index.html#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(ggrastr)) devtools::install_version(&quot;ggrastr&quot;,version=&quot;0.1.9&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb6-10"><a href="index.html#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(arrow)) devtools::install_version(&quot;arrow&quot;,version=&quot;2.0.0&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb6-11"><a href="index.html#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(Seurat)) devtools::install_version(&quot;Seurat&quot;,version=&quot;3.2.3&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb6-12"><a href="index.html#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(rmarkdown)) devtools::install_version(&quot;rmarkdown&quot;,version=&quot;2.5&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb6-13"><a href="index.html#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(tidyverse)) devtools::install_version(&quot;tidyverse&quot;,version=&quot;1.3.0&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb6-14"><a href="index.html#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(viridis)) devtools::install_version(&quot;viridis&quot;,version=&quot;0.5.1&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb6-15"><a href="index.html#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(BiocManager)) devtools::install_version(&quot;BiocManager&quot;,version=&quot;1.30.10&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb6-16"><a href="index.html#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(fgsea)) BiocManager::install(&quot;fgsea&quot;)&#39;</span></span>
+<span id="cb6-17"><a href="index.html#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="index.html#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co"># These should be already installed as dependencies of above packages</span></span>
+<span id="cb6-19"><a href="index.html#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(dbplyr)) devtools::install_version(&quot;dbplyr&quot;,version=&quot;1.0.2&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb6-20"><a href="index.html#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(RColorBrewer)) devtools::install_version(&quot;RColorBrewer&quot;,version=&quot;1.1-2&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb6-21"><a href="index.html#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(glue)) devtools::install_version(&quot;glue&quot;,version=&quot;1.4.2&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb6-22"><a href="index.html#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(gridExtra)) devtools::install_version(&quot;gridExtra&quot;,version=&quot;2.3&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb6-23"><a href="index.html#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(ggrepel)) devtools::install_version(&quot;ggrepel&quot;,version=&quot;0.8.2&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb6-24"><a href="index.html#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(MASS)) devtools::install_version(&quot;MASS&quot;,version=&quot;7.3-51.6&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
+<span id="cb6-25"><a href="index.html#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(data.table)) devtools::install_version(&quot;data.table&quot;,version=&quot;1.13.0&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span></code></pre></div>
 </div>
 <div id="run-cellxgene-by-h5ad-file" class="section level3" number="1.2.4">
 <h3><span class="header-section-number">1.2.4</span> Run cellxgene by h5ad file</h3>
 <p>You can aslo run cellxgene by specifying a h5ad file, which stores scRNA-seq data along with a host and a port.
 Use ‘ps’ to find used ports to spare. Please see <a href="https://chanzuckerberg.github.io/cellxgene/posts/launch" class="uri">https://chanzuckerberg.github.io/cellxgene/posts/launch</a> for details</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="index.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ps</span> <span class="at">-ef</span> <span class="kw">|</span> <span class="fu">grep</span> cellxgene</span>
-<span id="cb5-2"><a href="index.html#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">&#39;reticulate::py_config()&#39;</span></span>
-<span id="cb5-3"><a href="index.html#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the following command if the output of the above command doesn&#39;t point to the Python in your env.</span></span>
-<span id="cb5-4"><a href="index.html#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">RETICULATE_PYTHON=</span><span class="kw">`</span><span class="fu">which</span> python<span class="kw">`</span></span>
-<span id="cb5-5"><a href="index.html#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">cellxgene</span> launch <span class="at">--host</span> <span class="op">&lt;</span>xxx<span class="op">&gt;</span> --port <span class="op">&lt;</span>xxx<span class="op">&gt;</span> --disable-annotations <span class="at">--verbose</span> <span class="op">&lt;</span>h5ad file<span class="op">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="index.html#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ps</span> <span class="at">-ef</span> <span class="kw">|</span> <span class="fu">grep</span> cellxgene</span>
+<span id="cb7-2"><a href="index.html#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">&#39;reticulate::py_config()&#39;</span></span>
+<span id="cb7-3"><a href="index.html#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the following command if the output of the above command doesn&#39;t point to the Python in your env.</span></span>
+<span id="cb7-4"><a href="index.html#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">RETICULATE_PYTHON=</span><span class="kw">`</span><span class="fu">which</span> python<span class="kw">`</span></span>
+<span id="cb7-5"><a href="index.html#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">cellxgene</span> launch <span class="at">--host</span> <span class="op">&lt;</span>xxx<span class="op">&gt;</span> --port <span class="op">&lt;</span>xxx<span class="op">&gt;</span> --disable-annotations <span class="at">--verbose</span> <span class="op">&lt;</span>h5ad file<span class="op">&gt;</span></span></code></pre></div>
 </div>
 <div id="cellxgene-on-web-browser" class="section level3" number="1.2.5">
 <h3><span class="header-section-number">1.2.5</span> Cellxgene on web browser</h3>
@@ -300,6 +311,18 @@ Following screenshot is what you should be able to see in console of chrome deve
 
 </div>
 </div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="1">
+<li id="fn1"><p>Biogen, <a href="mailto:kejie.li@biogen.com" class="email">kejie.li@biogen.com</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>Bioinforx, <a href="mailto:oyoung@bioinforx.org" class="email">oyoung@bioinforx.org</a><a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>Biogen, <a href="mailto:dongdong.lin@biogen.com" class="email">dongdong.lin@biogen.com</a><a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p>Biogen, <a href="mailto:michael.mingueneau@biogen.com" class="email">michael.mingueneau@biogen.com</a><a href="#fnref4" class="footnote-back">↩︎</a></p></li>
+<li id="fn5"><p>Biogen, <a href="mailto:wwchen@post.harvard.edu" class="email">wwchen@post.harvard.edu</a><a href="#fnref5" class="footnote-back">↩︎</a></p></li>
+<li id="fn6"><p>Biogen, <a href="mailto:david.sexton@biogen.com" class="email">david.sexton@biogen.com</a><a href="#fnref6" class="footnote-back">↩︎</a></p></li>
+<li id="fn7"><p>Biogen, <a href="mailto:baohong.zhang@biogen.com" class="email">baohong.zhang@biogen.com</a><a href="#fnref7" class="footnote-back">↩︎</a></p></li>
+</ol>
 </div>
             </section>
 

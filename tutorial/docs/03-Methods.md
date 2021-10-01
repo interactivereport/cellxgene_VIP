@@ -4,13 +4,80 @@
 ## Client-side	Integration	by	a	jsPanel	Window	(VIP) {-}
 Following section in config.sh file.
 
-**
-Could I have config.sh here?
-**
+
 
 ```bash
-
+<script src="static/jquery.min.js"></script>
+<link href='static/jspanel/dist/jspanel.css' rel='stylesheet'>
+<script src='static/jspanel/dist/jspanel.js'></script>
+<script src='static/jspanel/dist/extensions/modal/jspanel.modal.js'></script>
+<script src='static/jspanel/dist/extensions/tooltip/jspanel.tooltip.js'></script>
+<script src='static/jspanel/dist/extensions/hint/jspanel.hint.js'></script>
+<script src='static/jspanel/dist/extensions/layout/jspanel.layout.js'></script>
+<script src='static/jspanel/dist/extensions/contextmenu/jspanel.contextmenu.js'></script>
+<script src='static/jspanel/dist/extensions/dock/jspanel.dock.js'></script>
 ```
+
+```js
+<script>
+  // execute JavaScript code in panel content
+  var setInnerHTML = function(elm, html) {
+    elm.innerHTML = html;
+    Array.from(elm.querySelectorAll('script')).forEach( oldScript => {
+      const newScript = document.createElement('script');
+      Array.from(oldScript.attributes)
+      .forEach( attr => newScript.setAttribute(attr.name, attr.value) );
+      newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+      oldScript.parentNode.replaceChild(newScript, oldScript);
+    });
+  }
+  var plotPanel = jsPanel.create({
+    panelSize: '190 0',
+    position: 'left-top 160 6',
+    dragit: { containment: [-10, -2000, -4000, -2000] }, // set dragging range of VIP window
+    boxShadow: 1,
+    border: "solid #D4DBDE thin",
+    contentOverflow: 'scroll scroll', // adding scrolling bars
+    headerControls:{
+      close: 'remove',
+      minimize: 'remove',
+      maximize: 'remove'
+    },
+    headerTitle: function () {return '<strong>Visualization in Plugin</strong>'},
+    contentAjax: {
+      url: 'static/interface.html',
+      done: function (panel) {
+            setInnerHTML(panel.content, this.responseText);
+      }
+    },
+    onwindowresize: function(event, panel) {
+      var jptop = parseInt(this.currentData.top);
+      var jpleft = parseInt(this.currentData.left);
+      
+      if (jptop<-10 || window.innerHeight-jptop<10 || window.innerWidth-jpleft<10 ||
+      jpleft+parseInt(this.currentData.width)<10) {
+        this.reposition("left-top 160 6");
+      }
+    },
+    onunsmallified: function (panel, status) {
+      this.reposition('center-top -370 180');
+      this.resize({ width: 740, height: function() { return Math.min(480, window.innerHeight*0.6);} });
+    },
+    onsmallified: function (panel, status) {
+      this.reposition('left-top 160 6');
+      this.style.width = '190px';
+    }
+  }).smallify();
+  plotPanel.headerbar.style.background = "#D4DBDE";
+```
+
+```bash
+</script>
+EOF
+insertL=$(sed -e 's/[&\\/]/\\&/g; s/|/\\|/g; s/$/\\/;' -e '$s/\\$//' <<<"$insertL")
+sed -i "s|<div id=\"root\"></div>|$insertL\n&|" "cellxgene/client/index_template.html"
+```
+
 
 
 All functional VIP HTML and JavaScript code will be in “interface.html” that is independent of cellxgene code bases.
@@ -51,13 +118,9 @@ Cellxgene client utilizes React Redux that is the official React binding for Red
 
 So, this line of code is appended to the end of client/src/reducers/index.js of cellxgene source code to expose the store to the browser.
 
-[
-**
-Java? R code chunck seems ok?
-**
-]
 
-```r
+
+```js
 window.store = store;
 ```
 
@@ -66,27 +129,18 @@ By doing this, Redux store holding client data and user selections are visible t
 
 - Unselect / select a feature. GUI is refreshed automatically after dispatching.
 
-[
-**
-Java? R code chunck seems ok?
-**
-]
 
-```r
+
+```js
 window.store.dispatch({type: "categorical metadata filter deselect", metadataField: "louvain", categoryIndex: 5})
 window.store.dispatch({type: "categorical metadata filter select", metadataField: "louvain", categoryIndex: 5})
 ```
 
 - Get state of just finished action and synchronize gene input and cell selections from main window to VIP if corresponding action was performed.
 
-[
-**
-Java? R code chunck seems ok?
-**
-]
 
 
-```r
+```js
 const unsubscribe = window.store.subscribe(() => {
   if (window.store.getState()["@@undoable/filterState"].prevAction) {
     actionType = window.store.getState()["@@undoable/filterState"].prevAction.type;

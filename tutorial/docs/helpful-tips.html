@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 5 Helpful Tips | Cellxgene VIP</title>
-  <meta name="description" content="Chapter 5 Helpful Tips | Cellxgene VIP" />
+  <title>Chapter 5 Helpful Tips | Supplementary Materials: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells</title>
+  <meta name="description" content="Chapter 5 Helpful Tips | Supplementary Materials: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells" />
   <meta name="generator" content="bookdown 0.23 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 5 Helpful Tips | Cellxgene VIP" />
+  <meta property="og:title" content="Chapter 5 Helpful Tips | Supplementary Materials: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells" />
   <meta property="og:type" content="book" />
   
   
@@ -16,15 +16,20 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 5 Helpful Tips | Cellxgene VIP" />
+  <meta name="twitter:title" content="Chapter 5 Helpful Tips | Supplementary Materials: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells" />
   
   
   
 
-<meta name="author" content="Kejie Li, Zhengyu Ouyang, Dongdong Lin, Michael Mingueneau, Will Chen, David Sexton, Baohong Zhang" />
+<meta name="author" content="Kejie Li" />
+<meta name="author" content="Zhengyu Ouyang" />
+<meta name="author" content="Dongdong Lin" />
+<meta name="author" content="Michael Mingueneau" />
+<meta name="author" content="Will Chen" />
+<meta name="author" content="David Sexton" />
+<meta name="author" content="Baohong Zhang*" />
 
 
-<meta name="date" content="2021-09-29" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -209,7 +214,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Cellxgene VIP</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Supplementary Materials: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells</a>
           </h1>
         </div>
 
@@ -222,11 +227,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="handle-nulls-in-categorical-annotation" class="section level2" number="5.1">
 <h2><span class="header-section-number">5.1</span> Handle nulls in categorical annotation</h2>
 <p>Such nan’s in categorical annotation would cause trouble in VIP because it cannot be converted to string. Here is how to handle it, let’s call the annotation X_annotation:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="helpful-tips.html#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cast to str from categorical</span></span>
-<span id="cb13-2"><a href="helpful-tips.html#cb13-2" aria-hidden="true" tabindex="-1"></a>adata.obs <span class="op">=</span> adata.obs.astype({<span class="st">&#39;X_annotation&#39;</span>:<span class="st">&#39;str&#39;</span>})</span>
-<span id="cb13-3"><a href="helpful-tips.html#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-4"><a href="helpful-tips.html#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># replace all of nan by ‘nan’</span></span>
-<span id="cb13-5"><a href="helpful-tips.html#cb13-5" aria-hidden="true" tabindex="-1"></a>adata.obs[<span class="st">&quot;X_annotation &quot;</span>][adata.obs[<span class="st">&quot;X_annotation &quot;</span>].isnull()] <span class="op">=</span> <span class="st">&#39;nan&#39;</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb17-1"><a href="helpful-tips.html#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cast to str from categorical</span></span>
+<span id="cb17-2"><a href="helpful-tips.html#cb17-2" aria-hidden="true" tabindex="-1"></a>adata.obs <span class="op">=</span> adata.obs.astype({<span class="st">&#39;X_annotation&#39;</span>:<span class="st">&#39;str&#39;</span>})</span>
+<span id="cb17-3"><a href="helpful-tips.html#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="helpful-tips.html#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># replace all of nan by ‘nan’</span></span>
+<span id="cb17-5"><a href="helpful-tips.html#cb17-5" aria-hidden="true" tabindex="-1"></a>adata.obs[<span class="st">&quot;X_annotation &quot;</span>][adata.obs[<span class="st">&quot;X_annotation &quot;</span>].isnull()] <span class="op">=</span> <span class="st">&#39;nan&#39;</span></span></code></pre></div>
 </div>
 <div id="display-full-traceback-stack-for-debugging-in-vip" class="section level2" number="5.2">
 <h2><span class="header-section-number">5.2</span> Display full traceback stack for debugging in VIP</h2>
@@ -242,6 +247,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
             </section>
 
           </div>
