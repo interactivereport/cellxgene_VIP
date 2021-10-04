@@ -32,6 +32,12 @@ bookdown::pdf_book:
   latex_engine: xelatex
   citation_package: natbib
   keep_tex: yes
+  number_sections: yes
+  toc: yes
+  toc_depth: 4
+  pandoc_args:
+    - '--lua-filter=scholarly-metadata.lua'
+    - '--lua-filter=author-info-blocks.lua'
 
 bookdown::epub_book:
   stylesheet: style.css
