@@ -1,14 +1,3 @@
----
-title: "Supplementary Materials: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells"
-author:
-- Kejie Li^[Biogen, kejie.li@biogen.com]
-- Zhengyu Ouyang^[Bioinforx, oyoung@bioinforx.org]
-- Dongdong Lin^[Biogen, dongdong.lin@biogen.com]
-- Michael Mingueneau^[Biogen, michael.mingueneau@biogen.com]
-- Will Chen^[Biogen, wwchen@post.harvard.edu]
-- David Sexton^[Biogen, david.sexton@biogen.com]
-- Baohong Zhang*^[Biogen, baohong.zhang@biogen.com]
----
 # Getting started with cellxgene VIP
 
 This is a cellxgene VIP tutorial book written in **Markdown**. 
@@ -96,5 +85,19 @@ cellxgene launch --host <xxx> --port <xxx> --disable-annotations --verbose <h5ad
 chrome is preferred, version 87.0.4280.88 or 87.0.4280.141 is used. Users can access \textbf{http(s)://host:port}.
 Following screenshot is what you should be able to see in console of chrome developer tools.
 ![Alt text](cellonweb.png)
+
+## Authors
+- Keijie Li (kejie.li@biogen.com), Associate Director at Biogen in the research department. Main author and content wrangler. 
+- Zhengyu Ouyang, Associate Director of Bioingormatics at BioinfoRx. Content wrangler. 
+- Baohong Zhang (baohong.zhang@biogen.com), Head of Genome Informatics at Biogen in the research department. Corresponding author and content wrangler.
+
+
+The development and delivery of this material has also contributed by: 
+
+- Yirui Chen (yirui.chen@bigen.com), Biogen Inc.
+- Dongdong Lin (dongdong.lin@biogen.com), Biogen Inc.
+- Michael Mingueneau (michael.mingueneau@bioigen.com), Biogen Inc.
+- Will Chen  (wwchen@post.harvard.edu), Biogen Inc.
+- David Sexton  (david.sexton@biogen.com), Biogen Inc.
 
 
