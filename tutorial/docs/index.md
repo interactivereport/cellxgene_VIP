@@ -1,3 +1,6 @@
+---
+title: "Supplemental Tutorial: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells"
+---
 # Getting started with cellxgene VIP
 
 This is a cellxgene VIP tutorial book written in **Markdown**. 
