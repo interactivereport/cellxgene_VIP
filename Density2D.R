@@ -38,6 +38,21 @@ expr <- data.frame(expr,check.names=T)
 #minExpr <- apply(expr,2,min)
 expr <- expr[apply(expr,1,function(x)return(sum(x>minExpr)))>0,]
 if(nrow(expr)<50) stop("Less than 50 cells expression above minimal value in at least one of two genes!")
+p <- ggplot(expr,aes_string(colnames(expr)[1],colnames(expr)[2]))+
+  xlim(-0.5,max(expr))+ylim(-0.5,max(expr))+
+  ggtitle(paste("Density on",nrow(expr),"cells")) +
+  geom_hex(bins=bandwidth)+
+  scale_fill_continuous(type="viridis")+
+  geom_vline(xintercept = 0, color = "red", linetype = 2) +
+  geom_hline(yintercept = 0, color = "red", linetype = 2) +
+  theme_bw()+
+  theme(axis.text = element_text(face = "bold"),
+        text=element_text(size=fontsize),
+        aspect.ratio=1) +
+  viridis::scale_fill_viridis(option = colMap, direction = dir) +
+  scale_shape_identity()
+
+if(F){
 h <- c(max(bandwidth,MASS::bandwidth.nrd(expr[,1])),
        max(bandwidth,MASS::bandwidth.nrd(expr[,2])))
 #if(MASS::bandwidth.nrd(expr[,1])<=0 || MASS::bandwidth.nrd(expr[,2])<=0)
@@ -53,7 +68,7 @@ p <- ggplot(D, aes_string(x = colnames(D)[1], y = colnames(D)[2], color = 'densi
         text=element_text(size=fontsize)) +
   viridis::scale_color_viridis(option = colMap, direction = dir) +
   scale_shape_identity()
-
+}
 strImg <- gsub("csv$",strFun,strCSV)
 f <- get(strFun)
 if(sum(strFun%in%c('png','jpeg','tiff'))>0){
