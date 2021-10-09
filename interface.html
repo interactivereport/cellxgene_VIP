@@ -1042,7 +1042,7 @@
 
     <div  id="DENS2D" class="tabcontent">
       <div id="DENS2Dinput">
-        <h3>Density Scatter plot shows the expression relationship of two genes <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-2d-density-plot" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+        <h3>Density Scatter plot shows the expression relationship of two genes. The color of each hexagon denotes the number of cells in it. <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-2d-density-plot" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
         <p>Choose cell selection(s):
           <label><input class="DENS2Dcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="DENS2Dcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
@@ -1050,7 +1050,7 @@
         <p>Choose two genes ('Add Genes' first):</p>
         <p id="DENS2Dgene"></p>
         <p>Expression cutoff: <input id="DENS2Dcutoff" type="number" step="0.1" value="1"/></p>
-        <p>The bin number: <input id="DENS2Dbandwidth" type="number" step="1" value="50"/></p>
+        <p>Number of hexagons: <input id="DENS2Dbandwidth" type="number" step="1" value="50"/> The higher the number, the less cells in a hexagon.</p>
       </div>
       <button class="DENS2Dbt"  onclick="DENS2Dplot()"><b>Plot</b></button>
       <button onclick="ZoomIn('DENS2Dresize')">Zoom In</button>
