@@ -4,7 +4,7 @@ To meet the growing demands from scientists to effectively extract deep insights
 ![cellxgene_VIP](https://interactivereport.github.io/cellxgene_VIP/cellxgene_VIP.png?raw=true "cellxgene_VIP")
 **Figure 1 | cellxgene VIP serves as an ecosystem of plugins which provide essential functions for
 publication-ready, interactive visualization, as well as CLI for analytics.** (svg files were assembled by
-figureComposer[7] with zoomable version available at https://bit.ly/2QqdMg3 that is best viewed by Chrome)
+bioInfograph with zoomable version available at https://bit.ly/2QqdMg3 that is best viewed by Chrome)
 **(a) Multi-tSNE/UMAP plot** visually highlights which cells expressing cell markers on selected embedding (UMAP
 based on harmony batch correction in this example). **(b) Dual-gene plot** highlights cells express SYT1 and GAD1
 (green SYT1 only, red GAD1 only, yellow co-expression of STY1 and GAD1), expression cutoff 2.2. **(c) Stacked
