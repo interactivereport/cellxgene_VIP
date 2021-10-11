@@ -18,14 +18,6 @@ their selective expression and validates the scRNAseq approach and visualization
 Interface (CLI)** exposed by mini Jupyter Notebook to provide maximal flexibility of doing various analytics on the
 whole or sliced single cell dataset.
 
-1.	Tang, F. et al. mRNA-Seq whole-transcriptome analysis of a single cell. Nature Methods 6, 377-382 (2009).
-2.	Svensson, V., da Veiga Beltrame, E. & Pachter, L. A curated database reveals trends in single-cell transcriptomics. bioRxiv, 742304 (2019).
-3.	Rodriques, S.G. et al. Slide-seq: A scalable technology for measuring genome-wide expression at high spatial resolution. Science 363, 1463 (2019).
-4.	Chan Zuckerberg Initiative chanzuckerberg/cellxgene: An interactive explorer for single-cell transcriptomics data. Available at https://chanzuckerberg.github.io/cellxgene/ ([Accessed: 5 May 2020]).
-5.	Cakir, B. et al. Comparison of visualization tools for single-cell RNAseq data. NAR Genomics and Bioinformatics 2 (2020).
-6.	Wolf, F.A., Angerer, P. & Theis, F.J. SCANPY: large-scale single-cell gene expression data analysis. Genome Biology 19, 15 (2018).
-7. Li, K. et al. figureComposer: A web-based interactive multi-panel bio-infographic designing tool. bioRxiv, 2020.2003.2004.976589 (2020).
-
 ## Demo site: https://cellxgenevip-ms.bxgenomics.com
 
 ## Online tutorial: https://interactivereport.github.io/cellxgene_VIP/tutorial/docs
