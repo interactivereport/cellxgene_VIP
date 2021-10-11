@@ -1,4 +1,28 @@
 delete_merged_file: true
-language:
-  ui:
-    chapter_name: "Chapter "
+# language:
+#   ui:
+#     chapter_name: ""
+#     #chapter_name: "Chapter "
+chapter_name: "Chapter "
+output_dir: docs
+rmd_files: ["index.Rmd", "01-WebSource.Rmd", "02-HowTo.Rmd", "03-Methods.Rmd", "04-Tips.Rmd"]
+
+bibliography: [packages.bib, book.bib]
+new_session: yes
+
+
+
+# author: " Kejie Li, Zhengyu Ouyang,  Dongdong Lin,  Michael Mingueneau, Will Chen, David Sexton, Baohong Zhang"
+# date: "`r Sys.Date()`"
+# site: bookdown::bookdown_site
+# output: 
+#   bookdown::gitbook:
+#     split_by: "section"
+#     split_bib: no
+# documentclass: book
+# bibliography: [book.bib, packages.bib]
+# url: https://github.com/interactivereport/cellxgene_VIP/tree/gh-pages/tutorial/_book
+# # cover-image: path to the social sharing image like images/cover.jpg
+# description: This is a tutorial of cellxgene VIP.
+# link-citations: yes
+# github-repo: https://github.com/interactivereport/cellxgene_VIP

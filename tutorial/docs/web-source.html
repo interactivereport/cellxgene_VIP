@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 2 Web source | Supplemental Tutorial: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells</title>
+  <meta name="description" content="Chapter 2 Web source | Supplemental Tutorial: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells" />
+  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 2 Web source | Supplemental Tutorial: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 2 Web source | Supplemental Tutorial: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells" />
+  
+  
+  
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="index.html"/>
+<link rel="next" href="how-to-use-cellxgene-vip.html"/>
+<script src="libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">CellXgene VIP tutorial</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Getting started with cellxgene VIP</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#why-use-cellxgene-vip"><i class="fa fa-check"></i><b>1.1</b> Why use cellxgene VIP?</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#getting-set-up"><i class="fa fa-check"></i><b>1.2</b> Getting Set up</a>
+<ul>
+<li class="chapter" data-level="1.2.1" data-path="index.html"><a href="index.html#execute-anaconda"><i class="fa fa-check"></i><b>1.2.1</b> Execute anaconda</a></li>
+<li class="chapter" data-level="1.2.2" data-path="index.html"><a href="index.html#cellxgene-installation"><i class="fa fa-check"></i><b>1.2.2</b> Cellxgene installation</a></li>
+<li class="chapter" data-level="1.2.3" data-path="index.html"><a href="index.html#r-dependencies"><i class="fa fa-check"></i><b>1.2.3</b> R dependencies</a></li>
+<li class="chapter" data-level="1.2.4" data-path="index.html"><a href="index.html#run-cellxgene-by-h5ad-file"><i class="fa fa-check"></i><b>1.2.4</b> Run cellxgene by h5ad file</a></li>
+<li class="chapter" data-level="1.2.5" data-path="index.html"><a href="index.html#cellxgene-on-web-browser"><i class="fa fa-check"></i><b>1.2.5</b> Cellxgene on web browser</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#authors"><i class="fa fa-check"></i><b>1.3</b> Authors</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="web-source.html"><a href="web-source.html"><i class="fa fa-check"></i><b>2</b> Web source</a>
+<ul>
+<li class="chapter" data-level="" data-path="web-source.html"><a href="web-source.html#cellxgene-vip"><i class="fa fa-check"></i>Cellxgene VIP</a></li>
+<li class="chapter" data-level="" data-path="web-source.html"><a href="web-source.html#cellxgene"><i class="fa fa-check"></i>Cellxgene</a></li>
+<li class="chapter" data-level="" data-path="web-source.html"><a href="web-source.html#python-packages"><i class="fa fa-check"></i>Python packages</a></li>
+<li class="chapter" data-level="" data-path="web-source.html"><a href="web-source.html#others"><i class="fa fa-check"></i>Others</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html"><i class="fa fa-check"></i><b>3</b> How to use Cellxgene VIP</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#graphical-user-interface-of-cellxgene-and-vip"><i class="fa fa-check"></i><b>3.1</b> Graphical user interface of cellxgene and VIP</a></li>
+<li class="chapter" data-level="3.2" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#cell-selection-by-categorial-annotations"><i class="fa fa-check"></i><b>3.2</b> Cell selection by categorial annotations</a></li>
+<li class="chapter" data-level="3.3" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#cell-selection-by-brushing-on-distribution-of-continues-variables"><i class="fa fa-check"></i><b>3.3</b> Cell selection by brushing on distribution of continues variables</a></li>
+<li class="chapter" data-level="3.4" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#free-hand-lasso-selection-on-dots-representing-cells"><i class="fa fa-check"></i><b>3.4</b> Free hand Lasso selection on dots representing cells</a></li>
+<li class="chapter" data-level="3.5" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-figure-option"><i class="fa fa-check"></i><b>3.5</b> VIP – Figure Option</a></li>
+<li class="chapter" data-level="3.6" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-add-genes-gene-sets"><i class="fa fa-check"></i><b>3.6</b> VIP – Add Genes / Gene Sets</a></li>
+<li class="chapter" data-level="3.7" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-violin-plot"><i class="fa fa-check"></i><b>3.7</b> VIP – Violin Plot</a></li>
+<li class="chapter" data-level="3.8" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-stacked-violin"><i class="fa fa-check"></i><b>3.8</b> VIP – Stacked Violin</a></li>
+<li class="chapter" data-level="3.9" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-heatmap"><i class="fa fa-check"></i><b>3.9</b> VIP – Heatmap</a></li>
+<li class="chapter" data-level="3.10" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-umaptsne"><i class="fa fa-check"></i><b>3.10</b> VIP – UMAP/tSNE</a></li>
+<li class="chapter" data-level="3.11" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-dot-plot"><i class="fa fa-check"></i><b>3.11</b> VIP – Dot Plot</a></li>
+<li class="chapter" data-level="3.12" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-track-plot"><i class="fa fa-check"></i><b>3.12</b> VIP – Track Plot</a></li>
+<li class="chapter" data-level="3.13" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-density-plot"><i class="fa fa-check"></i><b>3.13</b> VIP – Density Plot</a></li>
+<li class="chapter" data-level="3.14" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-2d-density-plot"><i class="fa fa-check"></i><b>3.14</b> VIP – 2D Density Plot</a></li>
+<li class="chapter" data-level="3.15" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-dual-genes"><i class="fa fa-check"></i><b>3.15</b> VIP – Dual Genes</a></li>
+<li class="chapter" data-level="3.16" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-sankey-diagram"><i class="fa fa-check"></i><b>3.16</b> VIP – Sankey Diagram</a></li>
+<li class="chapter" data-level="3.17" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-stacked-barplot"><i class="fa fa-check"></i><b>3.17</b> VIP – Stacked Barplot</a></li>
+<li class="chapter" data-level="3.18" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-gene-detected"><i class="fa fa-check"></i><b>3.18</b> VIP – Gene Detected</a></li>
+<li class="chapter" data-level="3.19" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-deg-differential-expressed-genes"><i class="fa fa-check"></i><b>3.19</b> VIP – DEG (Differential Expressed Genes)</a></li>
+<li class="chapter" data-level="3.20" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-marker-genes"><i class="fa fa-check"></i><b>3.20</b> VIP – Marker Genes</a></li>
+<li class="chapter" data-level="3.21" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-command-line-interface"><i class="fa fa-check"></i><b>3.21</b> VIP – Command Line Interface</a></li>
+<li class="chapter" data-level="3.22" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-comb.-abbr."><i class="fa fa-check"></i><b>3.22</b> VIP – Comb. &amp; Abbr.</a></li>
+<li class="chapter" data-level="3.23" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-other-functions"><i class="fa fa-check"></i><b>3.23</b> VIP – Other Functions</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="methods.html"><a href="methods.html"><i class="fa fa-check"></i><b>4</b> Methods</a>
+<ul>
+<li class="chapter" data-level="" data-path="methods.html"><a href="methods.html#client-side-integration-by-a-jspanel-window-vip"><i class="fa fa-check"></i>Client-side Integration by a jsPanel Window (VIP)</a></li>
+<li class="chapter" data-level="" data-path="methods.html"><a href="methods.html#server-side-integration"><i class="fa fa-check"></i>Server-side Integration</a></li>
+<li class="chapter" data-level="" data-path="methods.html"><a href="methods.html#communication-between-vip-and-cellxgene-web-gui"><i class="fa fa-check"></i>Communication between VIP and cellxgene web GUI</a></li>
+<li class="chapter" data-level="" data-path="methods.html"><a href="methods.html#diffxpy-integration"><i class="fa fa-check"></i>Diffxpy Integration</a></li>
+<li class="chapter" data-level="4.1" data-path="methods.html"><a href="methods.html#create-h5ad-file-from-seurat-object"><i class="fa fa-check"></i><b>4.1</b> Create h5ad file from Seurat object</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="helpful-tips.html"><a href="helpful-tips.html"><i class="fa fa-check"></i><b>5</b> Helpful Tips</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="helpful-tips.html"><a href="helpful-tips.html#handle-nulls-in-categorical-annotation"><i class="fa fa-check"></i><b>5.1</b> Handle nulls in categorical annotation</a></li>
+<li class="chapter" data-level="5.2" data-path="helpful-tips.html"><a href="helpful-tips.html#display-full-traceback-stack-for-debugging-in-vip"><i class="fa fa-check"></i><b>5.2</b> Display full traceback stack for debugging in VIP</a></li>
+<li class="chapter" data-level="5.3" data-path="helpful-tips.html"><a href="helpful-tips.html#pitfall-of-using-special-characters"><i class="fa fa-check"></i><b>5.3</b> Pitfall of using special characters</a></li>
+<li class="chapter" data-level="5.4" data-path="helpful-tips.html"><a href="helpful-tips.html#potential-use-for-bulk-or-pseudo-bulk-sample-dataset"><i class="fa fa-check"></i><b>5.4</b> Potential use for bulk or pseudo bulk sample dataset</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Supplemental Tutorial: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="web-source" class="section level1" number="2">
+<h1><span class="header-section-number">Chapter 2</span> Web source</h1>
+<div id="cellxgene-vip" class="section level2 unnumbered">
+<h2>Cellxgene VIP</h2>
+<ul>
+<li><strong>cellxgene VIP source code</strong>: <a href="https://github.com/interactivereport/cellxgene_VIP" class="uri">https://github.com/interactivereport/cellxgene_VIP</a></li>
+<li><strong>cellxgene VIP demo sites</strong>: <a href="https://cellxgenevip-ms.bxgenomics.com" class="uri">https://cellxgenevip-ms.bxgenomics.com</a> [Schirmer / Rowitch MS, Human brain snRNAseq 46k cells, Nature 2019 Schirmer et al]</li>
+</ul>
+</div>
+<div id="cellxgene" class="section level2 unnumbered">
+<h2>Cellxgene</h2>
+<ul>
+<li><strong>cellxgene</strong>: <a href="https://github.com/chanzuckerberg/cellxgene" class="uri">https://github.com/chanzuckerberg/cellxgene</a></li>
+<li><strong>cellxgene tutorial</strong>: <a href="https://cellgeni.readthedocs.io/en/latest/visualisations.html" class="uri">https://cellgeni.readthedocs.io/en/latest/visualisations.html</a></li>
+<li><strong>cellxgene features</strong>: <a href="https://chanzuckerberg.github.io/cellxgene/posts/gallery" class="uri">https://chanzuckerberg.github.io/cellxgene/posts/gallery</a></li>
+<li><strong>cellxgene data preparation</strong>: <a href="https://chanzuckerberg.github.io/cellxgene/posts/prepare.html" class="uri">https://chanzuckerberg.github.io/cellxgene/posts/prepare.html</a></li>
+</ul>
+</div>
+<div id="python-packages" class="section level2 unnumbered">
+<h2>Python packages</h2>
+<ul>
+<li><strong>scanpy</strong>: <a href="https://github.com/theislab/scanpy" class="uri">https://github.com/theislab/scanpy</a></li>
+<li><strong>scanpy plots</strong>: <a href="https://scanpy-tutorials.readthedocs.io/en/latest/visualizing-marker-genes.html" class="uri">https://scanpy-tutorials.readthedocs.io/en/latest/visualizing-marker-genes.html</a></li>
+<li><strong>diffxpy</strong>: <a href="https://github.com/theislab/diffxpy" class="uri">https://github.com/theislab/diffxpy</a></li>
+<li><strong>diffxpy tests</strong>: <a href="https://diffxpy.readthedocs.io/en/latest/tutorials.html#differential-testing" class="uri">https://diffxpy.readthedocs.io/en/latest/tutorials.html#differential-testing</a></li>
+</ul>
+</div>
+<div id="others" class="section level2 unnumbered">
+<h2>Others</h2>
+<ul>
+<li><strong>Benchmarking of interactive data visualization of single-cell RNAseq data — Batuhan Cakir</strong> : <a href="https://www.youtube.com/watch?v=3nH2xi_Ni6I" class="uri">https://www.youtube.com/watch?v=3nH2xi_Ni6I</a></li>
+<li><strong>sceasy</strong>: convertor of scRNA-Seq data formats <a href="https://github.com/cellgeni/sceasy" class="uri">https://github.com/cellgeni/sceasy</a></li>
+<li><strong>jupytext</strong>: <a href="https://jupytext.readthedocs.io" class="uri">https://jupytext.readthedocs.io</a> , Jupyter Notebooks as Markdown Documents, Julia, Python or R Scripts</li>
+<li><strong>nbconvert</strong>: <a href="https://nbconvert.readthedocs.io" class="uri">https://nbconvert.readthedocs.io</a> , Convert a Jupyter .ipynb notebook document file into another static format including HTML, LaTeX, PDF, Markdown, and more</li>
+</ul>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="how-to-use-cellxgene-vip.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["_main.pdf"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

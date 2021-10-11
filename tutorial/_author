@@ -1,0 +1,130 @@
+---
+# title: "Cellxgene VIP"
+# repo: https://github.com/interactivereport/cellxgene_VIP
+# # author: 
+# #   - name: "Kejie Li"
+# #     email: kejie.li@biogen.com
+# #     institute: biogen
+# #   - name: Zhengyu Ouyang
+# #     email: oyoung@bioinforx.com
+# #   - name: Dongdong Lin 
+# #     email: dongdong.lin@biogen.com
+# #   - name: Michael Mingueneau
+# #     email: michael.mingueneau@bioigen.com
+# #   - name: Will Chen 
+# #     email: wwchen@post.harvard.edu
+# #   - name: David Sexton 
+# #     email: david.sexton@biogen.com
+# #   - name: Baohong Zhang
+# #     
+# # 
+# # institute:
+# #  - biogen: Research Department, Biogen, Inc
+#  
+# date: "`r Sys.Date()`"
+title: "Radix for R Markdown"
+description: | 
+  Scientific and technical writing, native to the web
+date: May 4, 2018
+author:
+  - name: "JJ Allaire"
+    url: https://github.com/jjallaire
+    affiliation: RStudio
+    affiliation_url: https://www.rstudio.com
+  - name: "Rich Iannone"
+    url: https://github.com/rich-iannone
+    affiliation: RStudio
+    affiliation_url: https://www.rstudio.com
+---
+
+<script src="static/jquery.min.js"></script>
+<link href='static/jspanel/dist/jspanel.css' rel='stylesheet'>
+<script src='static/jspanel/dist/jspanel.js'></script>
+<script src='static/jspanel/dist/extensions/modal/jspanel.modal.js'></script>
+<script src='static/jspanel/dist/extensions/tooltip/jspanel.tooltip.js'></script>
+<script src='static/jspanel/dist/extensions/hint/jspanel.hint.js'></script>
+<script src='static/jspanel/dist/extensions/layout/jspanel.layout.js'></script>
+<script src='static/jspanel/dist/extensions/contextmenu/jspanel.contextmenu.js'></script>
+<script src='static/jspanel/dist/extensions/dock/jspanel.dock.js'></script>
+<script>
+  // execute JavaScript code in panel content
+  var setInnerHTML = function(elm, html) {
+    elm.innerHTML = html;
+    Array.from(elm.querySelectorAll('script')).forEach( oldScript => {
+      const newScript = document.createElement('script');
+      Array.from(oldScript.attributes)
+      .forEach( attr => newScript.setAttribute(attr.name, attr.value) );
+      newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+      oldScript.parentNode.replaceChild(newScript, oldScript);
+    });
+  }
+  var plotPanel = jsPanel.create({
+    panelSize: '190 0',
+    position: 'left-top 160 6',
+    dragit: { containment: [-10, -2000, -4000, -2000] }, // set dragging range of VIP window
+    boxShadow: 1,
+    border: "solid #D4DBDE thin",
+    contentOverflow: 'scroll scroll', // adding scrolling bars
+    headerControls:{
+      close: 'remove',
+      minimize: 'remove',
+      maximize: 'remove'
+    },
+    headerTitle: function () {return '<strong>Visualization in Plugin</strong>'},
+    contentAjax: {
+      url: 'static/interface.html',
+507 done: function (panel) {
+508 setInnerHTML(panel.content, this.responseText);
+509 }
+510 },
+511 onwindowresize: function(event, panel) {
+512 var jptop = parseInt(this.currentData.top);
+513 var jpleft = parseInt(this.currentData.left);
+514 if (jptop<-10 || window.innerHeight-jptop<10 || window.innerWidth-jpleft<10 || 
+515 jpleft+parseInt(this.currentData.width)<10) {
+516 this.reposition("left-top 160 6");
+517 }
+518 },
+519 onunsmallified: function (panel, status) {
+520 this.reposition('center-top -370 180');
+521 this.resize({ width: 740, height: function() { return Math.min(480, window.innerHeight*0.6);} });
+522 },
+523 onsmallified: function (panel, status) {
+524 this.reposition('left-top 160 6');
+525 this.style.width = '190px';
+526 }
+527 }).smallify();
+528 plotPanel.headerbar.style.background = "#D4DBDE";
+529 </script>
+530 EOF
+531 insertL=$(sed -e 's/[&\\/]/\\&/g; s/|/\\|/g; s/$/\\/;' -e '$s/\\$//' <<<"$insertL")
+532 sed -i "s|<div id=\"root\"></div>|$insertL\n&|" "cellxgene/client/index_template.html"
+
+
+---
+# title: "Supplementary Materials: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells"
+# author:
+# - Kejie Li^[Biogen, kejie.li@biogen.com]
+# - Zhengyu Ouyang^[Bioinforx, oyoung@bioinforx.org]
+# - Dongdong Lin^[Biogen, dongdong.lin@biogen.com]
+# - Michael Mingueneau^[Biogen, michael.mingueneau@biogen.com]
+# - Will Chen^[Biogen, wwchen@post.harvard.edu]
+# - David Sexton^[Biogen, david.sexton@biogen.com]
+# - Baohong Zhang*^[Biogen, baohong.zhang@biogen.com]
+---
+
+---
+title: "Supplementary Materials: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells"
+author:
+- Kejie Li^[Biogen, kejie.li@biogen.com]
+- Zhengyu Ouyang^[Bioinforx, oyoung@bioinforx.org]
+- Dongdong Lin^[Biogen, dongdong.lin@biogen.com]
+- Michael Mingueneau^[Biogen, michael.mingueneau@biogen.com]
+- Will Chen^[Biogen, wwchen@post.harvard.edu]
+- David Sexton^[Biogen, david.sexton@biogen.com]
+- Baohong Zhang*^[Biogen, baohong.zhang@biogen.com]
+---
+
+
+
+
