@@ -1442,7 +1442,7 @@
     <div id="SPATIAL" class="tabcontent">
       <div class="topTab">
         <button id="SPATIALimage" class="SPATIALlinks" onclick="selTop(event, 'SPATIALimageV','SPATIAL')">Image</button>
-        <button id="SPATIALlayout" class="SPATIALlinks" onclick="selTop(event, 'SPATIALlayoutV','SPATIAL')">Layout</button>
+        <button id="SPATIALlayout" class="SPATIALlinks" onclick="selTop(event, 'SPATIALlayoutV','SPATIAL'); SPATIALlist()">Layout</button>
       </div>
       <div id="SPATIALspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="SPATIALimageV" class="SPATIALcontent">
@@ -1472,6 +1472,12 @@
       <div id="SPATIALlayoutV" class="SPATIALcontent">
         <button class="SPATIALbt" onclick="SPATIALarrange()"><b>Arrange Slides</b></button>
         <button onclick="saveLayout()"><b>Save Layout</b></button>
+        <button onclick="hideShow($('#SLIDESinput'),$(this),'Slides');">Hide Slides</button>
+        <div id="SLIDESinput">
+          <p>Choose slides to arrange: <input type="checkbox" checked onclick="$('.SPATIALnames').prop('checked', this.checked);">Uncheck / Check All</p>
+          <p id="SPATIALname"></p>
+          <hr>
+        </div>
         <p>Click on an image to operate: <span id="selected_image"></span></p>
         <p><input type="checkbox" id="flipx" onclick="SpatialIMGman();"> Flip X
            <input type="checkbox" id="flipy" onclick="SpatialIMGman();"> Flip Y
@@ -3074,14 +3080,8 @@ function SPATIAL(){
   });
 }
 
-function SPATIALarrange() {
-  let grid = GridStack.init({minRow: 1, cellHeight: 200,resizable: {autoHide: true, handles: 'none'},float: true});
-  grid.column(6, 'moveScale');
-  grid.removeAll();
-
-  $(".SPATIALbt").prop('disabled',true);
-  document.getElementById("SPATIALspin").style.visibility="visible";
-
+function SPATIALlist() {
+  if ($('#SPATIALname').text().length > 1) return;
   var D = {'method':'SPATIAL',
             'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'embedding': 'get_spatial_list',
@@ -3097,72 +3097,94 @@ function SPATIALarrange() {
         return;
       }
       var spatialEmb = JSON.parse(res).list.filter(val => val !== "spatial_Merged");
-      var col = Math.ceil(Math.sqrt(spatialEmb.length));
-      var row = Math.ceil(spatialEmb.length/col);
-
-      var count = 0;
-      for (i=0;i<row;i++) {
-        for (j=0;j<col;j++) {
-          var D = {'method':'SPATIAL',
-                    'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
-                    'spots':SPATIALspots(spatialEmb[count]),
-                    'embedding':spatialEmb[count],
-                    'resolution':'lowres',
-                    'row':i,
-                    'col':j,
-                    'figOpt':window.figOpt};
-          $.ajax({
-            type:"POST",
-            url: VIPurl,
-            data:JSON.stringify(D),
-            contentType: 'application/json;charset=UTF-8',
-            success: function(res){
-              $(".SPATIALbt").prop("disabled",false);
-              document.getElementById("SPATIALspin").style.visibility="hidden";
-              if(res.startsWith('ERROR')){
-                $('#SPATIALnote').text(res);
-                return;
-              }
-              var resD = JSON.parse(res);
-              var input = JSON.parse(this.data);
-              var n={};
-              n.x=input.col;
-              n.y=input.row;
-              n.w=1;
-              n.h=1;
-              n.text=input.embedding.replace("spatial_","");
-              n.content = '<button onClick="GridStack.init().removeWidget(this.parentNode.parentNode)">X</button><br><div id="' + n.text + '_content"><div style="word-break:break-all;">' + n.text + '</div><image id="' + n.text +'_img" width="100%" src="data:image/png;base64,' +resD[1]+ '"></image></div>';
-              var el = grid.addWidget(n);
-              $('#'+n.text + '_content').click (function(){
-                var trans =  $('#'+ n.text + '_img')[0].style.transform;
-                trans.match(/scaleX/) ? $("#flipx").prop( "checked", true ) : $("#flipx").prop( "checked", false ) ;
-                trans.match(/scaleY/) ? $("#flipy").prop( "checked", true ) : $("#flipy").prop( "checked", false ) ;
-                if (trans.match(/([0-9]+)deg/)) {
-                  var rot = RegExp.$1;
-                  $('#image_rotate_val').text(rot);
-                  $('#image_rotate').val(rot);
-                } else {
-                  $('#image_rotate_val').text(0);
-                  $('#image_rotate').val(0);
-                }
-                $('#selected_image').text(n.text);
-              });
-            },
-            error: function(request,status,error){
-              $('#SPATIALnote').text(request.status+request.responseText);
-              $(".SPATIALbt").prop("disabled",false);
-              document.getElementById("SPATIALspin").style.visibility="hidden";
-            }
-          });
-          count ++;
-          if (count >= spatialEmb.length) break;
-		}
-	  }
+      var htmlCheck = "";
+      for(const g of spatialEmb){
+        htmlCheck += '<label id="SPATIAL'+'ck'+g+'"><input class="SPATIALnames" type="checkbox" value="'+g+'" checked/>'+g.replace("spatial_","")+'</label>'; 
+      }
+      $('#SPATIALname').append(htmlCheck);
     },
     error: function(request,status,error){
       $('#SPATIALnote').text(request.status+request.responseText);
     }
   });
+}
+
+function SPATIALarrange() {
+  let grid = GridStack.init({minRow: 1, cellHeight: 200,resizable: {autoHide: true, handles: 'none'},float: true});
+  grid.column(6, 'moveScale');
+  grid.removeAll();
+
+  $(".SPATIALbt").prop('disabled',true);
+  document.getElementById("SPATIALspin").style.visibility="visible";
+
+  var spatialEmb = [];
+  $(".SPATIALnames").each(function(){
+    if($(this).prop("checked")){
+      spatialEmb.push($(this).val());
+    }
+  });
+
+  var col = Math.ceil(Math.sqrt(spatialEmb.length));
+  var row = Math.ceil(spatialEmb.length/col);
+
+  var count = 0;
+  for (i=0;i<row;i++) {
+    for (j=0;j<col;j++) {
+      var D = {'method':'SPATIAL',
+                'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+                'spots':SPATIALspots(spatialEmb[count]),
+                'embedding':spatialEmb[count],
+                'resolution':'lowres',
+                'row':i,
+                'col':j,
+                'figOpt':window.figOpt};
+      $.ajax({
+        type:"POST",
+        url: VIPurl,
+        data:JSON.stringify(D),
+        contentType: 'application/json;charset=UTF-8',
+        success: function(res){
+          $(".SPATIALbt").prop("disabled",false);
+          document.getElementById("SPATIALspin").style.visibility="hidden";
+          if(res.startsWith('ERROR')){
+            $('#SPATIALnote').text(res);
+            return;
+          }
+          var resD = JSON.parse(res);
+          var input = JSON.parse(this.data);
+          var n={};
+          n.x=input.col;
+          n.y=input.row;
+          n.w=1;
+          n.h=1;
+          n.text=input.embedding.replace("spatial_","");
+          n.content = '<button onClick="GridStack.init().removeWidget(this.parentNode.parentNode)">X</button><br><div id="' + n.text + '_content"><div style="word-break:break-all;">' + n.text + '</div><image id="' + n.text +'_img" width="100%" src="data:image/png;base64,' +resD[1]+ '"></image></div>';
+          var el = grid.addWidget(n);
+          $('#'+n.text + '_content').click (function(){
+            var trans =  $('#'+ n.text + '_img')[0].style.transform;
+            trans.match(/scaleX/) ? $("#flipx").prop( "checked", true ) : $("#flipx").prop( "checked", false ) ;
+            trans.match(/scaleY/) ? $("#flipy").prop( "checked", true ) : $("#flipy").prop( "checked", false ) ;
+            if (trans.match(/([0-9]+)deg/)) {
+              var rot = RegExp.$1;
+              $('#image_rotate_val').text(rot);
+              $('#image_rotate').val(rot);
+            } else {
+              $('#image_rotate_val').text(0);
+              $('#image_rotate').val(0);
+            }
+            $('#selected_image').text(n.text);
+          });
+        },
+        error: function(request,status,error){
+          $('#SPATIALnote').text(request.status+request.responseText);
+          $(".SPATIALbt").prop("disabled",false);
+          document.getElementById("SPATIALspin").style.visibility="hidden";
+        }
+      });
+      count ++;
+      if (count >= spatialEmb.length) break;
+	}
+  }
 }
 
 function SPATIALspots(embedding){
