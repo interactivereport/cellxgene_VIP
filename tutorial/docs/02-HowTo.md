@@ -175,6 +175,10 @@ In each annotation category, top ranked marker genes (this example shows top 2) 
 
 Note: The four methods implementations by calling scanpy.tl.rank_genes_groups function: 'logreg' uses logistic regression, 't-test' uses t-test, 'wilcoxon' uses Wilcoxon rank-sum, and ‘t-test_overestim_var’ overestimates variance of each group.
 
+## VIP - Spatial Transcriptomics
+
+![Spatial transcriptomics analysis](figures/F26_label.svg)
+
 ## VIP	– Command	Line	Interface
 Although cellxgene VIP provides a rich set of visualization modules as shown above, command line interface is also built to allow unlimited visualization and analytical capabilities by power user who know how to program in Python / R languages. 
 
@@ -189,7 +193,7 @@ User can combine multiple annotations to create combinatorial annotation to grou
 
 User can also rename each annotation by creating abbreviations to shorten axis labels in figures.
 
-![Comb. & Abbr. function allows user to create new annotation by combining multiple annotations and abbreviations to shorten axis labels in figures especially when custom combinatorial names are used](figures/F22.jpg)
+![Comb. & Abbr. function allows user to create new annotation by combining multiple annotations and abbreviations to shorten axis labels in figures especially when custom combinatorial names are used](figures/F25_label.svg)
 
 ## VIP	– Other	Functions
 
