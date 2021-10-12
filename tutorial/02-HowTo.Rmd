@@ -106,17 +106,18 @@ To show the density of gene(s) expression in the cells annotated by category in 
 
 The bandwidth defines how close to a value point the distance between two points must be to influence the estimation of the density at the point. A small bandwidth only considers the closest values, so the estimation is close to the data. A large bandwidth considers more points and gives a smoother estimation.
 
-![Density plotting of the expression of genes in each group split by one annotation while colored by another.](figures/F13.jpg)
+![Density plotting of the expression of genes in each group split by one annotation while colored by another.](figures/F13_label.svg)
 
-## VIP	– 2D	Density	Plot
-Besides plotting of expression density of single gene, 2D density plot allows to explore the joint expression density of two genes in the cells expressing both genes above a cutoff.
+## VIP	– Density	Scatter Plot
+Besides plotting of expression density of single gene, density scatter plot allows to explore the joint expression density of two genes in the cells expressing both genes above a cutoff.
 
-![2D Density plotting of expression of two genes in the selected cells](figures/F14.jpg)
+![Density scatter plotting of expression of two genes in the selected cells](figures/F27_label.svg)
+
 
 ## VIP	– Dual	Genes
 To view the relationship of expression levels of two genes in selected cells. It is based on the embedding plot of cells while coloring cells according to the expression levels of gene(s) in each cell.
 
-![Embedding plotting of the expression of two genes in the selected cell group(s)](figures/F15.jpg)
+![Embedding plotting of the expression of two genes in the selected cell group(s)](figures/F15_label.svg)
 
 ## VIP	– Sankey	Diagram
 Sankey diagram shows the flow of gene expression and annotations linked by cells. Gene expression is divided equally into bins so user can view distribution relationship between gene expression and annotations. 
@@ -153,6 +154,13 @@ Volcano plotting is also provided to show the log2FC vs. -log10(FDR) relationshi
 <!-- ![Volcano plotting of identified DEGs.](figures/F19B.jpg) -->
 
 Note: The data used by DEG is unscaled (please refer to description of the dataset to find out what preprocessing was done on the data). Scaling control in the Figure Option does not apply to DEG. The three methods: ‘Welch’s t-test’ uses t-test (assuming underlining data with normal distributions) this uses cellxgene t-test implementation, ‘Wilcoxon rank test’ uses Wilcoxon rank-sum test (does not assume known distributions, non-parametric test) and ‘Wald’s test’ uses Wald Chi-Squared test which is based on maximum likelihood. ‘Wilcoxon rank test’ and ‘Wald’s test’ use diffxpy’s implementation.
+
+## VIP - Pre-computed DEG
+
+In addition, cellxgene VIP shows the differential analysis within some pre-computed annotated groups.
+
+![Pre-computed DEG analysis between/ among the selected pre-defubed group(s) with volcano plots and bubble heatmap](figures/F28_label.svg)
+
 
 ## VIP	– Marker	Genes
 This functional module allows user to identify marker genes in the selected group(s) (more than 2, if 2 groups, please use DEG) of cells by annotation categories.

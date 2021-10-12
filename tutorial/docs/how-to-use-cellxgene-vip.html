@@ -170,16 +170,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.11" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-dot-plot"><i class="fa fa-check"></i><b>3.11</b> VIP – Dot Plot</a></li>
 <li class="chapter" data-level="3.12" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-track-plot"><i class="fa fa-check"></i><b>3.12</b> VIP – Track Plot</a></li>
 <li class="chapter" data-level="3.13" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-density-plot"><i class="fa fa-check"></i><b>3.13</b> VIP – Density Plot</a></li>
-<li class="chapter" data-level="3.14" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-2d-density-plot"><i class="fa fa-check"></i><b>3.14</b> VIP – 2D Density Plot</a></li>
+<li class="chapter" data-level="3.14" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-density-scatter-plot"><i class="fa fa-check"></i><b>3.14</b> VIP – Density Scatter Plot</a></li>
 <li class="chapter" data-level="3.15" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-dual-genes"><i class="fa fa-check"></i><b>3.15</b> VIP – Dual Genes</a></li>
 <li class="chapter" data-level="3.16" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-sankey-diagram"><i class="fa fa-check"></i><b>3.16</b> VIP – Sankey Diagram</a></li>
 <li class="chapter" data-level="3.17" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-stacked-barplot"><i class="fa fa-check"></i><b>3.17</b> VIP – Stacked Barplot</a></li>
 <li class="chapter" data-level="3.18" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-gene-detected"><i class="fa fa-check"></i><b>3.18</b> VIP – Gene Detected</a></li>
 <li class="chapter" data-level="3.19" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-deg-differential-expressed-genes"><i class="fa fa-check"></i><b>3.19</b> VIP – DEG (Differential Expressed Genes)</a></li>
-<li class="chapter" data-level="3.20" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-marker-genes"><i class="fa fa-check"></i><b>3.20</b> VIP – Marker Genes</a></li>
-<li class="chapter" data-level="3.21" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-command-line-interface"><i class="fa fa-check"></i><b>3.21</b> VIP – Command Line Interface</a></li>
-<li class="chapter" data-level="3.22" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-comb.-abbr."><i class="fa fa-check"></i><b>3.22</b> VIP – Comb. &amp; Abbr.</a></li>
-<li class="chapter" data-level="3.23" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-other-functions"><i class="fa fa-check"></i><b>3.23</b> VIP – Other Functions</a></li>
+<li class="chapter" data-level="3.20" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip---pre-computed-deg"><i class="fa fa-check"></i><b>3.20</b> VIP - Pre-computed DEG</a></li>
+<li class="chapter" data-level="3.21" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-marker-genes"><i class="fa fa-check"></i><b>3.21</b> VIP – Marker Genes</a></li>
+<li class="chapter" data-level="3.22" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-command-line-interface"><i class="fa fa-check"></i><b>3.22</b> VIP – Command Line Interface</a></li>
+<li class="chapter" data-level="3.23" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-comb.-abbr."><i class="fa fa-check"></i><b>3.23</b> VIP – Comb. &amp; Abbr.</a></li>
+<li class="chapter" data-level="3.24" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-other-functions"><i class="fa fa-check"></i><b>3.24</b> VIP – Other Functions</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="methods.html"><a href="methods.html"><i class="fa fa-check"></i><b>4</b> Methods</a>
 <ul>
@@ -342,23 +343,23 @@ Note: Figure resolution and format can be set in “Figure Option” tab as show
 <p>To show the density of gene(s) expression in the cells annotated by category in the selected group(s) of cells. A density plot is a representation of the distribution of a numeric variable. It uses a kernel density estimate to show the probability density function of the variable (see more). It is a smoothed version of the histogram and is used in the same concept.</p>
 <p>The bandwidth defines how close to a value point the distance between two points must be to influence the estimation of the density at the point. A small bandwidth only considers the closest values, so the estimation is close to the data. A large bandwidth considers more points and gives a smoother estimation.</p>
 <div class="figure">
-<img src="figures/F13.jpg" alt="" />
+<img src="figures/F13_label.svg" alt="" />
 <p class="caption">Density plotting of the expression of genes in each group split by one annotation while colored by another.</p>
 </div>
 </div>
-<div id="vip-2d-density-plot" class="section level2" number="3.14">
-<h2><span class="header-section-number">3.14</span> VIP – 2D Density Plot</h2>
-<p>Besides plotting of expression density of single gene, 2D density plot allows to explore the joint expression density of two genes in the cells expressing both genes above a cutoff.</p>
+<div id="vip-density-scatter-plot" class="section level2" number="3.14">
+<h2><span class="header-section-number">3.14</span> VIP – Density Scatter Plot</h2>
+<p>Besides plotting of expression density of single gene, density scatter plot allows to explore the joint expression density of two genes in the cells expressing both genes above a cutoff.</p>
 <div class="figure">
-<img src="figures/F14.jpg" alt="" />
-<p class="caption">2D Density plotting of expression of two genes in the selected cells</p>
+<img src="figures/F27_label.svg" alt="" />
+<p class="caption">Density scatter plotting of expression of two genes in the selected cells</p>
 </div>
 </div>
 <div id="vip-dual-genes" class="section level2" number="3.15">
 <h2><span class="header-section-number">3.15</span> VIP – Dual Genes</h2>
 <p>To view the relationship of expression levels of two genes in selected cells. It is based on the embedding plot of cells while coloring cells according to the expression levels of gene(s) in each cell.</p>
 <div class="figure">
-<img src="figures/F15.jpg" alt="" />
+<img src="figures/F15_label.svg" alt="" />
 <p class="caption">Embedding plotting of the expression of two genes in the selected cell group(s)</p>
 </div>
 </div>
@@ -402,8 +403,16 @@ Note: Figure resolution and format can be set in “Figure Option” tab as show
 <!-- ![Volcano plotting of identified DEGs.](figures/F19B.jpg) -->
 <p>Note: The data used by DEG is unscaled (please refer to description of the dataset to find out what preprocessing was done on the data). Scaling control in the Figure Option does not apply to DEG. The three methods: ‘Welch’s t-test’ uses t-test (assuming underlining data with normal distributions) this uses cellxgene t-test implementation, ‘Wilcoxon rank test’ uses Wilcoxon rank-sum test (does not assume known distributions, non-parametric test) and ‘Wald’s test’ uses Wald Chi-Squared test which is based on maximum likelihood. ‘Wilcoxon rank test’ and ‘Wald’s test’ use diffxpy’s implementation.</p>
 </div>
-<div id="vip-marker-genes" class="section level2" number="3.20">
-<h2><span class="header-section-number">3.20</span> VIP – Marker Genes</h2>
+<div id="vip---pre-computed-deg" class="section level2" number="3.20">
+<h2><span class="header-section-number">3.20</span> VIP - Pre-computed DEG</h2>
+<p>In addition, cellxgene VIP shows the differential analysis within some pre-computed annotated groups.</p>
+<div class="figure">
+<img src="figures/F28_label.svg" alt="" />
+<p class="caption">Pre-computed DEG analysis between/ among the selected pre-defubed group(s) with volcano plots and bubble heatmap</p>
+</div>
+</div>
+<div id="vip-marker-genes" class="section level2" number="3.21">
+<h2><span class="header-section-number">3.21</span> VIP – Marker Genes</h2>
 <p>This functional module allows user to identify marker genes in the selected group(s) (more than 2, if 2 groups, please use DEG) of cells by annotation categories.</p>
 <p>Four methods are provided for detecting marker genes including logreg, t-test, Wilcoxon, and t-testoverest_var. For each identified marker gene, the gene name, scores (the z-score underlying the computation of a p-value for each gene for each group) and assigned group are listed in the output table.</p>
 <p>In each annotation category, top ranked marker genes (this example shows top 2) will be plotted by score in comparison to the rest of the categories.</p>
@@ -414,8 +423,8 @@ Note: Figure resolution and format can be set in “Figure Option” tab as show
 <!-- ![Plotting of identified marker genes by each category](figures/F20B.jpg) -->
 <p>Note: The four methods implementations by calling scanpy.tl.rank_genes_groups function: ‘logreg’ uses logistic regression, ‘t-test’ uses t-test, ‘wilcoxon’ uses Wilcoxon rank-sum, and ‘t-test_overestim_var’ overestimates variance of each group.</p>
 </div>
-<div id="vip-command-line-interface" class="section level2" number="3.21">
-<h2><span class="header-section-number">3.21</span> VIP – Command Line Interface</h2>
+<div id="vip-command-line-interface" class="section level2" number="3.22">
+<h2><span class="header-section-number">3.22</span> VIP – Command Line Interface</h2>
 <p>Although cellxgene VIP provides a rich set of visualization modules as shown above, command line interface is also built to allow unlimited visualization and analytical capabilities by power user who know how to program in Python / R languages.</p>
 <div class="figure">
 <img src="figures/F23_label.svg" alt="" />
@@ -423,8 +432,8 @@ Note: Figure resolution and format can be set in “Figure Option” tab as show
 </div>
 <p>Note: In CLI the AnnData (adata) object is available by default, and it is processed as ‘Description’ of the dataset states (i.e.: normalized and log transformed, but no scaled etc.). Settings in ‘Figure Option’ tab won’t apply to CLI.</p>
 </div>
-<div id="vip-comb.-abbr." class="section level2" number="3.22">
-<h2><span class="header-section-number">3.22</span> VIP – Comb. &amp; Abbr.</h2>
+<div id="vip-comb.-abbr." class="section level2" number="3.23">
+<h2><span class="header-section-number">3.23</span> VIP – Comb. &amp; Abbr.</h2>
 <p>User can combine multiple annotations to create combinatorial annotation to group cells in various of plotting, e.g., stacked violin and dot plot. Firstly, user ‘uncheck all annotations’ and, secondly go to the annotation panel in main window to select annotation categories to be combined, e.g., diagnosis (Control and MS) combined with sex (female and male). After clicking on ‘Create’ button, all possible combinatorial names will be listed and ‘Custom_combine’ will be automatically available as an option in ‘Group by’ drop down menu of many plotting functions.</p>
 <p>User can also rename each annotation by creating abbreviations to shorten axis labels in figures.</p>
 <div class="figure">
@@ -432,8 +441,8 @@ Note: Figure resolution and format can be set in “Figure Option” tab as show
 <p class="caption">Comb. &amp; Abbr. function allows user to create new annotation by combining multiple annotations and abbreviations to shorten axis labels in figures especially when custom combinatorial names are used</p>
 </div>
 </div>
-<div id="vip-other-functions" class="section level2" number="3.23">
-<h2><span class="header-section-number">3.23</span> VIP – Other Functions</h2>
+<div id="vip-other-functions" class="section level2" number="3.24">
+<h2><span class="header-section-number">3.24</span> VIP – Other Functions</h2>
 <p>There are other convenient functions available to user, such as ‘Save’ or ‘Load’ session, ‘Check All Annotations’ and ‘Brush’.</p>
 <p>‘Save’ or ‘Load’ session are used to save the current cell selections and parameter settings to text file or load previously saved session file in the tool for visualization.</p>
 <p>‘Check All Annotations’ is used to check all categorical selection boxes of annotations on the left panel.</p>
