@@ -4,30 +4,35 @@ def parseArgs(argv):
     inputfile = ''
     outputfile = ''
     dim = ''
+    size=700
     try:
-        opts, args = getopt.getopt(argv,"d:hi:o:r:",["input=","dimension=","output=","res="])
+        opts, args = getopt.getopt(argv,"d:hi:o:s:",["input=","dimension=","output=","size="])
     except getopt.GetoptError:
-        print('Usage: st_sample_merge.py -i <inputfile> -o <outputfile> [-d <dimention>]')
+        print('Usage: st_sample_merge.py -i <inputfile of data folders> -o <outputfile> [-d <grid dimention>] [-s <grid cell size>]')
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print('Usage: st_sample_merge.py -i <inputfile> -o <outputfile> [-d <dimention>]')
+            print('Usage: st_sample_merge.py -i <inputfile of data folders> -o <outputfile> [-d <grid dimention>] [-s <grid cell size>]')
             sys.exit()
         elif opt in ("-i", "--input"):
             inputfile = arg
-        elif opt in ("-d", "--dimension"):
-            dim = arg
         elif opt in ("-o", "--output"):
             outputfile = arg
+        elif opt in ("-d", "--dimension"):
+            dim = arg
+        elif opt in ("-s", "--size"):
+            size = int(arg)
     if inputfile == '':
-        print('Usage: st_sample_merge.py -i <inputfile> -o <outputfile> [-d <dimention>]')
+        print('Usage: st_sample_merge.py -i <inputfile of data folders> -o <outputfile> [-d <grid dimention>] [-s <grid cell size>]')
         sys.exit()
-    print('Input pattern is "',inputfile,'"')
-    print('dimension is "',dim,'"')
-    print('Output file is "',outputfile,'"')
-    return(inputfile, outputfile, dim)
+    return(inputfile, outputfile, dim, size)
 
-(inputfile, outputfile, dim) = parseArgs(sys.argv[1:])
+(inputfile, outputfile, dim, size) = parseArgs(sys.argv[1:])
+
+print('Input file of data folders "',inputfile,'"')
+print('Output file is "',outputfile,'"')
+print('Grid dimension is "',dim,'"')
+print('Grid cell size is ',size)
 
 import scanpy as sc
 import pandas as pd
@@ -124,7 +129,6 @@ else:
     width,height = dim.split('x')
 
 idx = 0
-size=700
 #creates a new empty image, RGB mode, and size 1400 by 1400.
 new_im = Image.new('RGB', (size*width,size*height))
 for i in range(0,size*width,size):
@@ -145,8 +149,10 @@ adata_merge.uns['spatial']['spatial_Merged']['images']["lowres"] = np.asarray(ne
 adata_merge.uns['spatial']['spatial_Merged']['scalefactors']['tissue_lowres_scalef'] = 1
 adata_merge.uns['spatial']['spatial_Merged']['scalefactors']['tissue_hires_scalef'] = 1
 
-
 # add back the spatial coordinates as separate embeddings
+# tissue_lowres_scalef: A scaling factor that converts pixel positions in the original, full-resolution image to pixel positions in tissue_lowres_image.png.
+# The tissue_hires_image.png image has 2,000 pixels in its largest dimension, and the tissue_lowres_image.png has 600 pixels.
+
 idx = 0
 adata_merge.obsm['X_spatial_Merged'] = adata_merge.obsm['spatial']
 for i in range(0,size*width,size):
@@ -161,7 +167,8 @@ for i in range(0,size*width,size):
         idx = idx+1    
 
 ## plotting out how the image and coordinates look
-## note, in python the image and coordinates are NOT overlapping, but when load in VIP, they would. Reason Y coordinate values are negative
+## note, in python the image and coordinates are NOT overlapping, but when load in cellxgene VIP, they would. It is because cellxgene adopts computer coordinates
+## that start from the upper left corner with y-axis oriented downwards on tey computer display.
 #library_id="spatial_Merged" # parse the string and get the sample id
 #matplotlib.pyplot.figure()
 #matplotlib.pyplot.imshow(spatial[library_id]['images']['lowres'])
