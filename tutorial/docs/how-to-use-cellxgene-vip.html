@@ -178,9 +178,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.19" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-deg-differential-expressed-genes"><i class="fa fa-check"></i><b>3.19</b> VIP – DEG (Differential Expressed Genes)</a></li>
 <li class="chapter" data-level="3.20" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip---pre-computed-deg"><i class="fa fa-check"></i><b>3.20</b> VIP - Pre-computed DEG</a></li>
 <li class="chapter" data-level="3.21" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-marker-genes"><i class="fa fa-check"></i><b>3.21</b> VIP – Marker Genes</a></li>
+<<<<<<< HEAD
 <li class="chapter" data-level="3.22" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-command-line-interface"><i class="fa fa-check"></i><b>3.22</b> VIP – Command Line Interface</a></li>
 <li class="chapter" data-level="3.23" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-comb.-abbr."><i class="fa fa-check"></i><b>3.23</b> VIP – Comb. &amp; Abbr.</a></li>
 <li class="chapter" data-level="3.24" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-other-functions"><i class="fa fa-check"></i><b>3.24</b> VIP – Other Functions</a></li>
+=======
+<li class="chapter" data-level="3.22" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip---spatial-transcriptomics"><i class="fa fa-check"></i><b>3.22</b> VIP - Spatial Transcriptomics</a></li>
+<li class="chapter" data-level="3.23" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-command-line-interface"><i class="fa fa-check"></i><b>3.23</b> VIP – Command Line Interface</a></li>
+<li class="chapter" data-level="3.24" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-comb.-abbr."><i class="fa fa-check"></i><b>3.24</b> VIP – Comb. &amp; Abbr.</a></li>
+<li class="chapter" data-level="3.25" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-other-functions"><i class="fa fa-check"></i><b>3.25</b> VIP – Other Functions</a></li>
+>>>>>>> 08e1c7e42287c0e0b6730cb159eac1a1decc08bd
 </ul></li>
 <li class="chapter" data-level="4" data-path="methods.html"><a href="methods.html"><i class="fa fa-check"></i><b>4</b> Methods</a>
 <ul>
@@ -423,8 +430,20 @@ Note: Figure resolution and format can be set in “Figure Option” tab as show
 <!-- ![Plotting of identified marker genes by each category](figures/F20B.jpg) -->
 <p>Note: The four methods implementations by calling scanpy.tl.rank_genes_groups function: ‘logreg’ uses logistic regression, ‘t-test’ uses t-test, ‘wilcoxon’ uses Wilcoxon rank-sum, and ‘t-test_overestim_var’ overestimates variance of each group.</p>
 </div>
+<<<<<<< HEAD
 <div id="vip-command-line-interface" class="section level2" number="3.22">
 <h2><span class="header-section-number">3.22</span> VIP – Command Line Interface</h2>
+=======
+<div id="vip---spatial-transcriptomics" class="section level2" number="3.22">
+<h2><span class="header-section-number">3.22</span> VIP - Spatial Transcriptomics</h2>
+<div class="figure">
+<img src="figures/F26_label.svg" alt="" />
+<p class="caption">Spatial transcriptomics analysis</p>
+</div>
+</div>
+<div id="vip-command-line-interface" class="section level2" number="3.23">
+<h2><span class="header-section-number">3.23</span> VIP – Command Line Interface</h2>
+>>>>>>> 08e1c7e42287c0e0b6730cb159eac1a1decc08bd
 <p>Although cellxgene VIP provides a rich set of visualization modules as shown above, command line interface is also built to allow unlimited visualization and analytical capabilities by power user who know how to program in Python / R languages.</p>
 <div class="figure">
 <img src="figures/F23_label.svg" alt="" />
@@ -432,17 +451,27 @@ Note: Figure resolution and format can be set in “Figure Option” tab as show
 </div>
 <p>Note: In CLI the AnnData (adata) object is available by default, and it is processed as ‘Description’ of the dataset states (i.e.: normalized and log transformed, but no scaled etc.). Settings in ‘Figure Option’ tab won’t apply to CLI.</p>
 </div>
+<<<<<<< HEAD
 <div id="vip-comb.-abbr." class="section level2" number="3.23">
 <h2><span class="header-section-number">3.23</span> VIP – Comb. &amp; Abbr.</h2>
+=======
+<div id="vip-comb.-abbr." class="section level2" number="3.24">
+<h2><span class="header-section-number">3.24</span> VIP – Comb. &amp; Abbr.</h2>
+>>>>>>> 08e1c7e42287c0e0b6730cb159eac1a1decc08bd
 <p>User can combine multiple annotations to create combinatorial annotation to group cells in various of plotting, e.g., stacked violin and dot plot. Firstly, user ‘uncheck all annotations’ and, secondly go to the annotation panel in main window to select annotation categories to be combined, e.g., diagnosis (Control and MS) combined with sex (female and male). After clicking on ‘Create’ button, all possible combinatorial names will be listed and ‘Custom_combine’ will be automatically available as an option in ‘Group by’ drop down menu of many plotting functions.</p>
 <p>User can also rename each annotation by creating abbreviations to shorten axis labels in figures.</p>
 <div class="figure">
-<img src="figures/F22.jpg" alt="" />
+<img src="figures/F25_label.svg" alt="" />
 <p class="caption">Comb. &amp; Abbr. function allows user to create new annotation by combining multiple annotations and abbreviations to shorten axis labels in figures especially when custom combinatorial names are used</p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="vip-other-functions" class="section level2" number="3.24">
 <h2><span class="header-section-number">3.24</span> VIP – Other Functions</h2>
+=======
+<div id="vip-other-functions" class="section level2" number="3.25">
+<h2><span class="header-section-number">3.25</span> VIP – Other Functions</h2>
+>>>>>>> 08e1c7e42287c0e0b6730cb159eac1a1decc08bd
 <p>There are other convenient functions available to user, such as ‘Save’ or ‘Load’ session, ‘Check All Annotations’ and ‘Brush’.</p>
 <p>‘Save’ or ‘Load’ session are used to save the current cell selections and parameter settings to text file or load previously saved session file in the tool for visualization.</p>
 <p>‘Check All Annotations’ is used to check all categorical selection boxes of annotations on the left panel.</p>

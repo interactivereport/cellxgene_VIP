@@ -30,6 +30,7 @@ vip-gene-detected
 vip-deg-differential-expressed-genes
 vip---pre-computed-deg
 vip-marker-genes
+vip---spatial-transcriptomics
 vip-command-line-interface
 vip-comb.-abbr.
 vip-other-functions
