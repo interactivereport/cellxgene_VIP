@@ -22,12 +22,13 @@ vip-umaptsne
 vip-dot-plot
 vip-track-plot
 vip-density-plot
-vip-2d-density-plot
+vip-density-scatter-plot
 vip-dual-genes
 vip-sankey-diagram
 vip-stacked-barplot
 vip-gene-detected
 vip-deg-differential-expressed-genes
+vip---pre-computed-deg
 vip-marker-genes
 vip-command-line-interface
 vip-comb.-abbr.

@@ -106,7 +106,7 @@ To show the density of gene(s) expression in the cells annotated by category in 
 
 The bandwidth defines how close to a value point the distance between two points must be to influence the estimation of the density at the point. A small bandwidth only considers the closest values, so the estimation is close to the data. A large bandwidth considers more points and gives a smoother estimation.
 
-![Density plotting of the expression of genes in each group split by one annotation while colored by another.](figures/F13.jpg)
+![Density plotting of the expression of genes in each group split by one annotation while colored by another.](figures/F13_label.svg)
 
 ## VIP	– 2D	Density	Plot
 Besides plotting of expression density of single gene, 2D density plot allows to explore the joint expression density of two genes in the cells expressing both genes above a cutoff.
@@ -116,7 +116,7 @@ Besides plotting of expression density of single gene, 2D density plot allows to
 ## VIP	– Dual	Genes
 To view the relationship of expression levels of two genes in selected cells. It is based on the embedding plot of cells while coloring cells according to the expression levels of gene(s) in each cell.
 
-![Embedding plotting of the expression of two genes in the selected cell group(s)](figures/F15.jpg)
+![Embedding plotting of the expression of two genes in the selected cell group(s)](figures/F15_label.svg)
 
 ## VIP	– Sankey	Diagram
 Sankey diagram shows the flow of gene expression and annotations linked by cells. Gene expression is divided equally into bins so user can view distribution relationship between gene expression and annotations. 
