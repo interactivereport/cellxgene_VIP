@@ -1434,7 +1434,9 @@ def plotBW(data):
     strD = re.sub(".h5ad$","/",data["h5ad"])
     ## plot in R
     strF = ('%s/BW%f.csv' % (data["CLItmp"],time.time()))
-
+    #strCMD = ' '.join([strExePath+'/browserPlot.R',strD,data['region'],str(data['exUP']),str(data['exDN']),strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
+    #with open("/home/zouyang/cellxgene/bw.txt","w") as f:
+    #    f.write(strCMD)
     res = subprocess.run([strExePath+'/browserPlot.R',strD,data['region'],str(data['exUP']),str(data['exDN']),strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
     img = res.stdout.decode('utf-8')
     #os.remove(strF)

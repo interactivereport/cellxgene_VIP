@@ -21,10 +21,10 @@ main <- function(){
 
     strExp <- args[5] # have to be provided, used to save temp figures
     strFun <- args[6]
-    fontsize <- as.numeric(args[7])
+    fontsize <- as.numeric(args[7])-7
     dpi <- as.numeric(args[8])
 
-    yLabSize <- 9
+    yLabSize <- fontsize+5
     ## obtain the region -----
     annotations <- NULL
     if(file.exists(paste0(strPath,"/annotation.rds"))) annotations <- readRDS(paste0(strPath,"/annotation.rds"))
@@ -144,7 +144,6 @@ customBigwigTrack <- function(strBW,region,fontsize,yLabSize) {
         AllPlots <- c(AllPlots,list(p))
     }
     yLim <- round(ceiling(yLim/10))*10
-    saveRDS(AllPlots,file="bw.rds")
     for(i in 1:length(AllPlots)){
         AllPlots[[i]] <- AllPlots[[i]]+
             scale_y_continuous(limits=c(0,yLim*1.05),breaks=c(0,yLim))+

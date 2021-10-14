@@ -1376,7 +1376,7 @@
           End: <input id="BROWregionEnd" type="number" style="width: 10em"/>
         </div>
         <div id="BROWregionGene" class="BROWregion" style="display:none">
-          Gene: <input id="BROWregionGene" type="text" size="10"/> <!-- <p id="BROWgene"></p> -->
+          Gene: <input id="BROWregionGeneName" type="text" size="10"/> <!-- <p id="BROWgene"></p> -->
           Extension upstream (bp): <input id="BROWregionUpEx" type="number" value="0"/>
           Extension downstream (bp): <input id="BROWregionDnEx" type="number" value="0"/>
         </div>
@@ -1389,8 +1389,9 @@
 
       <pre id="BROWnote" style="color:red;"></pre>
       <div id="BROWspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <div id="BROWresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="BROWfig"></p></div>
-
+      <div id="BROWresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6">
+          <p id="BROWfig"></p>
+      </div>
 
     </div>
 
@@ -4786,35 +4787,36 @@ function BROWplot(){
   if($("input[name='BROWinputRadio'][value='coordinate']").prop('checked')){
     region = $("#BROWregionChr").val()+"-"+ $("#BROWregionStart").val()+"-"+$("#BROWregionEnd").val();
   }else if($("input[name='BROWinputRadio'][value='gene']").prop('checked')){
-    region = $("#BROWregionGene").val();
-    exUP = $("BROWregionUpEx").val();
-    exDN = $("BROWregionDnEx").val();
+    region = $("#BROWregionGeneName").val();
+    exUP = $("#BROWregionUpEx").val();
+    exDN = $("#BROWregionDnEx").val();
   }else{
     $('#BROWnote').text("region is required");
   }
 
   var D = {'method':'plotBW',
             'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
-            'region':region
-            'exUP':geexUPnes,
+            'region':region,
+            'exUP':exUP,
             'exDN':exDN,
             'figOpt':window.figOpt};
 
   $(".BROWbt").prop('disabled',true);
   $(".BROWpngBT").prop('disabled',true);
   document.getElementById("BROWspin").style.visibility="visible";
-  $("#BROWresize").html("");
+  $("#BROWfig").html("");
   $.ajax({
     type:"POST",
     url: VIPurl,
     data:JSON.stringify(D),
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
+      BWimg=res;
       $(".BROWbt").prop("disabled",false);
       document.getElementById("BROWspin").style.visibility="hidden";
       if(res.startsWith('ERROR')){
         $('#BROWnote').text(res);
-        $('#BROWresize').html("");
+        $('#BROWfig').html("");
         return;
       }
       showImg('BROWfig',res);
