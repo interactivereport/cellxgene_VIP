@@ -68,8 +68,12 @@ R -q -e 'if(!require(rmarkdown)) devtools::install_version("rmarkdown",version="
 R -q -e 'if(!require(tidyverse)) devtools::install_version("tidyverse",version="1.3.0",repos = "http://cran.us.r-project.org")'
 R -q -e 'if(!require(viridis)) devtools::install_version("viridis",version="0.5.1",repos = "http://cran.us.r-project.org")'
 R -q -e 'if(!require(hexbin)) devtools::install_version("hexbin",version="1.28.2",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(ggforce)) devtools::install_version("ggforce",version="0.3.3",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(rtracklayer)) devtools::install_version("rtracklayer",version="1.50.0",repos = "http://cran.us.r-project.org")'
 R -q -e 'if(!require(BiocManager)) devtools::install_version("BiocManager",version="1.30.10",repos = "http://cran.us.r-project.org")'
 R -q -e 'if(!require(fgsea)) BiocManager::install("fgsea")'
+R -q -e 'if(!require(Signac)){BiocManager::install();setRepositories(ind=1:2);devtools::install_version("Signac",version="1.4.0",repos = "http://cran.us.r-project.org")}'
+
 
 # These should be already installed as dependencies of above packages
 R -q -e 'if(!require(dbplyr)) devtools::install_version("dbplyr",version="1.0.2",repos = "http://cran.us.r-project.org")'
