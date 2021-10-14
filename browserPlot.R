@@ -5,7 +5,6 @@ load <- function(libPath){
       addPath <- addPath[sapply(addPath,dir.exists)]
       .libPaths(c(addPath,.libPaths()))
     }
-    require(Signac)
     require(ggplot2)
     require(ggforce)
     require(rtracklayer)
@@ -44,7 +43,7 @@ main <- function(){
     ## plot gene annotation -----
     strAnno <- paste0(strPath,"/annotation.rds")
     if(file.exists(strAnno)){
-        p <- suppressWarnings(suppressMessages(customAnnotationPlot(readRDS(strAnno),region,yLabSize)))
+        p <- customAnnotationPlot(readRDS(strAnno),region,yLabSize)#suppressWarnings(suppressMessages())
         if(!is.null(p)){
             AllPlots <- c(AllPlots,list(p))
             h <- c(h,0.4)
@@ -70,6 +69,7 @@ main <- function(){
             h <- c(h,0.7)
         }
     }
+
     # save all plots -----
     strImg <- gsub("csv$",strFun,strExp)
     f <- get(strFun)
@@ -117,7 +117,7 @@ customLookupGeneCoords <- function(annotations, gene) {
     if (length(x = annot.sub) == 0) {
         return(NULL)
     } else {
-        gr <- GRanges(seqnames = as.character(x = seqnames(x = annot.sub))[[1]],
+        gr <- GRanges(seqnames = as.character(x = GenomicRanges::seqnames(x = annot.sub))[[1]],
                       ranges = IRanges::IRanges(start = min(IRanges::start(x = annot.sub)),
                                        end = max(IRanges::end(x = annot.sub))))
         return(gr)
@@ -164,22 +164,22 @@ customAnnotationPlot <- function(annotation, region, yLabSize) {
     }
     start.pos <- IRanges::start(x = region)
     end.pos <- IRanges::end(x = region)
-    chromosome <- seqnames(x = region)
+    chromosome <- GenomicRanges::seqnames(x = region)
 
     # get names of genes that overlap region, then subset to include only those
     # genes. This avoids truncating the gene if it runs outside the region
-    annotation.subset <- subsetByOverlaps(x = annotation, ranges = region)
+    annotation.subset <- IRanges::subsetByOverlaps(x = annotation, ranges = region)
     genes.keep <- unique(x = annotation.subset$gene_name)
     annotation.subset <- annotation[
         fastmatch::fmatch(x = annotation$gene_name, table = genes.keep, nomatch = 0L) > 0L
         ]
-
+    #print(annotation.subset)
     if (length(x = annotation.subset) == 0) {
         # make empty plot
         p <- ggplot(data = data.frame())
         y_limit <- c(0, 1)
     } else {
-        annotation_df_list <- Signac:::reformat_annotations(
+        annotation_df_list <- reformat_annotations(
             annotation = annotation.subset,
             start.pos = start.pos,
             end.pos = end.pos
@@ -285,11 +285,11 @@ customPeakPlot <- function(peaks,region,yLabSize,group.by = NULL,color = "dimgre
         return(NULL)
     }
     # subset to covered range
-    peak.intersect <- subsetByOverlaps(x = peaks, ranges = region)
+    peak.intersect <- IRanges::subsetByOverlaps(x = peaks, ranges = region)
     peak.df <- as.data.frame(x = peak.intersect)
     start.pos <- IRanges::start(x = region)
     end.pos <- IRanges::end(x = region)
-    chromosome <- seqnames(x = region)
+    chromosome <- GenomicRanges::seqnames(x = region)
 
     if (nrow(x = peak.df) > 0) {
         if (!is.null(x = group.by)) {
@@ -302,7 +302,7 @@ customPeakPlot <- function(peaks,region,yLabSize,group.by = NULL,color = "dimgre
         peak.df$end[peak.df$end > end.pos] <- end.pos
         peak.plot <- ggplot(
             data = peak.df,
-            aes_string(color = Signac:::SetIfNull(x = group.by, y = "color"))
+            aes_string(color = SetIfNull(x = group.by, y = "color"))
         ) +
             geom_segment(aes(x = start, y = 0, xend = end, yend = 0),
                          size = 2,
@@ -330,7 +330,7 @@ customLinkPlot <- function(links,region, yLabSize, object=NULL, min.cutoff = 0) 
     if (!inherits(x = region, what = "GRanges")) {
         region <- StringToGRanges(regions = region)
     }
-    chromosome <- seqnames(x = region)
+    chromosome <- GenomicRanges::seqnames(x = region)
 
     # extract link information
     if(!is.null(object)) links <- Links(object = object)
@@ -383,8 +383,267 @@ customLinkPlot <- function(links,region, yLabSize, object=NULL, min.cutoff = 0) 
         xlim(c(IRanges::start(x = region), IRanges::end(x = region)))
     return(p)
 }
+BigwigTrack <- function(region,bigwig,smooth = 200,type = "coverage",y_label = "Score",max.downsample = 3000,downsample.rate = 0.1) {
+    possible_types <- c("line", "heatmap", "coverage")
+    if (!(type %in% possible_types)) {
+        stop(
+            "Invalid type requested. Choose ",
+            paste(possible_types, collapse = ", ")
+        )
+    }
+    if (.Platform$OS.type == "windows") {
+        message("BigwigTrack not supported on Windows")
+        return(NULL)
+    }
+    if (!requireNamespace("rtracklayer", quietly = TRUE)) {
+        message("Please install rtracklayer. http://www.bioconductor.org/packages/rtracklayer/")
+        return(NULL)
+    }
+    if (!inherits(x = region, what = "GRanges")) {
+        stop("region should be a GRanges object")
+    }
+    region_data <- rtracklayer::import(
+        con = bigwig,
+        which = region,
+        as = "NumericList"
+    )[[1]]
+    if (!is.null(x = smooth)) {
+        region_data <- RcppRoll::roll_mean(x = region_data, n = smooth, fill = 0L)
+    }
+    region_data <- data.frame(
+        position = start(x = region):end(x = region),
+        score = region_data,
+        stringsAsFactors = FALSE
+    )
+    window.size = width(x = region)
+    sampling <- min(max.downsample, window.size * downsample.rate)
+    coverages <- dplyr::slice_sample(.data = region_data, n = sampling)
+    p <- ggplot(
+        data = coverages,
+        mapping = aes_string(x = "position", y = "score")
+    )
+    if (type == "line") {
+        p <- p + geom_line()
+    } else if (type == "heatmap") {
+        # different downsampling needed for heatmap
+        # cut into n bins and average within each bin
+        region_data$bin <- floor(x = region_data$position / smooth)
+        region_data <- dplyr::group_by(region_data, bin)
+        region_data <- dplyr::mutate(region_data, score = mean(x = score))
+        region_data <- dplyr::ungroup(region_data)
+        region_data <- unique(x = region_data[, c("bin", "score")])
+        p <- ggplot(
+            data = region_data,
+            mapping = aes_string(x = "bin", y = 1, fill = "score")
+        ) + geom_tile() + scale_fill_viridis_c()
+    } else if (type == "coverage") {
+        p <- p + geom_area()
+    }
+    chromosome <- as.character(x = GenomicRanges::seqnames(x = region))
+    p <- p + theme_browser() +
+        xlab(label = paste0(chromosome, " position (bp)")) +
+        ylab(label = y_label)
+    return(p)
+}
+CombineTracks <- function(plotlist,expression.plot = NULL,heights = NULL,widths = NULL) {
+    # remove any that are NULL
+    nullplots <- sapply(X = plotlist, FUN = is.null)
+    plotlist <- plotlist[!nullplots]
+    heights <- heights[!nullplots]
+
+    if (length(x = plotlist) == 1) {
+        return(plotlist[[1]])
+    }
+
+    # remove x-axis from all but last plot
+    for (i in 1:(length(x = plotlist) - 1)) {
+        plotlist[[i]] <- plotlist[[i]] + theme(
+            axis.title.x = element_blank(),
+            axis.text.x = element_blank(),
+            axis.line.x.bottom = element_blank(),
+            axis.ticks.x.bottom = element_blank()
+        )
+    }
+
+    # combine plots
+    if (is.null(x = heights)) {
+        # set height of first element to 10x more than other elements
+        n.plots <- length(x = plotlist)
+        heights <- c(8, rep(1, n.plots - 1))
+    } else {
+        if (length(x = heights) != length(x = plotlist)) {
+            stop("Relative height must be supplied for each plot")
+        }
+    }
+    if (!is.null(x = expression.plot)) {
+        # align expression plot with the first element in plot list
+        p <- (plotlist[[1]] + expression.plot) +
+            patchwork::plot_layout(widths = widths)
+
+        n <- length(x = plotlist)
+        heights.2 <- heights[2:n]
+        p2 <- patchwork::wrap_plots(plotlist[2:n], ncol = 1, heights = heights.2)
+
+        p <- p + p2 + patchwork::guide_area() + patchwork::plot_layout(
+            ncol = 2, heights = c(heights[[1]], sum(heights.2)),
+            guides = "collect")
+    } else {
+        p <- patchwork::wrap_plots(plotlist, ncol = 1, heights = heights)
+    }
+    return(p)
+}
+
 gg_color_hue <- function(n) {
     hues = seq(15, 375, length = n + 1)
     hcl(h = hues, l = 65, c = 100)[1:n]
 }
+split_body <- function(df, width = 1000) {
+    wd <- df$end - df$start
+    nbreak <- wd / width
+    if (nbreak > 1) {
+        steps <- 0:(nbreak)
+        starts <- (width * steps) + df$start
+        starts[starts > df$end] <- NULL
+    } else {
+        starts <- df$end
+    }
+    breaks <- data.frame(
+        seqnames = df$seqnames[[1]],
+        start = starts,
+        end = starts + 1,
+        strand = df$strand[[1]],
+        gene_name = df$gene_name[[1]],
+        gene_biotype = df$gene_biotype[[1]],
+        type = "arrow"
+    )
+    return(breaks)
+}
+theme_browser <- function(..., legend = TRUE) {
+    browser.theme <- theme_classic() +
+        theme(
+            axis.text.y = element_blank(),
+            strip.background = element_blank(),
+            strip.text.y.left = element_text(angle = 0)
+        )
+    if (!legend) {
+        browser.theme <- browser.theme +
+            theme(
+                legend.position = "none"
+            )
+    }
+    return(browser.theme)
+}
+Extend <- function(x,upstream = 0,downstream = 0,from.midpoint = FALSE) {
+    if (any(GenomicRanges::strand(x = x) == "*")) {
+        warning("'*' ranges were treated as '+'")
+    }
+    on_plus <- GenomicRanges::strand(x = x) == "+" | GenomicRanges::strand(x = x) == "*"
+    if (from.midpoint) {
+        midpoints <- GenomicRanges::start(x = x) + (GenomicRanges::width(x = x) / 2)
+        new_start <- midpoints - ifelse(
+            test = on_plus, yes = upstream, no = downstream
+        )
+        new_end <- midpoints + ifelse(
+            test = on_plus, yes = downstream, no = upstream
+        )
+    } else {
+        new_start <- GenomicRanges::start(x = x) - ifelse(
+            test = on_plus, yes = upstream, no = downstream
+        )
+        new_end <- end(x = x) + ifelse(
+            test = on_plus, yes = downstream, no = upstream
+        )
+    }
+    IRanges::ranges(x = x) <- IRanges::IRanges(start = new_start, end = new_end)
+    x <- GenomicRanges::trim(x = x)
+    return(x)
+}
+SetIfNull <- function(x, y) {
+    if (is.null(x = x)) {
+        return(y)
+    } else {
+        return(x)
+    }
+}
+record_overlapping <- function(annotation, min.gapwidth = 1000) {
+    # convert back to granges
+    annotation.stash <- annotation
+    annotation$strand <- "*"
+    gr <- GenomicRanges::makeGRangesFromDataFrame(
+        df = annotation[annotation$type == "body", ], keep.extra.columns = TRUE
+    )
+    # work out which ranges overlap
+    collapsed <- GenomicRanges::reduce(
+        x = gr, with.revmap = TRUE, min.gapwidth = min.gapwidth
+    )$revmap
+    idx <- seq_along(gr)
+    for (i in seq_along(collapsed)) {
+        mrg <- collapsed[[i]]
+        for (j in seq_along(mrg)) {
+            idx[[mrg[[j]]]] <- j
+        }
+    }
+    names(x = idx) <- gr$gene_name
+    return(idx)
+}
+reformat_annotations <- function(annotation,start.pos,end.pos) {
+    annotation <- annotation[annotation$type == "exon"]
+    exons <- as.data.frame(x = annotation,row.names=NULL)
+    annotation <- split(
+        x = annotation,
+        f = annotation$gene_name
+    )
+    annotation <- lapply(X = annotation, FUN = as.data.frame,row.names=NULL)
+
+    # add gene total start / end
+    gene_bodies <- list()
+    for (i in seq_along(annotation)) {
+        df <- data.frame(
+            seqnames = annotation[[i]]$seqnames[[1]],
+            start = min(annotation[[i]]$start),
+            end = max(annotation[[i]]$end),
+            strand = annotation[[i]]$strand[[1]],
+            gene_name = annotation[[i]]$gene_name[[1]],
+            gene_biotype = annotation[[i]]$gene_biotype[[1]],
+            type = "body"
+        )
+        # trim any that extend beyond region
+        df$start <- ifelse(
+            test = df$start < start.pos,
+            yes = start.pos,
+            no = df$start
+        )
+        df$end <- ifelse(
+            test = df$end > end.pos,
+            yes = end.pos,
+            no = df$end
+        )
+        breaks <- split_body(df = df)
+        df <- rbind(df, breaks)
+        gene_bodies[[i]] <- df
+    }
+    gene_bodies <- do.call(what = rbind, args = gene_bodies)
+
+    # record if genes overlap
+    overlap_idx <- record_overlapping(annotation = gene_bodies, min.gapwidth = 1000)
+    gene_bodies$dodge <- overlap_idx[gene_bodies$gene_name]
+    exons$dodge <- overlap_idx[exons$gene_name]
+
+    label_df <- gene_bodies[gene_bodies$type == "body", ]
+    label_df$width <- label_df$end - label_df$start
+    label_df$position <- label_df$start + (label_df$width / 2)
+
+    onplus <- gene_bodies[gene_bodies$strand %in% c("*", "+"), ]
+    onminus <- gene_bodies[gene_bodies$strand == "-", ]
+
+    return(
+        list(
+            "labels" = label_df,
+            "exons" = exons,
+            "plus" = onplus,
+            "minus" = onminus
+        )
+    )
+}
+
 main()

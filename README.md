@@ -69,10 +69,11 @@ R -q -e 'if(!require(tidyverse)) devtools::install_version("tidyverse",version="
 R -q -e 'if(!require(viridis)) devtools::install_version("viridis",version="0.5.1",repos = "http://cran.us.r-project.org")'
 R -q -e 'if(!require(hexbin)) devtools::install_version("hexbin",version="1.28.2",repos = "http://cran.us.r-project.org")'
 R -q -e 'if(!require(ggforce)) devtools::install_version("ggforce",version="0.3.3",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(RcppRoll)) devtools::install_version("RcppRoll",version="0.3.0",repos = "http://cran.r-project.org")'
+R -q -e 'if(!require(fastmatch)) devtools::install_version("fastmatch",version="1.1-3",repos = "http://cran.r-project.org")'
 R -q -e 'if(!require(BiocManager)) devtools::install_version("BiocManagerre",version="1.30.10",repos = "http://cran.us.r-project.org")'
 R -q -e 'if(!require(fgsea)) BiocManager::install("fgsea")'
 R -q -e 'if(!require(rtracklayer)) BiocManager::install("rtracklayer")'
-R -q -e 'if(!require(Signac)){BiocManager::install();setRepositories(ind=1:2);devtools::install_version("Signac",version="1.4.0",repos = "http://cran.us.r-project.org")}'
 
 
 # These should be already installed as dependencies of above packages
