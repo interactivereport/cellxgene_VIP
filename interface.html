@@ -548,11 +548,12 @@
       <button class="tablinks" onclick="selFun(event, 'STACBAR')">Stacked Barplot</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1')">DEG</button>
-      <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')">Pre-Computed DEG</button>
+      <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
+      <button id="browserBT" class="tablinks" onclick="selFun(event, 'BROW')" style="display: none;">Browser Tracks</button>
       <button class="tablinks" onclick="selFun(event, 'SPATIAL');defaultTopSel('SPATIAL','SPATIALimage')">Spatial Transcriptomics</button>
       <button class="tablinks" onclick="selFun(event, 'CLI')">Command Line Interface</button>
-      <button id="metaCellBT" class="tablinks colorButton" onclick="metaSel()">Show MetaCell</button>
+      <button id="metaCellBT" class="tablinks colorButton" onclick="metaSel()" style="display: none;">Show MetaCell</button>
       <div id="metaCellBTspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <hr size="1" noshade>
       <button class="tablinks" onclick="selFun(event, 'IMG')">Global Setting</button>
@@ -562,7 +563,7 @@
       <button class="tablinks" onclick="ABBRall()">Check All Annotations</button>
       <button class="tablinks" onclick="selFun(event, 'BRUSH');">Brush</button>
       <button class="tablinks" onclick="sync();">Sync</button>
-      <button id="VIPtestBT" class="tablinks" onclick="selFun(event, 'tVIP')">Test</button>
+      <button id="VIPtestBT" class="tablinks" onclick="selFun(event, 'tVIP')" style="display: none;">Test</button>
     </div>
   </div>
   <div id="separator" ></div>
@@ -625,8 +626,7 @@
 
     <div id="GD" class=tabcontent>
       <div id="GDinput">
-        <h3>Genes detected in cell selections <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-gene-detected" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i>
-</h3>
+        <h3>Genes detected in cell selections <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-gene-detected" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
         <p>In selection 1 (<span class="cellN1" style="color:red;">0</span>) cells and selection 2 (<span class="cellN2" style="color:red;">0</span>) cells</p>
         <p>Expression cutoff:
         <input id="GDcutoff" type="number" step="0.1" value="1"/></p>
@@ -644,8 +644,7 @@
 
     <div id="MARK" class="tabcontent">
       <div id="MARKinput">
-        <h3>Marker genes of annotation categories from selected cells <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-marker-genes" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i>
-</h3>
+        <h3>Marker genes of annotation categories from selected cells <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-marker-genes" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
         <p>Choose cell selection(s):
           <label><input class="MARKcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="MARKcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
@@ -1361,21 +1360,55 @@
       <div id='STACBARresize' style="height: 'auto'; width: 'auto'; padding: 0.5em;"></div>
     </div><!--STACBAR -->
 
+    <div id='BROW' class='tabcontent'>
+      <div id="BROWinput">
+        <h3>Browser track plot for ATAC based on bigwig</h3>
+        <fieldset>
+          <div id="BROWinfo"></div>
+        </fieldset>
+
+        Define track region by:
+        <label><input type="radio" name="BROWinputRadio" value="coordinate" onclick="$('.BROWregion').hide();$('#BROWregionCoor').show();">Coordinate</label>
+        <label><input type="radio" name="BROWinputRadio" value="gene" onclick="$('.BROWregion').hide();$('#BROWregionGene').show();">Gene</label>
+        <div id="BROWregionCoor" class="BROWregion" style="display:none">
+          Chromosome: <input id="BROWregionChr" type="text" size="5"/>
+          Start: <input id="BROWregionStart" type="number" style="width: 10em"/>
+          End: <input id="BROWregionEnd" type="number" style="width: 10em"/>
+        </div>
+        <div id="BROWregionGene" class="BROWregion" style="display:none">
+          Gene: <input id="BROWregionGene" type="text" size="10"/> <!-- <p id="BROWgene"></p> -->
+          Extension upstream (bp): <input id="BROWregionUpEx" type="number" value="0"/>
+          Extension downstream (bp): <input id="BROWregionDnEx" type="number" value="0"/>
+        </div>
+      </div>
+      <button class="BROWbt"  onclick="BROWplot()"><b>Plot</b> </button>
+      <button onclick="ZoomIn('BROWresize')">Zoom In</button>
+      <button onclick="ZoomOut('BROWresize')">Zoom Out</button>
+      <button class="BROWpngBT" onclick="saveImg('BROWimg')" disabled>Save</button>
+      <button onclick="hideShow($('#BROWinput'),$(this));">Hide Input</button>
+
+      <pre id="BROWnote" style="color:red;"></pre>
+      <div id="BROWspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+      <div id="BROWresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="BROWfig"></p></div>
+
+
+    </div>
+
     <div id="IMG" class="tabcontent">
       <h3>Global setting for VIP <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-figure-option" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
       <p>Select cells cumulatively:
         <input type="radio" name="IMGcumuRd" value="Yes" onclick="IMGcellSel()">Yes
         <input type="radio" name="IMGcumuRd" value="No" onclick="IMGcellSel()" checked>No
         &nbsp;&nbsp;&nbsp;&nbsp;<button onclick="IMGcellClear()">Clear Cell Selections</button></p>
-      <div id='IMGrandomCellDiv'>
+        <div id='IMGrandomCellDiv'>
         <Blockquote>
           <label>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>&nbsp;&nbsp;|&nbsp;&nbsp;
           <label>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </Blockquote>
-<!--
+        <!--
         From selected cell group, <input id="IMGcellRandomN" type="number" step="1" min="1" style="width: 50px;" /> cells will be randomly <button onclick="IMGcellRandomChoose()">Chosen</button>
--->
-      </div>
+        -->
+        </div>
       <div>
         <p>Scale gene expression to unit variance and zero mean
         <input type="radio" name="IMGscale" value="Yes" onclick="IMGset()">Yes
@@ -1408,12 +1441,12 @@
         <input type="radio" name="IMGtransparent" value="Yes" onclick="IMGset()">Yes
         <input type="radio" name="IMGtransparent" value="No" onclick="IMGset()" checked>No
       </p>
-<!--
+      <!--
       <p>Scanpy plot style:
         <input type="radio" name="IMGscanpybranch" value="master" onclick="IMGset()">master
         <input type="radio" name="IMGscanpybranch" value="split_show" onclick="IMGset()" checked>split_show
       </p>
--->
+      -->
       <p>Colormap of UMAP/tSNE, Density Scatter (limited to top 4 colormaps):
       <select id="IMGcolor" onchange="IMGset()">
         <option value='viridis'>viridis</option>
@@ -1446,12 +1479,12 @@
       </div>
       <div id="SPATIALspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="SPATIALimageV" class="SPATIALcontent">
-<!--
+        <!--
         <p>Choose cell selection(s):
           <label><input class="SPATIALcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="SPATIALcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
--->
+        -->
         <button class="SPATIALbt" onclick="SPATIAL()"><b>Get Spatial Image</b></button>
         <button onclick="SPATIALoverlay()"><b>Overlay Image</b></button>
         <button onclick="document.getElementById('spatial-layer').remove();"><b>Remove Image</b></button>
@@ -1636,9 +1669,9 @@ function enableButton(){
       for(const one of document.getElementsByClassName('tablinks')){
         one.disabled=true;
       }
-      $("#preDEGpanelBT").hide();
-      $("#metaCellBT").hide();
-      $("#VIPtestBT").hide();
+      //$("#preDEGpanelBT").hide();
+      //$("#metaCellBT").hide();
+      //$("#VIPtestBT").hide();
       setTimeout(enableButton, 100);
       loadingCycle ++;
     }else{
@@ -1932,6 +1965,29 @@ function enableVIPtest(){
       });
 
 }
+function enableBrowser(){
+  $.ajax({
+    type: "POST",
+    url: VIPurl,
+    data:JSON.stringify({'method':"getBWinfo",'dataset': window.store.getState().config.displayNames.dataset+'.h5ad'}),
+    contentType: 'application/json;charset=UTF-8',
+    success: function(res){
+      browserinfo= JSON.parse(res);
+      if(browserinfo['BWfile'].length > 0){
+        var html="<strong>The following tracks are available: </strong>" + browserinfo['BWfile'].join("; ");
+        if(browserinfo['BWpeak'].length>4) html += "<br><br><strong>All peaks are defined</strong>";
+        if(browserinfo['BWlink'].length>4) html += "<br><strong>Links between peaks and genes are avaiable</strong>";
+        $("#BROWinfo").html(html.replaceAll('.bw',''));
+        $("input[name='BROWinputRadio'][value='gene']").prop('disabled', true);
+        if(browserinfo['BWannotation'].length>4) $("input[name='BROWinputRadio'][value='gene']").prop('disabled', false);
+        $("#browserBT").show();
+      }
+    },
+    error: function(request,status,error){
+      console.log(request.status+': cannot get bigwig information ...');
+    }
+  });
+}
 function init(){
   if(!('bioInit' in window)){
     //----------------
@@ -2142,6 +2198,9 @@ function init(){
             //for VIP test
             enableVIPtest();
 
+            // for browser track plot
+            enableBrowser();
+
           }
         },
         error: function(request,status,error){
@@ -2193,6 +2252,7 @@ function sync(){
   DENS2Dref();
   SANKref();
   STACBARref();
+  BROWref();
   CLIref();
   preDEGVolcanoref("preDEGvolcano");
   preDEGmultiref();
@@ -2604,6 +2664,9 @@ function STACBARref(){
   }
 
 }
+function BROWref(){
+  //var selGene=showGene('BROW','onchange="BROWref()"','');
+}
 function radioCheckTriger(eName){
   $("input[name='"+eName+"']:checked").trigger("click");
 }
@@ -2701,12 +2764,12 @@ function IMGref(){
 function IMGcellSel(){
   //IMGcumuRd
   window.accumulateCell.cellaccumu=$("input[name='IMGcumuRd']:checked").val()=='Yes';
-/*
-  $("#IMGrandomCellDiv").hide();
-  if(window.accumulateCell.cellaccumu){
-    $("#IMGrandomCellDiv").show();
-  }
-*/
+  /*
+    $("#IMGrandomCellDiv").hide();
+    if(window.accumulateCell.cellaccumu){
+      $("#IMGrandomCellDiv").show();
+    }
+  */
   cellNupdate();
 }
 function IMGcellClear(){
@@ -3099,7 +3162,7 @@ function SPATIALlist() {
       var spatialEmb = JSON.parse(res).list.filter(val => val !== "spatial_Merged");
       var htmlCheck = "";
       for(const g of spatialEmb){
-        htmlCheck += '<label id="SPATIAL'+'ck'+g+'"><input class="SPATIALnames" type="checkbox" value="'+g+'" checked/>'+g.replace("spatial_","")+'</label>'; 
+        htmlCheck += '<label id="SPATIAL'+'ck'+g+'"><input class="SPATIALnames" type="checkbox" value="'+g+'" checked/>'+g.replace("spatial_","")+'</label>';
       }
       $('#SPATIALname').append(htmlCheck);
     },
@@ -4712,6 +4775,55 @@ function STACBARplot(){
       $('#STACBARnote').text(request.status+request.responseText);
       $(".STACBARbt").prop("disabled",false);
       document.getElementById("STACBARspin").style.visibility="hidden";
+
+    }
+  });
+
+}
+function BROWplot(){
+  $('#BROWnote').text("");
+  var region = "", exUP=0, exDN=0;
+  if($("input[name='BROWinputRadio'][value='coordinate']").prop('checked')){
+    region = $("#BROWregionChr").val()+"-"+ $("#BROWregionStart").val()+"-"+$("#BROWregionEnd").val();
+  }else if($("input[name='BROWinputRadio'][value='gene']").prop('checked')){
+    region = $("#BROWregionGene").val();
+    exUP = $("BROWregionUpEx").val();
+    exDN = $("BROWregionDnEx").val();
+  }else{
+    $('#BROWnote').text("region is required");
+  }
+
+  var D = {'method':'plotBW',
+            'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+            'region':region
+            'exUP':geexUPnes,
+            'exDN':exDN,
+            'figOpt':window.figOpt};
+
+  $(".BROWbt").prop('disabled',true);
+  $(".BROWpngBT").prop('disabled',true);
+  document.getElementById("BROWspin").style.visibility="visible";
+  $("#BROWresize").html("");
+  $.ajax({
+    type:"POST",
+    url: VIPurl,
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(res){
+      $(".BROWbt").prop("disabled",false);
+      document.getElementById("BROWspin").style.visibility="hidden";
+      if(res.startsWith('ERROR')){
+        $('#BROWnote').text(res);
+        $('#BROWresize').html("");
+        return;
+      }
+      showImg('BROWfig',res);
+      $(".BROWpngBT").prop('disabled',false);
+    },
+    error: function(request,status,error){
+      $('#BROWnote').text(request.status+request.responseText);
+      $(".BROWbt").prop("disabled",false);
+      document.getElementById("BROWspin").style.visibility="hidden";
 
     }
   });

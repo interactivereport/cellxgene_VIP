@@ -285,7 +285,9 @@ def distributeTask(aTask):
     'Description':getDesp,
     'GSEAgs':getGSEA,
 	'SPATIAL':SPATIAL,
-    'saveTest':saveTest
+    'saveTest':saveTest,
+    'getBWinfo':getBWinfo,
+    'plotBW':plotBW
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1412,6 +1414,34 @@ def isMeta(data):
   if not os.path.exists(strPath):
     return "FALSE"
   return "TRUE"
+
+def getBWinfo(data):
+    BWinfo = {"BWfile":[],"BWannotation":[],"BWlink":[],"BWpeak":[]}
+    strD = re.sub(".h5ad$","/",data["h5ad"])
+    if os.path.isdir(strD):
+        for one in os.listdir(strD):
+            if not re.search("bw$",one)==None:
+                BWinfo["BWfile"].append(one)
+            elif one=="annotation.rds":
+                BWinfo["BWannotation"]="annotation.rds"
+            elif one=="peaks.rds":
+                BWinfo["BWpeak"]="peaks.rds"
+            elif one=="links.rds":
+                BWinfo["BWlink"]="links.rds"
+    return json.dumps(BWinfo)
+
+def plotBW(data):
+    strD = re.sub(".h5ad$","/",data["h5ad"])
+    ## plot in R
+    strF = ('%s/BW%f.csv' % (data["CLItmp"],time.time()))
+
+    res = subprocess.run([strExePath+'/browserPlot.R',strD,data['region'],str(data['exUP']),str(data['exDN']),strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
+    img = res.stdout.decode('utf-8')
+    #os.remove(strF)
+    if 'Error' in res.stderr.decode('utf-8'):
+        raise SyntaxError("in R: "+res.stderr.decode('utf-8'))
+
+    return img
 
 #make sure the h5ad file full name is listed in vip.env as a variable 'testVIP';
 def testVIPready(data):
