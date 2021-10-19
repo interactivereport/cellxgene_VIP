@@ -1451,15 +1451,12 @@ def plotBW(data):
             if len(adata)==0:
                 grpFlag = False
             else:
-                adata.write("/home/oyoung/VIPdata/HIV_scATACexp/test.h5ad")
                 cluster = pd.read_csv(strType,sep="\t",header=None,index_col=1,skiprows=1)#delimiter="\n",
                 obsCluster = pd.DataFrame(list(cluster.loc[adata.obs[grp],:][0]),index=adata.obs.index,columns=[grp])
                 pd.concat([obsCluster,adata.to_df()], axis=1, sort=False).to_csv(strCSV)
     ## plot in R
     #strCMD = ' '.join([strExePath+'/browserPlot.R',strD,data['region'],str(data['exUP']),str(data['exDN']),strCSV,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
     #ppr.pprint(strCMD)
-    #with open("/home/zouyang/cellxgene/bw.txt","w") as f:
-    #    f.write(strCMD)
     res = subprocess.run([strExePath+'/browserPlot.R',strD,data['region'],str(data['exUP']),str(data['exDN']),strCSV,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
     img = res.stdout.decode('utf-8')
     if grpFlag:

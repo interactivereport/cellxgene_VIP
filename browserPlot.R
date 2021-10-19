@@ -94,7 +94,7 @@ main <- function(){
     a <- dev.off()
     fig = base64enc::dataURI(file = strImg)
     cat(gsub("data:;base64,","",fig))
-    #a <- file.remove(strImg)
+    a <- file.remove(strImg)
 
 }
 customFindRegion <- function(region,annotations=NULL,sep = c("-", "-"),extend.upstream = 0,extend.downstream = 0) {
