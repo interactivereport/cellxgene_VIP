@@ -1452,6 +1452,7 @@ def plotBW(data):
                 grpFlag = False
             else:
                 cluster = pd.read_csv(strType,sep="\t",header=None,index_col=1,skiprows=1)#delimiter="\n",
+                adata = adata[adata.obs[grp].isin(list(cluster.index)),:]
                 obsCluster = pd.DataFrame(list(cluster.loc[adata.obs[grp],:][0]),index=adata.obs.index,columns=[grp])
                 pd.concat([obsCluster,adata.to_df()], axis=1, sort=False).to_csv(strCSV)
     ## plot in R
