@@ -1416,7 +1416,7 @@ def isMeta(data):
   return "TRUE"
 
 def getBWinfo(data):
-    BWinfo = {"BWfile":[],"BWannotation":[],"BWlink":[],"BWpeak":[]}
+    BWinfo = {"BWfile":[],"BWannotation":[],"BWlink":[],"BWpeak":[],"BWcluster":[]}
     strD = re.sub(".h5ad$","/",data["h5ad"])
     if os.path.isdir(strD):
         for one in os.listdir(strD):
@@ -1428,18 +1428,42 @@ def getBWinfo(data):
                 BWinfo["BWpeak"]="peaks.rds"
             elif one=="links.rds":
                 BWinfo["BWlink"]="links.rds"
+            elif one=="bw.cluster":
+                BWinfo["BWcluster"]="bw.cluster"
     return json.dumps(BWinfo)
 
 def plotBW(data):
     strD = re.sub(".h5ad$","/",data["h5ad"])
+    strCSV = ('%s/BW%f.csv' % (data["CLItmp"],time.time()))
+    ## select all cells
+    strType = strD + 'bw.cluster'
+    grpFlag = False
+    if os.path.isfile(strType) and len(data['genes'])>0:
+        with open(strType,"r") as f:
+            grp = f.readline().strip()
+        with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+          dAnno = list(scD.get_obs_keys())
+          if grp in dAnno:
+              grpFlag = True
+        if grpFlag:
+            data['grp'] = [grp]
+            adata = createData(data)
+            if len(adata)==0:
+                grpFlag = False
+            else:
+                adata.write("/home/oyoung/VIPdata/HIV_scATACexp/test.h5ad")
+                cluster = pd.read_csv(strType,sep="\t",header=None,index_col=1,skiprows=1)#delimiter="\n",
+                obsCluster = pd.DataFrame(list(cluster.loc[adata.obs[grp],:][0]),index=adata.obs.index,columns=[grp])
+                pd.concat([obsCluster,adata.to_df()], axis=1, sort=False).to_csv(strCSV)
     ## plot in R
-    strF = ('%s/BW%f.csv' % (data["CLItmp"],time.time()))
-    #strCMD = ' '.join([strExePath+'/browserPlot.R',strD,data['region'],str(data['exUP']),str(data['exDN']),strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
+    #strCMD = ' '.join([strExePath+'/browserPlot.R',strD,data['region'],str(data['exUP']),str(data['exDN']),strCSV,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
+    #ppr.pprint(strCMD)
     #with open("/home/zouyang/cellxgene/bw.txt","w") as f:
     #    f.write(strCMD)
-    res = subprocess.run([strExePath+'/browserPlot.R',strD,data['region'],str(data['exUP']),str(data['exDN']),strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
+    res = subprocess.run([strExePath+'/browserPlot.R',strD,data['region'],str(data['exUP']),str(data['exDN']),strCSV,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
     img = res.stdout.decode('utf-8')
-    #os.remove(strF)
+    if grpFlag:
+        os.remove(strCSV)
     if 'Error' in res.stderr.decode('utf-8'):
         raise SyntaxError("in R: "+res.stderr.decode('utf-8'))
 

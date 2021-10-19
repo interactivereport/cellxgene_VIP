@@ -1368,8 +1368,8 @@
         </fieldset>
 
         Define track region by:
-        <label><input type="radio" name="BROWinputRadio" value="coordinate" onclick="$('.BROWregion').hide();$('#BROWregionCoor').show();">Coordinate</label>
-        <label><input type="radio" name="BROWinputRadio" value="gene" onclick="$('.BROWregion').hide();$('#BROWregionGene').show();">Gene</label>
+        <label><input type="radio" name="BROWinputRadio" value="coordinate" onclick="$('.BROWregion').hide();$('#BROWregionCoor').show();$('#BROWselGene').show();">Coordinate</label>
+        <label><input type="radio" name="BROWinputRadio" value="gene" onclick="$('.BROWregion').hide();$('#BROWregionGene').show();$('#BROWselGene').show();">Gene</label>
         <div id="BROWregionCoor" class="BROWregion" style="display:none">
           Chromosome: <input id="BROWregionChr" type="text" size="5"/>
           Start: <input id="BROWregionStart" type="number" style="width: 10em"/>
@@ -1377,10 +1377,17 @@
         </div>
         <div id="BROWregionGene" class="BROWregion" style="display:none">
           Gene: <input id="BROWregionGeneName" type="text" size="10"/> <!-- <p id="BROWgene"></p> -->
-          Extension upstream (bp): <input id="BROWregionUpEx" type="number" value="0"/>
-          Extension downstream (bp): <input id="BROWregionDnEx" type="number" value="0"/>
+          Extension upstream (bp): <input id="BROWregionUpEx" type="number" value="1000" min="0"/>
+          Extension downstream (bp): <input id="BROWregionDnEx" type="number" value="1000" min="0"/>
         </div>
+        <div id="BROWselGeneShow" style="display:none"><div id="BROWselGene" style="display:none">
+          <br>
+          <p>Add following gene expression violins to tracks ('Add Genes' first): <input type="checkbox" checked onclick="$('.BROWgenes').prop('checked', this.checked);">Uncheck / Check All</p>
+          <p id="BROWgene"></p>
+          <p>Expression cutoff: <input id="BROWgeneCutoff" type="number" step="0.1" value="-0.1" min="-0.1"/></p>
+        </div></div>
       </div>
+      <br>
       <button class="BROWbt"  onclick="BROWplot()"><b>Plot</b> </button>
       <button onclick="ZoomIn('BROWresize')">Zoom In</button>
       <button onclick="ZoomOut('BROWresize')">Zoom Out</button>
@@ -1981,6 +1988,7 @@ function enableBrowser(){
         $("#BROWinfo").html(html.replaceAll('.bw',''));
         $("input[name='BROWinputRadio'][value='gene']").prop('disabled', true);
         if(browserinfo['BWannotation'].length>4) $("input[name='BROWinputRadio'][value='gene']").prop('disabled', false);
+        if(browserinfo['BWcluster'].length>4) $("#BROWselGeneShow").show();
         $("#browserBT").show();
       }
     },
@@ -2667,6 +2675,7 @@ function STACBARref(){
 }
 function BROWref(){
   //var selGene=showGene('BROW','onchange="BROWref()"','');
+  showGene('BROW','','');
 }
 function radioCheckTriger(eName){
   $("input[name='"+eName+"']:checked").trigger("click");
@@ -4783,19 +4792,23 @@ function STACBARplot(){
 }
 function BROWplot(){
   $('#BROWnote').text("");
-  var region = "", exUP=0, exDN=0;
+  var region = "", exUP=0, exDN=0,genes=[];
   if($("input[name='BROWinputRadio'][value='coordinate']").prop('checked')){
     region = $("#BROWregionChr").val()+"-"+ $("#BROWregionStart").val()+"-"+$("#BROWregionEnd").val();
   }else if($("input[name='BROWinputRadio'][value='gene']").prop('checked')){
-    region = $("#BROWregionGeneName").val();
+    region = $("#BROWregionGeneName").val().trim();
     exUP = $("#BROWregionUpEx").val();
     exDN = $("#BROWregionDnEx").val();
   }else{
     $('#BROWnote').text("region is required");
+    return;
   }
 
   var D = {'method':'plotBW',
             'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+            'cells':Int32Array.from([...Array(window.store.getState().annoMatrix.nObs).keys()]),
+            'genes':getGenes('BROW'),
+            'cutoff':$('#BROWgeneCutoff').val(),
             'region':region,
             'exUP':exUP,
             'exDN':exDN,
@@ -4826,7 +4839,6 @@ function BROWplot(){
       $('#BROWnote').text(request.status+request.responseText);
       $(".BROWbt").prop("disabled",false);
       document.getElementById("BROWspin").style.visibility="hidden";
-
     }
   });
 

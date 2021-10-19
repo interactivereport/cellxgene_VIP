@@ -6,7 +6,9 @@ load <- function(libPath){
       .libPaths(c(addPath,.libPaths()))
     }
     require(ggplot2)
+    require(reshape2)
     require(ggforce)
+    require(patchwork)
     require(rtracklayer)
 }
 
@@ -18,13 +20,12 @@ main <- function(){
     region <- args[2]
     extend.upstream <- as.numeric(args[3])
     extend.downstream <- as.numeric(args[4])
-
     strExp <- args[5] # have to be provided, used to save temp figures
-    strFun <- args[6]
-    fontsize <- as.numeric(args[7])-7
-    dpi <- as.numeric(args[8])
+    expCutoff <- as.numeric(args[6])
+    strFun <- args[7]
+    fontsize <- as.numeric(args[8])
+    dpi <- as.numeric(args[9])
 
-    yLabSize <- fontsize+5
     ## obtain the region -----
     annotations <- NULL
     if(file.exists(paste0(strPath,"/annotation.rds"))) annotations <- readRDS(paste0(strPath,"/annotation.rds"))
@@ -37,52 +38,63 @@ main <- function(){
 
     ## plot the bigwig -----
     strBW <- list.files(strPath,"bw$",full.names=T)
-    AllPlots <- suppressWarnings(suppressMessages(customBigwigTrack(strBW,region,fontsize,yLabSize)))
-    h <- rep(1,length(AllPlots))
+    AllPlots <- suppressWarnings(suppressMessages(customBigwigTrack(strBW,region,fontsize)))
+    #h <- rep(1,length(AllPlots))
+    h <- length(strBW)
+    w <- 6
+
+    ## plot gene expression ----
+    expPlot <- customExpressionPlot(strExp,strBW,expCutoff,fontsize)
+    if(!is.null(expPlot)){
+      w <- c(w,nlevels(expPlot$data$gene))
+    }
 
     ## plot gene annotation -----
+    if(!is.null(annotations)){
+      p <- customAnnotationPlot(annotations,region,fontsize)#suppressWarnings(suppressMessages())
+      if(!is.null(p)){
+          AllPlots <- c(AllPlots,list(p))
+          h <- c(h,0.5)
+      }
+    }
     strAnno <- paste0(strPath,"/annotation.rds")
     if(file.exists(strAnno)){
-        p <- customAnnotationPlot(readRDS(strAnno),region,yLabSize)#suppressWarnings(suppressMessages())
-        if(!is.null(p)){
-            AllPlots <- c(AllPlots,list(p))
-            h <- c(h,0.4)
-        }
+
     }
 
     ## plot peaks -----
     strPeaks <- paste0(strPath,"/peaks.rds")
     if(file.exists(strAnno)){
-        p <- suppressWarnings(suppressMessages(customPeakPlot(readRDS(strPeaks),region,yLabSize)))
+        p <- suppressWarnings(suppressMessages(customPeakPlot(readRDS(strPeaks),region,fontsize)))
         if(!is.null(p)){
             AllPlots <- c(AllPlots,list(p))
-            h <- c(h,0.2)
+            h <- c(h,0.3)
         }
     }
 
     ## plot links -----
     strLinks <- paste0(strPath,"/links.rds")
     if(file.exists(strLinks)){
-        p <- suppressWarnings(suppressMessages(customLinkPlot(readRDS(strLinks),region,yLabSize)))
+        p <- suppressWarnings(suppressMessages(customLinkPlot(readRDS(strLinks),region,fontsize)))
         if(!is.null(p)){
             AllPlots <- c(AllPlots,list(p))
             h <- c(h,0.7)
         }
     }
-
     # save all plots -----
     strImg <- gsub("csv$",strFun,strExp)
     f <- get(strFun)
     if(sum(strFun%in%c('png','jpeg','tiff'))>0){
-        f(strImg, width=8, height=max(4,sum(h)),units='in',res=dpi)
+        f(strImg, width=sum(w), height=max(4,sum(h)),units='in',res=dpi)
     }else{
-        f(strImg, width=8, height=max(4,sum(h)))
+        f(strImg, width=sum(w), height=max(4,sum(h)))
     }
-    suppressWarnings(suppressMessages(print(CombineTracks(plotlist=AllPlots,heights=h))))
+    suppressWarnings(suppressMessages(print(CombineTracks(plotlist=AllPlots,heights=h,
+                                                          expression.plot=expPlot,widths=w))))
     a <- dev.off()
     fig = base64enc::dataURI(file = strImg)
     cat(gsub("data:;base64,","",fig))
-    a <- file.remove(strImg)
+    #a <- file.remove(strImg)
 
 }
 customFindRegion <- function(region,annotations=NULL,sep = c("-", "-"),extend.upstream = 0,extend.downstream = 0) {
@@ -123,38 +135,199 @@ customLookupGeneCoords <- function(annotations, gene) {
         return(gr)
     }
 }
-customBigwigTrack <- function(strBW,region,fontsize,yLabSize) {
+customExpressionPlot <- function(strExp,strBW,geneCutoff=-0.1,fontsize=9) {
+  if(!file.exists(strExp)) return(NULL)
+  Exp <- read.csv(strExp,row.names=1,as.is=T)
+  if(sum(!Exp[,1]%in%basename(strBW))>0) return(NULL)
+  # get data
+  data.plot <- t(Exp[,-1,drop=F])
+  obj.groups <- Exp[,1,drop=F]
+  features <- row.names(data.plot)
+  # set the color
+  levels.use <- basename(strBW)
+  colors_all <- setNames(gg_color_hue(length(levels.use)),levels.use)
+  # construct data frame
+  df <- setNames(melt(data.plot),c("gene","Cell","expression"))
+  df <- cbind(df,group=obj.groups[df$Cell,])
+
+  p.list <- list()
+  for (i in seq_along(along.with = features)) {
+    df.use.all <- df[df$gene == features[i], ]
+    df.use <- df.use.all[df.use.all$expression>geneCutoff,,drop=F]
+    df.rate <- round(100*table(df.use$group)/table(df.use.all$group),1)
+    df.rate <- data.frame(group=names(df.rate),
+                          text=paste0(df.rate,"%"),
+                          xpos=c(Inf),ypos=c(Inf))
+    p <- ggplot(data = df.use, aes(x = expression, y = gene, fill = group)) +
+      geom_violin(size = 1/4) +
+      facet_wrap(~group, ncol = 1, strip.position = "right") +
+      theme_classic() +
+      scale_y_discrete(position = "top") +
+      scale_x_continuous(position = "bottom", limits = c(0, NA)) +
+      geom_text(data=df.rate,aes(xpos,ypos,label=text,color=group),
+                hjust="right",vjust="top",size=fontsize-7)+
+      theme(
+        axis.text.y = element_blank(),
+        axis.text.x = element_text(size = fontsize),
+        axis.title.x = element_blank(),
+        strip.background = element_blank(),
+        strip.text.y = element_blank(),
+        legend.position = "none"
+      )
+    if (!is.null(x = levels.use)) {
+      p <- p + scale_fill_manual(values = colors_all)
+    }
+    p.list[[i]] <- p
+  }
+  p <- patchwork::wrap_plots(p.list, ncol = length(x = p.list))
+  return(p)
+}
+customBigwigTrack <- function(strBW,region,fontsize) {
     namePos <- data.frame(xpos=c(-Inf),ypos=c(Inf),text="",stringsAsFactors=F)
     nameBW <- setNames(sapply(strBW,function(x)return(trimws(gsub("\\.bw$","",basename(x))))),
                        strBW)
     bwCol <- setNames(gg_color_hue(length(strBW)),strBW)
 
-    AllPlots <- list()
-    yLim <- 0
-    yLab <- setNames(rep("",length(strBW)),strBW)
-    yLab[round(length(yLab)/2)] <- "Coverage"
-    for(one in strBW){
-        namePos[1,"text"] <- nameBW[one]
-        p <- BigwigTrack(region,one,y_label=yLab[one])+
-            geom_area(fill=bwCol[one])+
-            geom_text(data=namePos,aes(xpos,ypos,label=text),
-                      hjust="left",vjust="top",
-                      size=fontsize,color=bwCol[one])
-        yLim <- max(c(yLim,layer_scales(p)$y$get_limits()))
-        AllPlots <- c(AllPlots,list(p))
+    # each bigwig a plot -----
+    if(F){
+      AllPlots <- list()
+      yLim <- 0
+      yLab <- setNames(rep("",length(strBW)),strBW)
+      yLab[round(length(yLab)/2)] <- "Coverage"
+      for(one in strBW){
+          namePos[1,"text"] <- nameBW[one]
+          p <- BigwigTrack(region,one,y_label=yLab[one])+
+              geom_area(fill=bwCol[one])+
+              geom_text(data=namePos,aes(xpos,ypos,label=text),
+                        hjust="left",vjust="top",
+                        size=fontsize-4,color=bwCol[one])
+          yLim <- max(c(yLim,layer_scales(p)$y$get_limits()))
+          AllPlots <- c(AllPlots,list(p))
+      }
+      yLim <- round(ceiling(yLim/10))*10
+      for(i in 1:length(AllPlots)){
+          AllPlots[[i]] <- AllPlots[[i]]+
+              scale_y_continuous(limits=c(0,yLim*1.05),breaks=c(0,yLim))+
+              ##theme_classic()+
+              theme(plot.margin=margin(0,0,0,0,"inches"),
+                    axis.text.y=element_text(face="italic"),
+                    axis.title.y=element_text(size=fontsize))
+      }
     }
-    yLim <- round(ceiling(yLim/10))*10
-    for(i in 1:length(AllPlots)){
-        AllPlots[[i]] <- AllPlots[[i]]+
-            scale_y_continuous(limits=c(0,yLim*1.05),breaks=c(0,yLim))+
-            ##theme_classic()+
-            theme(plot.margin=margin(0,0,0,0,"inches"),
-                  axis.text.y=element_text(face="italic"),
-                  axis.title.y=element_text(size=yLabSize))
+    ## all bigwig in one plot -------
+    if(T){
+      coverages <- c()
+      for(one in strBW){
+        oneWig <- getBigwigCoverage(region,one)
+        coverages <- rbind(coverages,cbind(oneWig,group=basename(one)))
+      }
+      bwCol <- setNames(gg_color_hue(length(strBW)),basename(strBW))
+      xlabel <- paste0(as.character(x = GenomicRanges::seqnames(x = region)), " position (bp)")
+      AllPlots <- list(customCoverageTrack(coverages,xlabel,bwCol,fontsize=fontsize))
     }
     return(AllPlots)
 }
-customAnnotationPlot <- function(annotation, region, yLabSize) {
+getBigwigCoverage <- function(region,bigwig,smooth = 200,max.downsample = 3000,downsample.rate = 0.1) {
+    if (.Platform$OS.type == "windows") {
+        message("BigwigTrack not supported on Windows")
+        return(NULL)
+    }
+    if (!requireNamespace("rtracklayer", quietly = TRUE)) {
+        message("Please install rtracklayer. http://www.bioconductor.org/packages/rtracklayer/")
+        return(NULL)
+    }
+    if (!inherits(x = region, what = "GRanges")) {
+        stop("region should be a GRanges object")
+    }
+    region_data <- rtracklayer::import(
+        con = bigwig,
+        which = region,
+        as = "NumericList"
+    )[[1]]
+    if (!is.null(x = smooth)) {
+        region_data <- RcppRoll::roll_mean(x = region_data, n = smooth, fill = 0L)
+    }
+    region_data <- data.frame(
+        position = start(x = region):end(x = region),
+        coverage = region_data,
+        stringsAsFactors = FALSE
+    )
+    window.size = width(x = region)
+    sampling <- min(max.downsample, window.size * downsample.rate)
+    coverages <- dplyr::slice_sample(.data = region_data, n = sampling)
+    return(coverages)
+}
+customCoverageTrack <- function(coverages,xlabel,colors_all=NULL,fontsize=12,region.highlight = NULL) {
+  bwName <- levels(coverages$group)
+  bwName <- data.frame(xpos=c(-Inf),ypos=c(Inf),text=paste0(" ",gsub("\\.bw$","",bwName)),group=bwName)
+  yMax <- round(ceiling(max(coverages$coverage)/10))*10
+  p <- ggplot(
+    data = coverages,
+    mapping = aes(x = position, y = coverage, fill = group)
+  ) +
+    geom_area(stat = "identity") +
+    geom_hline(yintercept = 0, size = 0.1) +
+    facet_wrap(facets = ~group, strip.position = "left", ncol = 1) +
+    xlab(label = xlabel) +
+    ylab(label = paste0("Normalized accessibility")) +
+    geom_text(data=bwName,aes(xpos,ypos,label=text,color=group),
+              hjust="left",vjust="top",size=fontsize-7)+
+    theme_browser(legend = FALSE) +
+    scale_y_continuous(limits=c(0,yMax*1.05),breaks=c(yMax))+
+    theme(panel.spacing.y = unit(x = 0, units = "line"),
+          axis.text.y=element_text(face="italic"),
+          axis.title.y=element_text(size=fontsize),
+          strip.text.y.left=element_blank(),
+          strip.background = element_blank(),
+          legend.position="none")
+  if (!is.null(colors_all)) {
+    p <- p + scale_fill_manual(values = colors_all) +
+              scale_color_manual(values = colors_all)
+  }
+  if (!is.null(x = region.highlight)) {
+    if (!inherits(x = region.highlight, what = "GRanges")) {
+      warning("region.highlight must be a GRanges object")
+    } else {
+      md <- mcols(x = region.highlight)
+      if ("color" %in% colnames(x = md)) {
+        color.use <- md$color
+      } else {
+        color.use <- rep(x = "grey", length(x = region.highlight))
+      }
+      df <- data.frame(
+        "start" = start(x = region.highlight),
+        "end" = end(x = region.highlight),
+        "color" = color.use
+      )
+      df$start <- ifelse(
+        test = df$start < start.pos,
+        yes = start.pos,
+        no = df$start
+      )
+      df$end <- ifelse(
+        test = df$end > end.pos,
+        yes = end.pos,
+        no = df$end
+      )
+      p <- p +
+        geom_rect(
+          data = df,
+          inherit.aes = FALSE,
+          aes_string(
+            xmin = "start",
+            xmax = "end",
+            ymin = 0,
+            ymax = ymax),
+          fill = rep(x = df$color, length(x = unique(x = coverages$group))),
+          color = "transparent",
+          alpha = 0.2
+        )
+    }
+  }
+  return(p)
+}
+
+customAnnotationPlot <- function(annotation, region, fontsize) {
     if (is.null(x = annotation)) {
         return(NULL)
     }
@@ -271,12 +444,12 @@ customAnnotationPlot <- function(annotation, region, yLabSize) {
         theme(
             axis.ticks.y = element_blank(),
             axis.text.y = element_blank(),
-            axis.title=element_text(size=yLabSize)
+            axis.title=element_text(size=fontsize)
         ) +
         scale_color_manual(values = c("darkblue", "darkgreen"))
     return(p)
 }
-customPeakPlot <- function(peaks,region,yLabSize,group.by = NULL,color = "dimgrey") {
+customPeakPlot <- function(peaks,region,fontsize,group.by = NULL,color = "dimgrey") {
     if (!inherits(x = region, what = "GRanges")) {
         region <- StringToGRanges(regions = region)
     }
@@ -314,7 +487,7 @@ customPeakPlot <- function(peaks,region,yLabSize,group.by = NULL,color = "dimgre
         ylab(label = "Peaks") +
         theme(axis.ticks.y = element_blank(),
               axis.text.y = element_blank(),
-              axis.title=element_text(size=yLabSize)) +
+              axis.title=element_text(size=fontsize)) +
         xlab(label = paste0(chromosome, " position (bp)")) +
         xlim(c(start.pos, end.pos))
     if (is.null(x = group.by)) {
@@ -325,7 +498,7 @@ customPeakPlot <- function(peaks,region,yLabSize,group.by = NULL,color = "dimgre
     }
     return(peak.plot)
 }
-customLinkPlot <- function(links,region, yLabSize, object=NULL, min.cutoff = 0) {
+customLinkPlot <- function(links,region, fontsize, object=NULL, min.cutoff = 0) {
     if (!inherits(x = region, what = "GRanges")) {
         region <- StringToGRanges(regions = region)
     }
@@ -376,7 +549,7 @@ customLinkPlot <- function(links,region, yLabSize, object=NULL, min.cutoff = 0) 
         theme_classic() +
         theme(axis.ticks.y = element_blank(),
               axis.text.y = element_blank(),
-              axis.title.y=element_text(size=yLabSize)) +
+              axis.title.y=element_text(size=fontsize)) +
         ylab("Links") +
         xlab(label = paste0(chromosome, " position (bp)")) +
         xlim(c(IRanges::start(x = region), IRanges::end(x = region)))
@@ -480,12 +653,14 @@ CombineTracks <- function(plotlist,expression.plot = NULL,heights = NULL,widths 
             patchwork::plot_layout(widths = widths)
 
         n <- length(x = plotlist)
-        heights.2 <- heights[2:n]
-        p2 <- patchwork::wrap_plots(plotlist[2:n], ncol = 1, heights = heights.2)
+        if(n>1){
+          heights.2 <- heights[2:n]
+          p2 <- patchwork::wrap_plots(plotlist[2:n], ncol = 1, heights = heights.2)
 
-        p <- p + p2 + patchwork::guide_area() + patchwork::plot_layout(
-            ncol = 2, heights = c(heights[[1]], sum(heights.2)),
-            guides = "collect")
+          p <- p + p2 + patchwork::guide_area() + patchwork::plot_layout(
+              ncol = 2, heights = c(heights[[1]], sum(heights.2)),
+              guides = "collect")
+        }
     } else {
         p <- patchwork::wrap_plots(plotlist, ncol = 1, heights = heights)
     }
