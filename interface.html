@@ -2864,7 +2864,7 @@ function IMGset(){
   window.figOpt['fontsize'] = Math.max($('#IMGfontsize').val(),$('#IMGfontsize').prop('min'));
   window.figOpt['vectorFriendly'] = $("input[name='IMGvector']:checked").val();
   window.figOpt['transparent'] = $("input[name='IMGtransparent']:checked").val();
-  window.figOpt['scanpybranch'] = $("input[name='IMGscanpybranch']:checked").val();
+  window.figOpt['scanpybranch'] = 'split_show'; //$("input[name='IMGscanpybranch']:checked").val();
   window.figOpt['colorMap'] = $('#IMGcolor').val() + ($('#IMGcolor_r').prop('checked')?'_r':'');
 console.log(window.figOpt['colorMap']);
   //IMGref();
