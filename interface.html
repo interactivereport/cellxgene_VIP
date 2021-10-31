@@ -710,7 +710,8 @@
             <label><input class="SGVcomparecell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
           </p>
           <p>Choose a gene ('Add Genes' first): <select id="SGVcomparegene"></select></p>
-          <p>Expression cutoff: <input id="SGVcomparecutoff" type="number" step="0.1" value="1" min="0"/></p>
+          <p>Expression cutoff (for cell filtering): <input id="SGVcompareCellcutoff" type="number" step="0.01" value="0.01" min="0"/></p>
+          <p>Expression cutoff (for percentage calculation): <input id="SGVcomparecutoff" type="number" step="0.1" value="1" min="0"/></p>
           <p>Group by:
           <select id="SGVcompareorder"></select></p>
           <p>Sub-group by:
@@ -3542,6 +3543,7 @@ function SGVcompareplot(){
             'grp':grp,
             'abb':window.bioAbbr,
             'cutoff':$("#SGVcomparecutoff").val(),
+            'cellCutoff':$("#SGVcompareCellcutoff").val(),
             //'combine':combGrp,
             //'combineOrder':combGrpOrder,
             'figOpt':window.figOpt};

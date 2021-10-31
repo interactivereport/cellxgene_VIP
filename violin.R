@@ -153,7 +153,7 @@ dpi <- as.numeric(args[5])
 ## process
 mtable <- read.csv(strCSV,check.names=F)
 ## remove 0 on the violin plot
-mtable <- mtable[mtable[,1]>0,]
+#mtable <- mtable[mtable[,1]>=expCut,]
 
 g <- violinPlot(mtable,expCut)
 ## plot
