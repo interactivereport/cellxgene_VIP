@@ -231,7 +231,6 @@ pbmc <- LinkPeaks(
   object = pbmc,
   peak.assay = "peaks",
   expression.assay = "SCT",
-  genes.use = c("LYZ", "MS4A1")
 )
 ```
 
