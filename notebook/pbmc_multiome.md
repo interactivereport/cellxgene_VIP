@@ -1,7 +1,7 @@
 PBMC10k\_multiome data prepare for cellxgene VIP
 ================
 
-Following code is based on from
+Following code is based on
 <https://satijalab.org/signac/articles/pbmc_multiomic.html>
 
 ``` r
