@@ -263,7 +263,7 @@ data = sc.read_h5ad("../pbmc10k_multiome.h5ad")
 data.obs['CellType'].unique()
 rename_annotation ={"CD4 Naive": "CD4.Naive", 
                     "CD4 TCM" : "CD4.TCM", 
-                    "CD4 CTL" : "CD4.CTL, 
+                    "CD4 CTL" : "CD4.CTL", 
                     "CD4 TEM" : "CD4.TEM", 
                     "CD4 Proliferating" : "CD4.Proliferating",
                     "CD8 Naive" : "CD8.Naive", 
