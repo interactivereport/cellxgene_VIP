@@ -290,7 +290,7 @@ for i, line in enumeratate(df):
 df.to_csv('../pbmc10k_celltype.txt', header=None, sep ="\t", mode='a')
 ```
 
-Big wig file generation
+BIGWIG file generation
 
 Python package requirement
 
