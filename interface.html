@@ -1574,8 +1574,8 @@
       <button class="CLIbt"  onclick="CLIplot()"><b>Run</b></button>
       <button class="CLIbt"  onclick="editor.getSession().setValue('')">Clear</button>
       <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode1').text().trim());">Vignette 1</button>
-      <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode2').text().trim());">Vignette 2</button>
-      <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode3').text().trim());">Vignette 3</button>
+      <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode2').text().trim());selectByCelltype('T cells');">Vignette 2</button>
+      <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode3').text().trim());selectByCelltype('T cells');">Vignette 3</button>
       <button onclick="hideShow($('#CLIhelp'),$(this),'Help');">Show Help</button>
       <button onclick="hideShow($('#CLIinput'),$(this));">Hide Input</button>
       <button id="printNotebook" onclick="printNotebook();">Print Notebook</button>
@@ -2290,6 +2290,27 @@ function ADDGref(){
 }
 function GDref(){
 }
+
+function selectByCelltype(celltype) {
+  var selectionMap = new Map();
+  var categories = window.store.getState().annoMatrix.schema.annotations.obsByName['cell_type'].categories;
+  for (var j=0;j<categories.length; j++) {
+    if (categories[j] == celltype) { 
+      selectionMap.set(categories[j], true);
+    } else {
+      selectionMap.set(categories[j], false);
+    }
+  }
+  window.store.dispatch({type: "categorical metadata filter all of these", obsCrossfilter: window.store.getState().obsCrossfilter, metadataField: 'cell_type', labelSelectionState: selectionMap});
+  /* The selection is a promise, an asynchronous operation */
+  window.store.getState().obsCrossfilter.select("obs","cell_type",{mode:"none"}).then(function(response) {
+    console.log(response.obsCrossfilter);
+    window.store.getState().obsCrossfilter.obsCrossfilter = response.obsCrossfilter.select("obs/cell_type",{mode:"exact", values:celltype});
+    window.store.dispatch({type: "store current cell selection as differential set 1", data:window.store.getState().obsCrossfilter.allSelectedLabels()});
+    window.store.dispatch({type: "store current cell selection as differential set 2", data:null});
+  });
+}
+
 function addCustomCombine(element) {
   var x = document.getElementById(element);
   //var grps = Object.keys(window.store.getState().categoricalSelection).filter(function(e) { return !(e.startsWith('>') || e.startsWith('|')) });
