@@ -8,11 +8,11 @@ def parseArgs(argv):
     try:
         opts, args = getopt.getopt(argv,"d:hi:o:s:",["input=","dimension=","output=","size="])
     except getopt.GetoptError:
-        print('Usage: st_sample_merge.py -i <inputfile of data folders> -o <outputfile> [-d <grid dimention>] [-s <grid cell size>]')
+        print('Usage: st_sample_merge.py -i <inputfile of data folders> -o <outputfile> [-d <grid dimension>] [-s <grid cell size>]')
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print('Usage: st_sample_merge.py -i <inputfile of data folders> -o <outputfile> [-d <grid dimention>] [-s <grid cell size>]')
+            print('Usage: st_sample_merge.py -i <inputfile of data folders> -o <outputfile> [-d <grid dimension>] [-s <grid cell size>]')
             sys.exit()
         elif opt in ("-i", "--input"):
             inputfile = arg
@@ -23,7 +23,7 @@ def parseArgs(argv):
         elif opt in ("-s", "--size"):
             size = int(arg)
     if inputfile == '':
-        print('Usage: st_sample_merge.py -i <inputfile of data folders> -o <outputfile> [-d <grid dimention>] [-s <grid cell size>]')
+        print('Usage: st_sample_merge.py -i <inputfile of data folders> -o <outputfile> [-d <grid dimension>] [-s <grid cell size>]')
         sys.exit()
     return(inputfile, outputfile, dim, size)
 
