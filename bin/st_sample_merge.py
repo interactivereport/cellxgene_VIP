@@ -123,22 +123,27 @@ spatial=adata_merge.uns["spatial"]
 
 import math
 if dim=='':
-    height = math.ceil(math.sqrt(len(samples)))
-    width = math.ceil(len(samples)/height)
+    column = math.ceil(math.sqrt(len(samples)))
+    row = math.ceil(len(samples)/column)
 else:
-    width,height = dim.split('x')
+    row,column = map(int, dim.split('x'))
 
 idx = 0
-#creates a new empty image, RGB mode, and size 1400 by 1400.
-new_im = Image.new('RGB', (size*width,size*height))
-for i in range(0,size*width,size):
-    for j in range(0,size*height,size):
+#creates a new empty image, RGB mode, and dimension size*row by size*column.
+new_im = Image.new('RGB', (size*column,size*row))
+
+for i in range(0,size*row,size):
+    for j in range(0,size*column,size):
         # load the image from the object
         #im = Image.fromarray((spatial["spatial_V1_"+samples[idx]]["images"]["lowres"]* 255).round().astype(np.uint8)) # found a solution to covert float32 to unit8
         im = Image.fromarray((spatial["spatial_"+samples[idx]]["images"]["lowres"]* 255).round().astype(np.uint8)) # found a solution to covert float32 to unit8
         # paste images together
         new_im.paste(im, (j,i))
         idx = idx+1
+        if (idx >= len(samples)):
+            break;
+    if (idx >= len(samples)):
+        break;
 #new_im
 
 
@@ -155,8 +160,8 @@ adata_merge.uns['spatial']['spatial_Merged']['scalefactors']['tissue_hires_scale
 
 idx = 0
 adata_merge.obsm['X_spatial_Merged'] = adata_merge.obsm['spatial']
-for i in range(0,size*width,size):
-    for j in range(0,size*height,size):
+for i in range(0,size*row,size):
+    for j in range(0,size*column,size):
         #library_id='spatial_V1_'+samples[idx] # parse the string and get the sample id
         library_id='spatial_'+samples[idx] # parse the string and get the sample id
         print(library_id)
@@ -165,6 +170,10 @@ for i in range(0,size*width,size):
         adata_merge.obsm['X_spatial_Merged'][np.where(adata_merge.obs['sample']==str(idx)),1] = adatals[idx].obsm['spatial'][:,1]*tissue_lowres_scalef - i
         adata_merge.obsm['X_spatial_Merged'][np.where(adata_merge.obs['sample']==str(idx)),0] = adatals[idx].obsm['spatial'][:,0]*tissue_lowres_scalef + j
         idx = idx+1    
+        if (idx >= len(samples)):
+            break;
+    if (idx >= len(samples)):
+        break;
 
 ## plotting out how the image and coordinates look
 ## note, in python the image and coordinates are NOT overlapping, but when load in cellxgene VIP, they would. It is because cellxgene adopts computer coordinates
