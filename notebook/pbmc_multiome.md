@@ -1,6 +1,14 @@
 PBMC10k\_multiome data prepare for cellxgene VIP
 ================
 
+To generate a multiome instance in cellxgene VIP, three items are required. You can generate them by following this notebook.
+
++ One h5ad file. Please follows **part 1**.
++ Three .rds file (annotation.rds, links.rds, peaks.rds). Please follows **part 1**.
++ bigwig files (.bw files) and one index file (named bw.cluster). Please follows **part 2**.
+
+
+## Part 1 
 Following R code is based on
 <https://satijalab.org/signac/articles/pbmc_multiomic.html>
 
@@ -252,7 +260,7 @@ saveRDS(Links(pbmc[["peaks"]], file='links.rds'))
 SaveH5Seurat(pbmc, filename='pbmc10k_multiome.h5Seurat')
 Convert('pbmc10k_multiome.h5Seurat', dest='h5ad')
 ```
-
+## Part 2
 Generate celltype.txt for bam splitting (In Python)
 
 ``` python
@@ -332,3 +340,11 @@ ls *bw | sed -e 's/\.bam$//' > bw.cluster_c2
 sed -i 's/./ /g' bw.cluster_c2
 paste bw.cluster_c1 bw.cluster_c2 > bw.cluster
 ```
+Example output of bw.cluster:
+CellType  | |
+------------- | -------------
+ASDC.bw  | ASDC
+B.intermediate.bw | B intermediate
+B.memory.bw | B memory
+B.naive.bw  | B naive
+
