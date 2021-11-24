@@ -2146,6 +2146,9 @@ function init(){
         }
         if ( (action.type.includes("resize") || action.type.includes("zoom"))) {
 		}
+        if (action.type.includes("set layout choice")) {
+          if (document.getElementById('spatial-layer') != null) document.getElementById('spatial-layer').remove();
+		}
       }
     });
 
@@ -3167,6 +3170,7 @@ function SPATIAL(){
       var mtx = document.getElementById("camera-transformation-group").getCTM();
       var trans = 'translate(' +document.getElementById("graph-wrapper").offsetParent.offsetLeft+ ',0) matrix('+mtx.a+','+mtx.b+','+mtx.c+','+mtx.d+','+mtx.e+','+mtx.f+')';
       $("body").append('<svg id="spatial-layer" width="' +element.attributes.width.value+ '" height="' +element.attributes.height.value+ '" pointer-events="none" style="position:relative;opacity:0.75;z-index:0"><g id="spatial-transform-layer" transform="' +trans+ '"><g id="spatial-image-layer" transform="translate(' +resD[0][0].translatex+ ',' +resD[0][0].translatey+ ')"><image transform="matrix(' +scale+ ',0,0,-' +scale+ ',0,0)" href="data:image/png;base64,' +resD[1]+ '"></image></g></g></svg>');
+      window.store.dispatch({type: 'change graph interaction mode', data: 'zoom'});
     },
     error: function(request,status,error){
       $('#SPATIALnote').text(request.status+request.responseText);
