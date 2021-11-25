@@ -1429,7 +1429,7 @@
           </Blockquote>
         </div>
       </div>
-      <p>Width of the central canvas of main window in pixel: <input id=canvasWidth name=canvasWidth size=8>&nbsp;&nbsp;<button onclick="$('.container div')[0].children[1].style.width=$('#canvasWidth').val()+'px';">Apply</button>
+      <p>Width of the central canvas of main window in pixel: <input id=canvasWidth name=canvasWidth value=1024 size=4>&nbsp;&nbsp;<button onclick="$('.container div')[0].children[1].style.width=$('#canvasWidth').val()+'px';window.dispatchEvent(new Event('resize'));">Apply</button>
       <p>Figure DPI (Dots Per Inch):
       <select id="IMGdpi" onchange="IMGset()">
         <option value=150>150</option>
@@ -2182,6 +2182,8 @@ function init(){
       subtree: true,
       attributeOldValue: true
     });
+    // Click on "cellxgene" at the top-left corner to issue 'resize' event, so out-of-window VIP window will be back
+    $(".container div div div div div span")[0].onclick = function () {window.dispatchEvent(new Event('resize'));}
 
     console.log("VIP (Visualization in Plugin) is ready on client side.");
 
