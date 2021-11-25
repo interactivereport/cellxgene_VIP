@@ -538,7 +538,7 @@
       <button class="tablinks" onclick="selFun(event, 'SGV');defaultTopSel('SGV','SGVsingle')">Violin</button>
       <button class="tablinks" onclick="selFun(event, 'PGV')">Stacked Violin</button>
       <button class="tablinks" onclick="selFun(event, 'HEAT')">Heatmap</button>
-      <button class="tablinks" onclick="selFun(event, 'EMBED')">UMAP/tSNE</button>
+      <button class="tablinks" onclick="selFun(event, 'EMBED')">Embedding Plot</button>
       <button class="tablinks" onclick="selFun(event, 'DOT')">Dot Plot</button>
       <button class="tablinks" onclick="selFun(event, 'TRAK')">Track Plot</button>
       <button class="tablinks" onclick="selFun(event, 'DENS')">Density Plot</button>
@@ -1458,7 +1458,7 @@
         <input type="radio" name="IMGscanpybranch" value="split_show" onclick="IMGset()" checked>split_show
       </p>
       -->
-      <p>Colormap of UMAP/tSNE, Density Scatter (limited to top 4 colormaps):
+      <p>Colormap of Embedding Plot (all available), Density Scatter (limited to top 4 colormaps):
       <select id="IMGcolor" onchange="IMGset()">
         <option value='viridis'>viridis</option>
         <option value='plasma'>plasma</option>
