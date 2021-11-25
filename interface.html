@@ -550,7 +550,7 @@
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1')">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
-      <button id="browserBT" class="tablinks" onclick="selFun(event, 'BROW')" style="display: none;">Browser Tracks</button>
+      <button id="browserBT" class="tablinks" onclick="selFun(event, 'BROW')" style="display: none;">Multiome</button>
       <button class="tablinks" onclick="selFun(event, 'SPATIAL');defaultTopSel('SPATIAL','SPATIALimage')">Spatial Transcriptomics</button>
       <button class="tablinks" onclick="selFun(event, 'CLI')">Command Line Interface</button>
       <button id="metaCellBT" class="tablinks colorButton" onclick="metaSel()" style="display: none;">Show MetaCell</button>
@@ -1363,7 +1363,7 @@
 
     <div id='BROW' class='tabcontent'>
       <div id="BROWinput">
-        <h3>Browser track plot for ATAC based on bigwig</h3>
+        <h3>Jointly visualizing gene expression and DNA accessibility</h3>
         <fieldset>
           <div id="BROWinfo"></div>
         </fieldset>
@@ -1429,6 +1429,7 @@
           </Blockquote>
         </div>
       </div>
+      <p>Width of the central canvas of main window in pixel: <input id=canvasWidth name=canvasWidth size=8>&nbsp;&nbsp;<button onclick="$('.container div')[0].children[1].style.width=$('#canvasWidth').val()+'px';">Apply</button>
       <p>Figure DPI (Dots Per Inch):
       <select id="IMGdpi" onchange="IMGset()">
         <option value=150>150</option>
