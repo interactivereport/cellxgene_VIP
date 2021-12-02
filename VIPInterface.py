@@ -2,7 +2,6 @@ import requests
 import json
 import traceback
 import sqlite3
-import server.app.decode_fbs as decode_fbs
 import scanpy as sc
 import anndata as ad
 import pandas as pd
@@ -30,7 +29,7 @@ strExePath = os.path.dirname(os.path.abspath(__file__))
 import pprint
 ppr = pprint.PrettyPrinter(depth=6)
 
-import server.compute.diffexp_generic as diffDefault
+import server.common.compute.diffexp_generic as diffDefault
 import pickle
 from pyarrow import feather
 
@@ -72,22 +71,18 @@ def initialization(data,appConfig):
   data.update(VIPenv)
 
   # updatting the hosting data information
-  if appConfig.is_multi_dataset():
-    data["url_dataroot"]=appConfig.server_config.multi_dataset__dataroot['d']['base_url']
-    data['h5ad']=os.path.join(appConfig.server_config.multi_dataset__dataroot['d']['dataroot'], data["dataset"])
-  else:
-    data["url_dataroot"]=None
-    data["dataset"]=None
-    data['h5ad']=appConfig.server_config.single_dataset__datapath
+  data["url_dataroot"]=None
+  data["dataset"]=None
+  data['h5ad']=appConfig.server_config.single_dataset__datapath
 
   # setting the plotting options
   if 'figOpt' in data.keys():
     setFigureOpt(data['figOpt'])
 
   # get the var (gene) and obv index
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-    data['obs_index'] = scD.get_schema()["annotations"]["obs"]["index"]
-    data['var_index'] = scD.get_schema()["annotations"]["var"]["index"]
+  scD = app.current_app.app_config.dataset_config.get_data_adaptor() 
+  data['obs_index'] = scD.get_schema()["annotations"]["obs"]["index"]
+  data['var_index'] = scD.get_schema()["annotations"]["var"]["index"]
   return data
 
 def setFigureOpt(opt):
@@ -98,24 +93,24 @@ def getObs(data):
   selC = list(data['cells'].values())
   cNames = ["cell%d" %i for i in selC]
   ## obtain the category annotation
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-    selAnno = [data['obs_index']]+data['grp']
-    dAnno = list(scD.get_obs_keys())
-    anno = []
-    sel = list(set(selAnno)&set(dAnno))
-    if len(sel)>0:
-      tmp = scD.data.obs.loc[selC,sel].astype('str')
+  scD = app.current_app.app_config.dataset_config.get_data_adaptor()
+  selAnno = [data['obs_index']]+data['grp']
+  dAnno = list(scD.get_obs_keys())
+  anno = []
+  sel = list(set(selAnno)&set(dAnno))
+  if len(sel)>0:
+    tmp = scD.data.obs.loc[selC,sel].astype('str')
+    tmp.index = cNames
+    anno += [tmp]
+  sel = list(set(selAnno)-set(dAnno))
+  if len(sel)>0:
+    annotations = scD.dataset_config.user_annotations
+    if annotations:
+      labels = annotations.read_labels(scD)
+      tmp = labels.loc[list(scD.data.obs.loc[selC,data['obs_index']]),sel]
       tmp.index = cNames
       anno += [tmp]
-    sel = list(set(selAnno)-set(dAnno))
-    if len(sel)>0:
-      annotations = scD.dataset_config.user_annotations
-      if annotations:
-        labels = annotations.read_labels(scD)
-        tmp = labels.loc[list(scD.data.obs.loc[selC,data['obs_index']]),sel]
-        tmp.index = cNames
-        anno += [tmp]
-    obs = pd.concat(anno,axis=1)
+  obs = pd.concat(anno,axis=1)
   #ppr.pprint(obs)
   ## update the annotation Abbreviation
   combUpdate = cleanAbbr(data)
@@ -129,19 +124,19 @@ def getObsNum(data):
   cNames = ["cell%d" %i for i in selC]
   ## obtain the category annotation
   obs = pd.DataFrame()
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-    selAnno = data['grpNum']
-    dAnno = list(scD.get_obs_keys())
-    sel = list(set(selAnno)&set(dAnno))
-    if len(sel)>0:
-      obs = scD.data.obs.loc[selC,sel]
-      obs.index = cNames
+  scD = app.current_app.app_config.dataset_config.get_data_adaptor()
+  selAnno = data['grpNum']
+  dAnno = list(scD.get_obs_keys())
+  sel = list(set(selAnno)&set(dAnno))
+  if len(sel)>0:
+    obs = scD.data.obs.loc[selC,sel]
+    obs.index = cNames
   return obs
 
 def getVar(data):
   ## obtain the gene annotation
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-    gInfo = scD.data.var
+  scD = app.current_app.app_config.dataset_config.get_data_adaptor()
+  gInfo = scD.data.var
   gInfo.index = list(gInfo[data['var_index']])
   gInfo = gInfo.drop([data['var_index']],axis=1)
   return gInfo
@@ -175,17 +170,17 @@ def createData(data):
   fSparse = False
   X = []
   if 'genes' in data.keys():
-    with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-      if not type(scD.data.X) is np.ndarray:
-        fSparse = True
-      if len(data['genes'])>0:
-        fullG = list(scD.data.var[data['var_index']])
-        selG = sorted([fullG.index(i) for i in data['genes']]) #when data loaded backed, incremental is required
-        X = scD.data.X[:,selG]
-        gNames = [fullG[i] for i in selG] #data['genes']
-      else:
-        X = scD.data.X
-        gNames = list(scD.data.var[data['var_index']])
+    scD = app.current_app.app_config.dataset_config.get_data_adaptor()
+    if not type(scD.data.X) is np.ndarray:
+      fSparse = True
+    if len(data['genes'])>0:
+      fullG = list(scD.data.var[data['var_index']])
+      selG = sorted([fullG.index(i) for i in data['genes']]) #when data loaded backed, incremental is required
+      X = scD.data.X[:,selG]
+      gNames = [fullG[i] for i in selG] #data['genes']
+    else:
+      X = scD.data.X
+      gNames = list(scD.data.var[data['var_index']])
     if 'figOpt' in data.keys() and data['figOpt']['scale'] == 'Yes':
       X = sc.pp.scale(X,zero_center=(data['figOpt']['scaleZero'] == 'Yes'),max_value=(float(data['figOpt']['scaleMax']) if data['figOpt']['clipValue']=='Yes' else None))
     X = X[selC]
@@ -204,8 +199,8 @@ def createData(data):
       layout = [layout]
     if len(layout)>0:
       for one in layout:
-        with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-          embed['X_%s'%one] = pd.DataFrame(scD.data.obsm['X_%s'%one][selC][:,[0,1]],columns=['%s1'%one,'%s2'%one],index=cNames)
+        scD = app.current_app.app_config.dataset_config.get_data_adaptor()
+        embed['X_%s'%one] = pd.DataFrame(scD.data.obsm['X_%s'%one][selC][:,[0,1]],columns=['%s1'%one,'%s2'%one],index=cNames)
   #ppr.pprint("finished layout ...")
   ## obtain the category annotation
   combUpdate, obs = getObs(data)
@@ -316,69 +311,69 @@ def Msg(msg):
   return iostreamFig(fig)
 
 def SPATIAL(data):
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-    #ppr.pprint(vars(scD.data.uns["spatial"]))
-    spatial=scD.data.uns["spatial"]
-    if (data['embedding'] == "get_spatial_list"):
-      return json.dumps({'list':list(spatial)})
-    library_id=list(spatial)[0]
-    if (data['embedding'] in list(spatial)):
-      library_id=data['embedding']
+  scD = app.current_app.app_config.dataset_config.get_data_adaptor()
+  #ppr.pprint(vars(scD.data.uns["spatial"]))
+  spatial=scD.data.uns["spatial"]
+  if (data['embedding'] == "get_spatial_list"):
+    return json.dumps({'list':list(spatial)})
+  library_id=list(spatial)[0]
+  if (data['embedding'] in list(spatial)):
+    library_id=data['embedding']
 
-    height, width, depth = spatial[library_id]["images"][data['resolution']].shape
+  height, width, depth = spatial[library_id]["images"][data['resolution']].shape
 
-    embedding = 'X_'+data['embedding']
-    spatialxy = scD.data.obsm[embedding]
-    tissue_scalef = spatial[library_id]['scalefactors']['tissue_' + data['resolution'] + '_scalef']
-    i = data['spots']['spoti_i']
-    x = 0
-    y = 1
-    # from original embedding to (0,1) coordinate system (cellxgene embedding)
-    scalex = (data['spots']['spot0_x'] - data['spots']['spoti_x']) / (spatialxy[0][x] - spatialxy[i][x])
-    scaley = (data['spots']['spot0_y'] - data['spots']['spoti_y']) / (spatialxy[0][y] - spatialxy[i][y])
+  embedding = 'X_'+data['embedding']
+  spatialxy = scD.data.obsm[embedding]
+  tissue_scalef = spatial[library_id]['scalefactors']['tissue_' + data['resolution'] + '_scalef']
+  i = data['spots']['spoti_i']
+  x = 0
+  y = 1
+  # from original embedding to (0,1) coordinate system (cellxgene embedding)
+  scalex = (data['spots']['spot0_x'] - data['spots']['spoti_x']) / (spatialxy[0][x] - spatialxy[i][x])
+  scaley = (data['spots']['spot0_y'] - data['spots']['spoti_y']) / (spatialxy[0][y] - spatialxy[i][y])
 
-    # image is in (-1,0,1) coordinate system, so multiplied by 2
-    translatex = (spatialxy[i][x]*scalex - data['spots']['spoti_x']) * 2
-    translatey = (spatialxy[i][y]*scaley - data['spots']['spoti_y']) * 2
-    scale = 1/tissue_scalef * scalex * 2
-    # Addtional translate in Y due to flipping of the image if needed
-    ppr.pprint(scalex)
-    ppr.pprint(scaley)
-    ppr.pprint(translatex)
-    ppr.pprint(translatey)
+  # image is in (-1,0,1) coordinate system, so multiplied by 2
+  translatex = (spatialxy[i][x]*scalex - data['spots']['spoti_x']) * 2
+  translatey = (spatialxy[i][y]*scaley - data['spots']['spoti_y']) * 2
+  scale = 1/tissue_scalef * scalex * 2
+  # Addtional translate in Y due to flipping of the image if needed
+  ppr.pprint(scalex)
+  ppr.pprint(scaley)
+  ppr.pprint(translatex)
+  ppr.pprint(translatey)
 
-    # from (-1,0,1) (image layer) to (0,1) coordinate system (cellxgene embedding). Overlapping (0,0) origins of both.
-    translatex = -(1+translatex)
-    if (translatey > -0.1):
-      flip = True
-      translatey = -(1+translatey) + height*scale
-    else:
-      flip = False
-      translatey = -(1+translatey)
+  # from (-1,0,1) (image layer) to (0,1) coordinate system (cellxgene embedding). Overlapping (0,0) origins of both.
+  translatex = -(1+translatex)
+  if (translatey > -0.1):
+    flip = True
+    translatey = -(1+translatey) + height*scale
+  else:
+    flip = False
+    translatey = -(1+translatey)
 
-    returnD = [{'translatex':translatex,'translatey':translatey,'scale':scale}]
+  returnD = [{'translatex':translatex,'translatey':translatey,'scale':scale}]
 
-    dpi=100
-    figsize = width / float(dpi), height / float(dpi)
-    fig = plt.figure(figsize=figsize)
-    ax = fig.add_axes([0, 0, 1, 1])
-    ax.axis('off')
-    if (flip):
-      ax.imshow(np.flipud(spatial[library_id]["images"][data['resolution']]), interpolation='nearest')
-    else:
-      ax.imshow(spatial[library_id]["images"][data['resolution']], interpolation='nearest')
+  dpi=100
+  figsize = width / float(dpi), height / float(dpi)
+  fig = plt.figure(figsize=figsize)
+  ax = fig.add_axes([0, 0, 1, 1])
+  ax.axis('off')
+  if (flip):
+    ax.imshow(np.flipud(spatial[library_id]["images"][data['resolution']]), interpolation='nearest')
+  else:
+    ax.imshow(spatial[library_id]["images"][data['resolution']], interpolation='nearest')
 
-    figD = BytesIO()
-    plt.savefig(figD, dpi=dpi)
-    ppr.pprint(sys.getsizeof(figD))
-    imgD = base64.encodebytes(figD.getvalue()).decode("utf-8")
-    figD.close()
-    plt.close(fig)
+  figD = BytesIO()
+  plt.savefig(figD, dpi=dpi)
+  ppr.pprint(sys.getsizeof(figD))
+  imgD = base64.encodebytes(figD.getvalue()).decode("utf-8")
+  figD.close()
+  plt.close(fig)
   return json.dumps([returnD, imgD])
 
 def MINX(data):
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-    minV = min(scD.data.X[0])
+  scD = app.current_app.app_config.dataset_config.get_data_adaptor()
+  minV = min(scD.data.X[0])
   return '%.1f'%minV
 
 def geneFiltering(adata,cutoff,opt):
@@ -696,9 +691,9 @@ def DEG(data):
   if data['DEmethod']=='default':
     if sum(mask[0]==True)<10 or sum(mask[1]==True)<10:
       raise ValueError('Less than 10 cells in a group!')
-    with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-      res = diffDefault.diffexp_ttest(scD,mask[0].to_numpy(),mask[1].to_numpy(),scD.data.shape[1])# shape[cells as rows, genes as columns]
-      gNames = list(scD.data.var[data['var_index']])
+    scD = app.current_app.app_config.dataset_config.get_data_adaptor()
+    res = diffDefault.diffexp_ttest(scD,mask[0].to_numpy(),mask[1].to_numpy(),scD.data.shape[1])# shape[cells as rows, genes as columns]
+    gNames = list(scD.data.var[data['var_index']])
     deg = pd.DataFrame(res,columns=['gID','log2fc','pval','qval'])
     gName = pd.Series([gNames[i] for i in deg['gID']],name='gene')
     deg = pd.concat([deg,gName],axis=1).loc[:,['gene','log2fc','pval','qval']]
@@ -1391,10 +1386,10 @@ except Exception as e:
 def mergeMeta(data):
   selC = list(data['cells'].values())
   ## obtain the category annotation
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-    if not 'cellN' in scD.data.obs:
-      raise ValueError('This is not a metacell data!')
-    obs = scD.data.obs.loc[selC,[data['obs_index'],'cellN']]
+  scD = app.current_app.app_config.dataset_config.get_data_adaptor()
+  if not 'cellN' in scD.data.obs:
+    raise ValueError('This is not a metacell data!')
+  obs = scD.data.obs.loc[selC,[data['obs_index'],'cellN']]
   ppr.pprint(obs)
   ppr.pprint(obs['cellN'].sum())
   if obs['cellN'].sum() > int(data['METAmax']):
@@ -1410,9 +1405,9 @@ def mergeMeta(data):
   return data['METAurl']+"/d/"+os.path.basename(strOut)+"/"
 
 def isMeta(data):
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-    if not 'cellN' in scD.data.obs:
-      return "FALSE"
+  scD = app.current_app.app_config.dataset_config.get_data_adaptor()
+  if not 'cellN' in scD.data.obs:
+    return "FALSE"
   strPath = re.sub(".h5ad$","",data["h5ad"])
   if not os.path.exists(strPath):
     return "FALSE"
@@ -1444,10 +1439,10 @@ def plotBW(data):
     if os.path.isfile(strType) and len(data['genes'])>0:
         with open(strType,"r") as f:
             grp = f.readline().strip()
-        with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-          dAnno = list(scD.get_obs_keys())
-          if grp in dAnno:
-              grpFlag = True
+        scD = app.current_app.app_config.dataset_config.get_data_adaptor()
+        dAnno = list(scD.get_obs_keys())
+        if grp in dAnno:
+            grpFlag = True
         if grpFlag:
             data['grp'] = [grp]
             adata = createData(data)
