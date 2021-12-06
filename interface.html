@@ -1664,7 +1664,7 @@ function checkLoading(){
     var annoNum = 0;
     var columns = store.getState().annoMatrix.schema.annotations.obs.columns;
     for (var i=0;i<columns.length;i++) {
-      if (columns[i].type === "categorical" && columns[i].categories.length<2) continue;
+      if (columns[i].type === "categorical" && (typeof(columns[i].categories) === 'undefined' || columns[i].categories.length<2)) continue;
       annoNum ++;
     }
 
@@ -2022,7 +2022,9 @@ function init(){
     for(i=0;i<grps.length;i++){
       var one = {}
       for(var j=0;j<grpL[grps[i]].categories.length;j++){
-        one[grpL[grps[i]].categories[j]] = grpL[grps[i]].categories[j].toString();
+        if (typeof(grpL[grps[i]].categories[j]) !== "undefined") {
+          one[grpL[grps[i]].categories[j]] = grpL[grps[i]].categories[j].toString();
+        }
       }
       bioAbbr[grps[i]] = one;
     }
