@@ -2029,7 +2029,7 @@ function init(){
       for(var j=0;j<grpL[grps[i]].categories.length;j++){
         if(grpL[grps[i]].categories[j] == null){
           if(bAlert){
-            alert("VIP does NOT support NaN (numpy.nan) in .obs categories");
+            alert("VIP does NOT support NaN (numpy.nan) in .obs categories, recommend 'NA'");
             bAlert = false;
           }
           one[grpL[grps[i]].categories[j]] = 'null';
