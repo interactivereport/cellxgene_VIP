@@ -1654,23 +1654,27 @@ function printNotebook(){
     mywin.document.write(html);
     mywin.document.close();
 }
-
-function checkLoading(){
+function getAnnoNum(){
+  if(window.annoNum === undefined){
     if(!window.store || !window.store.getState().categoricalSelection || !window.store.getState().annoMatrix._cache.obs.__columns){
-      return false;
+      return -1;
     }
-    if (loadingCycle > 300) return true;
-    //console.log("Loaded Annotation:"+store.getState().annoMatrix._cache.obs.__columns.length);
     var annoNum = 0;
-    var columns = store.getState().annoMatrix.schema.annotations.obs.columns;
-    for (var i=0;i<columns.length;i++) {
-      if (columns[i].type === "categorical" && columns[i].categories.length<2) continue;
+    var bAlert = true;
+    Object.values(store.getState().annoMatrix.schema.annotations.obsByName).forEach(one => {
+      if(one.name==store.getState().annoMatrix.schema.annotations.obs.index) return
+      if(one.type==="categorical" && one.categories.length<2) return;
       annoNum ++;
-    }
-
-    if (Object.keys(store.getState().annoMatrix.schema.annotations.obsByName).includes(store.getState().annoMatrix.schema.annotations.obs.index)) annoNum--;
-    if (Object.keys(store.getState().annoMatrix.schema.annotations.obsByName).includes(">Description")) annoNum--;
-	if (store.getState().annoMatrix._cache.obs.__columns.length < annoNum) {
+    })
+    window.annoNum = annoNum;
+  }
+  return window.annoNum;
+}
+function checkLoading(){
+    var annoNum = getAnnoNum();
+    if(annoNum<0) return false;
+    //if (loadingCycle > 300) return true;
+	  if (store.getState().annoMatrix._cache.obs.__columns.length < annoNum) {
       return false;
     }
     return true;
@@ -2018,11 +2022,20 @@ function init(){
     }
     $('#ABBRgrp').html(htmlCheck);
 
-    var bioAbbr = {}
+    var bioAbbr = {};
+    var bAlert= true;
     for(i=0;i<grps.length;i++){
-      var one = {}
+      var one = {};
       for(var j=0;j<grpL[grps[i]].categories.length;j++){
-        one[grpL[grps[i]].categories[j]] = grpL[grps[i]].categories[j].toString();
+        if(grpL[grps[i]].categories[j] == null){
+          if(bAlert){
+            alert("VIP does NOT support NaN (numpy.nan) in .obs categories");
+            bAlert = false;
+          }
+          one[grpL[grps[i]].categories[j]] = 'null';
+        }else{
+          one[grpL[grps[i]].categories[j]] = grpL[grps[i]].categories[j].toString();
+        }
       }
       bioAbbr[grps[i]] = one;
     }
@@ -2301,7 +2314,7 @@ function selectByCelltype(celltype) {
   var selectionMap = new Map();
   var categories = window.store.getState().annoMatrix.schema.annotations.obsByName['cell_type'].categories;
   for (var j=0;j<categories.length; j++) {
-    if (categories[j] == celltype) { 
+    if (categories[j] == celltype) {
       selectionMap.set(categories[j], true);
     } else {
       selectionMap.set(categories[j], false);
