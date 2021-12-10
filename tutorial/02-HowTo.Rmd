@@ -9,7 +9,7 @@ importantly, cells shown as individual dots are presented in the center panel ba
 embedding and colored by either categorial annotations or continuous variables, which is indicated by
 pressed rain drop icon.
 
-![Cellxgene main window, functional icons and minimized VIP bar next to cellxgene logo](figures/F1A_label.png)
+![Cellxgene main window, functional icons and minimized VIP bar next to cellxgene logo](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F1A_label.png)
 
 ![VIP (Visualization in Plugin) window and controls of user interface. The cursor will change to corresponding icon when mouse hovers over control anchors inside the window. In the case of missing title bar after operation, changing the size of outside browser window (not VIP window) will always bring the VIP window back to the original location near the cellxgene logo](figures/F1B_label.png)
 
