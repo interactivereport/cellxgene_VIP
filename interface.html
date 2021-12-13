@@ -1408,7 +1408,7 @@
       <p>Select cells cumulatively:
         <input type="radio" name="IMGcumuRd" value="Yes" onclick="IMGcellSel()">Yes
         <input type="radio" name="IMGcumuRd" value="No" onclick="IMGcellSel()" checked>No
-        &nbsp;&nbsp;&nbsp;&nbsp;<button onclick="IMGcellClear()">Clear Cell Selections</button></p>
+        &nbsp;&nbsp;&nbsp;&nbsp;<button onclick="IMGcellClear()">Clear Cell Selections</button>&nbsp;<button onclick="selectAllCells()">Select All Cells</button></p>
         <div id='IMGrandomCellDiv'>
         <Blockquote>
           <label>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>&nbsp;&nbsp;|&nbsp;&nbsp;
@@ -1429,7 +1429,7 @@
           </Blockquote>
         </div>
       </div>
-      <p>Width of the central canvas of main window in pixel: <input id=canvasWidth name=canvasWidth value=1024 size=4>&nbsp;&nbsp;<button onclick="$('.container div')[0].children[1].style.width=$('#canvasWidth').val()+'px';window.dispatchEvent(new Event('resize'));">Apply</button>
+      <p>Width of the central canvas of main window in pixel: <input id=canvasWidth name=canvasWidth value=1024 size=4>&nbsp;&nbsp;<button onclick="$('#cellxgene_container div')[0].children[1].style.width=$('#canvasWidth').val()+'px';window.dispatchEvent(new Event('resize'));">Apply</button>
       <p>Figure DPI (Dots Per Inch):
       <select id="IMGdpi" onchange="IMGset()">
         <option value=150>150</option>
@@ -1574,7 +1574,7 @@
       </div>
       <button class="CLIbt"  onclick="CLIplot()"><b>Run</b></button>
       <button class="CLIbt"  onclick="editor.getSession().setValue('')">Clear</button>
-      <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode1').text().trim());">Vignette 1</button>
+      <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode1').text().trim());selectAllCells();">Vignette 1</button>
       <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode2').text().trim());selectByCelltype('T cells');">Vignette 2</button>
       <button class="CLIbt"  onclick="editor.getSession().setValue($('#CLIVignetteCode3').text().trim());selectByCelltype('T cells');">Vignette 3</button>
       <button onclick="hideShow($('#CLIhelp'),$(this),'Help');">Show Help</button>
@@ -1654,27 +1654,23 @@ function printNotebook(){
     mywin.document.write(html);
     mywin.document.close();
 }
-function getAnnoNum(){
-  if(window.annoNum === undefined){
-    if(!window.store || !window.store.getState().categoricalSelection || !window.store.getState().annoMatrix._cache.obs.__columns){
-      return -1;
-    }
-    var annoNum = 0;
-    var bAlert = true;
-    Object.values(store.getState().annoMatrix.schema.annotations.obsByName).forEach(one => {
-      if(one.name==store.getState().annoMatrix.schema.annotations.obs.index) return
-      if(one.type==="categorical" && one.categories.length<2) return;
-      annoNum ++;
-    })
-    window.annoNum = annoNum;
-  }
-  return window.annoNum;
-}
+
 function checkLoading(){
-    var annoNum = getAnnoNum();
-    if(annoNum<0) return false;
-    //if (loadingCycle > 300) return true;
-	  if (store.getState().annoMatrix._cache.obs.__columns.length < annoNum) {
+    if(!window.store || !window.store.getState().categoricalSelection || !window.store.getState().annoMatrix._cache.obs.__columns){
+      return false;
+    }
+    if (loadingCycle > 300) return true;
+    //console.log("Loaded Annotation:"+store.getState().annoMatrix._cache.obs.__columns.length);
+    var annoNum = 0;
+    var columns = store.getState().annoMatrix.schema.annotations.obs.columns;
+    for (var i=0;i<columns.length;i++) {
+      if (columns[i].type === "categorical" && columns[i].categories.length<2) continue;
+      annoNum ++;
+    }
+
+    if (Object.keys(store.getState().annoMatrix.schema.annotations.obsByName).includes(store.getState().annoMatrix.schema.annotations.obs.index)) annoNum--;
+    if (Object.keys(store.getState().annoMatrix.schema.annotations.obsByName).includes(">Description")) annoNum--;
+	if (store.getState().annoMatrix._cache.obs.__columns.length < annoNum) {
       return false;
     }
     return true;
@@ -1701,7 +1697,7 @@ function enableButton(){
       //    window.store.dispatch({type: "show centroid labels for category", showLabels: true});
       //  }
       //}
-      window.store.dispatch({type: "store current cell selection as differential set 1", data:Int32Array.from({length:window.store.getState().annoMatrix.nObs},(v,k)=>k)});
+      selectAllCells();
       init();
     }
     //var d = new Date();
@@ -2022,20 +2018,11 @@ function init(){
     }
     $('#ABBRgrp').html(htmlCheck);
 
-    var bioAbbr = {};
-    var bAlert= true;
+    var bioAbbr = {}
     for(i=0;i<grps.length;i++){
-      var one = {};
+      var one = {}
       for(var j=0;j<grpL[grps[i]].categories.length;j++){
-        if(grpL[grps[i]].categories[j] == null){
-          if(bAlert){
-            alert("VIP does NOT support NaN (numpy.nan) in .obs categories, recommend 'NA'");
-            bAlert = false;
-          }
-          one[grpL[grps[i]].categories[j]] = 'null';
-        }else{
-          one[grpL[grps[i]].categories[j]] = grpL[grps[i]].categories[j].toString();
-        }
+        one[grpL[grps[i]].categories[j]] = grpL[grps[i]].categories[j].toString();
       }
       bioAbbr[grps[i]] = one;
     }
@@ -2196,7 +2183,8 @@ function init(){
       attributeOldValue: true
     });
     // Click on "cellxgene" at the top-left corner to issue 'resize' event, so out-of-window VIP window will be back
-    $(".container div div div div div span")[0].onclick = function () {window.dispatchEvent(new Event('resize'));}
+    $(".container")[0].id = "cellxgene_container";
+    $("#cellxgene_container span")[0].onclick = function () {window.dispatchEvent(new Event('resize'));}
 
     console.log("VIP (Visualization in Plugin) is ready on client side.");
 
@@ -2310,11 +2298,17 @@ function ADDGref(){
 function GDref(){
 }
 
+function selectAllCells() {
+  $('[data-testid="subset-button"]').get(0).click();
+  $('[data-testid="reset-subset-button"]').get(0).click();
+  window.store.dispatch({type: "store current cell selection as differential set 1", data:Int32Array.from({length:window.store.getState().annoMatrix.nObs},(v,k)=>k)});
+}
+
 function selectByCelltype(celltype) {
   var selectionMap = new Map();
   var categories = window.store.getState().annoMatrix.schema.annotations.obsByName['cell_type'].categories;
   for (var j=0;j<categories.length; j++) {
-    if (categories[j] == celltype) {
+    if (categories[j] == celltype) { 
       selectionMap.set(categories[j], true);
     } else {
       selectionMap.set(categories[j], false);
@@ -2969,6 +2963,8 @@ function ABBRclear(){
   return;
 }
 function ABBRall(){
+  selectAllCells();
+  return;
   var grpKeys = Object.keys(window.store.getState().categoricalSelection);
   for(var i=0;i<grpKeys.length;i++) {
     var selectionMap = new Map();
