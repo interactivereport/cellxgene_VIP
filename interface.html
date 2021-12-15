@@ -568,16 +568,21 @@
   </div>
   <div id="separator" ></div>
   <div id="panel-right" >
-
     <div id="ABBR" class="tabcontent"> <!-- Abbreviation -->
       <h3>Create a combinatorial annotation <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-comb.-abbr." target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+      <p>Choose annotations to <button onclick="ABBRcombineNew()">Combine</button> (with max combination number <input type="number" id="ABBRcomBmax" min=2 value="200">):</p>
+      <p id="ABBRcomBgrp"></p>
+      <p id="ABBRcomBnote"></p>
+      <p id="ABBRcomBtable"></p>
+      <!--
       <ol type="1">
         <li><button onclick="ABBRclear()">Uncheck All Annotations</button></li>
         <li><p>Select the annotations of interest on the left panel of main window, then
           <button onclick="ABBRcombine();ABBRall()">Create</button> a new annotation named "Custom_combine" includes the
-          following categories: <!-- <p id="ABBRcombine"></p> -->
+          following categories:  <p id="ABBRcombine"></p>
 		    </li>
       </ol>
+      -->
       <div id="ABBRcombineList" style="display:none;">
         <p>Change the order by dragging items up or down:</p>
         <ul id="ABBRdynList" class="sortable-list"></ul><!--   -->
@@ -586,7 +591,7 @@
 
       <hr>
       <h3>Create abbreviations of annotations</h3><!-- <button onclick="ABBRsave()">Save to local</button><input id="ABBRfile" type="file" value="Load from local" onchange="ABBRload()"/>-->
-      <p>Choose annotation(s)s:</p>
+      <p>Choose annotation(s):</p>
       <p id="ABBRgrp"></p>
       <p id="ABBRtable"></p>
     </div><!--ABBR-->
@@ -2014,9 +2019,10 @@ function init(){
     for(i=0;i<grps.length;i++){
       var one = grps[i];
       if (one.startsWith(">")) continue;
-      htmlCheck += '<label><input class="ABBRgrps" type="checkbox" value="'+grps[i]+'" onclick="ABBRlist()"/> '+grps[i]+' ('+grpL[grps[i]].categories.length+')</label>';
+      htmlCheck += '<label><input class="ABBRgrps" type="checkbox" value="'+grps[i]+'" onclick="ABBRlist(\'ABBR\')"/> '+grps[i]+' ('+grpL[grps[i]].categories.length+')</label>';
     }
     $('#ABBRgrp').html(htmlCheck);
+    $('#ABBRcomBgrp').html(htmlCheck.replaceAll('ABBR','ABBRcomB'));
 
     var bioAbbr = {}
     for(i=0;i<grps.length;i++){
@@ -2308,7 +2314,7 @@ function selectByCelltype(celltype) {
   var selectionMap = new Map();
   var categories = window.store.getState().annoMatrix.schema.annotations.obsByName['cell_type'].categories;
   for (var j=0;j<categories.length; j++) {
-    if (categories[j] == celltype) { 
+    if (categories[j] == celltype) {
       selectionMap.set(categories[j], true);
     } else {
       selectionMap.set(categories[j], false);
@@ -2911,15 +2917,13 @@ function CLIref(){
   $(".CLIlayouts:checkbox[value='umap_harmony']").prop("checked","true");
 }
 // process annotation
-function ABBRlist(){
+function ABBRlist(eID){
   var grps = {},nrows=0,i;
-  var x = document.getElementsByClassName('ABBRgrps');
-  for(i=0;i<x.length;i++){
-    if(x[i].checked){
-      grps[x[i].value]=window.store.getState().annoMatrix.schema.annotations.obsByName[x[i].value].categories.map(String);
-      nrows = Math.max(nrows,grps[x[i].value].length);
-    }
-  }
+  $.each($('.'+eID+'grps:checkbox:checked'),function(index, one){
+    grps[one.value]=window.store.getState().annoMatrix.schema.annotations.obsByName[one.value].categories.map(String);
+    nrows = Math.max(nrows,grps[one.value].length);
+  });
+
   var grpKey = Object.keys(grps);
   var htmlTable = "<table style='width:100%;border-collapse: collapse;'><tr>";
   for(i=0;i<grpKey.length;i++){
@@ -2934,7 +2938,11 @@ function ABBRlist(){
         htmlTable += "<td align='right'>"
       }
       if(i<grps[grpKey[j]].length){//grpKey[j]+"','"+grps[grpKey[j]][i]
-        htmlTable += grps[grpKey[j]][i]+'</td><td><input type="text" id="'+grpKey[j]+"|"+grps[grpKey[j]][i]+'" value="' +window.bioAbbr[grpKey[j]][grps[grpKey[j]][i]]+'" onchange=ABBRupdate(["'+grpKey[j].replace(/ /g,";;")+'","'+grps[grpKey[j]][i].replace(/ /g,";;")+'"])></td>';
+        if(eID=="ABBRcomB"){
+          htmlTable += '<input class="ABBRcomBgrp_'+grpKey[j]+'" type="checkbox" value="'+grps[grpKey[j]][i]+'" checked/></td><td><label> '+grps[grpKey[j]][i]+'</label></td>';
+        }else{
+          htmlTable += grps[grpKey[j]][i]+'</td><td><input type="text" id="'+grpKey[j]+"|"+grps[grpKey[j]][i]+'" value="' +window.bioAbbr[grpKey[j]][grps[grpKey[j]][i]]+'" onchange=ABBRupdate(["'+grpKey[j].replace(/ /g,";;")+'","'+grps[grpKey[j]][i].replace(/ /g,";;")+'"])></td>';
+        }
       }else{
         htmlTable += "</td><td></td>";
       }
@@ -2942,7 +2950,10 @@ function ABBRlist(){
     htmlTable += "</tr><tr>"
   }
   htmlTable += "</tr></table>"
-  $('#ABBRtable').html(htmlTable);
+  $('#'+eID+'table').html(htmlTable);
+}
+function ABBRcomBlist(eID){
+  ABBRlist(eID)
 }
 function ABBRupdate(eID){
   for(var i=0;i<eID.length;i++){
@@ -2981,7 +2992,7 @@ function ABBRcombineCell(){
   var annKeys = Object.keys(window.store.getState().categoricalSelection);
   var obsMap = window.store.getState().annoMatrix._cache.obs.colIndex.index;
   var grpKeys = Object.keys(window.bioCombine);
-  var cName = [], cVal = [];//, selC=[]
+  var cName = [], cVal = [], combCell = {};//, selC=[]
   for(const key of grpKeys){
     var k = annKeys.indexOf(key);
     if(cName.length==0){
@@ -2999,13 +3010,17 @@ function ABBRcombineCell(){
           //var oneSel = indexOfAll(window.store.getState().annoMatrix._cache.obs.__columns[obsMap.get(key)],v);
           //newC.push(selC[i].filter(v => oneSel.includes(v)));
         });
+        if(newGrp.length>$("#ABBRcomBmax").val()){
+          $("#ABBRcomBnote").html("<p style='color:red;'>Max annotation combination reached, either increase the number of reduce selected annotations.</p>");
+          return combCell;
+        }
+
       }
       cName = newGrp;
       cVal = newVal;
       //selC = newC;
     }
   }
-  var combCell = {};
   for(var i=0;i<cName.length;i++){
     //cName[i] += " ("+selC[i].length+")";
     //var cells = new Int32Array(selC[i].length);
@@ -3013,6 +3028,35 @@ function ABBRcombineCell(){
     combCell[cVal[i]] = {cName:cName[i]};//,selC:cells
   }
   return combCell;
+}
+function ABBRcombineNew(){
+  window.bioCombine={};
+  var combGrp = {};
+  $.each($('.ABBRcomBgrps:checkbox:checked'),function(index, anno){
+    var oneG=[];
+    $.each($('.ABBRcomBgrp_'+$.escapeSelector(anno.value)+':checkbox:checked'),function(ix,sel){
+      oneG.push(sel.value);
+    });
+    if(oneG.length>0){
+      combGrp[anno.value]=oneG;
+    }
+  });
+  if(Object.keys(combGrp).length<2){
+    $("#ABBRcomBnote").html("Please select annotations from at least two categories.");
+    return;
+  }
+  window.bioCombine=combGrp;
+  window.bioCombineCell = ABBRcombineCell();
+  if(Object.keys(window.bioCombineCell).length<2){
+    return;
+  }
+  var htmlCheck = "";
+  for(const one of Object.values(window.bioCombineCell)){
+    htmlCheck += "<li data-val='"+one.cName+"'><label>"+one.cName+"</label></li>";
+  }
+  $("#ABBRdynList").html(htmlCheck);
+  $("#ABBRcombineList").show();
+
 }
 function ABBRcombine(){
   window.bioCombine={};
