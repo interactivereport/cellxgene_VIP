@@ -1990,7 +1990,7 @@ function enableBrowser(){
     success: function(res){
       browserinfo= JSON.parse(res);
       if(browserinfo['BWfile'].length > 0){
-        var html="<strong>The following tracks are available: </strong>";
+        var html="<input type='checkbox' onclick='$(\".BROWbwSel\").prop(\"checked\",$(this).prop(\"checked\"))' checked><strong>The following tracks are available: </strong>";
         $.each(browserinfo['BWfile'],function(i,v){
           html += '<label><input class="BROWbwSel" type="checkbox" value="'+v+'" checked/>'+v+' </label>';
         })
