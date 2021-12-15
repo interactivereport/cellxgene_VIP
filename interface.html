@@ -1313,9 +1313,13 @@
           <p>Select genes to be included in the bubble heatmap (rows):
           <input type="checkbox" onclick="$('.preDEGmultigenes').prop('checked', this.checked);">Uncheck / Check All</p>
           <p id="preDEGmultigene"></p>
-          <p>Select comparisons with tags to be included in the bubble heatmap (columns):
+          <p>Select comparisons from the table (shift/Ctrl for multi-selections) to be included in the bubble heatmap (columns):
+          <!--
           <input type="checkbox" onclick="$('.preDEGmultigrps').prop('checked', this.checked);">Uncheck / Check All</p>
           <p id="preDEGmulticomp"></p>
+          -->
+
+          <table id="preDEGmulticompTable" class="display" width="100%"></table>
           <p>Change the order by dragging items up and down:
           <b><button id="preDEGmultiorderBT" onclick="hideShow($('#preDEGmultiorderGrp'),$(this),'');" style="padding:2px;border-radius:50%">&#8722;</button></b></p>
           <div id='preDEGmultiorderGrp'>
@@ -1930,12 +1934,42 @@ function enablePreDEG(){
           resD = JSON.parse(res);
           $("#preDEGpanelBT").show();
 
-          var htmlCheck="";
+          var htmlCheck="", tb=[];
           for(const one of resD){
             $('#preDEGvolcanoTab').append(createOpt(one));
-            htmlCheck += '<label id="preDEGmulticompCK'+one+'"><input class="preDEGmultigrps" type="checkbox" value="'+one+'" onchange="preDEGmultiorderUpdate()"/> '+one+' </label>';//
+            //htmlCheck += '<label id="preDEGmulticompCK'+one+'"><input class="preDEGmultigrps" type="checkbox" value="'+one+'" onchange="preDEGmultiorderUpdate()"/> '+one+' </label>';//
           }//preDEGmulticomp
-          $('#preDEGmulticomp').html(htmlCheck);
+          $.each(resD,function(i,v){
+            var one = v.split(/;(.+)/);
+            if(one.length>1){
+              tb.push(one[0].split("::").concat([one[1]]));
+            }else{
+              tb.push(one[0].split("::").concat([""]));
+            }
+          });
+          var table = $('#preDEGmulticompTable').DataTable({
+            destroy: true,
+            select: true,
+            lengthMenu:[[10,50,-1],[10,50,'all']],
+            data: tb,
+            columns:[{title:'Comparison'},{title:"Cell Type"},{title:"Tags"}]
+          });
+          table.on('select',function(e, dt, type, indexes){
+            /*
+            var selRow=[];
+            $.each(table.rows(indexes).data().toArray(),function(i,v){
+              var one = v[0]+"::"+v[1];
+              if(v[2].length>0){
+                one += ";"+v[2];
+              }
+              selRow.push(one);
+            });*/
+            preDEGmultiorderUpdate(table);
+          }).on('deselect',function(e, dt, type, indexes){
+            preDEGmultiorderUpdate(table);
+          });
+
+          //$('#preDEGmulticomp').html(htmlCheck);
         },
         error: function(request,status,error){
           console.log(request.status+': cannot get preDEG information ...');
@@ -2628,8 +2662,8 @@ function DUALref(){
   }
 
 }
-function orderUpdate(eID,choseGene){
-  var selElem = [];
+function orderUpdate(eID,choseGene,selElem=[]){
+  //var selElem = [];
   $("."+eID+"grps").each(function(){
     if($(this).prop("checked")){
       selElem.push($(this).val());
@@ -2795,8 +2829,17 @@ function preDEGVolcanoref(eID){
 function preDEGmultiref(){
   showGene('preDEGmulti',"","");
 }
-function preDEGmultiorderUpdate(){
-  orderUpdate("preDEGmulti",false);
+function preDEGmultiorderUpdate(tb){
+  //orderUpdate("preDEGmulti",false);
+  var selRow=[];
+  $.each(tb.rows({selected:true}).data().toArray(),function(i,v){
+    var one = v[0]+"::"+v[1];
+    if(v[2].length>0){
+      one += ";"+v[2];
+    }
+    selRow.push(one);
+  });
+  orderUpdate("preDEGmulti",false,selRow);
 }
 function IMGref(){
   $('#IMGscaleZero').prop('checked',(window.figOpt['scaleZero']=="Yes"));
