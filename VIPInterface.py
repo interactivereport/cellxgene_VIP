@@ -1440,6 +1440,7 @@ def plotBW(data):
     strCSV = ('%s/BW%f.csv' % (data["CLItmp"],time.time()))
     ## select all cells
     strType = strD + 'bw.cluster'
+    data['bw']=['%s.bw'%one for one in data['bw']]
     grpFlag = False
     if os.path.isfile(strType) and len(data['genes'])>0:
         with open(strType,"r") as f:
@@ -1455,13 +1456,14 @@ def plotBW(data):
                 grpFlag = False
             else:
                 cluster = pd.read_csv(strType,sep="\t",header=None,index_col=1,skiprows=1)#delimiter="\n",
+                cluster = cluster[cluster[0].isin(data['bw'])]
                 adata = adata[adata.obs[grp].isin(list(cluster.index)),:]
                 obsCluster = pd.DataFrame(list(cluster.loc[adata.obs[grp],:][0]),index=adata.obs.index,columns=[grp])
                 pd.concat([obsCluster,adata.to_df()], axis=1, sort=False).to_csv(strCSV)
     ## plot in R
     #strCMD = ' '.join([strExePath+'/browserPlot.R',strD,data['region'],str(data['exUP']),str(data['exDN']),strCSV,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
     #ppr.pprint(strCMD)
-    res = subprocess.run([strExePath+'/browserPlot.R',strD,data['region'],str(data['exUP']),str(data['exDN']),strCSV,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
+    res = subprocess.run([strExePath+'/browserPlot.R',strD,data['region'],','.join(data['bw']),str(data['exUP']),str(data['exDN']),strCSV,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
     img = res.stdout.decode('utf-8')
     if grpFlag:
         os.remove(strCSV)

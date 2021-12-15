@@ -1990,7 +1990,13 @@ function enableBrowser(){
     success: function(res){
       browserinfo= JSON.parse(res);
       if(browserinfo['BWfile'].length > 0){
-        var html="<strong>The following tracks are available: </strong>" + browserinfo['BWfile'].join("; ");
+        var html="<strong>The following tracks are available: </strong>";
+        $.each(browserinfo['BWfile'],function(i,v){
+          html += '<label><input class="BROWbwSel" type="checkbox" value="'+v+'" checked/>'+v+' </label>';
+        })
+        //for(one in browserinfo['BWfile']){
+        //  html += '<label><input class="BROWbw" type="checkbox" value="'+grps[i]+'" onclick="ABBRlist(\'ABBR\')"/> '+grps[i]+' ('+grpL[grps[i]].categories.length+')</label>';
+        //}
         if(browserinfo['BWpeak'].length>4) html += "<br><br><strong>All peaks are defined</strong>";
         if(browserinfo['BWlink'].length>4) html += "<br><strong>Links between peaks and genes are avaiable</strong>";
         $("#BROWinfo").html(html.replaceAll('.bw',''));
@@ -4887,9 +4893,17 @@ function BROWplot(){
     $('#BROWnote').text("region is required");
     return;
   }
-
+  var selBW=[];
+  $.each($('.BROWbwSel:checkbox:checked'),function(i,v){
+    selBW.push(v.value);
+  })
+  if(selBW.length<1){
+    $('#BROWnote').text("Please select at least one tracks!");
+    return;
+  }
   var D = {'method':'plotBW',
             'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+            'bw':selBW,
             'cells':Int32Array.from([...Array(window.store.getState().annoMatrix.nObs).keys()]),
             'genes':getGenes('BROW'),
             'cutoff':$('#BROWgeneCutoff').val(),

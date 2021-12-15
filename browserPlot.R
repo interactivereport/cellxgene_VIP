@@ -18,13 +18,14 @@ main <- function(){
     suppressMessages(suppressWarnings(load(tail(args,1))))
     strPath <- args[1]
     region <- args[2]
-    extend.upstream <- as.numeric(args[3])
-    extend.downstream <- as.numeric(args[4])
-    strExp <- args[5] # have to be provided, used to save temp figures
-    expCutoff <- as.numeric(args[6])
-    strFun <- args[7]
-    fontsize <- as.numeric(args[8])
-    dpi <- as.numeric(args[9])
+    bwList <- unlist(strsplit(args[3],","))
+    extend.upstream <- as.numeric(args[4])
+    extend.downstream <- as.numeric(args[5])
+    strExp <- args[6] # have to be provided, used to save temp figures
+    expCutoff <- as.numeric(args[7])
+    strFun <- args[8]
+    fontsize <- as.numeric(args[9])
+    dpi <- as.numeric(args[10])
 
     ## obtain the region -----
     annotations <- NULL
@@ -38,6 +39,7 @@ main <- function(){
 
     ## plot the bigwig -----
     strBW <- list.files(strPath,"bw$",full.names=T)
+    strBW <- strBW[basename(strBW)%in%bwList]
     AllPlots <- suppressWarnings(suppressMessages(customBigwigTrack(strBW,region,fontsize)))
     #h <- rep(1,length(AllPlots))
     h <- length(strBW)
