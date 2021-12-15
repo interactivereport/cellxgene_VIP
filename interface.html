@@ -2933,7 +2933,11 @@ function ABBRlist(eID){
   var grpKey = Object.keys(grps);
   var htmlTable = "<table style='width:100%;border-collapse: collapse;'><tr>";
   for(i=0;i<grpKey.length;i++){
-    htmlTable += "<th colspan='2' style='background-color: #4CAF50;color: white;'>"+grpKey[i]+"</th>"
+    htmlTable += "<th colspan='2' style='background-color: #4CAF50;color: white;'><label>"
+    if(eID=="ABBRcomB"){
+      htmlTable += '<input type="checkbox" onclick="$(\'.ABBRcomBgrp_' + $.escapeSelector(grpKey[i]) + '\').prop(\'checked\',$(this).prop(\'checked\'))" checked/>';
+    }
+    htmlTable += grpKey[i]+"</label></th>"
   }
   htmlTable += "</tr><tr>";
   for(i=0;i<nrows;i++){
@@ -2945,7 +2949,7 @@ function ABBRlist(eID){
       }
       if(i<grps[grpKey[j]].length){//grpKey[j]+"','"+grps[grpKey[j]][i]
         if(eID=="ABBRcomB"){
-          htmlTable += '<input class="ABBRcomBgrp_'+grpKey[j]+'" type="checkbox" value="'+grps[grpKey[j]][i]+'" checked/></td><td><label> '+grps[grpKey[j]][i]+'</label></td>';
+          htmlTable += '<input class="ABBRcomBgrp_'+grpKey[j]+'" type="checkbox" value="'+grps[grpKey[j]][i]+'" checked/> </td><td>' + grps[grpKey[j]][i] + '</td>';
         }else{
           htmlTable += grps[grpKey[j]][i]+'</td><td><input type="text" id="'+grpKey[j]+"|"+grps[grpKey[j]][i]+'" value="' +window.bioAbbr[grpKey[j]][grps[grpKey[j]][i]]+'" onchange=ABBRupdate(["'+grpKey[j].replace(/ /g,";;")+'","'+grps[grpKey[j]][i].replace(/ /g,";;")+'"])></td>';
         }
