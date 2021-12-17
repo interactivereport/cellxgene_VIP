@@ -433,6 +433,7 @@ customAnnotationPlot <- function(annotation, region, fontsize) {
         p <- p + geom_text(
             data = annotation_df_list$labels,
             mapping = aes_string(x = "position", y = "dodge", label = "gene_name"),
+            nudge_y = 0.3,
             size = 3
         )
         y_limit <- c(0.9, n_stack + (n_stack * 0.5))
