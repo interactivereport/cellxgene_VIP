@@ -56,7 +56,7 @@ main <- function(){
       p <- customAnnotationPlot(annotations,region,fontsize)#suppressWarnings(suppressMessages())
       if(!is.null(p)){
           AllPlots <- c(AllPlots,list(p))
-          h <- c(h,0.5)
+          h <- c(h,0.7)
       }
     }
     strAnno <- paste0(strPath,"/annotation.rds")
