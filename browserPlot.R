@@ -70,7 +70,7 @@ main <- function(){
         p <- suppressWarnings(suppressMessages(customPeakPlot(readRDS(strPeaks),region,fontsize)))
         if(!is.null(p)){
             AllPlots <- c(AllPlots,list(p))
-            h <- c(h,0.3)
+            h <- c(h,0.4)
         }
     }
 
@@ -166,11 +166,10 @@ customExpressionPlot <- function(strExp,strBW,geneCutoff=-0.1,fontsize=9) {
       theme_classic() +
       scale_y_discrete(position = "top") +
       scale_x_continuous(position = "bottom", limits = c(0, NA)) +
-      geom_text(data=df.rate,aes(xpos,ypos,label=text,color=group),
-                hjust="right",vjust="top",size=fontsize-7)+
+      geom_text(data=df.rate,aes(xpos,ypos,label=text,color=group),hjust="right",vjust=1.1, size=fontsize-7)+
       theme(
-        axis.text.y = element_blank(),
-        axis.text.x = element_text(size = fontsize),
+        axis.text.x.top = element_text(size=fontsize, face="bold", angle=0), # Gene names @ top
+        axis.text.x.bottom = element_text(size=fontsize-1, angle=60, vjust=0.6),
         axis.title.x = element_blank(),
         strip.background = element_blank(),
         strip.text.y = element_blank(),
@@ -199,10 +198,8 @@ customBigwigTrack <- function(strBW,region,fontsize) {
       for(one in strBW){
           namePos[1,"text"] <- nameBW[one]
           p <- BigwigTrack(region,one,y_label=yLab[one])+
-              geom_area(fill=bwCol[one])+
-              geom_text(data=namePos,aes(xpos,ypos,label=text),
-                        hjust="left",vjust="top",
-                        size=fontsize-4,color=bwCol[one])
+              geom_text(data=namePos,aes(xpos,ypos,label=text), hjust="left", vjust="top", size=fontsize-4,color=bwCol[one])+
+              geom_area(fill=bwCol[one])
           yLim <- max(c(yLim,layer_scales(p)$y$get_limits()))
           AllPlots <- c(AllPlots,list(p))
       }
@@ -211,7 +208,7 @@ customBigwigTrack <- function(strBW,region,fontsize) {
           AllPlots[[i]] <- AllPlots[[i]]+
               scale_y_continuous(limits=c(0,yLim*1.05),breaks=c(0,yLim))+
               ##theme_classic()+
-              theme(plot.margin=margin(0,0,0,0,"inches"),
+              theme(plot.margin=margin(0,0,0,0),
                     axis.text.y=element_text(face="italic"),
                     axis.title.y=element_text(size=fontsize))
       }
@@ -272,13 +269,12 @@ customCoverageTrack <- function(coverages,xlabel,colors_all=NULL,fontsize=12,reg
     facet_wrap(facets = ~group, strip.position = "left", ncol = 1) +
     xlab(label = xlabel) +
     ylab(label = paste0("Normalized accessibility")) +
-    geom_text(data=bwName,aes(xpos,ypos,label=text,color=group),
-              hjust="left",vjust="top",size=fontsize-7)+
+    geom_text(data=bwName,aes(xpos,ypos,label=text,color=group), hjust="left",vjust=1.1, size=fontsize-7)+
     theme_browser(legend = FALSE) +
     scale_y_continuous(limits=c(0,yMax*1.05),breaks=c(yMax))+
     theme(panel.spacing.y = unit(x = 0, units = "line"),
           axis.text.y=element_text(face="italic"),
-          axis.title.y=element_text(size=fontsize),
+          axis.title.y=element_text(size=fontsize,face="bold"),
           strip.text.y.left=element_blank(),
           strip.background = element_blank(),
           legend.position="none")
@@ -447,7 +443,7 @@ customAnnotationPlot <- function(annotation, region, fontsize) {
         theme(
             axis.ticks.y = element_blank(),
             axis.text.y = element_blank(),
-            axis.title=element_text(size=fontsize)
+            axis.title=element_text(size=fontsize, face="bold")
         ) +
         scale_color_manual(values = c("darkblue", "darkgreen"))
     return(p)
@@ -490,7 +486,7 @@ customPeakPlot <- function(peaks,region,fontsize,group.by = NULL,color = "dimgre
         ylab(label = "Peaks") +
         theme(axis.ticks.y = element_blank(),
               axis.text.y = element_blank(),
-              axis.title=element_text(size=fontsize)) +
+              axis.title=element_text(size=fontsize, face="bold")) +
         xlab(label = paste0(chromosome, " position (bp)")) +
         xlim(c(start.pos, end.pos))
     if (is.null(x = group.by)) {
@@ -552,7 +548,7 @@ customLinkPlot <- function(links,region, fontsize, object=NULL, min.cutoff = 0) 
         theme_classic() +
         theme(axis.ticks.y = element_blank(),
               axis.text.y = element_blank(),
-              axis.title.y=element_text(size=fontsize)) +
+              axis.title=element_text(size=fontsize, face="bold")) +
         ylab("Links") +
         xlab(label = paste0(chromosome, " position (bp)")) +
         xlim(c(IRanges::start(x = region), IRanges::end(x = region)))
