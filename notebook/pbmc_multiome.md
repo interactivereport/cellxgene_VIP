@@ -340,7 +340,7 @@ ls *bw | sed -e 's/\.bam$//' > bw.cluster_c2
 sed -i 's/./ /g' bw.cluster_c2
 paste bw.cluster_c1 bw.cluster_c2 > bw.cluster
 ```
-Example output of bw.cluster:
+Sample of bw.cluster:
 CellType  | |
 ------------- | -------------
 ASDC.bw  | ASDC
@@ -348,3 +348,8 @@ B.intermediate.bw | B intermediate
 B.memory.bw | B memory
 B.naive.bw  | B naive
 
+#### Data files and directory structures for loading into cellxgene VIP
+``` bash
+cellxgene launch --host 0.0.0.0 --port 8802 --disable-annotations --verbose  ./pbmc10k_multiome.h5ad
+```
+<img src=https://user-images.githubusercontent.com/15882624/147169763-d6999567-db31-4ea9-950e-16b81252afa5.jpg width=240>
