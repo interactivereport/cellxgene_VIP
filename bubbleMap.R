@@ -60,9 +60,12 @@ g <- ggplot(D, aes(y=gene, x=tag, shape=log2FC.sign, fill=FDR.bin, size=abslog2F
         axis.text.y = element_text(size=rel(1.25)),
         panel.border = element_rect(color="black",fill=NA,size=1),
         legend.key = element_rect(fill=NA),
+        plot.margin=unit(c(0.5, 11, 0.5, 0.5), "lines"),
+        legend.justification = c(0,0),
+        legend.position=c(1,0),
         text=element_text(size=fontsize)) +
   scale_x_discrete(position = "top") +
-  labs(y = "Gene Symbol",x="Tag") +
+  labs(y = "Gene Symbol",x="") +
   guides(fill = guide_legend(override.aes = list(size=3)))
 
 strImg <- gsub("csv$",strFun,strCSV)
