@@ -74,24 +74,7 @@ make install-dist
 cd ..
 
 ## finished setting up ------
-strPath="$(python -c 'import site; print(site.getsitepackages()[0])')"
-strweb="${strPath}/server/common/web/static/."
-
-cp VIPInterface.py $strPath/server/app/.
-cp interface.html $strweb
-cp volcano.R $strPath/server/app/.
-cp violin.R $strPath/server/app/.
-cp Density2D.R $strPath/server/app/.
-cp bubbleMap.R $strPath/server/app/.
-cp fgsea.R $strPath/server/app/.
-mkdir -p $strPath/server/app/gsea
-cp gsea/*gmt $strPath/server/app/gsea
-cp vip.env $strPath/server/app/. 2>/dev/null | true
-sed -i "s|MAX_LAYOUTS *= *[0-9]\+|MAX_LAYOUTS = 300|" "$strPath/server/common/constants.py"
-find ./cellxgene/server/ -name "decode_fbs.py" -exec cp {} $strPath/server/app/. \;
-
-echo -e "\nls -l $strweb\n"
-ls -l $strweb
+./update.VIPInterface.sh all
 
 export LIBARROW_MINIMAL=false
 if [ $(python -c 'import nbconvert; print(nbconvert.__version__)') != "5.6.1" ]; then pip install nbconvert==5.6.1; fi
