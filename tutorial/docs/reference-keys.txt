@@ -41,3 +41,4 @@ handle-nulls-in-categorical-annotation
 display-full-traceback-stack-for-debugging-in-vip
 pitfall-of-using-special-characters
 potential-use-for-bulk-or-pseudo-bulk-sample-dataset
+common-mistakes-in-naming

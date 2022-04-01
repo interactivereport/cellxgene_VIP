@@ -1,6 +1,6 @@
 # Helpful Tips
 
-## Handle	nulls	in	categorical	annotation
+## Handle nulls in categorical annotation
 Such nan’s in categorical annotation would cause trouble in VIP because it cannot be converted to string. Here is how to handle it, let’s call the annotation X_annotation:
 
 
@@ -12,13 +12,17 @@ adata.obs = adata.obs.astype({'X_annotation':'str'})
 adata.obs["X_annotation "][adata.obs["X_annotation "].isnull()] = 'nan'
 ```
 
-## Display	full	traceback	stack	for	debugging	in	VIP
+## Display full traceback stack for debugging in VIP
 It follows the global setting. Please set “—verbose” to launch cellxgene server. 
 
-## Pitfall	of	using	special	characters
-In the mode which allows user to create manual annotation in cellxgene, user should try to avoid using hyphen (“-”) in name label.It would cause client-side issue. Please try to use underscores.
+## Pitfall of using special characters
+In the mode which allows user to create manual annotation in cellxgene, user should try to avoid using hyphen (“-”) in name label. It would cause client-side issue. Please try to use underscores.
 
-## Potential	use	for	bulk	or	pseudo	bulk	sample	dataset
-Once the data matrix is replaced by sample x gene matrix, cellxgene VIP framework can handle regular bulk / pseudobulk RNAseq datasets. Simply replace “cells” by “samples”. All plotting functions would still work.
+## Potential use for bulk or pseudo bulk sample dataset
+Once the data matrix is replaced by sample x gene matrix, cellxgene VIP framework can handle regular bulk / pseudobulk RNAseq datasets. Simply replace “cells” by “samples”. All plotting functions sould still work.
+
+## Common mistakes in naming
+* "B internediate " with extra space in the end
+* "CD4 naive" where "n" should be "N" to match the name used in h5ad
 
 
