@@ -637,7 +637,7 @@
           <label><input class="CPVcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
         </p>
         <p>Select Cell Population Annotation:
-          <input type="text" id="CPV_ClusterKey"></p>
+        <select id="CPV_ClusterKey"></select></p>
         <p>Select a Cell Population:
         <input type="text" id="CPV_Cluster"></p>
     <p>Select Condition Annotation:
@@ -2122,7 +2122,7 @@ function init(){
     var densG = document.getElementById("DENSgrp");
     var embed = document.getElementById("EMBEDsplit");
     var tVIP = document.getElementById("tVIPgrp");
-    //var CPV = document.getElementById("CPV_ClusterKey");
+    var CPVGrp = document.getElementById("CPV_ClusterKey");
 
     for(const one of grps){
       if (one.startsWith(">")) continue;
@@ -2138,7 +2138,7 @@ function init(){
       densG.add(createOpt(one));
       embed.add(createOpt(one));
       tVIP.add(createOpt(one));
-      //CPV.add(createOpt(one));
+      CPVGrp.add(createOpt(one));
     }
     densS.add(createOpt('None'));
     densG.add(createOpt('None'));
