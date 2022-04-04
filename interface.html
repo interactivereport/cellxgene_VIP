@@ -641,7 +641,7 @@
         <p>Select a Cell Population:
         <input type="text" id="CPV_Cluster"></p>
     <p>Select Condition Annotation:
-        <input type="text" id="CPV_ConditionKey"></p>
+      <select id="CPV_ConditionKey"></select></p>
 	  <p>Select Condition 1:
         <input type="text" id="CPV_C1"></p>
         <p>Select Condition 2:
@@ -2123,6 +2123,7 @@ function init(){
     var embed = document.getElementById("EMBEDsplit");
     var tVIP = document.getElementById("tVIPgrp");
     var CPVGrp = document.getElementById("CPV_ClusterKey");
+    var CPVGrp2 = document.getElementById("CPV_ConditionKey");
 
     for(const one of grps){
       if (one.startsWith(">")) continue;
@@ -2139,6 +2140,7 @@ function init(){
       embed.add(createOpt(one));
       tVIP.add(createOpt(one));
       CPVGrp.add(createOpt(one));
+      CPVGrp2.add(createOpt(one));
     }
     densS.add(createOpt('None'));
     densG.add(createOpt('None'));
