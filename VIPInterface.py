@@ -97,28 +97,38 @@ def setFigureOpt(opt):
 def getObs(data):
   selC = list(data['cells'].values())
   cNames = ["cell%d" %i for i in selC]
+  #ppr.pprint("get obs 1 ...")
   ## obtain the category annotation
   with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+    #ppr.pprint("get obs 2.1 ...")
     selAnno = [data['obs_index']]+data['grp']
+    #ppr.pprint("get obs 2.2 ...")
     dAnno = list(scD.get_obs_keys())
+    #ppr.pprint("get obs 2.3 ...")
     anno = []
     sel = list(set(selAnno)&set(dAnno))
+    #ppr.pprint("get obs 2.4 ...")
     if len(sel)>0:
+      #ppr.pprint("get obs 3.1 ...")
       tmp = scD.data.obs.loc[selC,sel].astype('str')
       tmp.index = cNames
       anno += [tmp]
+      #ppr.pprint("get obs 3.2 ...")
     sel = list(set(selAnno)-set(dAnno))
     if len(sel)>0:
       annotations = scD.dataset_config.user_annotations
+      #ppr.pprint("get obs 4 ...")
       if annotations:
         labels = annotations.read_labels(scD)
         tmp = labels.loc[list(scD.data.obs.loc[selC,data['obs_index']]),sel]
         tmp.index = cNames
         anno += [tmp]
+        #ppr.pprint("get obs 5 ...")
     obs = pd.concat(anno,axis=1)
   #ppr.pprint(obs)
   ## update the annotation Abbreviation
   combUpdate = cleanAbbr(data)
+  #ppr.pprint("get obs 6 ...")
   if 'abb' in data.keys():
     for i in data['grp']:
       obs[i] = obs[i].map(data['abb'][i])
@@ -177,8 +187,10 @@ def createData(data):
   if 'genes' in data.keys():
     with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
       if not type(scD.data.X) is np.ndarray:
+        #ppr.pprint("loop 1 ...")
         fSparse = True
       if len(data['genes'])>0:
+        #ppr.pprint("loop 2 ...")
         fullG = list(scD.data.var[data['var_index']])
         selG = sorted([fullG.index(i) for i in data['genes']]) #when data loaded backed, incremental is required
         X = scD.data.X[:,selG]
@@ -186,6 +198,7 @@ def createData(data):
       else:
         X = scD.data.X
         gNames = list(scD.data.var[data['var_index']])
+        #ppr.pprint("loop 3 ...")
     if 'figOpt' in data.keys() and data['figOpt']['scale'] == 'Yes':
       X = sc.pp.scale(X,zero_center=(data['figOpt']['scaleZero'] == 'Yes'),max_value=(float(data['figOpt']['scaleMax']) if data['figOpt']['clipValue']=='Yes' else None))
     X = X[selC]
@@ -193,6 +206,9 @@ def createData(data):
     expr = X
   else:
     expr = pd.DataFrame(X,columns=gNames,index=cNames)
+
+  #if expr in locals() :
+    #ppr.pprint("no problem with the 'genes' attribute ...")
 
   expr,gNames = collapseGeneSet(data,expr,gNames,cNames,fSparse)
   #ppr.pprint("finished expression ...")
@@ -209,6 +225,7 @@ def createData(data):
   #ppr.pprint("finished layout ...")
   ## obtain the category annotation
   combUpdate, obs = getObs(data)
+  #ppr.pprint("starting obv ...")
 
   ## create a custom annotation category and remove cells which are not in the selected annotation
   if combUpdate and len(data['grp'])>1:
@@ -287,7 +304,8 @@ def distributeTask(aTask):
 	'SPATIAL':SPATIAL,
     'saveTest':saveTest,
     'getBWinfo':getBWinfo,
-    'plotBW':plotBW
+    'plotBW':plotBW,
+    'CPV':CellPopView
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -296,6 +314,7 @@ def HELLO(data):
 def iostreamFig(fig):
   #getLock(iosLock)
   figD = BytesIO()
+  #fig.savefig("test.png")
   #ppr.pprint('io located at %d'%int(str(figD).split(" ")[3].replace(">",""),0))
   fig.savefig(figD,bbox_inches="tight")
   #ppr.pprint(sys.getsizeof(figD))
@@ -1499,3 +1518,53 @@ def saveTest(data):
         with open(strPath+re.sub("h5ad$","img.txt",strH5ad),'w') as f:
             f.write(data['img'])
     return 'success'
+
+
+def CellPopView(data):
+    
+    adata = createData(data)
+
+    #subset by cluster
+    Cluster_Key = data['ClusterKey']
+    
+    Cluster = data['Cluster']
+    
+    adata = adata[adata.obs[Cluster_Key].isin([Cluster])]
+
+    #Split by Condition
+    Condition_Key = data['ConditionKey']
+    
+    Condition1 = data['Cond1']
+    
+    Condition2 = data['Cond2']
+    
+    adata_1 = adata[adata.obs[Condition_Key].isin([Condition1])]
+    adata_2 = adata[adata.obs[Condition_Key].isin([Condition2])]
+    
+    
+    #Extract the data
+    Table_1 = adata_1.to_df()
+  
+    Table_2 = adata_2.to_df()
+   
+    
+    Table_1 = Table_1.transpose() #now genes = rows, cells = columns
+    Expression_1 = Table_1.mean(axis=1) #extracts the average of every row, e.g. average expression of every gene
+    
+
+    Table_2 = Table_2.transpose()
+    Expression_2 = Table_2.mean(axis=1) #average expression of every gene in Cluster 3, Condition S
+    
+    plt.scatter(Expression_1,Expression_2, label = "stars", color = "black", 
+            marker = ".",  s =30) 
+    
+    plt.title(Cluster_Key + ": " + Cluster) 
+    
+    plt.grid()
+
+    plt.xlabel(Condition1)
+    plt.ylabel(Condition2)
+    
+    CellPopPlot = plt.gcf()
+    
+    return iostreamFig(CellPopPlot)

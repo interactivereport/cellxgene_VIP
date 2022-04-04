@@ -547,6 +547,7 @@
       <button class="tablinks" onclick="selFun(event, 'SANK')">Sankey Diagram</button>
       <button class="tablinks" onclick="selFun(event, 'STACBAR')">Stacked Barplot</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
+      <button class="tablinks" onclick="selFun(event, 'CellPopView')">Cell Population View</button>
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1')">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
@@ -628,6 +629,29 @@
       <span id="ADDGsetError" style="color:red"></span><br>
 
     </div><!--ADDG-->
+
+    <div id="CellPopView" class="tabcontent">
+      <div id="CellPopInput">
+        <h3>For a given cell population, compare gene expression between two conditions:</h3>
+        <p>Cell Selection:
+          <label><input class="CPVcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
+        </p>
+        <p>Select Cell Population Annotation:
+          <input type="text" id="CPV_ClusterKey"></p>
+        <p>Select a Cell Population:
+        <input type="text" id="CPV_Cluster"></p>
+    <p>Select Condition Annotation:
+        <input type="text" id="CPV_ConditionKey"></p>
+	  <p>Select Condition 1:
+        <input type="text" id="CPV_C1"></p>
+        <p>Select Condition 2:
+        <input type="text" id="CPV_C2"></p>
+      </div>
+      <button class="CPVbt" onclick="CellPopPlot()"><b>Plot</b></button>
+      <p id="CPVnote" style="color:red;"></p>
+      <div id="CPVspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+      <p id="CPVfig"></p>
+    </div><!--CellPopView-->
 
     <div id="GD" class=tabcontent>
       <div id="GDinput">
@@ -2062,6 +2086,7 @@ function init(){
       htmlCheck += '<label><input class="ABBRgrps" type="checkbox" value="'+grps[i]+'" onclick="ABBRlist(\'ABBR\')"/> '+grps[i]+' ('+grpL[grps[i]].categories.length+')</label>';
     }
     $('#ABBRgrp').html(htmlCheck);
+    //$('#CPV_ClusterKey').html(htmlCheck);
     $('#ABBRcomBgrp').html(htmlCheck.replaceAll('ABBR','ABBRcomB'));
 
     var bioAbbr = {}
@@ -2097,6 +2122,7 @@ function init(){
     var densG = document.getElementById("DENSgrp");
     var embed = document.getElementById("EMBEDsplit");
     var tVIP = document.getElementById("tVIPgrp");
+    //var CPV = document.getElementById("CPV_ClusterKey");
 
     for(const one of grps){
       if (one.startsWith(">")) continue;
@@ -2112,6 +2138,7 @@ function init(){
       densG.add(createOpt(one));
       embed.add(createOpt(one));
       tVIP.add(createOpt(one));
+      //CPV.add(createOpt(one));
     }
     densS.add(createOpt('None'));
     densG.add(createOpt('None'));
@@ -5211,6 +5238,61 @@ function load(){
   };
   reader.readAsText($("#loadfile")[0].files[0]);
 }
+function CellPopPlot(){
+  var CPV_CK = document.getElementById("CPV_ClusterKey").value; 
+  
+  var CPV_C = document.getElementById("CPV_Cluster").value; 
+  
+  var CPV_CK2 = document.getElementById("CPV_ConditionKey").value; 
+  
+  var CPV_Con1 = document.getElementById("CPV_C1").value; 
+  
+  var CPV_Con2 = document.getElementById("CPV_C2").value;
+  
+  var cells = getCells('CPVcell');
+
+  //let grp = [...new Set(CPV_CK,CPV_CK2)];
+  let grp = [...new Set([$("#CPV_ClusterKey").val(),$("#CPV_ConditionKey").val()])];
+
+  if(CPV_CK && CPV_C && CPV_C2 && CPV_Con1 && CPV_Con2 && cells) {
+    
+    var D = {'method':'CPV',
+		'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+		'Cluster':CPV_C,
+		'ClusterKey':CPV_CK,
+		'ConditionKey':CPV_CK2,
+    'cells':cells,
+    'genes':[],
+    'grp':grp,
+		'Cond1':CPV_Con1,
+		'Cond2':CPV_Con2};
+    $(".CPVbt").prop("disabled",true);
+    document.getElementById("CPVspin").style.visibility="visible";
+    
+    $.ajax({
+    type:"POST",
+    url: VIPurl,
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(res){
+      $(".CPVbt").prop("disabled",false);
+      document.getElementById("CPVspin").style.visibility="hidden";
+      //$("#CPVnote").text('Success!');
+      
+      
+      showImg('CPVfig',res);
+
+    },
+    error: function() {
+      $("#CPVnote").text('Plotting Error!');
+    }
+})
+return
+  } 
+    $("#CPVnote").text('Input data required');
+    document.getElementById("CPVfig").innerHTML = "";  
+}
+
 function loadexe(content){
   if(content['saveName']!='cellxgene.'+window.store.getState().config.displayNames.dataset){
     if(!confirm("Saved information is NOT matching with the current data! Continue?")){
