@@ -648,9 +648,11 @@
         <input type="text" id="CPV_C2"></p>
       </div>
       <button class="CPVbt" onclick="CellPopPlot()"><b>Plot</b></button>
+      <button class="CPVTablebt" onclick="CellPopTable()"><b>Table</b></button>
       <p id="CPVnote" style="color:red;"></p>
       <div id="CPVspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <p id="CPVfig"></p>
+      <table id="CPVdatatable" class="display"></table>
     </div><!--CellPopView-->
 
     <div id="GD" class=tabcontent>
@@ -5293,6 +5295,64 @@ return
   } 
     $("#CPVnote").text('Input data required');
     document.getElementById("CPVfig").innerHTML = "";  
+}
+function CellPopTable(){
+  
+  var CPV_CK = document.getElementById("CPV_ClusterKey").value; 
+  
+  var CPV_C = document.getElementById("CPV_Cluster").value; 
+  
+  var CPV_CK2 = document.getElementById("CPV_ConditionKey").value; 
+  
+  var CPV_Con1 = document.getElementById("CPV_C1").value; 
+  
+  var CPV_Con2 = document.getElementById("CPV_C2").value;
+  
+  var cells = getCells('CPVcell');
+
+  //let grp = [...new Set(CPV_CK,CPV_CK2)];
+  let grp = [...new Set([$("#CPV_ClusterKey").val(),$("#CPV_ConditionKey").val()])];
+
+  if(CPV_CK && CPV_C && CPV_C2 && CPV_Con1 && CPV_Con2 && cells) {
+    
+    var D = {'method':'CPVTable',
+		'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+		'Cluster':CPV_C,
+		'ClusterKey':CPV_CK,
+		'ConditionKey':CPV_CK2,
+    'cells':cells,
+    'genes':[],
+    'grp':grp,
+		'Cond1':CPV_Con1,
+		'Cond2':CPV_Con2};
+    $(".CPVTablebt").prop("disabled",true);
+    document.getElementById("CPVspin").style.visibility="visible";
+    
+    $.ajax({
+    type:"POST",
+    url: VIPurl,
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(res){
+      $(".CPVTablebt").prop("disabled",false);
+      document.getElementById("CPVspin").style.visibility="hidden";
+
+      html_json = res;
+
+      document.getElementById("CPVdatatable").innerHTML = html_json;
+      
+
+
+    },
+    error: function() {
+      $("#CPVnote").text('Table Error!');
+    }
+})
+return
+  } 
+    $("#CPVnote").text('Input data required');
+    document.getElementById("CPVfig").innerHTML = ""; 
+
 }
 
 function loadexe(content){
