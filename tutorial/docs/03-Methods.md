@@ -125,11 +125,6 @@ window.store = store;
 ```
 
 
-<script type="text/javascript">
-window.store = store;
-</script>
-
-
 By doing this, Redux store holding client data and user selections are visible to VIP to access variables and dispatch actions to control cellxgene user interface. For example,
 
 - Unselect / select a feature. GUI is refreshed automatically after dispatching.

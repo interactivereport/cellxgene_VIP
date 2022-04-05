@@ -257,7 +257,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="r-dependencies" class="section level3" number="1.2.3">
 <h3><span class="header-section-number">1.2.3</span> R dependencies</h3>
 <p>Install all required R packages on linux:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="index.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">LIBARROW_MINIMAL</span><span class="op">=</span>false</span>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="index.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">LIBARROW_MINIMAL=</span>false</span>
 <span id="cb6-2"><a href="index.html#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#  ensure that the right instance of R is used. e.g. system-wide: /bin/R or /usr/bin/R ; local R under conda: ~/.conda/envs/VIP_conda_R/bin/R</span></span>
 <span id="cb6-3"><a href="index.html#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> R</span>
 <span id="cb6-4"><a href="index.html#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -290,7 +290,7 @@ Use ‘ps’ to find used ports to spare. Please see <a href="https://chanzucker
 <div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="index.html#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ps</span> <span class="at">-ef</span> <span class="kw">|</span> <span class="fu">grep</span> cellxgene</span>
 <span id="cb7-2"><a href="index.html#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">&#39;reticulate::py_config()&#39;</span></span>
 <span id="cb7-3"><a href="index.html#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the following command if the output of the above command doesn&#39;t point to the Python in your env.</span></span>
-<span id="cb7-4"><a href="index.html#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">RETICULATE_PYTHON</span><span class="op">=</span><span class="kw">`</span><span class="fu">which</span> python<span class="kw">`</span></span>
+<span id="cb7-4"><a href="index.html#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">RETICULATE_PYTHON=</span><span class="kw">`</span><span class="fu">which</span> python<span class="kw">`</span></span>
 <span id="cb7-5"><a href="index.html#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">cellxgene</span> launch <span class="at">--host</span> <span class="op">&lt;</span>xxx<span class="op">&gt;</span> --port <span class="op">&lt;</span>xxx<span class="op">&gt;</span> --disable-annotations <span class="at">--verbose</span> <span class="op">&lt;</span>h5ad file<span class="op">&gt;</span></span></code></pre></div>
 </div>
 <div id="cellxgene-on-web-browser" class="section level3" number="1.2.5">

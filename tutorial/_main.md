@@ -1,3 +1,140 @@
+---
+title: "Supplemental Tutorial: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells"
+---
+# Getting started with cellxgene VIP
+
+This is a cellxgene VIP tutorial book written in **Markdown**. 
+
+## Why use cellxgene VIP?
+To meet the growing demands from scientists to effectively extract deep insights from single cell RNA-seq datasets, we developed cellxgene VIP, a frontend interactive visualization plugin to cellxgene framework, which directly interacts with in-memory data to generate a comprehensive set of plots in high resolution, perform advanced analysis, and make data downloadable for further analysis. It makes large scale scRNA-seq data visualization and analysis more accessible and reproducible with the potential to become an ecosystem for the scientific community to contribute even more modules to the Swiss knife of scRNA-seq data exploration tool.
+
+## Getting Set up
+### Execute anaconda
+
+```bash
+bash ~/Downloads/Anaconda3-2020.02-Linux-x86_64.sh
+```
+If anaconda is not installed on server, you can install it following anaconda documentation (https://docs.anaconda.com/anaconda/install/linux/)
+### Create and enable conda environment
+
+```bash
+# clone repo from cellxgene VIP github
+git clone https://github.com/interactivereport/cellxgene_VIP.git
+cd cellxgene_VIP
+
+# conda environment
+source <path to Anaconda3>/etc/profile.d/conda.sh (Default: /opt/anaconda3/etc/profile.d/conda.sh)
+conda config --set channel_priority flexible
+conda env create -n <env name, such as: VIP> -f VIP.yml (system-wide R) or VIP_conda_R.yml (local R under conda, no root privilege needed)
+```
+Activate conda environment
+
+```bash
+conda activate <env name, such as: VIP>
+```
+or 
+
+```bash
+source activate <env name>
+```
+### Cellxgene installation
+Install cellxgene by running config.sh in "cellxgene_VIP" directory
+
+```bash
+./config.sh
+```
+### R dependencies
+Install all required R packages on linux:
+
+```bash
+export LIBARROW_MINIMAL=false
+#  ensure that the right instance of R is used. e.g. system-wide: /bin/R or /usr/bin/R ; local R under conda: ~/.conda/envs/VIP_conda_R/bin/R
+which R
+
+R -q -e 'if(!require(devtools)) install.packages("devtools",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(Cairo)) devtools::install_version("Cairo",version="1.5-12",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(foreign)) devtools::install_version("foreign",version="0.8-76",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(ggpubr)) devtools::install_version("ggpubr",version="0.3.0",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(ggrastr)) devtools::install_version("ggrastr",version="0.1.9",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(arrow)) devtools::install_version("arrow",version="2.0.0",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(Seurat)) devtools::install_version("Seurat",version="3.2.3",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(rmarkdown)) devtools::install_version("rmarkdown",version="2.5",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(tidyverse)) devtools::install_version("tidyverse",version="1.3.0",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(viridis)) devtools::install_version("viridis",version="0.5.1",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(BiocManager)) devtools::install_version("BiocManager",version="1.30.10",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(fgsea)) BiocManager::install("fgsea")'
+
+# These should be already installed as dependencies of above packages
+R -q -e 'if(!require(dbplyr)) devtools::install_version("dbplyr",version="1.0.2",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(RColorBrewer)) devtools::install_version("RColorBrewer",version="1.1-2",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(glue)) devtools::install_version("glue",version="1.4.2",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(gridExtra)) devtools::install_version("gridExtra",version="2.3",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(ggrepel)) devtools::install_version("ggrepel",version="0.8.2",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(MASS)) devtools::install_version("MASS",version="7.3-51.6",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(data.table)) devtools::install_version("data.table",version="1.13.0",repos = "http://cran.us.r-project.org")'
+```
+### Run cellxgene by h5ad file
+You can aslo run cellxgene by specifying a h5ad file, which stores scRNA-seq data along with a host and a port. 
+Use 'ps' to find used ports to spare. Please see <https://chanzuckerberg.github.io/cellxgene/posts/launch> for details
+
+```bash
+ps -ef | grep cellxgene
+Rscript -e 'reticulate::py_config()'
+# Run the following command if the output of the above command doesn't point to the Python in your env.
+export RETICULATE_PYTHON=`which python`
+cellxgene launch --host <xxx> --port <xxx> --disable-annotations --verbose <h5ad file>
+```
+### Cellxgene on web browser
+chrome is preferred, version 87.0.4280.88 or 87.0.4280.141 is used. Users can access \textbf{http(s)://host:port}.
+Following screenshot is what you should be able to see in console of chrome developer tools.
+![Alt text](cellonweb.png)
+
+## Authors
+- Keijie Li (kejie.li@biogen.com), Associate Director at Biogen in the research department. Main author and content wrangler. 
+- Zhengyu Ouyang, Associate Director of Bioingormatics at BioinfoRx. Content wrangler. 
+- Baohong Zhang (baohong.zhang@biogen.com), Head of Genome Informatics at Biogen in the research department. Corresponding author and content wrangler.
+
+
+The development and delivery of this material has also contributed by: 
+
+- Yirui Chen (yirui.chen@bigen.com), Biogen Inc.
+- Dongdong Lin (dongdong.lin@biogen.com), Biogen Inc.
+- Michael Mingueneau (michael.mingueneau@bioigen.com), Biogen Inc.
+- Will Chen  (wwchen@post.harvard.edu), Biogen Inc.
+- David Sexton  (david.sexton@biogen.com), Biogen Inc.
+
+
+
+<!--chapter:end:index.Rmd-->
+
+# Web source
+## Cellxgene VIP {-}
+- **cellxgene VIP source code**: https://github.com/interactivereport/cellxgene_VIP
+- **cellxgene VIP demo sites**: https://cellxgenevip-ms.bxgenomics.com  [Schirmer / Rowitch MS, Human brain snRNAseq 46k cells, Nature 2019 Schirmer et al]
+
+
+
+## Cellxgene {-}
+
+- **cellxgene**: https://github.com/chanzuckerberg/cellxgene
+- **cellxgene tutorial**: https://cellgeni.readthedocs.io/en/latest/visualisations.html
+- **cellxgene features**: https://chanzuckerberg.github.io/cellxgene/posts/gallery
+- **cellxgene data preparation**: https://chanzuckerberg.github.io/cellxgene/posts/prepare.html
+
+## Python packages {-}
+- **scanpy**: https://github.com/theislab/scanpy
+- **scanpy plots**: https://scanpy-tutorials.readthedocs.io/en/latest/visualizing-marker-genes.html
+- **diffxpy**: https://github.com/theislab/diffxpy
+- **diffxpy tests**: https://diffxpy.readthedocs.io/en/latest/tutorials.html#differential-testing
+
+## Others {-}
+- **Benchmarking of interactive data visualization of single-cell RNAseq data — Batuhan Cakir** : https://www.youtube.com/watch?v=3nH2xi_Ni6I
+- **sceasy**: convertor of scRNA-Seq data formats https://github.com/cellgeni/sceasy
+- **jupytext**: https://jupytext.readthedocs.io , Jupyter Notebooks as Markdown Documents, Julia, Python or R Scripts
+- **nbconvert**: https://nbconvert.readthedocs.io , Convert a Jupyter .ipynb notebook document file into another static format including HTML, LaTeX, PDF, Markdown, and more
+
+<!--chapter:end:01-WebSource.Rmd-->
+
 # How to use Cellxgene VIP
 
 ## Graphical user interface of cellxgene and VIP
@@ -263,4 +400,268 @@ There are other convenient functions available to user, such as ‘Save’ or �
 [![Figure F24_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F24_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F24_label.png)
 Supplementary Fig. 26. Other functions allow user to ‘Save’ or ‘Load’ session information, ‘Check All Annotations’ and show values of brushed ranges on histograms. 
 
+
+
+<!--chapter:end:02-HowTo.Rmd-->
+
+
+# Methods
+
+## Client-side	Integration	by	a	jsPanel	Window	(VIP) {-}
+Following section in config.sh file.
+
+
+
+```bash
+<script src="static/jquery.min.js"></script>
+<link href='static/jspanel/dist/jspanel.css' rel='stylesheet'>
+<script src='static/jspanel/dist/jspanel.js'></script>
+<script src='static/jspanel/dist/extensions/modal/jspanel.modal.js'></script>
+<script src='static/jspanel/dist/extensions/tooltip/jspanel.tooltip.js'></script>
+<script src='static/jspanel/dist/extensions/hint/jspanel.hint.js'></script>
+<script src='static/jspanel/dist/extensions/layout/jspanel.layout.js'></script>
+<script src='static/jspanel/dist/extensions/contextmenu/jspanel.contextmenu.js'></script>
+<script src='static/jspanel/dist/extensions/dock/jspanel.dock.js'></script>
+```
+
+```js
+<script>
+  // execute JavaScript code in panel content
+  var setInnerHTML = function(elm, html) {
+    elm.innerHTML = html;
+    Array.from(elm.querySelectorAll('script')).forEach( oldScript => {
+      const newScript = document.createElement('script');
+      Array.from(oldScript.attributes)
+      .forEach( attr => newScript.setAttribute(attr.name, attr.value) );
+      newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+      oldScript.parentNode.replaceChild(newScript, oldScript);
+    });
+  }
+  var plotPanel = jsPanel.create({
+    panelSize: '190 0',
+    position: 'left-top 160 6',
+    dragit: { containment: [-10, -2000, -4000, -2000] }, // set dragging range of VIP window
+    boxShadow: 1,
+    border: "solid #D4DBDE thin",
+    contentOverflow: 'scroll scroll', // adding scrolling bars
+    headerControls:{
+      close: 'remove',
+      minimize: 'remove',
+      maximize: 'remove'
+    },
+    headerTitle: function () {return '<strong>Visualization in Plugin</strong>'},
+    contentAjax: {
+      url: 'static/interface.html',
+      done: function (panel) {
+            setInnerHTML(panel.content, this.responseText);
+      }
+    },
+    onwindowresize: function(event, panel) {
+      var jptop = parseInt(this.currentData.top);
+      var jpleft = parseInt(this.currentData.left);
+      
+      if (jptop<-10 || window.innerHeight-jptop<10 || window.innerWidth-jpleft<10 ||
+      jpleft+parseInt(this.currentData.width)<10) {
+        this.reposition("left-top 160 6");
+      }
+    },
+    onunsmallified: function (panel, status) {
+      this.reposition('center-top -370 180');
+      this.resize({ width: 740, height: function() { return Math.min(480, window.innerHeight*0.6);} });
+    },
+    onsmallified: function (panel, status) {
+      this.reposition('left-top 160 6');
+      this.style.width = '190px';
+    }
+  }).smallify();
+  plotPanel.headerbar.style.background = "#D4DBDE";
+```
+
+```bash
+</script>
+EOF
+insertL=$(sed -e 's/[&\\/]/\\&/g; s/|/\\|/g; s/$/\\/;' -e '$s/\\$//' <<<"$insertL")
+sed -i "s|<div id=\"root\"></div>|$insertL\n&|" "cellxgene/client/index_template.html"
+```
+
+
+
+All functional VIP HTML and JavaScript code will be in “interface.html” that is independent of cellxgene code bases.
+
+## Server-side	Integration {-}
+Following section in config.sh file.
+
+```bash
+echo '
+from server.app.biogenInterface import route  
+@webbp.route("/biogen", methods=["POST"]) 
+def biogen():
+  return route(request.data,current_app.app_config)' >> cellxgene/server/app/app.py
+.
+.
+.
+
+strPath="$(python -c 'import site; print(site.getsitepackages())')"
+strPath=${strPath//"['"/}
+strPath=${strPath//"']"/}
+strweb="${strPath}/server/common/web/static/."
+echo $strweb
+cp interface.html $strweb
+cp jquery.min.js $strweb
+cp color_map.png $strweb
+
+cp -R DataTables $strweb
+cp -R jspanel $strweb
+
+cp cellxgene/server/test/decode_fbs.py $strPath/server/app/.
+cp VIPInterface.py $strPath/server/app/.
+```
+
+
+
+## Communication	between	VIP	and	cellxgene	web	GUI {-}
+Cellxgene client utilizes React Redux that is the official React binding for Redux. It lets your React components read data from a Redux store, and dispatch actions to the store to update data.
+
+So, this line of code is appended to the end of client/src/reducers/index.js of cellxgene source code to expose the store to the browser.
+
+
+
+```js
+window.store = store;
+```
+
+
+By doing this, Redux store holding client data and user selections are visible to VIP to access variables and dispatch actions to control cellxgene user interface. For example,
+
+- Unselect / select a feature. GUI is refreshed automatically after dispatching.
+
+
+
+```js
+window.store.dispatch({type: "categorical metadata filter deselect", metadataField: "louvain", categoryIndex: 5})
+window.store.dispatch({type: "categorical metadata filter select", metadataField: "louvain", categoryIndex: 5})
+```
+
+- Get state of just finished action and synchronize gene input and cell selections from main window to VIP if corresponding action was performed.
+
+
+
+```js
+const unsubscribe = window.store.subscribe(() => {
+  if (window.store.getState()["@@undoable/filterState"].prevAction) {
+    actionType = window.store.getState()["@@undoable/filterState"].prevAction.type;
+    if (actionType.includes("user defined gene success") ||
+    actionType.includes("store current cell selection as differential set")) {
+      sync();
+      }
+  }
+});
+```
+
+## Diffxpy	Integration {-}
+This is the sample pseudocode, please see VIPInterface.py for actual implementation.
+
+
+```python
+import scanpy as sc
+import pandas as pd
+import diffxpy.api as app
+# set 1 of cells as cell1; set 2 of cells as cell2
+
+
+with app.get_data_adaptor() as data_adaptor:
+  X1 = data_adaptor.data.X[cell1]
+  X2 = data_adaptor.data.X[cell2]
+
+
+adata = sc.AnnData(pd.concat([X1,X2]),pd.DataFrame(['grp1' for i in range(X1.shape[0])]+['grp2' for i in range(X2.shape[0])],columns=['comGrp']))
+deg = de.test.two_sample(adata,'comGrp').summary()
+#deg is a dataframe contains the folloing columns ['gene','log2fc','pval','qval']
+```
+
+
+## Create	h5ad	file	from	Seurat	object
+First, export the following from Seurat object in R: **expression matrix (assume normalized), metadata and coordinates (pca, tsne, umap) as separate txt files.**
+
+Next in Python, create an AnnData object from 10x (scanpy.read_h5ad function) as a starting point. Then replace the expression matrix, meta data and coordinates as following, a h5ad file would be generated.
+
+```python
+import sys
+import scanpy as sc
+import pandas as pd
+import numpy as np
+import seaborn as sns
+from numpy import ndarray, unique
+from scipy.sparse.csc import csc_matrix
+
+adata= sc.read_h5ad("previous generated .h5ad")
+
+# read clustering res
+xpca = pd.read_csv(“./data/harmony_clustered.h5ad.pca_coordinates.txt", sep='\t', encoding='utf-8')
+xtsne = pd.read_csv(“./data/harmony_clustered.h5ad.tsne_coordinates.txt", sep='\t', encoding='utf-8')
+xumap = pd.read_csv(“./data/harmony_clustered.h5ad.umap_coordinates.txt", sep='\t', encoding='utf-8')
+xobs = pd.read_csv(“./data/harmony_clustered.h5ad.meta_data.txt", sep='\t', encoding='utf-8')
+
+xpca.set_index('index', inplace=True)
+xtsne.set_index('index', inplace=True)
+xumap.set_index('index', inplace=True)
+xobs.set_index('index', inplace=True)
+
+adata.obsm['X_pca'] = np.array(xpca.loc[adataRaw.obs.index])
+
+adata.obsm['X_tsne'] = np.array(xtsne.loc[adataRaw.obs.index])
+adata.obsm['X_umap'] = np.array(xumap.loc[adataRaw.obs.index])
+adata.obs = xobs.loc[adataRaw.obs.index] # this is a pandas dataframe
+
+# read in expression matrix as numpy.ndarray as following:
+exp_mat = np.loadtxt(fname =”expression matrix .txt")
+adata.X = exp_mat
+
+# convert dense matrix into sparse matrix to save storage space and memory usage
+adata.X = csc_matrix(adata.X)_matrix
+
+# add short description and initial graph settings. “|” and “by” are delimiters for VIP to parse the initial settings. Please follow the same rule for your own h5ad files.
+adata.obs['>Description'] = ['Human brain snRNAseq 46k cells (MS Nature 2019 Schirmer et al.); data normalized, log transformed and scaled UMI; platform - 10X v2 chemistry | embedding by umap; color by cell_type']*adata.n_obs
+
+# Then last step to save h5ad:
+adata.write_h5ad("final output.h5ad")
+```
+
+
+
+
+
+
+<!--chapter:end:03-Methods.Rmd-->
+
+# Helpful Tips
+
+## Handle nulls in categorical annotation
+Such nan’s in categorical annotation would cause trouble in VIP because it cannot be converted to string. Here is how to handle it, let’s call the annotation X_annotation:
+
+
+```python
+# Cast to str from categorical
+adata.obs = adata.obs.astype({'X_annotation':'str'})
+
+# replace all of nan by ‘nan’
+adata.obs["X_annotation "][adata.obs["X_annotation "].isnull()] = 'nan'
+```
+
+## Display full traceback stack for debugging in VIP
+It follows the global setting. Please set “—verbose” to launch cellxgene server. 
+
+## Pitfall of using special characters
+In the mode which allows user to create manual annotation in cellxgene, user should try to avoid using hyphen (“-”) in name label. It would cause client-side issue. Please try to use underscores.
+
+## Potential use for bulk or pseudo bulk sample dataset
+Once the data matrix is replaced by sample x gene matrix, cellxgene VIP framework can handle regular bulk / pseudobulk RNAseq datasets. Simply replace “cells” by “samples”. All plotting functions sould still work.
+
+## Common mistakes in naming
+* "B internediate " with extra space in the end
+* "CD4 naive" where "n" should be "N" to match the name used in h5ad
+
+
+
+<!--chapter:end:04-Tips.Rmd-->
 
