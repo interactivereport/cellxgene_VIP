@@ -637,15 +637,15 @@
           <label><input class="CPVcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
         </p>
         <p>Select Cell Population Annotation:
-        <select id="CPV_ClusterKey"></select></p>
+        <select id="CPV_ClusterKey" onclick="CellPopList('cluster')"></select></p>
         <p>Select a Cell Population:
-        <input type="text" id="CPV_Cluster"></p>
+        <select id="CPV_Cluster"></select></p>
     <p>Select Condition Annotation:
-      <select id="CPV_ConditionKey"></select></p>
+      <select id="CPV_ConditionKey" onclick="CellPopList('condition')"></select></p>
 	  <p>Select Condition 1:
-        <input type="text" id="CPV_C1"></p>
+      <select id="CPV_C1"></select></p>
         <p>Select Condition 2:
-        <input type="text" id="CPV_C2"></p>
+        <select id="CPV_C2"></select></p>
       </div>
       <button class="CPVbt" onclick="CellPopPlot()"><b>Plot</b></button>
       <button class="CPVTablebt" onclick="CellPopTable()"><b>Table</b></button>
@@ -2996,6 +2996,42 @@ function CLIref(){
   $(".CLIgrps:checkbox[value='cell_type']").prop("checked","true");
   $(".CLIlayouts:checkbox[value='umap_harmony']").prop("checked","true");
 }
+
+function CellPopList(opt){
+  var grps = {};
+
+  if(opt=="cluster"){
+    var annCat = document.getElementById("CPV_ClusterKey").value;
+    grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
+
+    $("#CPV_Cluster").empty();
+
+    var levels = document.getElementById("CPV_Cluster");
+
+    for(const one of grps[annCat]) {
+      levels.add(createOpt(one));
+    }
+   
+  }else{
+    var annCat = document.getElementById("CPV_ConditionKey").value;
+    grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
+    $("#CPV_C1").empty();
+    $("#CPV_C2").empty();
+
+    var levels1 = document.getElementById("CPV_C1");
+    var levels2 = document.getElementById("CPV_C2");
+
+    for(const one of grps[annCat]) {
+      levels1.add(createOpt(one));
+    }
+
+    for(const one of grps[annCat]) {
+      levels2.add(createOpt(one));
+    }
+   } 
+  
+}
+
 // process annotation
 function ABBRlist(eID){
   var grps = {},nrows=0,i;
@@ -5294,7 +5330,8 @@ function CellPopPlot(){
 return
   } 
     $("#CPVnote").text('Input data required');
-    document.getElementById("CPVfig").innerHTML = "";  
+    document.getElementById("CPVfig").innerHTML = "";
+    $('#CPVdatatable').empty();  
 }
 function CellPopTable(){
   
@@ -5337,7 +5374,7 @@ function CellPopTable(){
       $(".CPVTablebt").prop("disabled",false);
       document.getElementById("CPVspin").style.visibility="hidden";
 
-      html_json = res;
+      html_json = res; //html table object; easy to inter-convert between HTML table and Pandas df.
 
       document.getElementById("CPVdatatable").innerHTML = html_json;
       
@@ -5351,7 +5388,8 @@ function CellPopTable(){
 return
   } 
     $("#CPVnote").text('Input data required');
-    document.getElementById("CPVfig").innerHTML = ""; 
+    document.getElementById("CPVfig").innerHTML = "";
+    $('#CPVdatatable').empty();
 
 }
 
