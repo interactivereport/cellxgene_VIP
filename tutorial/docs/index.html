@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Supplemental Tutorial: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells</title>
-  <meta name="description" content="Supplemental Tutorial: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells" />
+  <title>Supplemental Tutorial: Cellxgene VIP unleashes full power of interactive visualization and integrative analysis of scRNA-seq, spatial transcriptomics, and multiome data</title>
+  <meta name="description" content="Supplemental Tutorial: Cellxgene VIP unleashes full power of interactive visualization and integrative analysis of scRNA-seq, spatial transcriptomics, and multiome data" />
   <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Supplemental Tutorial: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells" />
+  <meta property="og:title" content="Supplemental Tutorial: Cellxgene VIP unleashes full power of interactive visualization and integrative analysis of scRNA-seq, spatial transcriptomics, and multiome data" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Supplemental Tutorial: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells" />
+  <meta name="twitter:title" content="Supplemental Tutorial: Cellxgene VIP unleashes full power of interactive visualization and integrative analysis of scRNA-seq, spatial transcriptomics, and multiome data" />
   
   
   
@@ -211,7 +211,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Supplemental Tutorial: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Supplemental Tutorial: Cellxgene VIP unleashes full power of interactive visualization and integrative analysis of scRNA-seq, spatial transcriptomics, and multiome data</a>
           </h1>
         </div>
 
@@ -220,7 +220,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
             <section class="normal" id="section-">
 <div id="header">
-<h1 class="title">Supplemental Tutorial: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells</h1>
+<h1 class="title">Supplemental Tutorial: Cellxgene VIP unleashes full power of interactive visualization and integrative analysis of scRNA-seq, spatial transcriptomics, and multiome data</h1>
 </div>
 <div id="getting-started-with-cellxgene-vip" class="section level1" number="1">
 <h1><span class="header-section-number">Chapter 1</span> Getting started with cellxgene VIP</h1>
@@ -257,7 +257,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="r-dependencies" class="section level3" number="1.2.3">
 <h3><span class="header-section-number">1.2.3</span> R dependencies</h3>
 <p>Install all required R packages on linux:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="index.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">LIBARROW_MINIMAL=</span>false</span>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="index.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">LIBARROW_MINIMAL</span><span class="op">=</span>false</span>
 <span id="cb6-2"><a href="index.html#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#  ensure that the right instance of R is used. e.g. system-wide: /bin/R or /usr/bin/R ; local R under conda: ~/.conda/envs/VIP_conda_R/bin/R</span></span>
 <span id="cb6-3"><a href="index.html#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> R</span>
 <span id="cb6-4"><a href="index.html#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -290,7 +290,7 @@ Use ‘ps’ to find used ports to spare. Please see <a href="https://chanzucker
 <div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="index.html#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ps</span> <span class="at">-ef</span> <span class="kw">|</span> <span class="fu">grep</span> cellxgene</span>
 <span id="cb7-2"><a href="index.html#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">&#39;reticulate::py_config()&#39;</span></span>
 <span id="cb7-3"><a href="index.html#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the following command if the output of the above command doesn&#39;t point to the Python in your env.</span></span>
-<span id="cb7-4"><a href="index.html#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">RETICULATE_PYTHON=</span><span class="kw">`</span><span class="fu">which</span> python<span class="kw">`</span></span>
+<span id="cb7-4"><a href="index.html#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">RETICULATE_PYTHON</span><span class="op">=</span><span class="kw">`</span><span class="fu">which</span> python<span class="kw">`</span></span>
 <span id="cb7-5"><a href="index.html#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">cellxgene</span> launch <span class="at">--host</span> <span class="op">&lt;</span>xxx<span class="op">&gt;</span> --port <span class="op">&lt;</span>xxx<span class="op">&gt;</span> --disable-annotations <span class="at">--verbose</span> <span class="op">&lt;</span>h5ad file<span class="op">&gt;</span></span></code></pre></div>
 </div>
 <div id="cellxgene-on-web-browser" class="section level3" number="1.2.5">
@@ -312,6 +312,7 @@ Following screenshot is what you should be able to see in console of chrome deve
 <li>Yirui Chen (<a href="mailto:yirui.chen@bigen.com" class="email">yirui.chen@bigen.com</a>), Biogen Inc.</li>
 <li>Dongdong Lin (<a href="mailto:dongdong.lin@biogen.com" class="email">dongdong.lin@biogen.com</a>), Biogen Inc.</li>
 <li>Michael Mingueneau (<a href="mailto:michael.mingueneau@bioigen.com" class="email">michael.mingueneau@bioigen.com</a>), Biogen Inc.</li>
+<li>Jake Gagnon (<a href="mailto:jake.gagnon@biogen.com" class="email">jake.gagnon@biogen.com</a>), Biogen Inc.</li>
 <li>Will Chen (<a href="mailto:wwchen@post.harvard.edu" class="email">wwchen@post.harvard.edu</a>), Biogen Inc.</li>
 <li>David Sexton (<a href="mailto:david.sexton@biogen.com" class="email">david.sexton@biogen.com</a>), Biogen Inc.</li>
 </ul>

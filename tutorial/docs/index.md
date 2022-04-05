@@ -1,5 +1,5 @@
 ---
-title: "Supplemental Tutorial: cellxgene VIP unleashes full power of interactive visualization, plotting and analysis of scRNA-seq data in the scale of millions of cells"
+title: "Supplemental Tutorial: Cellxgene VIP unleashes full power of interactive visualization and integrative analysis of scRNA-seq, spatial transcriptomics, and multiome data"
 ---
 # Getting started with cellxgene VIP
 
@@ -100,6 +100,7 @@ The development and delivery of this material has also contributed by:
 - Yirui Chen (yirui.chen@bigen.com), Biogen Inc.
 - Dongdong Lin (dongdong.lin@biogen.com), Biogen Inc.
 - Michael Mingueneau (michael.mingueneau@bioigen.com), Biogen Inc.
+- Jake Gagnon (jake.gagnon@biogen.com), Biogen Inc.
 - Will Chen  (wwchen@post.harvard.edu), Biogen Inc.
 - David Sexton  (david.sexton@biogen.com), Biogen Inc.
 
