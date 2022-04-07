@@ -1,7 +1,7 @@
-
 # Methods
 
 ## Client-side	Integration	by	a	jsPanel	Window	(VIP) {-}
+
 Following section in config.sh file.
 
 
@@ -83,6 +83,7 @@ sed -i "s|<div id=\"root\"></div>|$insertL\n&|" "cellxgene/client/index_template
 All functional VIP HTML and JavaScript code will be in “interface.html” that is independent of cellxgene code bases.
 
 ## Server-side	Integration {-}
+
 Following section in config.sh file.
 
 ```bash
@@ -114,6 +115,7 @@ cp VIPInterface.py $strPath/server/app/.
 
 
 ## Communication	between	VIP	and	cellxgene	web	GUI {-}
+
 Cellxgene client utilizes React Redux that is the official React binding for Redux. It lets your React components read data from a Redux store, and dispatch actions to the store to update data.
 
 So, this line of code is appended to the end of client/src/reducers/index.js of cellxgene source code to expose the store to the browser.
@@ -157,7 +159,8 @@ const unsubscribe = window.store.subscribe(() => {
 });
 ```
 
-## Diffxpy	Integration {-}
+## Diffxpy	Integration
+
 This is the sample pseudocode, please see VIPInterface.py for actual implementation.
 
 
@@ -180,6 +183,7 @@ deg = de.test.two_sample(adata,'comGrp').summary()
 
 
 ## Create	h5ad	file	from	Seurat	object
+
 First, export the following from Seurat object in R: **expression matrix (assume normalized), metadata and coordinates (pca, tsne, umap) as separate txt files.**
 
 Next in Python, create an AnnData object from 10x (scanpy.read_h5ad function) as a starting point. Then replace the expression matrix, meta data and coordinates as following, a h5ad file would be generated.

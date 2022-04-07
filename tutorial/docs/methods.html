@@ -188,8 +188,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="methods.html"><a href="methods.html#client-side-integration-by-a-jspanel-window-vip"><i class="fa fa-check"></i>Client-side Integration by a jsPanel Window (VIP)</a></li>
 <li class="chapter" data-level="" data-path="methods.html"><a href="methods.html#server-side-integration"><i class="fa fa-check"></i>Server-side Integration</a></li>
 <li class="chapter" data-level="" data-path="methods.html"><a href="methods.html#communication-between-vip-and-cellxgene-web-gui"><i class="fa fa-check"></i>Communication between VIP and cellxgene web GUI</a></li>
-<li class="chapter" data-level="" data-path="methods.html"><a href="methods.html#diffxpy-integration"><i class="fa fa-check"></i>Diffxpy Integration</a></li>
-<li class="chapter" data-level="4.1" data-path="methods.html"><a href="methods.html#create-h5ad-file-from-seurat-object"><i class="fa fa-check"></i><b>4.1</b> Create h5ad file from Seurat object</a></li>
+<li class="chapter" data-level="4.1" data-path="methods.html"><a href="methods.html#diffxpy-integration"><i class="fa fa-check"></i><b>4.1</b> Diffxpy Integration</a></li>
+<li class="chapter" data-level="4.2" data-path="methods.html"><a href="methods.html#create-h5ad-file-from-seurat-object"><i class="fa fa-check"></i><b>4.2</b> Create h5ad file from Seurat object</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="helpful-tips.html"><a href="helpful-tips.html"><i class="fa fa-check"></i><b>5</b> Helpful Tips</a>
 <ul>
@@ -343,8 +343,8 @@ window.store = store;
 <span id="cb14-8"><a href="methods.html#cb14-8" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb14-9"><a href="methods.html#cb14-9" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
 </div>
-<div id="diffxpy-integration" class="section level2 unnumbered">
-<h2>Diffxpy Integration</h2>
+<div id="diffxpy-integration" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Diffxpy Integration</h2>
 <p>This is the sample pseudocode, please see VIPInterface.py for actual implementation.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="methods.html#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scanpy <span class="im">as</span> sc</span>
 <span id="cb15-2"><a href="methods.html#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -361,8 +361,8 @@ window.store = store;
 <span id="cb15-13"><a href="methods.html#cb15-13" aria-hidden="true" tabindex="-1"></a>deg <span class="op">=</span> de.test.two_sample(adata,<span class="st">&#39;comGrp&#39;</span>).summary()</span>
 <span id="cb15-14"><a href="methods.html#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co">#deg is a dataframe contains the folloing columns [&#39;gene&#39;,&#39;log2fc&#39;,&#39;pval&#39;,&#39;qval&#39;]</span></span></code></pre></div>
 </div>
-<div id="create-h5ad-file-from-seurat-object" class="section level2" number="4.1">
-<h2><span class="header-section-number">4.1</span> Create h5ad file from Seurat object</h2>
+<div id="create-h5ad-file-from-seurat-object" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> Create h5ad file from Seurat object</h2>
 <p>First, export the following from Seurat object in R: <strong>expression matrix (assume normalized), metadata and coordinates (pca, tsne, umap) as separate txt files.</strong></p>
 <p>Next in Python, create an AnnData object from 10x (scanpy.read_h5ad function) as a starting point. Then replace the expression matrix, meta data and coordinates as following, a h5ad file would be generated.</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb16-1"><a href="methods.html#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
