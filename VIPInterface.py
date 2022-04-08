@@ -1616,8 +1616,13 @@ def cpvTable(data):
 
   deg = deg.iloc[range(200),]
 
+
   deg = deg.to_csv(index=False)
   
+  
+  #ppr.pprint(deg)
+  #ppr.pprint("csv table" + "\n" + deg1)
+
   return json.dumps(deg)
 
 
