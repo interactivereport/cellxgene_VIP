@@ -4229,6 +4229,7 @@ function DEGfind(){
                   (+data.qval).toExponential(2)],
                   Object.values(data).slice(4));
         });
+      
       var tableTitle = [];
       [].concat(['Gene',"Log Fold Change","p-value","padj"],gInfo).forEach(function(d){tableTitle = tableTitle.concat({title:d})});
       var table = $('#DEGtable').DataTable({
@@ -5374,10 +5375,36 @@ function CellPopTable(){
       $(".CPVTablebt").prop("disabled",false);
       document.getElementById("CPVspin").style.visibility="hidden";
 
-      html_json = res; //html table object; easy to inter-convert between HTML table and Pandas df.
 
-      document.getElementById("CPVdatatable").innerHTML = html_json;
+      resTable = res; 
+      resTable = JSON.stringify(resTable);
+      resTable = resTable.split("\\n");
+      resTable = resTable.join('\n');
+      resTable = resTable.replace(/\\/g, '');
+      resTable = resTable.replace(/"/g,"");
       
+      var gInfo = resTable.split("\n")[0].split(',').slice(4);
+      
+      var tableD = d3.csvParse(resTable,function(data){
+        return [].concat([data.gene,
+                  (+data.log2fc).toFixed(2),
+                  (+data.pval).toExponential(2),
+                  (+data.qval).toExponential(2)],
+                  Object.values(data).slice(4));
+        });
+      
+      
+      var tableTitle = [];
+      [].concat(['Gene',"Log Fold Change","p-value","padj"],gInfo).forEach(function(d){tableTitle = tableTitle.concat({title:d})});
+      var table = $('#CPVdatatable').DataTable({
+        destroy: true,
+        dom:'Blfrtip',
+        lengthMenu:[[10,50,100,200],[10,50,100,200]],
+        order:[3,"asc"],
+        buttons:['csv'],
+        data:tableD,
+        columns:tableTitle
+      });
 
 
     },

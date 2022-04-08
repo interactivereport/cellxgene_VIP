@@ -1525,6 +1525,12 @@ def CellPopView(data):
     
     adata = createData(data)
 
+    #log_normalize
+    sc.pp.normalize_total(adata, target_sum=1e4)
+    sc.pp.log1p(adata)
+
+    adata.raw = adata
+
     #subset by cluster
     Cluster_Key = data['ClusterKey']
     
@@ -1574,6 +1580,12 @@ def cpvTable(data):
 
   adata = createData(data)
 
+  #log-normalize
+  sc.pp.normalize_total(adata, target_sum=1e4)
+  sc.pp.log1p(adata)
+
+  adata.raw = adata
+
   #subset by cluster
   Cluster_Key = data['ClusterKey']
     
@@ -1602,10 +1614,10 @@ def cpvTable(data):
   deg.index = deg['gene']
   deg = pd.concat([deg,gInfo],axis=1,sort=False)
 
-  restable = deg.to_html()
-  
-  ppr.pprint("Basic HTML Table created")
+  deg = deg.iloc[range(200),]
 
-  return json.dumps(restable)
+  deg = deg.to_csv(index=False)
+  
+  return json.dumps(deg)
 
 
