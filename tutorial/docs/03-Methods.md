@@ -1,37 +1,43 @@
 # Methods
 
-## Client-side	Integration	by	a	jsPanel	Window	(VIP) {-}
+## Client-side Integration by a jsPanel Window (VIP)
 
-Following section in config.sh file.
+Related lines in config.sh file.
 
 
 
 ```bash
-<script src="static/jquery.min.js"></script>
-<link href='static/jspanel/dist/jspanel.css' rel='stylesheet'>
-<script src='static/jspanel/dist/jspanel.js'></script>
-<script src='static/jspanel/dist/extensions/modal/jspanel.modal.js'></script>
-<script src='static/jspanel/dist/extensions/tooltip/jspanel.tooltip.js'></script>
-<script src='static/jspanel/dist/extensions/hint/jspanel.hint.js'></script>
-<script src='static/jspanel/dist/extensions/layout/jspanel.layout.js'></script>
-<script src='static/jspanel/dist/extensions/contextmenu/jspanel.contextmenu.js'></script>
-<script src='static/jspanel/dist/extensions/dock/jspanel.dock.js'></script>
+sed -i "s|<div id=\"root\"></div>|$(sed -e 's/[&\\/]/\\&/g; s/|/\\|/g; s/$/\\/;' -e '$s/\\$//' index_template.insert)\n&|" "cellxgene/client/index_template.html"
 ```
 
+The content of the index_template.insert file.
+
+
 ```js
+<script src="https://interactivereport.github.io/cellxgene_VIP/static/jquery.min.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://interactivereport.github.io/cellxgene_VIP/static/stackedbar/d3.v3.min.js"></script>
+<link href="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/jspanel.css" rel="stylesheet">
+<script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/jspanel.js"></script>
+<script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/extensions/modal/jspanel.modal.js"></script>
+<script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/extensions/tooltip/jspanel.tooltip.js"></script>
+<script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/extensions/hint/jspanel.hint.js"></script>
+<script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/extensions/layout/jspanel.layout.js"></script>
+<script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/extensions/contextmenu/jspanel.contextmenu.js"></script>
+<script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/extensions/dock/jspanel.dock.js"></script>
 <script>
-  // execute JavaScript code in panel content
-  var setInnerHTML = function(elm, html) {
+// execute JavaScript code in panel content
+var setInnerHTML = function(elm, html) {
     elm.innerHTML = html;
     Array.from(elm.querySelectorAll('script')).forEach( oldScript => {
-      const newScript = document.createElement('script');
-      Array.from(oldScript.attributes)
-      .forEach( attr => newScript.setAttribute(attr.name, attr.value) );
-      newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-      oldScript.parentNode.replaceChild(newScript, oldScript);
+        const newScript = document.createElement('script');
+        Array.from(oldScript.attributes)
+        .forEach( attr => newScript.setAttribute(attr.name, attr.value) );
+        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+        oldScript.parentNode.replaceChild(newScript, oldScript);
     });
-  }
-  var plotPanel = jsPanel.create({
+}
+var plotPanel = jsPanel.create({
     panelSize: '190 0',
     position: 'left-top 160 6',
     dragit: { containment: [-10, -2000, -4000, -2000] }, // set dragging range of VIP window
@@ -45,91 +51,105 @@ Following section in config.sh file.
     },
     headerTitle: function () {return '<strong>Visualization in Plugin</strong>'},
     contentAjax: {
-      url: 'static/interface.html',
-      done: function (panel) {
-            setInnerHTML(panel.content, this.responseText);
-      }
+        url: window.location.href.replace(/\\\/+$/,'')+'/static/interface.html',
+        done: function (panel) {
+               setInnerHTML(panel.content, this.responseText);
+        }
     },
     onwindowresize: function(event, panel) {
-      var jptop = parseInt(this.currentData.top);
-      var jpleft = parseInt(this.currentData.left);
-      
-      if (jptop<-10 || window.innerHeight-jptop<10 || window.innerWidth-jpleft<10 ||
-      jpleft+parseInt(this.currentData.width)<10) {
-        this.reposition("left-top 160 6");
-      }
+        var jptop = parseInt(this.currentData.top);
+        var jpleft = parseInt(this.currentData.left);
+        if (jptop<-10 || window.innerHeight-jptop<10 || window.innerWidth-jpleft<10 || jpleft+parseInt(this.currentData.width)<10) {
+            this.reposition("left-top 160 6");
+        }
     },
     onunsmallified: function (panel, status) {
-      this.reposition('center-top -370 180');
-      this.resize({ width: 740, height: function() { return Math.min(480, window.innerHeight*0.6);} });
+        this.reposition('center-top -370 180');
+        this.resize({ width: 740, height: function() { return Math.min(480, window.innerHeight*0.6);} });
     },
     onsmallified: function (panel, status) {
-      this.reposition('left-top 160 6');
-      this.style.width = '190px';
+        this.reposition('left-top 160 6');
+        this.style.width = '190px';
     }
-  }).smallify();
-  plotPanel.headerbar.style.background = "#D4DBDE";
-```
-
-```bash
+}).smallify();
+plotPanel.headerbar.style.background = "#D4DBDE";
 </script>
-EOF
-insertL=$(sed -e 's/[&\\/]/\\&/g; s/|/\\|/g; s/$/\\/;' -e '$s/\\$//' <<<"$insertL")
-sed -i "s|<div id=\"root\"></div>|$insertL\n&|" "cellxgene/client/index_template.html"
 ```
+All functional VIP HTML and JavaScript code will be in a new file called “interface.html”, which is out of cellxgene code base.
 
+## Server-side Integration
 
-
-All functional VIP HTML and JavaScript code will be in “interface.html” that is independent of cellxgene code bases.
-
-## Server-side	Integration {-}
-
-Following section in config.sh file.
+Related in config.sh file.
 
 ```bash
 echo '
-from server.app.biogenInterface import route  
-@webbp.route("/biogen", methods=["POST"]) 
-def biogen():
-  return route(request.data,current_app.app_config)' >> cellxgene/server/app/app.py
-.
-.
-.
+from server.app.VIPInterface import route
+@webbp.route("/VIP", methods=["POST"])
+def VIP():
+    return route(request.data,current_app.app_config)' >> cellxgene/server/app/app.py
 
-strPath="$(python -c 'import site; print(site.getsitepackages())')"
-strPath=${strPath//"['"/}
-strPath=${strPath//"']"/}
+cd cellxgene
+make pydist
+make install-dist
+cd ..
+
+## finished setting up ------
+./update.VIPInterface.sh all
+```
+
+The content of update.VIPInterface.sh file.
+
+```bash
+#!/usr/bin/env bash
+if [ -n "$1" ]; then
+echo "usually update once"
+fi
+
+## finished setting up ------
+strPath="$(python -c 'import site; print(site.getsitepackages()[0])')"
 strweb="${strPath}/server/common/web/static/."
-echo $strweb
-cp interface.html $strweb
-cp jquery.min.js $strweb
-cp color_map.png $strweb
 
-cp -R DataTables $strweb
-cp -R jspanel $strweb
-
-cp cellxgene/server/test/decode_fbs.py $strPath/server/app/.
 cp VIPInterface.py $strPath/server/app/.
+cp interface.html $strweb
+cp vip.env $strPath/server/app/. 2>/dev/null | true
+
+cp fgsea.R $strPath/server/app/.
+mkdir -p $strPath/server/app/gsea
+cp gsea/*gmt $strPath/server/app/gsea
+
+if [ -n "$1" ]; then
+  cp Density2D.R $strPath/server/app/.
+  cp bubbleMap.R $strPath/server/app/.
+  cp violin.R $strPath/server/app/.
+  cp volcano.R $strPath/server/app/.
+  cp browserPlot.R $strPath/server/app/.
+  if [ "$(uname -s)" = "Darwin" ]; then
+    sed -i .bak "s|route(request.data,current_app.app_config, \"/tmp\")|route(request.data,current_app.app_config)|" "$strPath/server/app/app.py"
+    sed -i .bak "s|MAX_LAYOUTS *= *[0-9]\+|MAX_LAYOUTS = 300|" "$strPath/server/common/constants.py"
+  else
+    sed -i "s|route(request.data,current_app.app_config, \"/tmp\")|route(request.data,current_app.app_config)|" "$strPath/server/app/app.py"
+    sed -i "s|MAX_LAYOUTS *= *[0-9]\+|MAX_LAYOUTS = 300|" "$strPath/server/common/constants.py"
+  fi
+
+  find ./cellxgene/server/ -name "decode_fbs.py" -exec cp {} $strPath/server/app/. \;
+fi
+
+echo -e "\nls -l $strweb\n"
+ls -l $strweb
 ```
 
 
 
-## Communication	between	VIP	and	cellxgene	web	GUI {-}
+## Communication between VIP and cellxgene web GUI
 
 Cellxgene client utilizes React Redux that is the official React binding for Redux. It lets your React components read data from a Redux store, and dispatch actions to the store to update data.
 
-So, this line of code is appended to the end of client/src/reducers/index.js of cellxgene source code to expose the store to the browser.
+So, this following code in config.sh appends "window.store = store;" to the end of client/src/reducers/index.js of cellxgene source code to expose the store to the browser.
 
 
-
-```js
-window.store = store;
+```bash
+echo -e "\nwindow.store = store;" >> cellxgene/client/src/reducers/index.js
 ```
-
-
-<script type="text/javascript">
-window.store = store;
-</script>
 
 
 By doing this, Redux store holding client data and user selections are visible to VIP to access variables and dispatch actions to control cellxgene user interface. For example,
@@ -143,7 +163,7 @@ window.store.dispatch({type: "categorical metadata filter deselect", metadataFie
 window.store.dispatch({type: "categorical metadata filter select", metadataField: "louvain", categoryIndex: 5})
 ```
 
-- Get state of just finished action and synchronize gene input and cell selections from main window to VIP if corresponding action was performed.
+- Get the state of a just finished action and synchronize gene input and cell selections from main window to VIP if corresponding action was performed.
 
 
 
@@ -159,7 +179,7 @@ const unsubscribe = window.store.subscribe(() => {
 });
 ```
 
-## Diffxpy	Integration
+## Diffxpy Integration
 
 This is the sample pseudocode, please see VIPInterface.py for actual implementation.
 
@@ -182,11 +202,12 @@ deg = de.test.two_sample(adata,'comGrp').summary()
 ```
 
 
-## Create	h5ad	file	from	Seurat	object
+## Create a h5ad file from Seurat object
 
 First, export the following from Seurat object in R: **expression matrix (assume normalized), metadata and coordinates (pca, tsne, umap) as separate txt files.**
 
-Next in Python, create an AnnData object from 10x (scanpy.read_h5ad function) as a starting point. Then replace the expression matrix, meta data and coordinates as following, a h5ad file would be generated.
+Next in Python, create an AnnData object from 10x (scanpy.read_h5ad function) as a starting point. Then replace the expression matrix, meta data and coordinates as shown in the following Python code block to generate a h5ad file.
+
 
 ```python
 import sys
@@ -216,7 +237,7 @@ adata.obsm['X_tsne'] = np.array(xtsne.loc[adataRaw.obs.index])
 adata.obsm['X_umap'] = np.array(xumap.loc[adataRaw.obs.index])
 adata.obs = xobs.loc[adataRaw.obs.index] # this is a pandas dataframe
 
-# read in expression matrix as numpy.ndarray as following:
+# read in expression matrix as numpy.ndarray
 exp_mat = np.loadtxt(fname =”expression matrix .txt")
 adata.X = exp_mat
 
@@ -230,6 +251,7 @@ adata.obs['>Description'] = ['Human brain snRNAseq 46k cells (MS Nature 2019 Sch
 adata.write_h5ad("final output.h5ad")
 ```
 
+When the h5ad file is uploaded to cellxgeneVIP, AnnData.X matrix is to be used for visualization and DEG analysis. By default, the data (e.g, raw count matrix) is assumed to be unscaled , however, if the data have been scaled or normalized, the user needs to turn off the option ‘Scale data to unit variance for plotting:’ in ‘Global Setting’.
 
 
 

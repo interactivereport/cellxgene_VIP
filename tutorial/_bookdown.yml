@@ -4,8 +4,9 @@ delete_merged_file: true
 #     chapter_name: ""
 #     #chapter_name: "Chapter "
 chapter_name: "Chapter "
+book_filename: "cellxgene_VIP"
 output_dir: docs
-rmd_files: ["index.Rmd", "01-WebSource.Rmd", "02-HowTo.Rmd", "03-Methods.Rmd", "04-Tips.Rmd"]
+rmd_files: ["index.Rmd", "02-HowTo.Rmd", "03-Methods.Rmd", "04-Tips.Rmd", "01-WebSource.Rmd"]
 
 bibliography: [packages.bib, book.bib]
 new_session: yes
