@@ -651,7 +651,11 @@
       <button class="CPVTablebt" onclick="CellPopTable()"><b>Table</b></button>
       <p id="CPVnote" style="color:red;"></p>
       <div id="CPVspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <p id="CPVfig"></p>
+      <button onclick="ZoomIn('CPVresize')">Zoom In</button>
+      <button onclick="ZoomOut('CPVresize')">Zoom Out</button>
+      <div id="CPVresize" style="height: 'auto'; width: 'auto'; padding: 0.5em;">
+        <p id="CPVfig"></p>
+      </div>
       <table id="CPVdatatable" class="display"></table>
     </div><!--CellPopView-->
 
