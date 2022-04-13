@@ -5312,6 +5312,7 @@ function CellPopPlot(){
 		'Cond1':CPV_Con1,
 		'Cond2':CPV_Con2};
     $(".CPVbt").prop("disabled",true);
+    $(".CPVTablebt").prop("disabled",true);
     document.getElementById("CPVspin").style.visibility="visible";
     
     $.ajax({
@@ -5321,6 +5322,7 @@ function CellPopPlot(){
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
       $(".CPVbt").prop("disabled",false);
+      $(".CPVTablebt").prop("disabled",false);
       document.getElementById("CPVspin").style.visibility="hidden";
       //$("#CPVnote").text('Success!');
       
@@ -5368,6 +5370,7 @@ function CellPopTable(){
 		'Cond1':CPV_Con1,
 		'Cond2':CPV_Con2};
     $(".CPVTablebt").prop("disabled",true);
+    $(".CPVbt").prop("disabled",true);
     document.getElementById("CPVspin").style.visibility="visible";
     
     $.ajax({
@@ -5377,6 +5380,7 @@ function CellPopTable(){
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
       $(".CPVTablebt").prop("disabled",false);
+      $(".CPVbt").prop("disabled",false);
       document.getElementById("CPVspin").style.visibility="hidden";
 
 
