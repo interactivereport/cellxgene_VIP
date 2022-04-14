@@ -21,7 +21,7 @@ whole or sliced single cell dataset.
 
 ## Online tutorial: https://interactivereport.github.io/cellxgene_VIP/tutorial/docs
 
-## Pre-print: https://www.biorxiv.org/content/10.1101/2020.08.28.270652v1
+## Pre-print: https://www.biorxiv.org/content/10.1101/2020.08.28.270652v2
 
 # Installation instruction
 
