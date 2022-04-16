@@ -25,6 +25,8 @@ import os
 import re
 import glob
 import subprocess
+from multiprocessing import Process, Queue
+
 strExePath = os.path.dirname(os.path.abspath(__file__))
 
 import pprint
@@ -48,15 +50,27 @@ def getLock(lock):
 def freeLock(lock):
     lock.release()
 
-def route(data,appConfig):
-  #ppr.pprint("current working dir:%s"%os.getcwd())
+def runJob(q, data, appConfig):
   data = initialization(data,appConfig)
-  #ppr.pprint(data)
+  try:
+      taskRes = distributeTask(data["method"])(data)
+      q.put([False, taskRes])
+  except Exception as e:
+    q.put([True, traceback.format_exc()])
+
+def route(data,appConfig):
+  q = Queue()
+  p = Process(target=runJob, args=(q, data, appConfig,))
   try:
     getLock(jobLock)
-    taskRes = distributeTask(data["method"])(data)
+    p.start()
+    has_error, data = q.get()
+    p.join()
     freeLock(jobLock)
-    return taskRes
+    if has_error:
+        return 'ERROR @server: '+data
+    else:
+        return data
   except Exception as e:
     freeLock(jobLock)
     return 'ERROR @server: '+traceback.format_exc() # 'ERROR @server: {}, {}'.format(type(e),str(e))
