@@ -25,7 +25,8 @@ import os
 import re
 import glob
 import subprocess
-import psutil,gc
+import gc #,psutil
+
 strExePath = os.path.dirname(os.path.abspath(__file__))
 
 import pprint
