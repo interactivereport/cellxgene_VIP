@@ -25,6 +25,7 @@ import os
 import re
 import glob
 import subprocess
+import psutil,gc
 strExePath = os.path.dirname(os.path.abspath(__file__))
 
 import pprint
@@ -56,6 +57,9 @@ def route(data,appConfig):
     getLock(jobLock)
     taskRes = distributeTask(data["method"])(data)
     freeLock(jobLock)
+    gc.collect()
+    #ppr.pprint("memory usage: rss (%dM) and vms (%dM)"%(int(psutil.Process().memory_info().rss / 1024 **2),
+    #                                                    int(psutil.Process().memory_info().vms / 1024 **2)))
     return taskRes
   except Exception as e:
     freeLock(jobLock)
@@ -721,6 +725,7 @@ def DEG(data):
     deg = res.summary()
     deg = deg.sort_values(by=['qval']).loc[:,['gene','log2fc','pval','qval']]
     deg['log2fc'] = -1 * deg['log2fc']
+  #del adata
   ## plot in R
   #strF = ('/tmp/DEG%f.csv' % time.time())
   strF = ('%s/DEG%f.csv' % (data["CLItmp"],time.time()))
