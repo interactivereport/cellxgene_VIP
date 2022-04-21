@@ -531,82 +531,112 @@ def pHeatmap(data):
     #s = adata.obs[data['order']]
     #ix = sorted(range(len(s)), key=lambda k: s[k])
     #adata = adata[ix,]
-  colCounter = 0
-  colName =['Set1','Set3']
-  grpCol = list()
-  grpLegend = list()
-  grpWd = list()
-  grpLen = list()
   h = 8
-  w = len(data['genes'])/3+0.3
-  for gID in data['grp']:
+  w = len(data['genes'])/3+0.3 + 2
+  heatCol=data['color']
+  Zscore=None
+  heatCenter=None
+  colTitle="Expression"
+  
+  if data['plotMethod']=='sns':
+    colCounter = 0
+    colName =['Set1','Set3']
+    grpCol = list()
+    grpLegend = list()
+    grpWd = list()
+    grpLen = list()
+    for gID in data['grp']:
       grp = adata.obs[gID]
       Ugrp = grp.unique()
       if len(Ugrp)<10:
-          lut = dict(zip(Ugrp,sns.color_palette(colName[colCounter%2],len(Ugrp)).as_hex()))
-          colCounter += 1
+        lut = dict(zip(Ugrp,sns.color_palette(colName[colCounter%2],len(Ugrp)).as_hex()))
+        colCounter += 1
       elif len(Ugrp)<20:
-          lut = dict(zip(Ugrp,sns.color_palette(n_colors=len(Ugrp)).as_hex()))
+        lut = dict(zip(Ugrp,sns.color_palette(n_colors=len(Ugrp)).as_hex()))
       else:
-          lut = dict(zip(Ugrp,sns.color_palette("husl",len(Ugrp)).as_hex()))
+        lut = dict(zip(Ugrp,sns.color_palette("husl",len(Ugrp)).as_hex()))
       grpCol.append(grp.map(lut))
       grpLegend.append([mpatches.Patch(color=v,label=k) for k,v in lut.items()])
       grpWd.append(max([len(x) for x in Ugrp]))#0.02*fW*max([len(x) for x in Ugrp])
       grpLen.append(len(Ugrp)+2)
-
-  w += 2
-  Zscore=None
-  heatCol=data['color']
-  heatCenter=None
-  colTitle="Expression"
-  if data['norm']=='zscore':
-    Zscore=1
-    #heatCol="vlag"
-    heatCenter=0
-    colTitle="Z-score"
-  #ppr.pprint('HEAT data preparing cost %f seconds' % (time.time()-sT) )
-  #sT = time.time()
-
-  try:
-    g = sns.clustermap(adata.to_df(),
-                     method="ward",row_cluster=exprOrder,z_score=Zscore,cmap=heatCol,center=heatCenter,
-                     row_colors=pd.concat(grpCol,axis=1).astype('str'),yticklabels=False,xticklabels=True,
-                     figsize=(w,h),colors_ratio=0.05,
-                     cbar_pos=(.3, .95, .55, .02),
-                     cbar_kws={"orientation": "horizontal","label": colTitle,"shrink": 0.5})
-  except Exception as e:
-    return 'ERROR: Z score calculation failed for 0 standard diviation. '+traceback.format_exc() # 'ERROR @server: {}, {}'.format(type(e),str(e))
-
-
-  #ppr.pprint('HEAT plotting cost %f seconds' % (time.time()-sT) )
-  #sT = time.time()
-  g.ax_col_dendrogram.set_visible(False)
-  #g.ax_row_dendrogram.set_visible(False)
-  plt.setp(g.ax_heatmap.xaxis.get_majorticklabels(), rotation=90)
-  grpW = [1.02]
-  grpH = [1.2]
-  cumulaN = 0
-  cumulaMax = 0
-  characterW=1/40 # a character is 1/40 of heatmap width
-  characterH=1/40 # a character is 1/40 of heatmap height
-  for i in sorted(range(len(grpLen)),key=lambda k:grpLen[k]):#range(5):#
+    if data['norm']=='zscore':
+      Zscore=1
+      #heatCol="vlag"
+      heatCenter=0
+      colTitle="Z-score"
+    #ppr.pprint('HEAT data preparing cost %f seconds' % (time.time()-sT) )
+    #sT = time.time()
+  
+    try:
+      g = sns.clustermap(adata.to_df(),
+                       method="ward",row_cluster=exprOrder,z_score=Zscore,cmap=heatCol,center=heatCenter,
+                       row_colors=pd.concat(grpCol,axis=1).astype('str'),yticklabels=False,xticklabels=True,
+                       figsize=(w,h),colors_ratio=0.05,
+                       cbar_pos=(.3, .95, .55, .02),
+                       cbar_kws={"orientation": "horizontal","label": colTitle,"shrink": 0.5})
+    except Exception as e:
+      return 'ERROR: Z score calculation failed for 0 standard diviation. '+traceback.format_exc() # 'ERROR @server: {}, {}'.format(type(e),str(e))
+  
+  
+    #ppr.pprint('HEAT plotting cost %f seconds' % (time.time()-sT) )
+    #sT = time.time()
+    g.ax_col_dendrogram.set_visible(False)
+    #g.ax_row_dendrogram.set_visible(False)
+    plt.setp(g.ax_heatmap.xaxis.get_majorticklabels(), rotation=90)
+    grpW = [1.02]
+    grpH = [1.2]
+    cumulaN = 0
+    cumulaMax = 0
+    characterW=1/40 # a character is 1/40 of heatmap width
+    characterH=1/40 # a character is 1/40 of heatmap height
+    for i in sorted(range(len(grpLen)),key=lambda k:grpLen[k]):#range(5):#
       cumulaN += grpLen[i]
       if cumulaN>(10+1/characterH):
-        grpW.append(grpW[-1]+cumulaMax)
-        grpH = [1.2]
-        cumulaN =0
-        cumulaMax=0
+          grpW.append(grpW[-1]+cumulaMax)
+          grpH = [1.2]
+          cumulaN =0
+          cumulaMax=0
       leg = g.ax_heatmap.legend(handles=grpLegend[i],frameon=True,title=data['grp'][i],loc="upper left",
                                 bbox_to_anchor=(grpW[-1],grpH[-1]),fontsize=5)#grpW[i],0.5,0.3
       #leg = g.ax_heatmap.legend(handles=grpLegend[0],frameon=True,title=data['grp'][0],loc="upper left",
       #                          bbox_to_anchor=(1.02,1-i*0.25),fontsize=5)#grpW[i],0.5,0.
       cumulaMax = max([cumulaMax,grpWd[i]*characterW])
       grpH.append(grpH[-1]-grpLen[i]*characterH)
-
       leg.get_title().set_fontsize(6)#min(grpSize)+2
       g.ax_heatmap.add_artist(leg)
-  #ppr.pprint('HEAT post plotting cost %f seconds' % (time.time()-sT) )
-  return iostreamFig(g)#json.dumps([iostreamFig(g),Xdata])#)#
+    #ppr.pprint('HEAT post plotting cost %f seconds' % (time.time()-sT) )
+    return iostreamFig(g)#json.dumps([iostreamFig(g),Xdata])#)#
+  elif data['plotMethod']=='cHeatmap':
+    characterW=1/40
+    grpW = list()
+    grpN = list()
+    for gID in data['grp']:
+      grp = adata.obs[gID]
+      Ugrp = grp.unique()
+      grpN.append(1+len(Ugrp))
+      grpW.append(max([len(x) for x in Ugrp]))
+    legendCol = math.ceil(sum(grpN)/40)
+    w=w+characterW*sum(sorted(grpW,reverse=True)[0:legendCol])
+    strF = ('%s/HEAT%f.csv' % (data["CLItmp"],time.time()))
+    D = adata.to_df()
+    if data['norm']=='zscore':
+      for one in D.columns:
+        D[one] = (D[one]-D[one].mean())/D[one].std()
+      colTitle="Z-score"
+    D = pd.concat([D,adata.obs],axis=1,sort=False)
+    D.to_csv(strF,index=False)
+    ## plot in R
+    cmd = "%s/complexHeatmap.R %s %s %s %s %f %f %s %s %s %s '%s'"%(strExePath,strF,','.join(data['genes']),colTitle,exprOrder,w,h,heatCol,
+      data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib'])
+    #ppr.pprint(cmd)
+    res = subprocess.run(cmd,check=True,shell=True,capture_output=True)#
+    img = res.stdout.decode('utf-8')
+    os.remove(strF)
+    if 'Error' in res.stderr.decode('utf-8'):
+      raise SyntaxError("in R: "+res.stderr.decode('utf-8'))
+    return img
+  else:
+    raise ValueError('Unknown heatmap plotting method (%s)!'%data['plotMethod'])
 
 def HeatData(data):
   adata = createData(data)

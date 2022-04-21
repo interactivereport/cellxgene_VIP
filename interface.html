@@ -863,6 +863,11 @@
                 <tr valign="top"><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_sequential.png" width="300"></td><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_diverging.png" width="300"></td></tr>
               </table>
     		</div>
+    		<p>Select plotting methods:
+    		  <select id="HEATplotMethod">
+    		    <option value="sns">Seaborn (python)</option>
+    		    <option value="cHeatmap">ComplexHeatmap (R)</option>
+    		  </select></p>
       </div>
       <button class="HEATbt"  onclick="HEATplot()"><b>Plot</b></button>
       <button class="HEATsaveBT" onclick="HEATdata()" disabled>Get Data</button>
@@ -1449,6 +1454,7 @@
       <select id="IMGimg" onchange="IMGset()">
         <option value='png'>PNG</option>
         <option value='svg'>SVG</option>
+        <option value='pdf'>PDF</option>
       </select></p>
       <p>Font size:
       <input id="IMGfontsize" type="number" step="1" value="11" min="5" onchange="IMGset()"/></p>
@@ -3876,14 +3882,18 @@ function HEATcheck(){
   $(".HEATsaveBT").prop('disabled',true);
   var color = $("#HEATcolor").val();
   if ($("#HEATcolor_r")[0].checked) color += '_r';
+  if($("#HEATplotMethod").val()=="cHeatmap" && orderGrp=="Expression"){
+    $('#HEATnote').text("The cells with sd=0 and value<1 across all selected genes will be removed");
+  }
   var D = {'method':'HEAT',
             'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'cells':cells,
             'genes':genes,
             'order':orderGrp,
-            'norm':$("#HEATnorm option:selected").val(),
+            'norm':$("#HEATnorm").val(),
             'grp':grps,
             'color':color,
+            'plotMethod':$("#HEATplotMethod").val(),
             'abb':window.bioAbbr,
             'combine':combGrp,
             'combineOrder':combGrpOrder,
