@@ -1526,8 +1526,8 @@ def CellPopView(data):
     adata = createData(data)
 
     #log_normalize
-    sc.pp.normalize_total(adata, target_sum=1e4)
-    sc.pp.log1p(adata)
+    #sc.pp.normalize_total(adata, target_sum=1e4)
+    #sc.pp.log1p(adata)
 
     #subset by cluster
     Cluster_Key = data['ClusterKey']
@@ -1554,11 +1554,10 @@ def CellPopView(data):
    
     
     Table_1 = Table_1.transpose() #now genes = rows, cells = columns
-    Expression_1 = Table_1.mean(axis=1) #extracts the average of every row, e.g. average expression of every gene
-    
+    Expression_1 = np.log1p(np.expm1(Table_1).mean(axis=1)) #extracts the average of every row, e.g. average expression of every gene
 
     Table_2 = Table_2.transpose()
-    Expression_2 = Table_2.mean(axis=1) #average expression of every gene in Cluster 3, Condition S
+    Expression_2 = np.log1p(np.expm1(Table_2).mean(axis=1)) #average expression of every gene in Cluster 3, Condition S
 
     #get 'top gene'
     pairs = zip(Expression_1, Expression_2)
