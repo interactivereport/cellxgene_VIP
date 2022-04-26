@@ -5409,12 +5409,49 @@ function CellPopTable(){
         dom:'Blfrtip',
         lengthMenu:[[10,50,100,200],[10,50,100,200]],
         order:[3,"asc"],
-        buttons:['csv'],
+        buttons:['csv', {
+          extend:'csv',
+          text:'GOA',
+          exportOptions: {
+            columns: 0
+          },
+          customize: function(csv) {
+            csv = csv.replace(/"/g, '');
+            var csv_split = csv.split("\n");
+            csv_split.shift();
+
+            var geneList = [];
+
+            for (element of csv_split) {
+              //console.log(element);
+              element = element.replace("-","_");
+              element = element.split('.')[0];
+              //console.log(element);
+              geneList.push(element);
+            }
+
+            var url = "https://plasmodb.org/plasmo/app/search?q=";
+
+            var top_10 = geneList.slice(0, 10);
+
+            for (element of top_10) {
+
+              url = url.concat("+",element);
+              //console.log(url);
+
+            }
+
+            window.open(url);
+
+            var new_csv = geneList.join()
+            return geneList;
+          }
+        }],
         data:tableD,
         columns:tableTitle
       });
 
-
+  
     },
     error: function() {
       $("#CPVnote").text('Table Error!');

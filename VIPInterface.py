@@ -1529,8 +1529,6 @@ def CellPopView(data):
     sc.pp.normalize_total(adata, target_sum=1e4)
     sc.pp.log1p(adata)
 
-    adata.raw = adata
-
     #subset by cluster
     Cluster_Key = data['ClusterKey']
     
@@ -1561,6 +1559,16 @@ def CellPopView(data):
 
     Table_2 = Table_2.transpose()
     Expression_2 = Table_2.mean(axis=1) #average expression of every gene in Cluster 3, Condition S
+
+    #get 'top gene'
+    pairs = zip(Expression_1, Expression_2)
+    pairs=list(pairs)
+
+    top_coord = max(pairs)
+
+    max_gene = Expression_1[Expression_1  == top_coord[0]].index.tolist()[0]
+
+    #plotting graph
     
     plt.scatter(Expression_1,Expression_2, label = "stars", color = "black", 
             marker = ".",  s =30) 
@@ -1571,6 +1579,16 @@ def CellPopView(data):
 
     plt.xlabel(Condition1)
     plt.ylabel(Condition2)
+
+    bot,top= plt.ylim()
+
+    plt.ylim(bot,top+1)
+
+    plt.annotate(max_gene,
+             top_coord,
+             textcoords="offset points",
+             xytext=(-40,10),
+             ha='center')
     
     CellPopPlot = plt.gcf()
     
@@ -1583,8 +1601,6 @@ def cpvTable(data):
   #log-normalize
   sc.pp.normalize_total(adata, target_sum=1e4)
   sc.pp.log1p(adata)
-
-  adata.raw = adata
 
   #subset by cluster
   Cluster_Key = data['ClusterKey']
@@ -1604,7 +1620,7 @@ def cpvTable(data):
   adata = adata[adata.obs[Condition_Key].isin([Condition1,Condition2])]
 
   #Differential Expression Analysis
-  res = de.test.t_test(adata,grouping=Condition_Key)
+  res = de.test.t_test(adata,grouping=Condition_Key) #DE method = t-test
 
   deg = res.summary()
   deg = deg.sort_values(by=['qval']).loc[:,['gene','log2fc','pval','qval']]
