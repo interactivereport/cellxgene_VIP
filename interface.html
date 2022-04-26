@@ -656,6 +656,9 @@
       <div id="CPVresize" style="height: 'auto'; width: 'auto'; padding: 0.5em;">
         <p id="CPVfig"></p>
       </div>
+      <p id="LFC_Note" style="visibility: hidden;">Select a Log Fold Change Threshold:
+      <input type="number" id="DEG_LFC" value="0.5" step="0.1" style="visibility: hidden;"></p>
+      <p></p>
       <table id="CPVdatatable" class="display"></table>
     </div><!--CellPopView-->
 
@@ -5382,7 +5385,8 @@ function CellPopTable(){
       $(".CPVTablebt").prop("disabled",false);
       $(".CPVbt").prop("disabled",false);
       document.getElementById("CPVspin").style.visibility="hidden";
-
+      document.getElementById("DEG_LFC").style.visibility="visible";
+      document.getElementById("LFC_Note").style.visibility="visible";
 
       resTable = res; 
       resTable = JSON.stringify(resTable);
@@ -5411,30 +5415,46 @@ function CellPopTable(){
         order:[3,"asc"],
         buttons:['csv', {
           extend:'csv',
-          text:'GOA',
-          exportOptions: {
-            columns: 0
-          },
+          text:'PlasmoDB (Up)',
+          //exportOptions: {
+            //columns: 0
+          //},
           customize: function(csv) {
+
+            var LFC = document.getElementById("DEG_LFC").value;
+
             csv = csv.replace(/"/g, '');
             var csv_split = csv.split("\n");
             csv_split.shift();
 
+            console.log(csv_split);
+
             var geneList = [];
 
             for (element of csv_split) {
-              //console.log(element);
+              console.log(element);
+              data = element.split(',');
+              console.log(data[1]);
+              if(parseFloat(data[1]) > parseFloat(LFC)){
+                geneList.push(data[0]);
+              }
+            }
+
+            console.log(geneList);
+
+            var preppedGenes = [];
+
+            for (element of geneList) {
+              console.log(element);
               element = element.replace("-","_");
               element = element.split('.')[0];
-              //console.log(element);
-              geneList.push(element);
+              console.log(element);
+              preppedGenes.push(element);
             }
 
             var url = "https://plasmodb.org/plasmo/app/search?q=";
 
-            var top_10 = geneList.slice(0, 10);
-
-            for (element of top_10) {
+            for (element of preppedGenes) {
 
               url = url.concat("+",element);
               //console.log(url);
@@ -5443,9 +5463,65 @@ function CellPopTable(){
 
             window.open(url);
 
-            var new_csv = geneList.join()
-            return geneList;
+            //searchPDB();
+
+            var new_csv = preppedGenes.join()
+            return new_csv;
           }
+        }, {
+          extend:'csv',
+          text:'PlasmoDB (Down)',
+          customize: function(csv) {
+
+            var LFC = document.getElementById("DEG_LFC").value;
+
+            csv = csv.replace(/"/g, '');
+            var csv_split = csv.split("\n");
+            csv_split.shift();
+
+            console.log(csv_split);
+
+            var geneList = [];
+
+            for (element of csv_split) {
+              console.log(element);
+              data = element.split(',');
+              console.log(data[1]);
+              console.log(LFC);
+              if(parseFloat(data[1]) < parseFloat(LFC)){
+                geneList.push(data[0]);
+              }
+            }
+
+            console.log(geneList);
+
+            var preppedGenes = [];
+
+            for (element of geneList) {
+              console.log(element);
+              element = element.replace("-","_");
+              element = element.split('.')[0];
+              console.log(element);
+              preppedGenes.push(element);
+            }
+
+            var url = "https://plasmodb.org/plasmo/app/search?q=";
+
+            for (element of preppedGenes) {
+
+              url = url.concat("+",element);
+              //console.log(url);
+
+            }
+
+            window.open(url);
+
+            //searchPDB();
+
+            var new_csv = preppedGenes.join()
+            return new_csv;
+          }
+
         }],
         data:tableD,
         columns:tableTitle
@@ -5464,6 +5540,17 @@ return
     $('#CPVdatatable').empty();
 
 }
+
+//function searchPDB(){
+  //$.ajax({
+            //type: "POST",
+            //url: "https://plasmodb.org/plasmo/service/users/current/datasets",
+            //data: {ids: ['PF3D7_1133400', 'PF3D7_1133500']},
+            //success: function(res){
+              //console.log(res);
+            //}
+            //})
+//
 
 function loadexe(content){
   if(content['saveName']!='cellxgene.'+window.store.getState().config.displayNames.dataset){
