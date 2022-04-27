@@ -49,7 +49,7 @@ if(clusterRow){
 
 ## annotation
 anno_df <- D[,!colnames(D)%in%genes,drop=F]
-anno_df <- anno_df[,sapply(anno_df,function(x)return(length(unique(x))))<50]
+anno_df <- anno_df[,sapply(anno_df,function(x)return(length(unique(x))))<50,drop=F]
 ann_col <- apply(anno_df,2,function(x){
   if(is.numeric(x)) {
     if(prod(range(x))<0)
