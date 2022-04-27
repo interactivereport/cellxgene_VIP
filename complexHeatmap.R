@@ -75,14 +75,22 @@ colorN <- length(colorSet)
 if(imgColRev) colorSet <- rev(colorSet)
 matRange <- range(mat)
 if(prod(matRange)<0){
-  colorBreak <- c(head(seq(matRange[1],0,length.out=ceiling(colorN/2)),-1),0,
-                  seq(0,matRange[2],length.out=ceiling(colorN/2))[-1])
+  if(max(abs(matRange))>30){
+    colorBreak <- c(head(quantile(mat[mat<0],seq(0,1,length.out=ceiling(colorN/2))),-1),0,
+                    quantile(mat[mat>0],seq(0,1,length.out=ceiling(colorN/2)))[-1])
+  }else{
+    colorBreak <- c(head(seq(matRange[1],0,length.out=ceiling(colorN/2)),-1),0,
+                    seq(0,matRange[2],length.out=ceiling(colorN/2))[-1])
+  }
 }else{
-  colorBreak <- seq(matRange[1],matRange[2],length.out=colorN)
+  if(max(abs(matRange))>30){
+    colorBreak <- quantile(mat[mat!=0],seq(0,1,length.out=colorN))
+  }else{
+    colorBreak <- seq(matRange[1],matRange[2],length.out=colorN)
+  }
+
 }
 col_fun <- circlize::colorRamp2(colorBreak,colorSet)
-
-
 }))
 
 strImg <- gsub("csv$",strFun,strCSV)
