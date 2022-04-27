@@ -5422,51 +5422,10 @@ function CellPopTable(){
           customize: function(csv) {
 
             var LFC = document.getElementById("DEG_LFC").value;
+            
+            results = searchPDB(csv,'up',LFC);
 
-            csv = csv.replace(/"/g, '');
-            var csv_split = csv.split("\n");
-            csv_split.shift();
-
-            console.log(csv_split);
-
-            var geneList = [];
-
-            for (element of csv_split) {
-              console.log(element);
-              data = element.split(',');
-              console.log(data[1]);
-              if(parseFloat(data[1]) > parseFloat(LFC)){
-                geneList.push(data[0]);
-              }
-            }
-
-            console.log(geneList);
-
-            var preppedGenes = [];
-
-            for (element of geneList) {
-              console.log(element);
-              element = element.replace("-","_");
-              element = element.split('.')[0];
-              console.log(element);
-              preppedGenes.push(element);
-            }
-
-            var url = "https://plasmodb.org/plasmo/app/search?q=";
-
-            for (element of preppedGenes) {
-
-              url = url.concat("+",element);
-              //console.log(url);
-
-            }
-
-            window.open(url);
-
-            //searchPDB();
-
-            var new_csv = preppedGenes.join()
-            return new_csv;
+            return results;
           }
         }, {
           extend:'csv',
@@ -5474,52 +5433,10 @@ function CellPopTable(){
           customize: function(csv) {
 
             var LFC = document.getElementById("DEG_LFC").value;
+            
+            results = searchPDB(csv,'down',LFC);
 
-            csv = csv.replace(/"/g, '');
-            var csv_split = csv.split("\n");
-            csv_split.shift();
-
-            console.log(csv_split);
-
-            var geneList = [];
-
-            for (element of csv_split) {
-              console.log(element);
-              data = element.split(',');
-              console.log(data[1]);
-              console.log(LFC);
-              if(parseFloat(data[1]) < parseFloat(LFC)){
-                geneList.push(data[0]);
-              }
-            }
-
-            console.log(geneList);
-
-            var preppedGenes = [];
-
-            for (element of geneList) {
-              console.log(element);
-              element = element.replace("-","_");
-              element = element.split('.')[0];
-              console.log(element);
-              preppedGenes.push(element);
-            }
-
-            var url = "https://plasmodb.org/plasmo/app/search?q=";
-
-            for (element of preppedGenes) {
-
-              url = url.concat("+",element);
-              //console.log(url);
-
-            }
-
-            window.open(url);
-
-            //searchPDB();
-
-            var new_csv = preppedGenes.join()
-            return new_csv;
+            return results;
           }
 
         }],
@@ -5541,16 +5458,101 @@ return
 
 }
 
-//function searchPDB(){
+function searchPDB(csv,direc,threshold){
+  
+  if(direc=='up'){
+
+    csv = csv.replace(/"/g, '');
+            var csv_split = csv.split("\n");
+            csv_split.shift();
+
+            var geneList = [];
+
+            for (element of csv_split) {
+              
+              data = element.split(',');
+              
+              if(parseFloat(data[1]) > parseFloat(threshold)){
+                geneList.push(data[0]);
+              }
+            }
+
+            var preppedGenes = [];
+
+            for (element of geneList) {
+              
+              element = element.replace("-","_");
+              element = element.split('.')[0];
+              
+              preppedGenes.push(element);
+            }
+
+            var url = "https://plasmodb.org/plasmo/app/search?q=";
+
+            for (element of preppedGenes) {
+
+              url = url.concat("+",element);
+
+            }
+
+            window.open(url);
+
+            var new_csv = preppedGenes.join()
+            return new_csv
+
+  }else{
+    csv = csv.replace(/"/g, '');
+            var csv_split = csv.split("\n");
+            csv_split.shift();
+            var geneList = [];
+
+            for (element of csv_split) {
+              
+              data = element.split(',');
+              
+              if(parseFloat(data[1]) < parseFloat(threshold)){
+                geneList.push(data[0]);
+              }
+            }
+
+            var preppedGenes = [];
+
+            for (element of geneList) {
+              
+              element = element.replace("-","_");
+              element = element.split('.')[0];
+              
+              preppedGenes.push(element);
+            }
+
+            var url = "https://plasmodb.org/plasmo/app/search?q=";
+
+            for (element of preppedGenes) {
+
+              url = url.concat("+",element);
+
+            }
+
+            window.open(url);
+
+            var new_csv = preppedGenes.join()
+            return new_csv;
+
+  }
+
+}
+
+//function postPDB(){
   //$.ajax({
             //type: "POST",
-            //url: "https://plasmodb.org/plasmo/service/users/current/datasets",
+            //url: "https://cors-anywhere.herokuapp.com/https://plasmodb.org/plasmo/service/users/current/datasets",
             //data: {ids: ['PF3D7_1133400', 'PF3D7_1133500']},
             //success: function(res){
               //console.log(res);
             //}
             //})
-//
+          //}
+
 
 function loadexe(content){
   if(content['saveName']!='cellxgene.'+window.store.getState().config.displayNames.dataset){
