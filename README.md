@@ -73,6 +73,7 @@ R -q -e 'if(!require(fastmatch)) devtools::install_version("fastmatch",version="
 R -q -e 'if(!require(BiocManager)) devtools::install_version("BiocManager",version="1.30.10",repos = "http://cran.us.r-project.org")'
 R -q -e 'if(!require(fgsea)) BiocManager::install("fgsea")'
 R -q -e 'if(!require(rtracklayer)) BiocManager::install("rtracklayer")'
+R -q -e 'if(!require(rjson)) devtools::install_version("rjson",version="0.2.20",repos = "https://cran.us.r-project.org")'
 R -q -e 'if(!require(ComplexHeatmap)) BiocManager::install("ComplexHeatmap")'
 
 
