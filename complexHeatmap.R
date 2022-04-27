@@ -105,20 +105,3 @@ a <- dev.off()
 fig = base64enc::dataURI(file = strImg)
 cat(gsub("data:;base64,","",fig))
 a <- file.remove(strImg)
-
-
-## test matrix
-if(F){
-nCell <- 50000
-nGene <- 10
-nGrp <- 5
-mat = matrix(nrow = nCell, ncol = nGene,dimnames=list(paste0("c_",1:nCell),paste0("g_",1:nGene)))
-for(i in 1:nCell) {
-  nHalf <- floor(nGene/2)
-  mat[i, ] = runif(nGene) + c(sort(abs(rnorm(nGene)))[1:nHalf], rev(sort(abs(rnorm(nGene)))[1:(nGene-nHalf)]))  * i/1000
-}
-mat <- mat[nrow(mat):1, ]
-grp <- matrix(sample(LETTERS[1:10],nCell*nGrp,replace=T),nrow=nCell,ncol=nGrp,dimnames=list(paste0("c_",1:nCell),paste0("grp_",1:nGrp)))
-mat <- cbind(cName=rownames(mat),data.frame(mat),grp)
-data.table::fwrite(mat,"heatmap.csv")
-}
