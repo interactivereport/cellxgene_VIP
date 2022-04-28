@@ -5360,7 +5360,7 @@ function CellPopTable(){
   
   var cells = getCells('CPVcell');
 
-  
+  //postPDB();
 
   //let grp = [...new Set(CPV_CK,CPV_CK2)];
   let grp = [...new Set([$("#CPV_ClusterKey").val(),$("#CPV_ConditionKey").val()])];
@@ -5492,13 +5492,16 @@ function searchPDB(csv,direc,threshold){
               preppedGenes.push(element);
             }
 
-            var url = "https://plasmodb.org/plasmo/app/search?q=";
+            var url = "https://plasmodb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=";
 
             for (element of preppedGenes) {
 
-              url = url.concat("+",element);
+              url = url.concat(element + ",");
 
             }
+            
+            url = url.slice(0, -1);
+            url = url.concat("&autoRun=1");
 
             window.open(url);
 
@@ -5530,13 +5533,16 @@ function searchPDB(csv,direc,threshold){
               preppedGenes.push(element);
             }
 
-            var url = "https://plasmodb.org/plasmo/app/search?q=";
+            var url = "https://plasmodb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=";
 
             for (element of preppedGenes) {
 
-              url = url.concat("+",element);
+              url = url.concat(element + ",");
 
-            }
+              }
+
+            url = url.slice(0, -1);
+            url = url.concat("&autoRun=1");
 
             window.open(url);
 
@@ -5621,16 +5627,16 @@ function add_DEG_GeneSet(){
 
 
 
-//function postPDB(){
-  //$.ajax({
-            //type: "POST",
-            //url: "https://cors-anywhere.herokuapp.com/https://plasmodb.org/plasmo/service/users/current/datasets",
-            //data: {ids: ['PF3D7_1133400', 'PF3D7_1133500']},
-            //success: function(res){
-              //console.log(res);
-            //}
-            //})
-          //}
+function postPDB(){
+  $.ajax({
+            type: "POST",
+            url: "https://veupathdb.org/veupathdb/app/search/transcript/GenesWithUserComments?autoRun",
+            data: {ids: ['PF3D7_1133400', 'PF3D7_1133500']},
+            success: function(res){
+              console.log(res);
+            }
+            })
+          }
 
 
 function loadexe(content){
