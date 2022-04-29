@@ -547,7 +547,7 @@
       <button class="tablinks" onclick="selFun(event, 'SANK')">Sankey Diagram</button>
       <button class="tablinks" onclick="selFun(event, 'STACBAR')">Stacked Barplot</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
-      <button class="tablinks" onclick="selFun(event, 'CellPopView')">Cell Population View</button>
+      <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells()">Cell Population View</button>
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1')">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
@@ -611,6 +611,7 @@
       <h3>Add gene sets of interest manually</h3>
       <p>Gene set name: <input id="Geneset_Name0" type="text" size=10/>
         Gene names: <input id="Geneset_Genes0" type="text" size=35/>
+        <p></p>
         <button onclick="ADDGsetAdd(0)"><b>Add</b></button><button onclick="add_DEG_GeneSet()"><b>Add DEG Genes as Set</b></button>
       </p>
 
@@ -632,9 +633,6 @@
     <div id="CellPopView" class="tabcontent">
       <div id="CellPopInput">
         <h3>For a given cell population, compare gene expression between two conditions:</h3>
-        <p>Cell Selection:
-          <label><input class="CPVcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
-        </p>
         <p>Select Cell Population Annotation:
         <select id="CPV_ClusterKey" onclick="CellPopList('cluster')"></select></p>
         <p>Select a Cell Population:
@@ -1449,7 +1447,7 @@
       <p>Select cells cumulatively:
         <input type="radio" name="IMGcumuRd" value="Yes" onclick="IMGcellSel()">Yes
         <input type="radio" name="IMGcumuRd" value="No" onclick="IMGcellSel()" checked>No
-        &nbsp;&nbsp;&nbsp;&nbsp;<button onclick="IMGcellClear()">Clear Cell Selections</button>&nbsp;<button onclick="selectAllCells()">Select All Cells</button></p>
+        &nbsp;&nbsp;&nbsp;&nbsp;<button onclick="IMGcellClear()">Clear Cell Selections</button>&nbsp;<button onclick="getAllCe">Select All Cells</button></p>
         <div id='IMGrandomCellDiv'>
         <Blockquote>
           <label>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>&nbsp;&nbsp;|&nbsp;&nbsp;
@@ -5289,6 +5287,7 @@ function load(){
   };
   reader.readAsText($("#loadfile")[0].files[0]);
 }
+
 function CellPopPlot(){
   var CPV_CK = document.getElementById("CPV_ClusterKey").value; 
   
@@ -5300,7 +5299,7 @@ function CellPopPlot(){
   
   var CPV_Con2 = document.getElementById("CPV_C2").value;
   
-  var cells = getCells('CPVcell');
+  var cells = AllCells;
 
   //let grp = [...new Set(CPV_CK,CPV_CK2)];
   let grp = [...new Set([$("#CPV_ClusterKey").val(),$("#CPV_ConditionKey").val()])];
@@ -5358,11 +5357,8 @@ function CellPopTable(){
   
   var CPV_Con2 = document.getElementById("CPV_C2").value;
   
-  var cells = getCells('CPVcell');
+  var cells = AllCells;
 
-  //postPDB();
-
-  //let grp = [...new Set(CPV_CK,CPV_CK2)];
   let grp = [...new Set([$("#CPV_ClusterKey").val(),$("#CPV_ConditionKey").val()])];
 
   if(CPV_CK && CPV_C && CPV_C2 && CPV_Con1 && CPV_Con2 && cells) {
@@ -5421,9 +5417,6 @@ function CellPopTable(){
         buttons:['csv', {
           extend:'csv',
           text:'PlasmoDB (Up)',
-          //exportOptions: {
-            //columns: 0
-          //},
           customize: function(csv) {
 
             var LFC = document.getElementById("DEG_LFC").value;
@@ -5553,6 +5546,12 @@ function searchPDB(csv,direc,threshold){
 
 }
 
+function getAllCells(){
+  AllCells = Int32Array.from({length:window.store.getState().annoMatrix.nObs},(v,k)=>k);
+}
+
+var AllCells;
+
 function add_DEG_GeneSet(){
   $("#ADDGsetError").text("");
   var grpName = "DEG Genes".trim();
@@ -5608,12 +5607,12 @@ function add_DEG_GeneSet(){
     }
   }
   var eMsg= "";
-  if(notG.length>0){
-    eMsg +="The following genes cannot be found in the data or defined in previous gene sets: "+notG;
+  if(notG[0]=='nCount_RNA'){
+    eMsg +="Error - no preloaded DEG genes present";
     $("#ADDGsetError").text(eMsg);
   }
   if(geneNames.length==0){
-    $("#ADDGsetError").text(eMsg+". No valid gene names is provided");
+    $("#ADDGsetError").text(eMsg+". Error - No valid gene names provided.");
     return;
   }
  
