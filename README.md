@@ -55,6 +55,7 @@ For Mac User, ./config.macOS.sh
 export LIBARROW_MINIMAL=false
 #  ensure that the right instance of R is used. e.g. system-wide: /bin/R or /usr/bin/R ; local R under conda: ~/.conda/envs/VIP_conda_R/bin/R
 which R
+#  The version of a Bioconductor package is controlled by BiocManager, whose version is provided
 
 R -q -e 'if(!require(devtools)) install.packages("devtools",repos = "http://cran.us.r-project.org")'
 R -q -e 'if(!require(Cairo)) devtools::install_version("Cairo",version="1.5-12",repos = "http://cran.us.r-project.org")'
@@ -75,7 +76,6 @@ R -q -e 'if(!require(fgsea)) BiocManager::install("fgsea")'
 R -q -e 'if(!require(rtracklayer)) BiocManager::install("rtracklayer")'
 R -q -e 'if(!require(rjson)) devtools::install_version("rjson",version="0.2.20",repos = "https://cran.us.r-project.org")'
 R -q -e 'if(!require(ComplexHeatmap)) BiocManager::install("ComplexHeatmap")'
-
 
 # These should be already installed as dependencies of above packages
 R -q -e 'if(!require(dbplyr)) devtools::install_version("dbplyr",version="1.0.2",repos = "http://cran.us.r-project.org")'
