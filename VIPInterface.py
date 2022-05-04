@@ -25,6 +25,7 @@ import os
 import re
 import glob
 import subprocess
+import anndata as anndata
 strExePath = os.path.dirname(os.path.abspath(__file__))
 
 import pprint
@@ -1598,8 +1599,8 @@ def cpvTable(data):
   adata = createData(data)
 
   #log-normalize
-  sc.pp.normalize_total(adata, target_sum=1e4)
-  sc.pp.log1p(adata)
+  #sc.pp.normalize_total(adata, target_sum=1e4)
+  #sc.pp.log1p(adata)
 
   #subset by cluster
   Cluster_Key = data['ClusterKey']
@@ -1617,10 +1618,11 @@ def cpvTable(data):
   Condition2 = data['Cond2']
     
   adata = adata[adata.obs[Condition_Key].isin([Condition1,Condition2])]
-
+  
   #Differential Expression Analysis
-  res = de.test.t_test(adata,grouping=Condition_Key) #DE method = t-test
-
+  
+  res = de.test.t_test(adata,grouping=Condition_Key, is_logged=True)
+  
   deg = res.summary()
   deg = deg.sort_values(by=['qval']).loc[:,['gene','log2fc','pval','qval']]
   deg['log2fc'] = -1 * deg['log2fc']
