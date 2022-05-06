@@ -4275,7 +4275,22 @@ function DEGfind(){
 
         }],
         data:tableD,
-        columns:tableTitle
+        columns:tableTitle,
+	columnDefs:[
+         {targets:0,
+         render: function(data, type, row, meta){
+          
+           geneName = data.replace("-","_");
+           geneName = geneName.split('.')[0];
+ 
+           data="<a href='https://plasmodb.org/plasmo/app/record/gene/"+geneName+"' target='_blank'>"+data+"</a>";
+ 
+           return data;
+ 
+         }
+ 
+         }
+        ]
       });
       $('#DEGtable tbody').on('click',"tr",function(){
         var data = table.row(this).data();
