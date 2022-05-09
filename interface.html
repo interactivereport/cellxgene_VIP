@@ -643,6 +643,8 @@
       <select id="CPV_C1"></select></p>
         <p>Select Condition 2:
         <select id="CPV_C2"></select></p>
+        <p>Select additional info annotatoin:
+          <select id="add_Info"></select></p>
       </div>
       <button class="CPVbt" onclick="CellPopPlot()"><b>Plot</b></button>
       <button class="CPVTablebt" onclick="CellPopTable(); helpText('table')"><b>Table</b></button>
@@ -2154,6 +2156,25 @@ function init(){
     densS.add(createOpt('None'));
     densG.add(createOpt('None'));
     //--------------------------------------------------------------------------
+    //add gene annotation categories
+
+    var featureCats = Object.entries(store.getState().annoMatrix.schema.annotations.var.columns)
+
+    var finalCats = [];
+
+    for(x of featureCats){
+
+    finalCats.push(x[1].name)
+  
+  }
+
+  var addInfo = document.getElementById("add_Info");
+
+  for(x of finalCats){
+    addInfo.add(createOpt(x));
+  }
+ 
+    //--------------------------------------------------------------------------
     //add layout to EMBED, DUAL, and CLI checkbox
     var embedLay = document.getElementById("EMBEDlayout");
     var dualLay = document.getElementById("DUALlayout");
@@ -3221,7 +3242,7 @@ function ADDGadd(){
   console.log(genes);
   var notG = [];
   var totalG = window.store.getState().annoMatrix._cache.var.__columns[0];
-  console.log(totalG);
+  
   var totalGlower = totalG.map(function(s){return s.toLowerCase();});
   console.log(totalGlower);
 
