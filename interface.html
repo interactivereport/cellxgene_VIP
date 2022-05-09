@@ -612,7 +612,7 @@
       <p>Gene set name: <input id="Geneset_Name0" type="text" size=10/>
         Gene names: <input id="Geneset_Genes0" type="text" size=35/>
         <p></p>
-        <button onclick="ADDGsetAdd(0)"><b>Add</b></button><button onclick="add_DEG_GeneSet()"><b>Add DEG Genes as Set</b></button>
+        <button onclick="ADDGsetAdd(0)"><b>Add</b></button><button onclick="add_DEG_GeneSet()"><b>Add DE Genes as Set</b></button>
       </p>
 
       <h3>Add gene sets from databases</h3>
@@ -5605,9 +5605,11 @@ function getAllCells(){
 
 var AllCells;
 
+var DE_Counter = 0;
+
 function add_DEG_GeneSet(){
   $("#ADDGsetError").text("");
-  var grpName = "DEG Genes".trim();
+  var grpName = "DE Genes".trim();
   
   if(grpName.length<1){
     $("#ADDGsetError").text("Please provide a gene set name with at least one character!");
@@ -5615,8 +5617,8 @@ function add_DEG_GeneSet(){
   }
   var grpKeys = Object.keys(window.bioGeneGrp);
   if(grpKeys.includes(grpName)){
-    $("#ADDGsetError").text("The gene set name exists!");
-    return;
+    DE_Counter += 1;
+    grpName = grpName + "_" + DE_Counter;
   }
   
   var definedG = [];
@@ -5677,16 +5679,16 @@ function add_DEG_GeneSet(){
   ADDGref();
 }
 
-function postPDB(){
-  $.ajax({
-            type: "POST",
-            url: "https://veupathdb.org/veupathdb/app/search/transcript/GenesWithUserComments?autoRun",
-            data: {ids: ['PF3D7_1133400', 'PF3D7_1133500']},
-            success: function(res){
-              console.log(res);
-            }
-            })
-          }
+//function postPDB(){
+  //$.ajax({
+            //type: "POST",
+            //url: "https://veupathdb.org/veupathdb/app/search/transcript/GenesWithUserComments?autoRun",
+            //data: {ids: ['PF3D7_1133400', 'PF3D7_1133500']},
+            //success: function(res){
+              //console.log(res);
+            //}
+            //})
+          //}
 
 function helpText(x){
   if (x=='table'){
