@@ -2163,8 +2163,10 @@ function init(){
     var finalCats = [];
 
     for(x of featureCats){
+    
+    if (x[1].name === "name_0") continue;
 
-    finalCats.push(x[1].name)
+    finalCats.push(x[1].name);
   
   }
 
@@ -5425,6 +5427,8 @@ function CellPopTable(){
   var CPV_Con1 = document.getElementById("CPV_C1").value; 
   
   var CPV_Con2 = document.getElementById("CPV_C2").value;
+
+  var geneMetaData = document.getElementById("add_Info").value;
   
   var cells = AllCells;
 
@@ -5445,6 +5449,7 @@ function CellPopTable(){
     'cells':cells,
     'genes':[],
     'grp':grp,
+    'gMD':geneMetaData,
 		'Cond1':CPV_Con1,
 		'Cond2':CPV_Con2};
     $(".CPVTablebt").prop("disabled",true);

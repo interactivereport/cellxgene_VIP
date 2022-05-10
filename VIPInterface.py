@@ -1628,6 +1628,13 @@ def cpvTable(data):
   deg['log2fc'] = -1 * deg['log2fc']
 
   gInfo = getVar(data)
+  
+  #subset by specific gene metadata column
+
+  metadata = data['gMD']
+
+  gInfo = gInfo[metadata]
+
   deg.index = deg['gene']
   deg = pd.concat([deg,gInfo],axis=1,sort=False)
 
