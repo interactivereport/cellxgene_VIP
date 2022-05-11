@@ -98,38 +98,27 @@ def setFigureOpt(opt):
 def getObs(data):
   selC = list(data['cells'].values())
   cNames = ["cell%d" %i for i in selC]
-  #ppr.pprint("get obs 1 ...")
   ## obtain the category annotation
   with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-    #ppr.pprint("get obs 2.1 ...")
     selAnno = [data['obs_index']]+data['grp']
-    #ppr.pprint("get obs 2.2 ...")
     dAnno = list(scD.get_obs_keys())
-    #ppr.pprint("get obs 2.3 ...")
     anno = []
     sel = list(set(selAnno)&set(dAnno))
-    #ppr.pprint("get obs 2.4 ...")
     if len(sel)>0:
-      #ppr.pprint("get obs 3.1 ...")
       tmp = scD.data.obs.loc[selC,sel].astype('str')
       tmp.index = cNames
       anno += [tmp]
-      #ppr.pprint("get obs 3.2 ...")
     sel = list(set(selAnno)-set(dAnno))
     if len(sel)>0:
       annotations = scD.dataset_config.user_annotations
-      #ppr.pprint("get obs 4 ...")
       if annotations:
         labels = annotations.read_labels(scD)
         tmp = labels.loc[list(scD.data.obs.loc[selC,data['obs_index']]),sel]
         tmp.index = cNames
         anno += [tmp]
-        #ppr.pprint("get obs 5 ...")
     obs = pd.concat(anno,axis=1)
-  #ppr.pprint(obs)
   ## update the annotation Abbreviation
   combUpdate = cleanAbbr(data)
-  #ppr.pprint("get obs 6 ...")
   if 'abb' in data.keys():
     for i in data['grp']:
       obs[i] = obs[i].map(data['abb'][i])
@@ -207,9 +196,6 @@ def createData(data):
     expr = X
   else:
     expr = pd.DataFrame(X,columns=gNames,index=cNames)
-
-  #if expr in locals() :
-    #ppr.pprint("no problem with the 'genes' attribute ...")
 
   expr,gNames = collapseGeneSet(data,expr,gNames,cNames,fSparse)
   #ppr.pprint("finished expression ...")
@@ -306,8 +292,8 @@ def distributeTask(aTask):
     'saveTest':saveTest,
     'getBWinfo':getBWinfo,
     'plotBW':plotBW,
-    'CPV':CellPopView,
-    'CPVTable':cpvTable
+    'CPV':cellpopview,
+    'CPVTable':cpvtable
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1522,63 +1508,59 @@ def saveTest(data):
     return 'success'
 
 
-def CellPopView(data):
+def cellpopview(data):
     
     adata = createData(data)
 
-    #log_normalize
-    #sc.pp.normalize_total(adata, target_sum=1e4)
-    #sc.pp.log1p(adata)
+    # Subset Data by cluster.
+    cluster_key = data['ClusterKey']
+    
+    cluster = data['Cluster']
+    
+    adata = adata[adata.obs[cluster_key].isin([cluster])]
 
-    #subset by cluster
-    Cluster_Key = data['ClusterKey']
+    # Split by Condition.
+    condition_key = data['ConditionKey']
     
-    Cluster = data['Cluster']
+    condition_1 = data['Cond1']
     
-    adata = adata[adata.obs[Cluster_Key].isin([Cluster])]
-
-    #Split by Condition
-    Condition_Key = data['ConditionKey']
+    condition_2 = data['Cond2']
     
-    Condition1 = data['Cond1']
-    
-    Condition2 = data['Cond2']
-    
-    adata_1 = adata[adata.obs[Condition_Key].isin([Condition1])]
-    adata_2 = adata[adata.obs[Condition_Key].isin([Condition2])]
+    adata_1 = adata[adata.obs[condition_key].isin([condition_1])]
+    adata_2 = adata[adata.obs[condition_key].isin([condition_2])]
     
     
-    #Extract the data
-    Table_1 = adata_1.to_df()
+    # Extract the data.
+    table_1 = adata_1.to_df()
   
-    Table_2 = adata_2.to_df()
+    table_2 = adata_2.to_df()
    
-    
-    Table_1 = Table_1.transpose() #now genes = rows, cells = columns
-    Expression_1 = np.log1p(np.expm1(Table_1).mean(axis=1)) #extracts the average of every row, e.g. average expression of every gene
+    # Transpose the data for subsequent log normalization.
+    table_1 = table_1.transpose() 
+    expression_1 = np.log1p(np.expm1(table_1).mean(axis=1)) 
 
-    Table_2 = Table_2.transpose()
-    Expression_2 = np.log1p(np.expm1(Table_2).mean(axis=1)) #average expression of every gene in Cluster 3, Condition S
+    table_2 = table_2.transpose()
+    expression_2 = np.log1p(np.expm1(table_2).mean(axis=1)) 
 
-    #get 'top gene'
-    pairs = zip(Expression_1, Expression_2)
+    # Identify the gene with the highest level of expression in condition1.
+    pairs = zip(expression_1, expression_2)
     pairs=list(pairs)
 
     top_coord = max(pairs)
 
-    max_gene = Expression_1[Expression_1  == top_coord[0]].index.tolist()[0]
+    max_gene = expression_1[expression_1  == top_coord[0]].index.tolist()[0]
 
-    #plotting graph
+    # Graph plotting.
     
-    plt.scatter(Expression_1,Expression_2, label = "stars", color = "black", 
+    plt.scatter(expression_1,expression_2, label = "stars", color = "black", 
             marker = ".",  s =30) 
     
-    plt.title(Cluster_Key + ": " + Cluster) 
+    plt.title(cluster_key + ": " + cluster) 
     
     plt.grid()
 
-    plt.xlabel(Condition1)
-    plt.ylabel(Condition2)
+    plt.xlabel(condition_1)
+    plt.ylabel(condition_2)
 
     bot,top= plt.ylim()
 
@@ -1590,63 +1572,57 @@ def CellPopView(data):
              xytext=(-40,10),
              ha='center')
     
-    CellPopPlot = plt.gcf()
+    cellpop_plot = plt.gcf()
     
-    return iostreamFig(CellPopPlot)
+    return iostreamFig(cellpop_plot)
 
-def cpvTable(data):
+def cpvtable(data):
 
   adata = createData(data)
 
-  #log-normalize
-  #sc.pp.normalize_total(adata, target_sum=1e4)
-  #sc.pp.log1p(adata)
+  # Subset data by cluster.
+  cluster_key = data['ClusterKey']
+    
+  cluster = data['Cluster']
+    
+  adata = adata[adata.obs[cluster_key].isin([cluster])]
 
-  #subset by cluster
-  Cluster_Key = data['ClusterKey']
-    
-  Cluster = data['Cluster']
-    
-  adata = adata[adata.obs[Cluster_Key].isin([Cluster])]
-
-  #remove extraneous conditions
+  # Remove extraneous conditions.
   
-  Condition_Key = data['ConditionKey']
+  condition_key = data['ConditionKey']
     
-  Condition1 = data['Cond1']
+  condition_1 = data['Cond1']
     
-  Condition2 = data['Cond2']
+  condition_2 = data['Cond2']
     
-  adata = adata[adata.obs[Condition_Key].isin([Condition1,Condition2])]
+  adata = adata[adata.obs[condition_key].isin([condition_1,condition_2])]
   
-  #Differential Expression Analysis
+  # Run Differential Expression Analysis.
   
-  res = de.test.t_test(adata,grouping=Condition_Key, is_logged=True)
+  res = de.test.t_test(adata,grouping=condition_key, is_logged=True)
   
   deg = res.summary()
   deg = deg.sort_values(by=['qval']).loc[:,['gene','log2fc','pval','qval']]
   deg['log2fc'] = -1 * deg['log2fc']
 
+  # Extract user-specified gene metadata column, concatenate to DE dataframe.
+
   gInfo = getVar(data)
   
-  #subset by specific gene metadata column
-
   metadata = data['gMD']
 
   gInfo = gInfo[metadata]
 
+  # Process and Export DE Results
+
   deg.index = deg['gene']
+  
   deg = pd.concat([deg,gInfo],axis=1,sort=False)
 
   deg = deg.iloc[range(200),]
 
-
   deg = deg.to_csv(index=False)
   
-  
-  #ppr.pprint(deg)
-  #ppr.pprint("csv table" + "\n" + deg1)
-
   return json.dumps(deg)
 
 

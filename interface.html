@@ -643,8 +643,8 @@
       <select id="CPV_C1"></select></p>
         <p>Select Condition 2:
         <select id="CPV_C2"></select></p>
-        <p>Select additional info annotatoin:
-          <select id="add_Info"></select></p>
+        <p>Select gene metadata category:
+          <select id="gene_MetaCat"></select></p>
       </div>
       <button class="CPVbt" onclick="CellPopPlot()"><b>Plot</b></button>
       <button class="CPVTablebt" onclick="CellPopTable(); helpText('table')"><b>Table</b></button>
@@ -1452,7 +1452,7 @@
       <p>Select cells cumulatively:
         <input type="radio" name="IMGcumuRd" value="Yes" onclick="IMGcellSel()">Yes
         <input type="radio" name="IMGcumuRd" value="No" onclick="IMGcellSel()" checked>No
-        &nbsp;&nbsp;&nbsp;&nbsp;<button onclick="IMGcellClear()">Clear Cell Selections</button>&nbsp;<button onclick="getAllCe">Select All Cells</button></p>
+        &nbsp;&nbsp;&nbsp;&nbsp;<button onclick="IMGcellClear()">Clear Cell Selections</button>&nbsp;<button onclick="selectAllCells()">Select All Cells</button></p>
         <div id='IMGrandomCellDiv'>
         <Blockquote>
           <label>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>&nbsp;&nbsp;|&nbsp;&nbsp;
@@ -2160,20 +2160,20 @@ function init(){
 
     var featureCats = Object.entries(store.getState().annoMatrix.schema.annotations.var.columns)
 
-    var finalCats = [];
+    var finalFeatureCats = [];
 
     for(x of featureCats){
     
     if (x[1].name === "name_0") continue;
 
-    finalCats.push(x[1].name);
+    finalFeatureCats.push(x[1].name);
   
   }
 
-  var addInfo = document.getElementById("add_Info");
+  var varCats = document.getElementById("gene_MetaCat");
 
-  for(x of finalCats){
-    addInfo.add(createOpt(x));
+  for(x of finalFeatureCats){
+    varCats.add(createOpt(x));
   }
  
     //--------------------------------------------------------------------------
@@ -5428,7 +5428,7 @@ function CellPopTable(){
   
   var CPV_Con2 = document.getElementById("CPV_C2").value;
 
-  var geneMetaData = document.getElementById("add_Info").value;
+  var geneMetaData = document.getElementById("gene_MetaCat").value;
   
   var cells = AllCells;
 
@@ -5548,92 +5548,63 @@ return
 }
 
 function searchPDB(csv,direc,threshold){
+
+  csv = csv.replace(/"/g, '');
+  var csv_split = csv.split("\n");
+  csv_split.shift();
+
+  var geneList = [];
   
   if(direc=='up'){
-
-    csv = csv.replace(/"/g, '');
-            var csv_split = csv.split("\n");
-            csv_split.shift();
-
-            var geneList = [];
-
-            for (element of csv_split) {
+    
+    for (element of csv_split) {
               
-              data = element.split(',');
+      data = element.split(',');
               
-              if(parseFloat(data[1]) > parseFloat(threshold)){
-                geneList.push(data[0]);
-              }
-            }
+      if(parseFloat(data[1]) > parseFloat(threshold)){
+        geneList.push(data[0]);
+      }
+  }
+}else{
+      
+  for (element of csv_split) {
+                
+    data = element.split(',');
+                        
+    if(parseFloat(data[1]) < parseFloat(threshold)){
+          
+    geneList.push(data[0]);
+        
+    }
+  }
+  
+}
 
-            var preppedGenes = [];
+  var preppedGenes = [];
 
-            for (element of geneList) {
+  for (element of geneList) {
               
-              element = element.replace("-","_");
-              element = element.split('.')[0];
+    element = element.replace("-","_");
+    element = element.split('.')[0];
               
-              preppedGenes.push(element);
-            }
+    preppedGenes.push(element);
+    }
 
-            var url = "https://plasmodb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=";
+  var url = "https://plasmodb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=";
 
-            for (element of preppedGenes) {
+  for (element of preppedGenes) {
 
-              url = url.concat(element + ",");
-
-            }
-            
-            url = url.slice(0, -1);
-            url = url.concat("&autoRun=1");
-
-            window.open(url);
-
-            var new_csv = preppedGenes.join()
-            return new_csv
-
-  }else{
-    csv = csv.replace(/"/g, '');
-            var csv_split = csv.split("\n");
-            csv_split.shift();
-            var geneList = [];
-
-            for (element of csv_split) {
-              
-              data = element.split(',');
-              
-              if(parseFloat(data[1]) < parseFloat(threshold)){
-                geneList.push(data[0]);
-              }
-            }
-
-            var preppedGenes = [];
-
-            for (element of geneList) {
-              
-              element = element.replace("-","_");
-              element = element.split('.')[0];
-              
-              preppedGenes.push(element);
-            }
-
-            var url = "https://plasmodb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=";
-
-            for (element of preppedGenes) {
-
-              url = url.concat(element + ",");
-
-              }
-
-            url = url.slice(0, -1);
-            url = url.concat("&autoRun=1");
-
-            window.open(url);
-
-            var new_csv = preppedGenes.join()
-            return new_csv;
+    url = url.concat(element + ",");
 
   }
+            
+  url = url.slice(0, -1);
+  url = url.concat("&autoRun=1");
+
+  window.open(url);
+
+  var new_csv = preppedGenes.join()
+  return new_csv
 
 }
 
@@ -5717,16 +5688,6 @@ function add_DEG_GeneSet(){
   ADDGref();
 }
 
-//function postPDB(){
-  //$.ajax({
-            //type: "POST",
-            //url: "https://veupathdb.org/veupathdb/app/search/transcript/GenesWithUserComments?autoRun",
-            //data: {ids: ['PF3D7_1133400', 'PF3D7_1133500']},
-            //success: function(res){
-              //console.log(res);
-            //}
-            //})
-          //}
 
 function helpText(x){
   if (x=='table'){
