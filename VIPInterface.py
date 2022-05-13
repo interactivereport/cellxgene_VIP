@@ -1586,7 +1586,7 @@ def cpvtable(data):
   cluster = data['Cluster']
     
   adata = adata[adata.obs[cluster_key].isin([cluster])]
-
+  
   # Remove extraneous conditions.
   
   condition_key = data['ConditionKey']
@@ -1596,7 +1596,7 @@ def cpvtable(data):
   condition_2 = data['Cond2']
     
   adata = adata[adata.obs[condition_key].isin([condition_1,condition_2])]
-  
+
   # Run Differential Expression Analysis.
   
   res = de.test.t_test(adata,grouping=condition_key, is_logged=True)

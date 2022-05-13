@@ -599,6 +599,7 @@
 
     <div id="ADDG" class="tabcontent">
       <h3>Add genes of interest for plotting <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-add-genes-gene-sets" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+      <p><button onclick="add_DEG_GeneSet()"><b>Add DE Genes</b></button> Add top ten genes identified via cellxgene differential expression analysis as Set.</p>
       <p>Please input a list of genes separated by comma, semicolon, space or tab:</p>
       <p><textarea id="ADDGinput" rows="5" cols="70"></textarea></p>
       <p><button onclick="ADDGadd()"><b>Add</b></button></p>
@@ -612,7 +613,7 @@
       <p>Gene set name: <input id="Geneset_Name0" type="text" size=10/>
         Gene names: <input id="Geneset_Genes0" type="text" size=35/>
         <p></p>
-        <button onclick="ADDGsetAdd(0)"><b>Add</b></button><button onclick="add_DEG_GeneSet()"><b>Add DE Genes as Set</b></button>
+        <button onclick="ADDGsetAdd(0)"><b>Add</b></button>
       </p>
 
       <h3>Add gene sets from databases</h3>
@@ -4305,7 +4306,7 @@ function DEGfind(){
           
            geneName = data.replace("-","_");
            geneName = geneName.split('.')[0];
- 
+
            data="<a href='https://plasmodb.org/plasmo/app/record/gene/"+geneName+"' target='_blank'>"+data+"</a>";
  
            return data;
@@ -5526,7 +5527,7 @@ function CellPopTable(){
         
           geneName = data.replace("-","_");
           geneName = geneName.split('.')[0];
-          data="<a href='https://plasmodb.org/plasmo/app/record/gene/"+geneName+"' target='_blank'>"+data+"</a>";
+
           return data;
         }
         }
@@ -5620,10 +5621,6 @@ function add_DEG_GeneSet(){
   $("#ADDGsetError").text("");
   var grpName = "DE Genes".trim();
   
-  if(grpName.length<1){
-    $("#ADDGsetError").text("Please provide a gene set name with at least one character!");
-    return;
-  }
   var grpKeys = Object.keys(window.bioGeneGrp);
   if(grpKeys.includes(grpName)){
     DE_Counter += 1;
@@ -5674,9 +5671,6 @@ function add_DEG_GeneSet(){
   if(notG[0]=='nCount_RNA'){
     eMsg +="Error - please run DEG analysis";
     $("#ADDGsetError").text(eMsg);
-  }
-  if(geneNames.length==0){
-    $("#ADDGsetError").text(eMsg+". Error - No valid gene names provided.");
     return;
   }
  
