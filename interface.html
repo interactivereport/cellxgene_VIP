@@ -5403,12 +5403,14 @@ function CellPopPlot(){
       document.getElementById("CPVspin").style.visibility="hidden";
       $("#CPVnote").text('');
       
-      
-      showImg('CPVfig',res);
+      $('#CPVfig').html(res);
 
     },
     error: function() {
       $("#CPVnote").text('Plotting Error!');
+      document.getElementById("CPVspin").style.visibility="hidden";
+      $(".CPVbt").prop("disabled",false);
+      $(".CPVTablebt").prop("disabled",false);
     }
 })
 return

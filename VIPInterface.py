@@ -16,6 +16,7 @@ import matplotlib.patches as mpatches
 from matplotlib import rcParams
 import plotly.graph_objects as go
 import plotly.io as plotIO
+import plotly.express as px
 import base64
 import math
 from io import BytesIO
@@ -1550,31 +1551,13 @@ def cellpopview(data):
 
     max_gene = expression_1[expression_1  == top_coord[0]].index.tolist()[0]
 
-    # Graph plotting.
+    # Interactive Graph plotting.
     
-    plt.scatter(expression_1,expression_2, label = "stars", color = "black", 
-            marker = ".",  s =30) 
-    
-    plt.title(cluster_key + ": " + cluster) 
-    
-    plt.grid()
+    cellpop_plot = go.Figure(data=go.Scatter(x=expression_1, y=expression_2, mode='markers')) #should be a graph object
 
-    plt.xlabel(condition_1)
-    plt.ylabel(condition_2)
-
-    bot,top= plt.ylim()
-
-    plt.ylim(bot,top+1)
-
-    plt.annotate(max_gene,
-             top_coord,
-             textcoords="offset points",
-             xytext=(-40,10),
-             ha='center')
+    div = plotIO.to_html(cellpop_plot)
     
-    cellpop_plot = plt.gcf()
-    
-    return iostreamFig(cellpop_plot)
+    return div
 
 def cpvtable(data):
 
