@@ -1543,19 +1543,15 @@ def cellpopview(data):
     table_2 = table_2.transpose()
     expression_2 = np.log1p(np.expm1(table_2).mean(axis=1)) 
 
-    # Identify the gene with the highest level of expression in condition1.
-    pairs = zip(expression_1, expression_2)
-    pairs=list(pairs)
-
-    top_coord = max(pairs)
-
-    max_gene = expression_1[expression_1  == top_coord[0]].index.tolist()[0]
-
     # Interactive Graph plotting.
     
-    cellpop_plot = go.Figure(data=go.Scatter(x=expression_1, y=expression_2, mode='markers')) #should be a graph object
+    #cellpop_plot = go.Figure(data=go.Scatter(x=expression_1, y=expression_2, mode='markers')) #should be a graph object
 
-    div = plotIO.to_html(cellpop_plot)
+    cellpop2 = px.scatter(x=expression_1, y=expression_2)
+
+    #div = plotIO.to_html(cellpop_plot)
+
+    div = plotIO.to_html(cellpop2)
     
     return div
 
