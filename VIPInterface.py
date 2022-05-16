@@ -1530,7 +1530,6 @@ def cellpopview(data):
     adata_1 = adata[adata.obs[condition_key].isin([condition_1])]
     adata_2 = adata[adata.obs[condition_key].isin([condition_2])]
     
-    
     # Extract the data.
     table_1 = adata_1.to_df()
   
@@ -1543,15 +1542,36 @@ def cellpopview(data):
     table_2 = table_2.transpose()
     expression_2 = np.log1p(np.expm1(table_2).mean(axis=1)) 
 
+    # Generate Pandas Dataframe of Relevant Graph Information
+
+    gene_names = expression_1.index
+
+    gene_metaData = data['gMD']
+
+    gInfo = getVar(data)
+  
+    gInfo = gInfo[gene_metaData]
+
+    annot = []
+
+    for x in gInfo:
+      annot.append(x)
+
+    data = {"Gene_Name":gene_names,"Expression_1":expression_1,"Expression_2":expression_2,"Gene_Annotations":annot}
+
+    plot_dataframe = pd.DataFrame(data)
+
     # Interactive Graph plotting.
     
-    #cellpop_plot = go.Figure(data=go.Scatter(x=expression_1, y=expression_2, mode='markers')) #should be a graph object
+    axis_labels = {"Expression_1":condition_1,"Expression_2":condition_2}
 
-    cellpop2 = px.scatter(x=expression_1, y=expression_2)
+    plot_title = condition_1 + " vs. " + condition_2
 
-    #div = plotIO.to_html(cellpop_plot)
+    hd = {'Gene_Name':True,'Expression_1':False,'Expression_2':False,'Gene_Annotations':True}
 
-    div = plotIO.to_html(cellpop2)
+    cellpop_plot = px.scatter(plot_dataframe, x="Expression_1", y="Expression_2", hover_data=hd, labels=axis_labels, title=plot_title)
+
+    div = plotIO.to_html(cellpop_plot)
     
     return div
 
@@ -1584,7 +1604,7 @@ def cpvtable(data):
   deg = deg.sort_values(by=['qval']).loc[:,['gene','log2fc','pval','qval']]
   deg['log2fc'] = -1 * deg['log2fc']
 
-  # Extract user-specified gene metadata column, concatenate to DE dataframe.
+  # Extract user-specified gene metadata column, reduce to relevant column.
 
   gInfo = getVar(data)
   
