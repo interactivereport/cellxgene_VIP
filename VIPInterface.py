@@ -1557,19 +1557,19 @@ def cellpopview(data):
     for x in gInfo:
       annot.append(x)
 
-    data = {"Gene_Name":gene_names,"Expression_1":expression_1,"Expression_2":expression_2,"Gene_Annotations":annot}
+    data = {"Gene_Name":gene_names,condition_1:expression_1,condition_2:expression_2,gene_metaData:annot}
 
     plot_dataframe = pd.DataFrame(data)
 
     # Interactive Graph plotting.
     
-    axis_labels = {"Expression_1":condition_1,"Expression_2":condition_2}
+    #axis_labels = {"Expression_1":condition_1,"Expression_2":condition_2}
 
     plot_title = condition_1 + " vs. " + condition_2
 
-    hd = {'Gene_Name':True,'Expression_1':False,'Expression_2':False,'Gene_Annotations':True}
+    hd = {'Gene_Name':False,condition_1:False,condition_2:False,gene_metaData:True}
 
-    cellpop_plot = px.scatter(plot_dataframe, x="Expression_1", y="Expression_2", hover_data=hd, labels=axis_labels, title=plot_title)
+    cellpop_plot = px.scatter(plot_dataframe, x=condition_1, y=condition_2, hover_data=hd, hover_name="Gene_Name", title=plot_title)
 
     div = plotIO.to_html(cellpop_plot)
     
