@@ -26,7 +26,7 @@ import os
 import re
 import glob
 import subprocess
-import anndata as anndata
+
 strExePath = os.path.dirname(os.path.abspath(__file__))
 
 import pprint
