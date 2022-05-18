@@ -1542,7 +1542,7 @@ def cellpopview(data):
     table_2 = table_2.transpose()
     expression_2 = np.log1p(np.expm1(table_2).mean(axis=1)) 
 
-    # Generate Pandas Dataframe of Relevant Graph Information
+    # Generate Pandas Dataframe of Graph Information.
 
     gene_names = expression_1.index
 
@@ -1561,9 +1561,7 @@ def cellpopview(data):
 
     plot_dataframe = pd.DataFrame(data)
 
-    # Interactive Graph plotting.
-    
-    #axis_labels = {"Expression_1":condition_1,"Expression_2":condition_2}
+    # Interactive Graph Plotting.
 
     plot_title = condition_1 + " vs. " + condition_2
 
