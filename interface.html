@@ -5564,7 +5564,7 @@ function detectOrganism(){
   prefixList = [];
   
   for (x of allGenes){
-    prefix = x.substring(0,2);
+    prefix = x.substring(0,1);
     prefixList.push(prefix)
 
   }
@@ -5577,9 +5577,13 @@ function detectOrganism(){
 
     database_URL = "https://www.ncbi.nlm.nih.gov/gene/?term=";
 
-  }else if([...uniquePrefix][0] == "PB"){
+  }else if([...uniquePrefix][0].toUpperCase() == "P"){
 
     database_URL = "https://plasmodb.org/plasmo/app/record/gene/"
+
+  }else if([...uniquePrefix][0].toUpperCase() == "T"){
+
+    database_URL = "https://tritrypdb.org/tritrypdb/app/record/gene/"
 
   }
 
