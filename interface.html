@@ -547,7 +547,7 @@
       <button class="tablinks" onclick="selFun(event, 'SANK')">Sankey Diagram</button>
       <button class="tablinks" onclick="selFun(event, 'STACBAR')">Stacked Barplot</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
-      <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells()">Cell Population View</button>
+      <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells();detectOrganism()">Cell Population View</button>
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1')">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
@@ -5531,7 +5531,9 @@ function CellPopTable(){
           geneName = data.replace("-","_");
           geneName = geneName.split('.')[0];
 
-          data="<a href='https://plasmodb.org/plasmo/app/record/gene/"+geneName+"' target='_blank'>"+data+"</a>";
+          url = window.database_URL;
+
+          data="<a href='"+url+geneName+"' target='_blank'>"+data+"</a>";
 
           return data;
         }
@@ -5551,6 +5553,37 @@ return
     document.getElementById("CPVfig").innerHTML = "";
     $('#CPVdatatable').empty();
 
+}
+
+var database_URL;
+
+function detectOrganism(){
+
+  allGenes = window.store.getState().annoMatrix._cache.var.__columns[0];
+
+  prefixList = [];
+  
+  for (x of allGenes){
+    prefix = x.substring(0,2);
+    prefixList.push(prefix)
+
+  }
+
+  const uniquePrefix = [...new Set(prefixList)];
+
+  pfList = Array.from(uniquePrefix);
+
+  if(pfList.length > 1){
+
+    database_URL = "https://www.ncbi.nlm.nih.gov/gene/?term=";
+
+  }else if([...uniquePrefix][0] == "PB"){
+
+    database_URL = "https://plasmodb.org/plasmo/app/record/gene/"
+
+  }
+
+  console.log(window.database_URL)
 }
 
 function searchPDB(csv,direc,threshold){
