@@ -5417,11 +5417,13 @@ function CellPopPlot(){
     }
 })
 return
-  } 
+  }else{
     $("#CPVnote").text('Input data required');
     document.getElementById("CPVfig").innerHTML = "";
     $('#CPVdatatable').empty();  
+  } 
 }
+
 function CellPopTable(){
   
   var CPV_CK = document.getElementById("CPV_ClusterKey").value; 
@@ -5549,12 +5551,11 @@ function CellPopTable(){
       $("#CPVnote").text('Table Error!');
     }
 })
-return
-  } 
+  }else{
     $("#CPVnote").text('Input data required');
     document.getElementById("CPVfig").innerHTML = "";
     $('#CPVdatatable').empty();
-
+  } 
 }
 
 var database_URL;
