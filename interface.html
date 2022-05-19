@@ -4274,23 +4274,23 @@ function DEGfind(){
         order:[3,"asc"],
         buttons:['csv', {
           extend:'csv',
-          text:'PlasmoDB (Up)',
+          text:'SearchDB (Up)',
           customize: function(csv) {
 
             var degTabLFC = document.getElementById("DEG_TAB_LFC").value;
             
-            results = searchPDB(csv,'up',degTabLFC);
+            results = searchDB(csv,'up',degTabLFC);
 
             return results;
           }
         }, {
           extend:'csv',
-          text:'PlasmoDB (Down)',
+          text:'SearchDB (Down)',
           customize: function(csv) {
 
             var degTabLFC = document.getElementById("DEG_TAB_LFC").value;
             
-            results = searchPDB(csv,'down',degTabLFC);
+            results = searchDB(csv,'down',degTabLFC);
 
             return results;
           }
@@ -4305,7 +4305,9 @@ function DEGfind(){
            geneName = data.replace("-","_");
            geneName = geneName.split('.')[0];
 
-           data="<a href='https://plasmodb.org/plasmo/app/record/gene/"+geneName+"' target='_blank'>"+data+"</a>";
+           url = window.database_URL;
+
+           data="<a href='"+url+geneName+"' target='_blank'>"+data+"</a>";
  
            return data;
  
@@ -5500,23 +5502,23 @@ function CellPopTable(){
         order:[3,"asc"],
         buttons:['csv', {
           extend:'csv',
-          text:'PlasmoDB (Up)',
+          text:'SearchDB (Up)',
           customize: function(csv) {
 
             var LFC = document.getElementById("DEG_LFC").value;
             
-            results = searchPDB(csv,'up',LFC);
+            results = searchDB(csv,'up',LFC);
 
             return results;
           }
         }, {
           extend:'csv',
-          text:'PlasmoDB (Down)',
+          text:'SearchDB (Down)',
           customize: function(csv) {
 
             var LFC = document.getElementById("DEG_LFC").value;
             
-            results = searchPDB(csv,'down',LFC);
+            results = searchDB(csv,'down',LFC);
 
             return results;
           }
@@ -5589,7 +5591,7 @@ function detectOrganism(){
 
 }
 
-function searchPDB(csv,direc,threshold){
+function searchDB(csv,direc,threshold){
 
   csv = csv.replace(/"/g, '');
   var csv_split = csv.split("\n");
@@ -5632,7 +5634,8 @@ function searchPDB(csv,direc,threshold){
     preppedGenes.push(element);
     }
 
-  var url = "https://plasmodb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=";
+  
+  url = window.database_URL;
 
   for (element of preppedGenes) {
 
@@ -5726,7 +5729,7 @@ function add_DEG_GeneSet(){
 
 function helpText(x){
   if (x=='table'){
-    $("#Table_Help").text('CSV: Download Table as CSV. PlasmoDB (Up): Explore PlasmoDB with Table Genes whose LFC value exceeds threshold. PlasmoDB (Down): Explore PlasmoDB with Table Genes whose LFC value falls below threshold.');
+    $("#Table_Help").text('CSV: Download Table as CSV. SearchDB (Up): Explore the relevant database with Table Genes whose LFC value exceeds threshold. SearchDB (Down): Explore the relevant database with Table Genes whose LFC value falls below threshold.');
   }
 }
 
