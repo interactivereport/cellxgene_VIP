@@ -25,6 +25,7 @@ import os
 import re
 import glob
 import subprocess
+import anndata as anndata
 strExePath = os.path.dirname(os.path.abspath(__file__))
 
 import pprint
@@ -116,7 +117,6 @@ def getObs(data):
         tmp.index = cNames
         anno += [tmp]
     obs = pd.concat(anno,axis=1)
-  #ppr.pprint(obs)
   ## update the annotation Abbreviation
   combUpdate = cleanAbbr(data)
   if 'abb' in data.keys():
@@ -177,8 +177,10 @@ def createData(data):
   if 'genes' in data.keys():
     with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
       if not type(scD.data.X) is np.ndarray:
+        #ppr.pprint("loop 1 ...")
         fSparse = True
       if len(data['genes'])>0:
+        #ppr.pprint("loop 2 ...")
         fullG = list(scD.data.var[data['var_index']])
         selG = sorted([fullG.index(i) for i in data['genes']]) #when data loaded backed, incremental is required
         X = scD.data.X[:,selG]
@@ -186,6 +188,7 @@ def createData(data):
       else:
         X = scD.data.X
         gNames = list(scD.data.var[data['var_index']])
+        #ppr.pprint("loop 3 ...")
     if 'figOpt' in data.keys() and data['figOpt']['scale'] == 'Yes':
       X = sc.pp.scale(X,zero_center=(data['figOpt']['scaleZero'] == 'Yes'),max_value=(float(data['figOpt']['scaleMax']) if data['figOpt']['clipValue']=='Yes' else None))
     X = X[selC]
@@ -209,6 +212,7 @@ def createData(data):
   #ppr.pprint("finished layout ...")
   ## obtain the category annotation
   combUpdate, obs = getObs(data)
+  #ppr.pprint("starting obv ...")
 
   ## create a custom annotation category and remove cells which are not in the selected annotation
   if combUpdate and len(data['grp'])>1:
@@ -287,7 +291,9 @@ def distributeTask(aTask):
 	'SPATIAL':SPATIAL,
     'saveTest':saveTest,
     'getBWinfo':getBWinfo,
-    'plotBW':plotBW
+    'plotBW':plotBW,
+    'CPV':cellpopview,
+    'CPVTable':cpvtable
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -296,6 +302,7 @@ def HELLO(data):
 def iostreamFig(fig):
   #getLock(iosLock)
   figD = BytesIO()
+  #fig.savefig("test.png")
   #ppr.pprint('io located at %d'%int(str(figD).split(" ")[3].replace(">",""),0))
   fig.savefig(figD,bbox_inches="tight")
   #ppr.pprint(sys.getsizeof(figD))
@@ -1499,3 +1506,123 @@ def saveTest(data):
         with open(strPath+re.sub("h5ad$","img.txt",strH5ad),'w') as f:
             f.write(data['img'])
     return 'success'
+
+
+def cellpopview(data):
+    
+    adata = createData(data)
+
+    # Subset Data by cluster.
+    cluster_key = data['ClusterKey']
+    
+    cluster = data['Cluster']
+    
+    adata = adata[adata.obs[cluster_key].isin([cluster])]
+
+    # Split by Condition.
+    condition_key = data['ConditionKey']
+    
+    condition_1 = data['Cond1']
+    
+    condition_2 = data['Cond2']
+    
+    adata_1 = adata[adata.obs[condition_key].isin([condition_1])]
+    adata_2 = adata[adata.obs[condition_key].isin([condition_2])]
+    
+    
+    # Extract the data.
+    table_1 = adata_1.to_df()
+  
+    table_2 = adata_2.to_df()
+   
+    # Transpose the data for subsequent log normalization.
+    table_1 = table_1.transpose() 
+    expression_1 = np.log1p(np.expm1(table_1).mean(axis=1)) 
+
+    table_2 = table_2.transpose()
+    expression_2 = np.log1p(np.expm1(table_2).mean(axis=1)) 
+
+    # Identify the gene with the highest level of expression in condition1.
+    pairs = zip(expression_1, expression_2)
+    pairs=list(pairs)
+
+    top_coord = max(pairs)
+
+    max_gene = expression_1[expression_1  == top_coord[0]].index.tolist()[0]
+
+    # Graph plotting.
+    
+    plt.scatter(expression_1,expression_2, label = "stars", color = "black", 
+            marker = ".",  s =30) 
+    
+    plt.title(cluster_key + ": " + cluster) 
+    
+    plt.grid()
+
+    plt.xlabel(condition_1)
+    plt.ylabel(condition_2)
+
+    bot,top= plt.ylim()
+
+    plt.ylim(bot,top+1)
+
+    plt.annotate(max_gene,
+             top_coord,
+             textcoords="offset points",
+             xytext=(-40,10),
+             ha='center')
+    
+    cellpop_plot = plt.gcf()
+    
+    return iostreamFig(cellpop_plot)
+
+def cpvtable(data):
+
+  adata = createData(data)
+
+  # Subset data by cluster.
+  cluster_key = data['ClusterKey']
+    
+  cluster = data['Cluster']
+    
+  adata = adata[adata.obs[cluster_key].isin([cluster])]
+  
+  # Remove extraneous conditions.
+  
+  condition_key = data['ConditionKey']
+    
+  condition_1 = data['Cond1']
+    
+  condition_2 = data['Cond2']
+    
+  adata = adata[adata.obs[condition_key].isin([condition_1,condition_2])]
+
+  # Run Differential Expression Analysis.
+  
+  res = de.test.t_test(adata,grouping=condition_key, is_logged=True)
+  
+  deg = res.summary()
+  deg = deg.sort_values(by=['qval']).loc[:,['gene','log2fc','pval','qval']]
+  deg['log2fc'] = -1 * deg['log2fc']
+
+  # Extract user-specified gene metadata column, concatenate to DE dataframe.
+
+  gInfo = getVar(data)
+  
+  metadata = data['gMD']
+
+  gInfo = gInfo[metadata]
+
+  # Process and Export DE Results
+
+  deg.index = deg['gene']
+  
+  deg = pd.concat([deg,gInfo],axis=1,sort=False)
+
+  deg = deg.iloc[range(200),]
+
+  deg = deg.to_csv(index=False)
+  
+  return json.dumps(deg)
+
+

@@ -547,6 +547,7 @@
       <button class="tablinks" onclick="selFun(event, 'SANK')">Sankey Diagram</button>
       <button class="tablinks" onclick="selFun(event, 'STACBAR')">Stacked Barplot</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
+      <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells()">Cell Population View</button>
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1')">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
@@ -598,6 +599,7 @@
 
     <div id="ADDG" class="tabcontent">
       <h3>Add genes of interest for plotting <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-add-genes-gene-sets" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+      <p><button onclick="add_DEG_GeneSet()"><b>Add DE Genes</b></button> Add top ten genes identified via cellxgene differential expression analysis as Set.</p>
       <p>Please input a list of genes separated by comma, semicolon, space or tab:</p>
       <p><textarea id="ADDGinput" rows="5" cols="70"></textarea></p>
       <p><button onclick="ADDGadd()"><b>Add</b></button></p>
@@ -610,6 +612,7 @@
       <h3>Add gene sets of interest manually</h3>
       <p>Gene set name: <input id="Geneset_Name0" type="text" size=10/>
         Gene names: <input id="Geneset_Genes0" type="text" size=35/>
+        <p></p>
         <button onclick="ADDGsetAdd(0)"><b>Add</b></button>
       </p>
 
@@ -624,10 +627,42 @@
   		<textarea class="form-control my-3 geneset_genes" style="width: 30rem; margin-top: 1rem;" rows="5" id="Geneset_Genes1" name="Geneset_Genes1" placeholder="Here will list all genes in a geneset"></textarea>
   		<p><button onclick="ADDGsetAdd(1)"><b>Add</b></button></p>
   	</div>
-
       <span id="ADDGsetError" style="color:red"></span><br>
 
     </div><!--ADDG-->
+
+    <div id="CellPopView" class="tabcontent">
+      <div id="CellPopInput">
+        <h3>For a given cell population, compare gene expression between two conditions:</h3>
+        <p>Select Cell Population Annotation:
+        <select id="CPV_ClusterKey" onclick="CellPopList('cluster')"></select></p>
+        <p>Select a Cell Population:
+        <select id="CPV_Cluster"></select></p>
+    <p>Select Condition Annotation:
+      <select id="CPV_ConditionKey" onclick="CellPopList('condition')"></select></p>
+	  <p>Select Condition 1:
+      <select id="CPV_C1"></select></p>
+        <p>Select Condition 2:
+        <select id="CPV_C2"></select></p>
+        <p>Select gene metadata category:
+          <select id="gene_MetaCat"></select></p>
+      </div>
+      <button class="CPVbt" onclick="CellPopPlot()"><b>Plot</b></button>
+      <button class="CPVTablebt" onclick="CellPopTable(); helpText('table')"><b>Table</b></button>
+      <p id="CPVnote" style="color:red;"></p>
+      <div id="CPVspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+      <button onclick="ZoomIn('CPVresize')">Zoom In</button>
+      <button onclick="ZoomOut('CPVresize')">Zoom Out</button>
+      <div id="CPVresize" style="height: 'auto'; width: 'auto'; padding: 0.5em;">
+        <p id="CPVfig"></p>
+      </div>
+      <p id="Table_Help" style="color:green"></p>
+      <p></p>
+      <p id="LFC_Note" style="visibility: hidden;">Select a Log Fold Change Threshold:
+      <input type="number" id="DEG_LFC" value="0.5" step="0.1" style="visibility: hidden;"></p>
+      <p></p>
+      <table id="CPVdatatable" class="display"></table>
+    </div><!--CellPopView-->
 
     <div id="GD" class=tabcontent>
       <div id="GDinput">
@@ -1214,7 +1249,8 @@
             <p id="DEGinteractive" style="height: 500px; width:500px; padding: 0.5em; border: 1px solid #B6B6B6"></p>
           </div>
         </div>
-
+        <p id="DEG_TAB_LFC_Note" style="visibility: hidden;">Select a Log Fold Change Threshold:
+        <input type="number" id="DEG_TAB_LFC" value="0.5" step="0.1" style="visibility: hidden;"></p>
         <table id="DEGtable" class="display"></table>
         <button onclick="ZoomIn('DEGresize')">Zoom In</button>
         <button onclick="ZoomOut('DEGresize')">Zoom Out</button>
@@ -2062,6 +2098,7 @@ function init(){
       htmlCheck += '<label><input class="ABBRgrps" type="checkbox" value="'+grps[i]+'" onclick="ABBRlist(\'ABBR\')"/> '+grps[i]+' ('+grpL[grps[i]].categories.length+')</label>';
     }
     $('#ABBRgrp').html(htmlCheck);
+    //$('#CPV_ClusterKey').html(htmlCheck);
     $('#ABBRcomBgrp').html(htmlCheck.replaceAll('ABBR','ABBRcomB'));
 
     var bioAbbr = {}
@@ -2097,6 +2134,8 @@ function init(){
     var densG = document.getElementById("DENSgrp");
     var embed = document.getElementById("EMBEDsplit");
     var tVIP = document.getElementById("tVIPgrp");
+    var CPVGrp = document.getElementById("CPV_ClusterKey");
+    var CPVGrp2 = document.getElementById("CPV_ConditionKey");
 
     for(const one of grps){
       if (one.startsWith(">")) continue;
@@ -2112,9 +2151,32 @@ function init(){
       densG.add(createOpt(one));
       embed.add(createOpt(one));
       tVIP.add(createOpt(one));
+      CPVGrp.add(createOpt(one));
+      CPVGrp2.add(createOpt(one));
     }
     densS.add(createOpt('None'));
     densG.add(createOpt('None'));
+    //--------------------------------------------------------------------------
+    //add gene annotation categories
+
+    var featureCats = Object.entries(store.getState().annoMatrix.schema.annotations.var.columns)
+
+    var finalFeatureCats = [];
+
+    for(x of featureCats){
+    
+    if (x[1].name === "name_0") continue;
+
+    finalFeatureCats.push(x[1].name);
+  
+  }
+
+  var varCats = document.getElementById("gene_MetaCat");
+
+  for(x of finalFeatureCats){
+    varCats.add(createOpt(x));
+  }
+ 
     //--------------------------------------------------------------------------
     //add layout to EMBED, DUAL, and CLI checkbox
     var embedLay = document.getElementById("EMBEDlayout");
@@ -2965,6 +3027,42 @@ function CLIref(){
   $(".CLIgrps:checkbox[value='cell_type']").prop("checked","true");
   $(".CLIlayouts:checkbox[value='umap_harmony']").prop("checked","true");
 }
+
+function CellPopList(opt){
+  var grps = {};
+
+  if(opt=="cluster"){
+    var annCat = document.getElementById("CPV_ClusterKey").value;
+    grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
+
+    $("#CPV_Cluster").empty();
+
+    var levels = document.getElementById("CPV_Cluster");
+
+    for(const one of grps[annCat]) {
+      levels.add(createOpt(one));
+    }
+   
+  }else{
+    var annCat = document.getElementById("CPV_ConditionKey").value;
+    grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
+    $("#CPV_C1").empty();
+    $("#CPV_C2").empty();
+
+    var levels1 = document.getElementById("CPV_C1");
+    var levels2 = document.getElementById("CPV_C2");
+
+    for(const one of grps[annCat]) {
+      levels1.add(createOpt(one));
+    }
+
+    for(const one of grps[annCat]) {
+      levels2.add(createOpt(one));
+    }
+   } 
+  
+}
+
 // process annotation
 function ABBRlist(eID){
   var grps = {},nrows=0,i;
@@ -3142,10 +3240,14 @@ function ABBRcombine(){
 // process genes
 function ADDGadd(){
   var addG = $("#ADDGinput").val().trim().split(/\s+|\s*,\s*|\s*;\s*/);
+  console.log(addG);
   var genes =  window.biogen;
+  console.log(genes);
   var notG = [];
   var totalG = window.store.getState().annoMatrix._cache.var.__columns[0];
+  
   var totalGlower = totalG.map(function(s){return s.toLowerCase();});
+  console.log(totalGlower);
 
   for(var i=0;i<addG.length;i++){
     var one = addG[i].trim();
@@ -4126,6 +4228,8 @@ function DEGfind(){
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
       document.getElementById("DEGspin").style.visibility="hidden";
+      document.getElementById("DEG_TAB_LFC").style.visibility="visible";
+      document.getElementById("DEG_TAB_LFC_Note").style.visibility="visible";
       $(".DEGbt").prop("disabled",false);
       $(".DEGpngBT").prop('disabled',false);
 
@@ -4162,6 +4266,7 @@ function DEGfind(){
                   (+data.qval).toExponential(2)],
                   Object.values(data).slice(4));
         });
+      
       var tableTitle = [];
       [].concat(['Gene',"Log Fold Change","p-value","padj"],gInfo).forEach(function(d){tableTitle = tableTitle.concat({title:d})});
       var table = $('#DEGtable').DataTable({
@@ -4169,9 +4274,47 @@ function DEGfind(){
         dom:'Blfrtip',
         lengthMenu:[[10,50,100,200],[10,50,100,200]],
         order:[3,"asc"],
-        buttons:['csv'],
+        buttons:['csv', {
+          extend:'csv',
+          text:'PlasmoDB (Up)',
+          customize: function(csv) {
+
+            var degTabLFC = document.getElementById("DEG_TAB_LFC").value;
+            
+            results = searchPDB(csv,'up',degTabLFC);
+
+            return results;
+          }
+        }, {
+          extend:'csv',
+          text:'PlasmoDB (Down)',
+          customize: function(csv) {
+
+            var degTabLFC = document.getElementById("DEG_TAB_LFC").value;
+            
+            results = searchPDB(csv,'down',degTabLFC);
+
+            return results;
+          }
+
+        }],
         data:tableD,
-        columns:tableTitle
+        columns:tableTitle,
+	columnDefs:[
+         {targets:0,
+         render: function(data, type, row, meta){
+          
+           geneName = data.replace("-","_");
+           geneName = geneName.split('.')[0];
+
+           data="<a href='https://plasmodb.org/plasmo/app/record/gene/"+geneName+"' target='_blank'>"+data+"</a>";
+ 
+           return data;
+ 
+         }
+ 
+         }
+        ]
       });
       $('#DEGtable tbody').on('click',"tr",function(){
         var data = table.row(this).data();
@@ -5211,6 +5354,344 @@ function load(){
   };
   reader.readAsText($("#loadfile")[0].files[0]);
 }
+
+function CellPopPlot(){
+  var CPV_CK = document.getElementById("CPV_ClusterKey").value; 
+  
+  var CPV_C = document.getElementById("CPV_Cluster").value; 
+  
+  var CPV_CK2 = document.getElementById("CPV_ConditionKey").value; 
+  
+  var CPV_Con1 = document.getElementById("CPV_C1").value; 
+  
+  var CPV_Con2 = document.getElementById("CPV_C2").value;
+  
+  var cells = AllCells;
+
+  if(CPV_Con1 == CPV_Con2) {
+    $("#CPVnote").text('Please input two different conditions');
+    return
+  }
+
+  //let grp = [...new Set(CPV_CK,CPV_CK2)];
+  let grp = [...new Set([$("#CPV_ClusterKey").val(),$("#CPV_ConditionKey").val()])];
+
+  if(CPV_CK && CPV_C && CPV_C2 && CPV_Con1 && CPV_Con2 && cells) {
+    
+    var D = {'method':'CPV',
+		'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+		'Cluster':CPV_C,
+		'ClusterKey':CPV_CK,
+		'ConditionKey':CPV_CK2,
+    'cells':cells,
+    'genes':[],
+    'grp':grp,
+		'Cond1':CPV_Con1,
+		'Cond2':CPV_Con2};
+    $(".CPVbt").prop("disabled",true);
+    $(".CPVTablebt").prop("disabled",true);
+    document.getElementById("CPVspin").style.visibility="visible";
+    
+    $.ajax({
+    type:"POST",
+    url: VIPurl,
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(res){
+      $(".CPVbt").prop("disabled",false);
+      $(".CPVTablebt").prop("disabled",false);
+      document.getElementById("CPVspin").style.visibility="hidden";
+      $("#CPVnote").text('');
+      
+      
+      showImg('CPVfig',res);
+
+    },
+    error: function() {
+      $("#CPVnote").text('Plotting Error!');
+    }
+})
+return
+  } 
+    $("#CPVnote").text('Input data required');
+    document.getElementById("CPVfig").innerHTML = "";
+    $('#CPVdatatable').empty();  
+}
+function CellPopTable(){
+  
+  var CPV_CK = document.getElementById("CPV_ClusterKey").value; 
+  
+  var CPV_C = document.getElementById("CPV_Cluster").value; 
+  
+  var CPV_CK2 = document.getElementById("CPV_ConditionKey").value; 
+  
+  var CPV_Con1 = document.getElementById("CPV_C1").value; 
+  
+  var CPV_Con2 = document.getElementById("CPV_C2").value;
+
+  var geneMetaData = document.getElementById("gene_MetaCat").value;
+  
+  var cells = AllCells;
+
+  if(CPV_Con1 == CPV_Con2) {
+    $("#CPVnote").text('Please input two different conditions');
+    return
+  }
+
+  let grp = [...new Set([$("#CPV_ClusterKey").val(),$("#CPV_ConditionKey").val()])];
+
+  if(CPV_CK && CPV_C && CPV_C2 && CPV_Con1 && CPV_Con2 && cells) {
+    
+    var D = {'method':'CPVTable',
+		'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+		'Cluster':CPV_C,
+		'ClusterKey':CPV_CK,
+		'ConditionKey':CPV_CK2,
+    'cells':cells,
+    'genes':[],
+    'grp':grp,
+    'gMD':geneMetaData,
+		'Cond1':CPV_Con1,
+		'Cond2':CPV_Con2};
+    $(".CPVTablebt").prop("disabled",true);
+    $(".CPVbt").prop("disabled",true);
+    document.getElementById("CPVspin").style.visibility="visible";
+    
+    $.ajax({
+    type:"POST",
+    url: VIPurl,
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(res){
+      $(".CPVTablebt").prop("disabled",false);
+      $(".CPVbt").prop("disabled",false);
+      $("#CPVnote").text('');
+      document.getElementById("CPVspin").style.visibility="hidden";
+      document.getElementById("DEG_LFC").style.visibility="visible";
+      document.getElementById("LFC_Note").style.visibility="visible";
+
+      resTable = res; 
+      resTable = JSON.stringify(resTable);
+      resTable = resTable.split("\\n");
+      resTable = resTable.join('\n');
+      resTable = resTable.replace(/\\/g, '');
+      resTable = resTable.replace(/"/g,"");
+      
+      var gInfo = resTable.split("\n")[0].split(',').slice(4);
+      
+      var tableD = d3.csvParse(resTable,function(data){
+        return [].concat([data.gene,
+                  (+data.log2fc).toFixed(2),
+                  (+data.pval).toExponential(2),
+                  (+data.qval).toExponential(2)],
+                  Object.values(data).slice(4));
+        });
+      
+      
+      var tableTitle = [];
+      [].concat(['Gene',"Log Fold Change","p-value","padj"],gInfo).forEach(function(d){tableTitle = tableTitle.concat({title:d})});
+      var table = $('#CPVdatatable').DataTable({
+        destroy: true,
+        dom:'Blfrtip',
+        lengthMenu:[[10,50,100,200],[10,50,100,200]],
+        order:[3,"asc"],
+        buttons:['csv', {
+          extend:'csv',
+          text:'PlasmoDB (Up)',
+          customize: function(csv) {
+
+            var LFC = document.getElementById("DEG_LFC").value;
+            
+            results = searchPDB(csv,'up',LFC);
+
+            return results;
+          }
+        }, {
+          extend:'csv',
+          text:'PlasmoDB (Down)',
+          customize: function(csv) {
+
+            var LFC = document.getElementById("DEG_LFC").value;
+            
+            results = searchPDB(csv,'down',LFC);
+
+            return results;
+          }
+
+        }],
+        data:tableD,
+        columns:tableTitle,
+        columnDefs:[
+        {targets:0,
+        render: function(data, type, row, meta){
+        
+          geneName = data.replace("-","_");
+          geneName = geneName.split('.')[0];
+
+          data="<a href='https://plasmodb.org/plasmo/app/record/gene/"+geneName+"' target='_blank'>"+data+"</a>";
+
+          return data;
+        }
+        }
+       ]
+
+      });
+
+    },
+    error: function() {
+      $("#CPVnote").text('Table Error!');
+    }
+})
+return
+  } 
+    $("#CPVnote").text('Input data required');
+    document.getElementById("CPVfig").innerHTML = "";
+    $('#CPVdatatable').empty();
+
+}
+
+function searchPDB(csv,direc,threshold){
+
+  csv = csv.replace(/"/g, '');
+  var csv_split = csv.split("\n");
+  csv_split.shift();
+
+  var geneList = [];
+  
+  if(direc=='up'){
+    
+    for (element of csv_split) {
+              
+      data = element.split(',');
+              
+      if(parseFloat(data[1]) > parseFloat(threshold)){
+        geneList.push(data[0]);
+      }
+  }
+}else{
+      
+  for (element of csv_split) {
+                
+    data = element.split(',');
+                        
+    if(parseFloat(data[1]) < parseFloat(threshold)){
+          
+    geneList.push(data[0]);
+        
+    }
+  }
+  
+}
+
+  var preppedGenes = [];
+
+  for (element of geneList) {
+              
+    element = element.replace("-","_");
+    element = element.split('.')[0];
+              
+    preppedGenes.push(element);
+    }
+
+  var url = "https://plasmodb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=";
+
+  for (element of preppedGenes) {
+
+    url = url.concat(element + ",");
+
+  }
+            
+  url = url.slice(0, -1);
+  url = url.concat("&autoRun=1");
+
+  window.open(url);
+
+  var new_csv = preppedGenes.join()
+  return new_csv
+
+}
+
+function getAllCells(){
+  AllCells = Int32Array.from({length:window.store.getState().annoMatrix.nObs},(v,k)=>k);
+}
+
+var AllCells;
+
+var DE_Counter = 0;
+
+function add_DEG_GeneSet(){
+  $("#ADDGsetError").text("");
+  var grpName = "DE Genes".trim();
+  
+  var grpKeys = Object.keys(window.bioGeneGrp);
+  if(grpKeys.includes(grpName)){
+    DE_Counter += 1;
+    grpName = grpName + "_" + DE_Counter;
+  }
+  
+  var definedG = [];
+  for(var i=0;i<grpKeys.length;i++){
+    definedG = definedG.concat(window.bioGeneGrp[grpKeys[i]]);
+  }
+
+  var histogram_labels = document.querySelectorAll('[data-testclass="brushable-histogram-field-name"]');
+  
+
+  var histogram_labels2 = Array.from(histogram_labels);
+  deg_results = histogram_labels2.slice(0,10);
+ 
+  gene_names = [];
+  
+  for(element of deg_results){
+    
+    gene = element.textContent;
+    
+
+    gene_names.push(gene);
+  }
+
+  var gNames = gene_names;
+  var notG = [],geneNames=[];
+  var totalG = window.store.getState().annoMatrix._cache.var.__columns[0];
+  var totalGlower = totalG.map(function(s){return s.toLowerCase();});
+  for(var i=0;i<gNames.length;i++){
+    var one = gNames[i].trim();
+    var ix = totalGlower.indexOf(one.toLowerCase());
+    if(ix !== -1){
+      var oneG = totalG[ix];
+      if (one.length<1) continue;
+      if(!definedG.includes(oneG)){
+        geneNames.push(oneG);
+      }else{
+        notG.push(one);
+      }
+    }else{
+      notG.push(one);
+    }
+  }
+  var eMsg= "";
+  if(notG[0]=='nCount_RNA'){
+    eMsg +="Error - please run DEG analysis";
+    $("#ADDGsetError").text(eMsg);
+    return;
+  }
+ 
+  window.bioGeneGrp[grpName] = geneNames;
+
+  geneNames = geneNames.concat(window.biogen);
+  geneNames = [...new Set(geneNames)];
+  window.biogen = geneNames;
+  ADDGref();
+}
+
+
+function helpText(x){
+  if (x=='table'){
+    $("#Table_Help").text('CSV: Download Table as CSV. PlasmoDB (Up): Explore PlasmoDB with Table Genes whose LFC value exceeds threshold. PlasmoDB (Down): Explore PlasmoDB with Table Genes whose LFC value falls below threshold.');
+  }
+}
+
+
 function loadexe(content){
   if(content['saveName']!='cellxgene.'+window.store.getState().config.displayNames.dataset){
     if(!confirm("Saved information is NOT matching with the current data! Continue?")){
