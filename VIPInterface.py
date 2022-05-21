@@ -16,6 +16,7 @@ import matplotlib.patches as mpatches
 from matplotlib import rcParams
 import plotly.graph_objects as go
 import plotly.io as plotIO
+import plotly.express as px
 import base64
 import math
 from io import BytesIO
@@ -25,7 +26,7 @@ import os
 import re
 import glob
 import subprocess
-import anndata as anndata
+
 strExePath = os.path.dirname(os.path.abspath(__file__))
 
 import pprint
@@ -1529,7 +1530,6 @@ def cellpopview(data):
     adata_1 = adata[adata.obs[condition_key].isin([condition_1])]
     adata_2 = adata[adata.obs[condition_key].isin([condition_2])]
     
-    
     # Extract the data.
     table_1 = adata_1.to_df()
   
@@ -1542,39 +1542,36 @@ def cellpopview(data):
     table_2 = table_2.transpose()
     expression_2 = np.log1p(np.expm1(table_2).mean(axis=1)) 
 
-    # Identify the gene with the highest level of expression in condition1.
-    pairs = zip(expression_1, expression_2)
-    pairs=list(pairs)
+    # Generate Pandas Dataframe of Graph Information.
 
-    top_coord = max(pairs)
+    gene_names = expression_1.index
 
-    max_gene = expression_1[expression_1  == top_coord[0]].index.tolist()[0]
+    gene_metaData = data['gMD']
 
-    # Graph plotting.
+    gInfo = getVar(data)
+  
+    gInfo = gInfo[gene_metaData]
+
+    annot = []
+
+    for x in gInfo:
+      annot.append(x)
+
+    data = {"Gene_Name":gene_names,condition_1:expression_1,condition_2:expression_2,gene_metaData:annot}
+
+    plot_dataframe = pd.DataFrame(data)
+
+    # Interactive Graph Plotting.
+
+    plot_title = condition_1 + " vs. " + condition_2
+
+    hd = {'Gene_Name':False,condition_1:False,condition_2:False,gene_metaData:True}
+
+    cellpop_plot = px.scatter(plot_dataframe, x=condition_1, y=condition_2, hover_data=hd, hover_name="Gene_Name", title=plot_title)
+
+    div = plotIO.to_html(cellpop_plot)
     
-    plt.scatter(expression_1,expression_2, label = "stars", color = "black", 
-            marker = ".",  s =30) 
-    
-    plt.title(cluster_key + ": " + cluster) 
-    
-    plt.grid()
-
-    plt.xlabel(condition_1)
-    plt.ylabel(condition_2)
-
-    bot,top= plt.ylim()
-
-    plt.ylim(bot,top+1)
-
-    plt.annotate(max_gene,
-             top_coord,
-             textcoords="offset points",
-             xytext=(-40,10),
-             ha='center')
-    
-    cellpop_plot = plt.gcf()
-    
-    return iostreamFig(cellpop_plot)
+    return div
 
 def cpvtable(data):
 
@@ -1605,7 +1602,7 @@ def cpvtable(data):
   deg = deg.sort_values(by=['qval']).loc[:,['gene','log2fc','pval','qval']]
   deg['log2fc'] = -1 * deg['log2fc']
 
-  # Extract user-specified gene metadata column, concatenate to DE dataframe.
+  # Extract user-specified gene metadata column, reduce to relevant column.
 
   gInfo = getVar(data)
   

@@ -651,8 +651,6 @@
       <button class="CPVTablebt" onclick="CellPopTable(); helpText('table')"><b>Table</b></button>
       <p id="CPVnote" style="color:red;"></p>
       <div id="CPVspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <button onclick="ZoomIn('CPVresize')">Zoom In</button>
-      <button onclick="ZoomOut('CPVresize')">Zoom Out</button>
       <div id="CPVresize" style="height: 'auto'; width: 'auto'; padding: 0.5em;">
         <p id="CPVfig"></p>
       </div>
@@ -5365,6 +5363,8 @@ function CellPopPlot(){
   var CPV_Con1 = document.getElementById("CPV_C1").value; 
   
   var CPV_Con2 = document.getElementById("CPV_C2").value;
+
+  var geneMetaData = document.getElementById("gene_MetaCat").value;
   
   var cells = AllCells;
 
@@ -5386,6 +5386,7 @@ function CellPopPlot(){
     'cells':cells,
     'genes':[],
     'grp':grp,
+    'gMD':geneMetaData,
 		'Cond1':CPV_Con1,
 		'Cond2':CPV_Con2};
     $(".CPVbt").prop("disabled",true);
@@ -5403,20 +5404,23 @@ function CellPopPlot(){
       document.getElementById("CPVspin").style.visibility="hidden";
       $("#CPVnote").text('');
       
-      
-      showImg('CPVfig',res);
+      $('#CPVfig').html(res);
 
     },
     error: function() {
       $("#CPVnote").text('Plotting Error!');
+      document.getElementById("CPVspin").style.visibility="hidden";
+      $(".CPVbt").prop("disabled",false);
+      $(".CPVTablebt").prop("disabled",false);
     }
 })
-return
-  } 
+  }else{
     $("#CPVnote").text('Input data required');
     document.getElementById("CPVfig").innerHTML = "";
     $('#CPVdatatable').empty();  
-}
+    }
+} 
+    
 function CellPopTable(){
   
   var CPV_CK = document.getElementById("CPV_ClusterKey").value; 
@@ -5542,12 +5546,11 @@ function CellPopTable(){
       $("#CPVnote").text('Table Error!');
     }
 })
-return
-  } 
+  }else{
     $("#CPVnote").text('Input data required');
     document.getElementById("CPVfig").innerHTML = "";
     $('#CPVdatatable').empty();
-
+  } 
 }
 
 function searchPDB(csv,direc,threshold){
