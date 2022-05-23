@@ -14,6 +14,8 @@ cp vip.env $strPath/server/app/. 2>/dev/null | true
 cp fgsea.R $strPath/server/app/.
 mkdir -p $strPath/server/app/gsea
 cp gsea/*gmt $strPath/server/app/gsea
+cp complexHeatmap.R $strPath/server/app/.
+cp volcano.R $strPath/server/app/.
 
 if [ -n "$1" ]; then
   cp Density2D.R $strPath/server/app/.

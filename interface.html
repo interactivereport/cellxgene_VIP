@@ -1163,6 +1163,10 @@
           <p>Define the significance in FDR &#62; <input id="DEGsigFDR" type="number" step="0.001" value="0.05" min="0" max="1"/>
             and absolute log2(FC) &#62; <input id="DEGsigLogfc" type="number" step="0.1" value="1" min="0"/> </p>
           <p>Remove genes in volcano plot with the absolute log2(FC) larger than: <input id="DEGlogfcCut" type="number" step="1" value="10" min="0"/></p>
+          <p>Label Size: <input id="DEGlabelSize" type="number" step="0.5" value="3" min="1" max="24"/>
+          Dot Size: <input id="DEGdotSize" type="number" step="0.1" value="0.5" min="0.1" max="2"/>
+          <p>Y-axis Min: <input id="DEGymin" type="number" step="1" value="-3" min="-10" max="10"/>
+          Y-axis Max: <input id="DEGymax" type="number" step="1" value="100" min="1" max="5000"/></p>
           <fieldset>
             <legend>Gene Set Enrichment Analysis:
               <label class="switch"><input type="checkbox" id="GSEAenable" onclick="if($(this).prop('checked')){$('#GSEAopt').show()}else{$('#GSEAopt').hide()}"/>
@@ -1263,6 +1267,10 @@
           </select></p>
         <p>Define the significance in FDR &#60; <input id="preDEGvolcanoFDR" type="number" step="0.001" value="0.05" min="0" max="1"/>
             and absolute log2(FC) &#62; <input id="preDEGvolcanoLogfc" type="number" step="0.1" value="1" min="0"/> </p>
+        <p>Label Size: <input id="preDEGvolcanolabelSize" type="number" step="0.5" value="3" min="1" max="24"/>
+        Dot Size: <input id="preDEGvolcanodotSize" type="number" step="0.1" value="0.5" min="0.1" max="2"/>
+        <p>Y-axis Min: <input id="preDEGvolcanoymin" type="number" step="1" value="-3" min="-10" max="10"/>
+        Y-axis Max: <input id="preDEGvolcanoymax" type="number" step="1" value="100" min="1" max="5000"/></p>
 
         <p hidden>Remove genes in volcano plot with the absolute log2(FC) larger than: <input id="preDEGvolcanologfcCut" type="number" step="1" value="100" min="0"/></p>
         <button class="preDEGvolcanobt" onclick="preDEGVolcanofind('preDEGvolcano')"><b>Plot</b></button>
@@ -4088,6 +4096,10 @@ function DEGfind(){
            'logFC':$("#DEGlogfcCut").val(),
            'sigFDR':$("#DEGsigFDR").val(),
            'sigFC':$("#DEGsigLogfc").val(),
+           'labelSize':$("#DEGlabelSize").val(),
+           'dotSize':$("#DEGdotSize").val(),
+           'ymin':$("#DEGymin").val(),
+           'ymax':$("#DEGymax").val(),
            'gsea':{'enable':$('#GSEAenable').prop('checked'),
                    'gs':$('#GSEAgs').val(),
                    'gsMin':$('#GSEAminSize').val(),
@@ -4238,6 +4250,10 @@ function preDEGVolcanofind(eID){
            'logFC':10,
            'sigFC':$("#"+eID+"Logfc").val(),
            'sigFDR':$("#"+eID+"FDR").val(),
+           'labelSize':$("#"+eID+"labelSize").val(),
+           'dotSize':$("#"+eID+"dotSize").val(),
+           'ymin':$("#"+eID+"ymin").val(),
+           'ymax':$("#"+eID+"ymax").val(),
            'figOpt':window.figOpt};
   document.getElementById(eID+"spin").style.visibility="visible";
   $("."+eID+"bt").prop('disabled',true);

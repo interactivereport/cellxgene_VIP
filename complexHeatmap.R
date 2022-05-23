@@ -104,11 +104,19 @@ if(sum(strFun%in%c('png','jpeg','tiff'))>0){
 }
 
 p <- Heatmap(mat,name=heatkey,right_annotation=rowAnno,
-             col=col_fun,use_raster=use_raster,column_title = paste(nrow(mat),"cells"),
+             col=col_fun,column_title = paste(nrow(mat),"cells"),
              cluster_columns=F,cluster_rows=clusterRow,clustering_method_rows="ward.D",
              heatmap_legend_param=list(title_gp=gpar(fontsize = fontsize),
                                        labels_gp=gpar(fontsize=fontsize-1)))
 draw(p)
+if (use_raster) {
+  for (comp in grid.ls(flatten=TRUE,print=FALSE)[1]$name) {
+    if (grepl("GRID.rect",comp)) {
+      grid.remove(comp)
+    }
+  }
+}
+
 a <- dev.off()
 fig = base64enc::dataURI(file = strImg)
 cat(gsub("data:;base64,","",fig))
