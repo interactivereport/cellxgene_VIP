@@ -858,16 +858,22 @@
           <option value='RdYlBu'>RdYlBu</option>
           <option value='RdYlGn'>RdYlGn</option>
         </select> <input id="HEATcolor_r" type="checkbox">Reverse <button onclick="hideShow($('#HEATcolorhelp'),$(this),'Color Help');">Show Color Help</button></p>
-    		<div id="HEATcolorhelp" style="display:none;">
-              <table border=0>
-                <tr valign="top"><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_sequential.png" width="300"></td><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_diverging.png" width="300"></td></tr>
-              </table>
-    		</div>
-    		<p>Select plotting methods:
-    		  <select id="HEATplotMethod">
-    		    <option value="sns">Seaborn (python)</option>
-    		    <option value="cHeatmap">ComplexHeatmap (R)</option>
-    		  </select></p>
+  		<div id="HEATcolorhelp" style="display:none;">
+            <table border=0>
+              <tr valign="top"><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_sequential.png" width="300"></td><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_diverging.png" width="300"></td></tr>
+            </table>
+  		</div>
+  		<p>Select plotting methods:
+  		  <select id="HEATplotMethod">
+  		    <option value="cHeatmap">ComplexHeatmap (R)</option>
+  		    <option value="sns">Seaborn (python)</option>
+  		  </select></p>
+        <p>Width: <input id="HEATwidth" type="number" step="0.5" value="6" min="1" max="24"/>
+           Height: <input id="HEATheight" type="number" step="0.5" value="8" min="1" max="24"/>
+        </p>
+        <p>Column Format: <input id="HEATcolumnFormat" type="text" size=36 value="fontsize=4,col='black',fontface='plain'"/></p>
+        <p>Row Format: <input id="HEATrowFormat" type="text" size=36 value="fontsize=4"/></p>
+        <p>Annotation Format: <input id="HEATannoFormat" type="text" size=36 value="fontsize=6"/></p>
       </div>
       <button class="HEATbt"  onclick="HEATplot()"><b>Plot</b></button>
       <button class="HEATsaveBT" onclick="HEATdata()" disabled>Get Data</button>
@@ -3901,6 +3907,11 @@ function HEATcheck(){
             'grp':grps,
             'color':color,
             'plotMethod':$("#HEATplotMethod").val(),
+            'width':$("#HEATwidth").val(),
+            'height':$("#HEATheight").val(),
+            'columnFormat':$("#HEATcolumnFormat").val().replaceAll("'","\\'"),
+            'rowFormat':$("#HEATrowFormat").val().replaceAll("'","\\'"),
+            'annoFormat':$("#HEATannoFormat").val().replaceAll("'","\\'"),
             'abb':window.bioAbbr,
             'combine':combGrp,
             'combineOrder':combGrpOrder,

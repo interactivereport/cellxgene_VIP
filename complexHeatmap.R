@@ -15,6 +15,7 @@ if(nchar(libPath)>3){
 }
 
 library(ComplexHeatmap)
+library(png)
 
 strCSV <- args[1]
 genes <- unlist(strsplit(args[2],","))
@@ -28,6 +29,9 @@ i <- 8
 strFun <- args[i]
 fontsize <- as.numeric(args[i+1])
 dpi <- as.numeric(args[i+2])
+columnFormat <- args[i+3]
+rowFormat <- args[i+4]
+annoFormat <- args[i+5]
 
 imgColRev <- F
 if(grepl("_r$",imgCol)){
@@ -63,6 +67,7 @@ ann_col <- apply(anno_df,2,function(x){
   return(list(setNames(scales::hue_pal()(xN),sort(unique(x)))))
 })
 rowAnno <- rowAnnotation(df=anno_df,col=unlist(ann_col,recursive=F),
+                         annotation_name_gp = eval(parse(text = paste0("grid::gpar(", annoFormat , ")"))),
                          annotation_legend_param=list(title_gp=gpar(fontsize = fontsize),
                                                       labels_gp=gpar(fontsize=fontsize-1)))
 ## color for heatmap
@@ -96,25 +101,43 @@ col_fun <- circlize::colorRamp2(colorBreak,colorSet)
 strImg <- gsub("csv$",strFun,strCSV)
 f <- get(strFun)
 if(sum(strFun%in%c('png','jpeg','tiff'))>0){
-  f(strImg, width=imgW, height=imgH,units='in',res=dpi)
   use_raster <- F
 }else{
-  f(strImg, width=imgW, height=imgH)
   use_raster <- T
 }
 
 p <- Heatmap(mat,name=heatkey,right_annotation=rowAnno,
-             col=col_fun,column_title = paste(nrow(mat),"cells"),
+#             col=col_fun,column_title = paste(nrow(mat),"cells"),
+             col=col_fun,
+             column_names_gp = eval(parse(text = paste0("grid::gpar(", columnFormat , ")"))),
+             row_names_gp = eval(parse(text = paste0("grid::gpar(", rowFormat, ")"))),
              cluster_columns=F,cluster_rows=clusterRow,clustering_method_rows="ward.D",
              heatmap_legend_param=list(title_gp=gpar(fontsize = fontsize),
                                        labels_gp=gpar(fontsize=fontsize-1)))
-draw(p)
 if (use_raster) {
-  for (comp in grid.ls(flatten=TRUE,print=FALSE)[1]$name) {
+  pngFile = paste0(strImg,".png")
+  png(pngFile, width=imgW, height=imgH, units='in', res=dpi, bg='transparent')
+  draw(p)
+  for (comp in grid.ls(flatten=TRUE,print=FALSE,recursive=FALSE)[1]$name) {
+    if (!grepl("GRID.rect",comp)) {
+      grid.remove(comp)
+    }
+  }
+  a <- dev.off()
+  heatmap = readPNG(pngFile)
+
+  f(strImg, width=imgW, height=imgH)
+  draw(p)
+  for (comp in grid.ls(flatten=TRUE,print=FALSE,recursive=FALSE)[1]$name) {
     if (grepl("GRID.rect",comp)) {
       grid.remove(comp)
     }
   }
+  grid.raster(heatmap)
+  a <- file.remove(pngFile)
+} else {
+  f(strImg, width=imgW, height=imgH,units='in',res=dpi)
+  draw(p)
 }
 
 a <- dev.off()
