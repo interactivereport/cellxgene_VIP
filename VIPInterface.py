@@ -626,12 +626,12 @@ def pHeatmap(data):
     D = pd.concat([D,adata.obs],axis=1,sort=False)
     D.to_csv(strF,index=False)
     ## plot in R
-    cmd = "%s/complexHeatmap.R %s %s %s %s %s %s %s %s %s %s %s %s %s '%s'"%(strExePath,strF,','.join(data['genes']),colTitle,exprOrder,str(data['width']),str(data['height']),heatCol,
-      data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['columnFormat']),str(data['rowFormat']),str(data['annoFormat']),data['Rlib'])
+    cmd = "%s/complexHeatmap.R %s %s %s %s %s %s %s %s %s %s %s %s %s %s '%s'"%(strExePath,strF,','.join(data['genes']),colTitle,exprOrder,str(data['width']),str(data['height']),heatCol,
+      data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['columnFormat']),str(data['rowFormat']),str(data['annoFormat']),str(data['swapAxes']),data['Rlib'])
     #ppr.pprint(cmd)
     res = subprocess.run(cmd,check=True,shell=True,capture_output=True)#
     img = res.stdout.decode('utf-8')
-    #os.remove(strF)
+    os.remove(strF)
     if 'Error' in res.stderr.decode('utf-8'):
       raise SyntaxError("in R: "+res.stderr.decode('utf-8'))
     return img

@@ -32,6 +32,7 @@ dpi <- as.numeric(args[i+2])
 columnFormat <- args[i+3]
 rowFormat <- args[i+4]
 annoFormat <- args[i+5]
+swapAxes <- as.logical(args[i+6])
 
 imgColRev <- F
 if(grepl("_r$",imgCol)){
@@ -41,6 +42,7 @@ if(grepl("_r$",imgCol)){
 
 D <- as.data.frame(data.table::fread(strCSV))
 mat <- as.matrix(D[,genes,drop=F])
+mat <- mat[ , colSums(is.na(mat)) == 0]
 # if clusterRow is True, remove cells with sd=0 and value<1
 if(ncol(mat)==1) clusterRow <- F
 if(clusterRow){
@@ -66,10 +68,19 @@ ann_col <- apply(anno_df,2,function(x){
     return(list(setNames(sample(RColorBrewer::brewer.pal(name="Set3",n=12),xN),unique(x))))
   return(list(setNames(scales::hue_pal()(xN),sort(unique(x)))))
 })
-rowAnno <- rowAnnotation(df=anno_df,col=unlist(ann_col,recursive=F),
+
+if (!swapAxes) {
+  rowAnno <- HeatmapAnnotation(df=anno_df,col=unlist(ann_col,recursive=F),
+                         annotation_name_gp = eval(parse(text = paste0("grid::gpar(", annoFormat , ")"))),
+                         annotation_legend_param=list(title_gp=gpar(fontsize = fontsize),
+                                                      labels_gp=gpar(fontsize=fontsize-1)),which = "row")
+} else {
+  colAnno <- HeatmapAnnotation(df=anno_df,col=unlist(ann_col,recursive=F),
                          annotation_name_gp = eval(parse(text = paste0("grid::gpar(", annoFormat , ")"))),
                          annotation_legend_param=list(title_gp=gpar(fontsize = fontsize),
                                                       labels_gp=gpar(fontsize=fontsize-1)))
+  mat <- t(mat)
+}
 ## color for heatmap
 colorN <- 21 # please be an odd number
 colorSet <- RColorBrewer::brewer.pal(name = imgCol, n = colorN)
@@ -106,7 +117,8 @@ if(sum(strFun%in%c('png','jpeg','tiff'))>0){
   use_raster <- T
 }
 
-p <- Heatmap(mat,name=heatkey,right_annotation=rowAnno,
+if (!swapAxes) {
+  p <- Heatmap(mat,name=heatkey,right_annotation=rowAnno,
 #             col=col_fun,column_title = paste(nrow(mat),"cells"),
              col=col_fun,
              column_names_gp = eval(parse(text = paste0("grid::gpar(", columnFormat , ")"))),
@@ -114,6 +126,17 @@ p <- Heatmap(mat,name=heatkey,right_annotation=rowAnno,
              cluster_columns=F,cluster_rows=clusterRow,clustering_method_rows="ward.D",
              heatmap_legend_param=list(title_gp=gpar(fontsize = fontsize),
                                        labels_gp=gpar(fontsize=fontsize-1)))
+} else {
+#print(dim(mat))
+#print(attributes(colAnno))
+  p <- Heatmap(mat,name=heatkey,top_annotation=colAnno,
+             col=col_fun,
+             column_names_gp = eval(parse(text = paste0("grid::gpar(", rowFormat , ")"))),
+             row_names_gp = eval(parse(text = paste0("grid::gpar(", columnFormat, ")"))),
+             cluster_rows=F,cluster_columns=clusterRow,clustering_method_columns="ward.D",
+             heatmap_legend_param=list(title_gp=gpar(fontsize = fontsize),
+                                       labels_gp=gpar(fontsize=fontsize-1)))
+}
 if (use_raster) {
   pngFile = paste0(strImg,".png")
   png(pngFile, width=imgW, height=imgH, units='in', res=dpi, bg='transparent')

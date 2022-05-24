@@ -868,6 +868,7 @@
   		    <option value="cHeatmap">ComplexHeatmap (R)</option>
   		    <option value="sns">Seaborn (python)</option>
   		  </select></p>
+        <p>Gene as <input type="radio" name="HEATswapAxes" value="F" checked>Column <input type="radio" name="HEATswapAxes" value="T">Row</p>
         <p>Width: <input id="HEATwidth" type="number" step="0.5" value="6" min="1" max="24"/>
            Height: <input id="HEATheight" type="number" step="0.5" value="8" min="1" max="24"/>
         </p>
@@ -3912,6 +3913,7 @@ function HEATcheck(){
             'columnFormat':$("#HEATcolumnFormat").val().replaceAll("'","\\'"),
             'rowFormat':$("#HEATrowFormat").val().replaceAll("'","\\'"),
             'annoFormat':$("#HEATannoFormat").val().replaceAll("'","\\'"),
+            'swapAxes':$("input[name='HEATswapAxes']:checked").val(),
             'abb':window.bioAbbr,
             'combine':combGrp,
             'combineOrder':combGrpOrder,
