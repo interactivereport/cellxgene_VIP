@@ -33,6 +33,7 @@ columnFormat <- args[i+3]
 rowFormat <- args[i+4]
 annoFormat <- args[i+5]
 swapAxes <- as.logical(args[i+6])
+rasterize <- ifelse(grepl(args[i+7],'Yes'), T, F)
 
 imgColRev <- F
 if(grepl("_r$",imgCol)){
@@ -112,9 +113,9 @@ col_fun <- circlize::colorRamp2(colorBreak,colorSet)
 strImg <- gsub("csv$",strFun,strCSV)
 f <- get(strFun)
 if(sum(strFun%in%c('png','jpeg','tiff'))>0){
-  use_raster <- F
+  SVGformat <- F
 }else{
-  use_raster <- T
+  SVGformat <- T
 }
 
 if (!swapAxes) {
@@ -137,27 +138,32 @@ if (!swapAxes) {
              heatmap_legend_param=list(title_gp=gpar(fontsize = fontsize),
                                        labels_gp=gpar(fontsize=fontsize-1)))
 }
-if (use_raster) {
-  pngFile = paste0(strImg,".png")
-  png(pngFile, width=imgW, height=imgH, units='in', res=dpi, bg='transparent')
-  draw(p)
-  for (comp in grid.ls(flatten=TRUE,print=FALSE,recursive=FALSE)[1]$name) {
-    if (!grepl("GRID.rect",comp)) {
-      grid.remove(comp)
+if (SVGformat) {
+  if (rasterize) {
+    pngFile = paste0(strImg,".png")
+    png(pngFile, width=imgW, height=imgH, units='in', res=dpi, bg='transparent')
+    draw(p)
+    for (comp in grid.ls(flatten=TRUE,print=FALSE,recursive=FALSE)[1]$name) {
+      if (!grepl("GRID.rect",comp)) {
+        grid.remove(comp)
+      }
     }
+    a <- dev.off()
+    heatmap = readPNG(pngFile)
   }
-  a <- dev.off()
-  heatmap = readPNG(pngFile)
 
   f(strImg, width=imgW, height=imgH)
   draw(p)
-  for (comp in grid.ls(flatten=TRUE,print=FALSE,recursive=FALSE)[1]$name) {
-    if (grepl("GRID.rect",comp)) {
-      grid.remove(comp)
+
+  if (rasterize) {
+    for (comp in grid.ls(flatten=TRUE,print=FALSE,recursive=FALSE)[1]$name) {
+      if (grepl("GRID.rect",comp)) {
+        grid.remove(comp)
+      }
     }
+    grid.raster(heatmap)
+    a <- file.remove(pngFile)
   }
-  grid.raster(heatmap)
-  a <- file.remove(pngFile)
 } else {
   f(strImg, width=imgW, height=imgH,units='in',res=dpi)
   draw(p)

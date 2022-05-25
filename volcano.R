@@ -27,6 +27,7 @@ labelSize <- as.numeric(args[11])
 dotSize <- as.numeric(args[12])
 ymin <- as.numeric(args[13]) 
 ymax <- as.numeric(args[14]) 
+rasterize <- ifelse(grepl(args[15],'Yes'), T, F)
 
 
 mtable <- read.csv(strCSV,as.is=T,check.names=F)
@@ -42,10 +43,15 @@ mtable <- mtable[abs(mtable$logFC)<logFCcut,]
 #mtable[mtable$logFC< -logFCcut,'logFC'] <- -logFCcut
 mtable$FDR = ifelse(-log10(mtable$FDR)<ymax,mtable$FDR,1/10^ymax)
 
-g <- ggplot(mtable, aes(x=logFC, y=-log10(FDR))) + ylim(c(ymin,ymax)) +
-  #geom_point(aes(color = Top), size=dotSize, alpha=0.6) +
-  geom_point_rast(aes(color = Top), size=dotSize, alpha=0.6,na.rm=TRUE)+
-  theme_bw(base_size = 12) + xlab("log2(FC)") +
+g <- ggplot(mtable, aes(x=logFC, y=-log10(FDR))) + ylim(c(ymin,ymax))
+
+if (rasterize) {
+  g <- g + geom_point_rast(aes(color = Top), size=dotSize, alpha=0.6,na.rm=TRUE)
+} else {
+  g <- g + geom_point(aes(color = Top), size=dotSize, alpha=0.6)
+}
+
+g <- g + theme_bw(base_size = 12) + xlab("log2(FC)") +
   scale_color_manual(values = c("Up"="#B41A29", "Not Sig"="grey", "Down"="#5B98E6")) +
   geom_text_repel(data = subset(mtable, gene_name %in% genes), aes(label = gene_name), size = labelSize, box.padding = unit(0.35, "lines"), point.padding = unit(0.3, "lines"))
 g <- g + theme(legend.position="none") + geom_hline(yintercept=-log10(FDR), linetype="dashed", color = "darkgreen")

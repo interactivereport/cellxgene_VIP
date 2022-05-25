@@ -1172,8 +1172,8 @@
           <p>Remove genes in volcano plot with the absolute log2(FC) larger than: <input id="DEGlogfcCut" type="number" step="1" value="10" min="0"/></p>
           <p>Label Size: <input id="DEGlabelSize" type="number" step="0.5" value="3" min="1" max="24"/>
           Dot Size: <input id="DEGdotSize" type="number" step="0.1" value="0.5" min="0.1" max="2"/>
-          <p>Y-axis Min: <input id="DEGymin" type="number" step="1" value="-3" min="-10" max="10"/>
-          Y-axis Max: <input id="DEGymax" type="number" step="1" value="100" min="1" max="5000"/></p>
+          <p>Y-axis Min: <input id="DEGymin" type="number" step="1" value="-2" min="-10" max="10"/>
+          Y-axis Max: <input id="DEGymax" type="number" step="1" value="30" min="1" max="5000"/></p>
           <fieldset>
             <legend>Gene Set Enrichment Analysis:
               <label class="switch"><input type="checkbox" id="GSEAenable" onclick="if($(this).prop('checked')){$('#GSEAopt').show()}else{$('#GSEAopt').hide()}"/>
@@ -1276,12 +1276,12 @@
             and absolute log2(FC) &#62; <input id="preDEGvolcanoLogfc" type="number" step="0.1" value="1" min="0"/> </p>
         <p>Label Size: <input id="preDEGvolcanolabelSize" type="number" step="0.5" value="3" min="1" max="24"/>
         Dot Size: <input id="preDEGvolcanodotSize" type="number" step="0.1" value="0.5" min="0.1" max="2"/>
-        <p>Y-axis Min: <input id="preDEGvolcanoymin" type="number" step="1" value="-3" min="-10" max="10"/>
-        Y-axis Max: <input id="preDEGvolcanoymax" type="number" step="1" value="100" min="1" max="5000"/></p>
+        <p>Y-axis Min: <input id="preDEGvolcanoymin" type="number" step="1" value="-2" min="-10" max="10"/>
+        Y-axis Max: <input id="preDEGvolcanoymax" type="number" step="1" value="30" min="1" max="5000"/></p>
 
         <p hidden>Remove genes in volcano plot with the absolute log2(FC) larger than: <input id="preDEGvolcanologfcCut" type="number" step="1" value="100" min="0"/></p>
         <button class="preDEGvolcanobt" onclick="preDEGVolcanofind('preDEGvolcano')"><b>Plot</b></button>
-        <button id="preDEGvolcanointeractiveBtn" onclick="hideShow($('#DEGfinal'),$(this),'Interactive');">Hide Interactive</button>
+        <button id="preDEGvolcanointeractiveBtn" onclick="hideShow($('#preDEGvolcanofinal'),$(this),'Interactive');">Hide Interactive</button>
         <pre id="preDEGvolcanonote" style="color:red;"></pre>
         <label id='preDEGvolcanoinfo'></label>
         <div id="preDEGvolcanospin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
@@ -1473,8 +1473,8 @@
       <p>Font size:
       <input id="IMGfontsize" type="number" step="1" value="11" min="5" onchange="IMGset()"/></p>
       <p>Vector friendly:
-        <input type="radio" name="IMGvector" value="Yes" onclick="IMGset()" checked>Yes
-        <input type="radio" name="IMGvector" value="No" onclick="IMGset()">No
+        <input type="radio" name="IMGvector" value="Yes" onclick="IMGset()" checked>Yes, plot mass components using png
+        <input type="radio" name="IMGvector" value="No" onclick="IMGset()">No, all are vectors.
       </p>
       <p>Transparent figure:
         <input type="radio" name="IMGtransparent" value="Yes" onclick="IMGset()">Yes
