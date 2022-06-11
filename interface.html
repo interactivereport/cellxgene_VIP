@@ -2088,7 +2088,11 @@ function init(){
     for(i=0;i<grps.length;i++){
       var one = {}
       for(var j=0;j<grpL[grps[i]].categories.length;j++){
-        one[grpL[grps[i]].categories[j]] = grpL[grps[i]].categories[j].toString();
+        if (grpL[grps[i]].categories[j] != null) {
+          one[grpL[grps[i]].categories[j]] = grpL[grps[i]].categories[j].toString();
+		} else {
+          one[grpL[grps[i]].categories[j]] = "NA";
+        }
       }
       bioAbbr[grps[i]] = one;
     }
