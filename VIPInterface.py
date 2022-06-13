@@ -17,6 +17,8 @@ from matplotlib import rcParams
 import plotly.graph_objects as go
 import plotly.io as plotIO
 import plotly.express as px
+import yaml
+from yaml.loader import SafeLoader
 import base64
 import math
 from io import BytesIO
@@ -294,7 +296,8 @@ def distributeTask(aTask):
     'getBWinfo':getBWinfo,
     'plotBW':plotBW,
     'CPV':cellpopview,
-    'CPVTable':cpvtable
+    'CPVTable':cpvtable,
+    'ymlPARSE':detectOrg
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1623,3 +1626,11 @@ def cpvtable(data):
   return json.dumps(deg)
 
 
+def detectOrg(data):
+
+  ymlAddress = data['addr']
+
+  with open(ymlAddress) as f:
+    data = yaml.load(f, Loader=SafeLoader)
+  
+  return data
