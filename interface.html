@@ -5562,35 +5562,25 @@ var database_URL;
 
 function detectOrganism(){
 
-  allGenes = window.store.getState().annoMatrix._cache.var.__columns[0];
+var D = {'method':'ymlPARSE',
+  'addr':'database.yml'};
 
-  prefixList = [];
-  
-  for (x of allGenes){
-    prefix = x.substring(0,1);
-    prefixList.push(prefix)
+$.ajax({
+  type:"POST",
+  url: VIPurl,
+  data:JSON.stringify(D),
+  contentType: 'application/json;charset=UTF-8',//
+  success: function(res){
+    
+    database_URL = res['url'];
 
+  },
+  error: function() {
+    console.log('error!');
   }
-
-  const uniquePrefix = [...new Set(prefixList)];
-
-  pfList = Array.from(uniquePrefix);
-
-  if(pfList.length > 1){
-
-    database_URL = "https://www.ncbi.nlm.nih.gov/gene/?term=";
-
-  }else if([...uniquePrefix][0].toUpperCase() == "P"){
-
-    database_URL = "https://plasmodb.org/plasmo/app/record/gene/"
-
-  }else if([...uniquePrefix][0].toUpperCase() == "T"){
-
-    database_URL = "https://tritrypdb.org/tritrypdb/app/record/gene/"
-
-  }
-
+})
 }
+
 
 function searchDB(csv,direc,threshold){
 
