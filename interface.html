@@ -4273,26 +4273,32 @@ function DEGfind(){
         lengthMenu:[[10,50,100,200],[10,50,100,200]],
         order:[3,"asc"],
         buttons:['csv', {
-          extend:'csv',
           text:'PlasmoDB (Up)',
-          customize: function(csv) {
+          action: function(e, dt, node, config) {
 
-            var degTabLFC = document.getElementById("DEG_TAB_LFC").value;
+            var allData = table.rows().data();
+
+            csv = table_to_csv(allData);
+
+            var LFC = document.getElementById("DEG_LFC").value;
             
-            results = searchPDB(csv,'up',degTabLFC);
+            searchPDB(csv,'up',LFC);
 
-            return results;
+            return;
           }
         }, {
-          extend:'csv',
           text:'PlasmoDB (Down)',
-          customize: function(csv) {
+          action: function(e, dt, node, config) {
 
-            var degTabLFC = document.getElementById("DEG_TAB_LFC").value;
+            var allData = table.rows().data();
+
+            csv = table_to_csv(allData);
+
+            var LFC = document.getElementById("DEG_LFC").value;
             
-            results = searchPDB(csv,'down',degTabLFC);
+            searchPDB(csv,'down',LFC);
 
-            return results;
+            return;
           }
 
         }],
