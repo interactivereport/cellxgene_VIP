@@ -5559,11 +5559,12 @@ function CellPopTable(){
 }
 
 var database_URL;
+var databaseSearch_URL;
 
 function detectOrganism(){
 
 var D = {'method':'ymlPARSE',
-  'addr':'database.yml'};
+  'addr':'/home/ed/cellxgene_VIP/YAML/'+window.store.getState().config.displayNames.dataset+'.yml'};
 
 $.ajax({
   type:"POST",
@@ -5573,6 +5574,7 @@ $.ajax({
   success: function(res){
 
     database_URL = res['url'];
+    console.log(database_URL);
 
   },
   error: function() {
@@ -5580,6 +5582,8 @@ $.ajax({
   }
 })
 }
+
+var data
 
 
 function searchDB(csv,direc,threshold){
