@@ -5574,7 +5574,7 @@ $.ajax({
   success: function(res){
 
     database_URL = res['url'];
-    console.log(database_URL);
+    databaseSearch_URL = res['url2']
 
   },
   error: function() {
@@ -5630,7 +5630,7 @@ function searchDB(csv,direc,threshold){
     }
 
   
-  url = window.database_URL;
+  url = window.databaseSearch_URL;
 
   for (element of preppedGenes) {
 
