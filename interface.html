@@ -4303,7 +4303,6 @@ function DEGfind(){
          render: function(data, type, row, meta){
           
            geneName = data.replace("-","_");
-           geneName = geneName.split('.')[0];
 
            url = window.database_URL;
 
@@ -5533,7 +5532,6 @@ function CellPopTable(){
         render: function(data, type, row, meta){
         
           geneName = data.replace("-","_");
-          geneName = geneName.split('.')[0];
 
           url = window.database_URL;
 
@@ -5624,7 +5622,7 @@ function searchDB(csv,direc,threshold){
   for (element of geneList) {
               
     element = element.replace("-","_");
-    element = element.split('.')[0];
+    //element = element.split('.')[0];
               
     preppedGenes.push(element);
     }
