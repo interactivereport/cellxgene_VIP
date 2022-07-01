@@ -629,6 +629,12 @@
   	</div>
       <span id="ADDGsetError" style="color:red"></span><br>
 
+      <h3>Search Database with a User Defined Gene Set</h3>
+      <p>Select a Gene Set:
+        <select id="gene_set"></select></p>
+        <button class="gs_db_bt" onclick="geneset_to_database()"><b>Search database</b></button>
+        <p></p>
+ 
     </div><!--ADDG-->
 
     <div id="CellPopView" class="tabcontent">
@@ -3323,10 +3329,12 @@ function ADDGsetAdd(idx){//Geneset_Name Geneset_Genes
   geneNames = [...new Set(geneNames)];
   window.biogen = geneNames;
   ADDGref();
+  gsDB_dropdown()
 }
 function ADDGsetDel(grpName){
   delete window.bioGeneGrp[grpName];
   ADDGref();
+  gsDB_dropdown();
 }
 function hideShow(section, button, label) {
   section.toggle();
@@ -5713,6 +5721,50 @@ function add_DEG_GeneSet(){
   geneNames = [...new Set(geneNames)];
   window.biogen = geneNames;
   ADDGref();
+  gsDB_dropdown();
+}
+
+function geneset_to_database(){
+ 
+  var url = "https://plasmodb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=";
+ 
+ const grpName = document.getElementById("gene_set").value;
+ 
+ const geneSet = window.bioGeneGrp[grpName];
+ 
+ var preppedGenes = [];
+ 
+ for (element of geneSet) {
+            
+   element = element.replace("-","_");
+   element = element.split('.')[0];
+            
+   preppedGenes.push(element);
+   }
+ 
+ for (element of preppedGenes) {
+ 
+ url = url.concat(element + ",");
+ 
+ }
+      
+ url = url.slice(0, -1);
+ url = url.concat("&autoRun=1");
+ 
+ window.open(url);
+ 
+ 
+}
+
+function gsDB_dropdown(){
+ var dbGS = document.getElementById('gene_set');
+ var gsKeys = Object.keys(window.bioGeneGrp)
+ 
+ $("#gene_set").empty();
+ 
+ for(const one of gsKeys){
+   dbGS.add(createOpt(one));
+ }
 }
 
 
