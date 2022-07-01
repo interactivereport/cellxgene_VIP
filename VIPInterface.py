@@ -1630,7 +1630,15 @@ def detectOrg(data):
 
   ymlAddress = data['addr']
 
-  with open(ymlAddress) as f:
+  cwd = os.getcwd()
+
+  ppr.pprint(cwd)
+
+  finalAddr = cwd + ymlAddress
+
+  ppr.pprint(finalAddr)
+
+  with open(finalAddr) as f:
     data = yaml.load(f, Loader=SafeLoader)
   
   return data

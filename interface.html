@@ -2155,7 +2155,7 @@ function init(){
     densS.add(createOpt('None'));
     densG.add(createOpt('None'));
     //--------------------------------------------------------------------------
-    //add gene annotation categories
+    //add gene annotation categories (CellPopViw Tab)
 
     var featureCats = Object.entries(store.getState().annoMatrix.schema.annotations.var.columns)
 
@@ -5562,7 +5562,7 @@ var databaseSearch_URL;
 function detectOrganism(){
 
 var D = {'method':'ymlPARSE',
-  'addr':'/home/ed/cellxgene_VIP/YAML/'+window.store.getState().config.displayNames.dataset+'.yml'};
+  'addr':'/YAML/'+window.store.getState().config.displayNames.dataset+'.yml'};
 
 $.ajax({
   type:"POST",
