@@ -5572,7 +5572,11 @@ $.ajax({
   success: function(res){
 
     database_URL = res['url'];
-    databaseSearch_URL = res['url2']
+
+    databaseSearch_URL = res['url2'];
+
+    console.log(database_URL);
+    console.log(databaseSearch_URL);
 
   },
   error: function() {
