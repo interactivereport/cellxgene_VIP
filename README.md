@@ -33,7 +33,7 @@ bash ~/Downloads/Anaconda3-2020.02-Linux-x86_64.sh
 
 ## 2. Create and enable conda environment
 ``` bash
-git clone https://github.com/interactivereport/cellxgene_VIP.git
+git clone https://github.com/iii-cell-atlas/cellxgene_VIP.git
 cd cellxgene_VIP
 
 source <path to Anaconda3>/etc/profile.d/conda.sh (Default: /opt/anaconda3/etc/profile.d/conda.sh)

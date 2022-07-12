@@ -629,6 +629,12 @@
   	</div>
       <span id="ADDGsetError" style="color:red"></span><br>
 
+      <h3>Search Database with a User Defined Gene Set</h3>
+      <p>Select a Gene Set:
+        <select id="gene_set"></select></p>
+        <button class="gs_db_bt" onclick="geneset_to_database()"><b>Search database</b></button>
+        <p></p>
+ 
     </div><!--ADDG-->
 
     <div id="CellPopView" class="tabcontent">
@@ -3323,10 +3329,12 @@ function ADDGsetAdd(idx){//Geneset_Name Geneset_Genes
   geneNames = [...new Set(geneNames)];
   window.biogen = geneNames;
   ADDGref();
+  gsDB_dropdown()
 }
 function ADDGsetDel(grpName){
   delete window.bioGeneGrp[grpName];
   ADDGref();
+  gsDB_dropdown();
 }
 function hideShow(section, button, label) {
   section.toggle();
@@ -4280,7 +4288,7 @@ function DEGfind(){
 
             csv = table_to_csv(allData);
 
-            var degTabLFC = document.getElementById("DEG_TAB_LFC").value;
+            var LFC = document.getElementById("DEG_LFC").value;
             
             searchDB(csv,'up',degTabLFC);
 
@@ -4294,7 +4302,9 @@ function DEGfind(){
 
             csv = table_to_csv(allData);
 
-            var degTabLFC = document.getElementById("DEG_TAB_LFC").value;
+            csv = table_to_csv(allData);
+
+            var LFC = document.getElementById("DEG_LFC").value;
             
             searchDB(csv,'down',degTabLFC);
 
@@ -5421,14 +5431,13 @@ function CellPopPlot(){
       $(".CPVTablebt").prop("disabled",false);
     }
 })
-return
   }else{
     $("#CPVnote").text('Input data required');
     document.getElementById("CPVfig").innerHTML = "";
     $('#CPVdatatable').empty();  
-  } 
-}
-
+    }
+} 
+    
 function CellPopTable(){
   
   var CPV_CK = document.getElementById("CPV_ClusterKey").value; 
@@ -5535,7 +5544,6 @@ function CellPopTable(){
 
             return;
           }
-
         }],
         data:tableD,
         columns:tableTitle,
@@ -5592,7 +5600,7 @@ $.ajax({
     console.log('error!');
   }
 })
-}
+
 
 var data
 
@@ -5615,12 +5623,10 @@ rowList.forEach(function(rowArray) {
 return csv;
 }
 
-
 function searchDB(csv,direc,threshold){
 
   csv = csv.replace(/"/g, '');
   var csv_split = csv.split("\n");
-  csv_split.shift();
 
   var geneList = [];
   
@@ -5672,8 +5678,7 @@ function searchDB(csv,direc,threshold){
 
   window.open(url);
 
-  var new_csv = preppedGenes.join()
-  return new_csv
+  return;
 
 }
 
@@ -5748,6 +5753,50 @@ function add_DEG_GeneSet(){
   geneNames = [...new Set(geneNames)];
   window.biogen = geneNames;
   ADDGref();
+  gsDB_dropdown();
+}
+
+function geneset_to_database(){
+ 
+  var url = "https://plasmodb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=";
+ 
+ const grpName = document.getElementById("gene_set").value;
+ 
+ const geneSet = window.bioGeneGrp[grpName];
+ 
+ var preppedGenes = [];
+ 
+ for (element of geneSet) {
+            
+   element = element.replace("-","_");
+   element = element.split('.')[0];
+            
+   preppedGenes.push(element);
+   }
+ 
+ for (element of preppedGenes) {
+ 
+ url = url.concat(element + ",");
+ 
+ }
+      
+ url = url.slice(0, -1);
+ url = url.concat("&autoRun=1");
+ 
+ window.open(url);
+ 
+ 
+}
+
+function gsDB_dropdown(){
+ var dbGS = document.getElementById('gene_set');
+ var gsKeys = Object.keys(window.bioGeneGrp)
+ 
+ $("#gene_set").empty();
+ 
+ for(const one of gsKeys){
+   dbGS.add(createOpt(one));
+ }
 }
 
 
