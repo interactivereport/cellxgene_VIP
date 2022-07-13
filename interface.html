@@ -5583,7 +5583,7 @@ var databaseSearch_URL;
 function detectOrganism(){
 
 var D = {'method':'ymlPARSE',
-  'addr':'/YAML/'+window.store.getState().config.displayNames.dataset+'.yml'};
+  'addr':'/'+window.store.getState().config.displayNames.dataset+'.yml'};
 
 $.ajax({
   type:"POST",
