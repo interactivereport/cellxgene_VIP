@@ -548,6 +548,7 @@
       <button class="tablinks" onclick="selFun(event, 'STACBAR')">Stacked Barplot</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells();detectOrganism()">Cell Population View</button>
+      <button class="tablinks" onclick="selFun(event, 'Pseudo')">Pseudotime Inference</button>
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1');detectOrganism()">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
@@ -667,6 +668,15 @@
       <p></p>
       <table id="CPVdatatable" class="display"></table>
     </div><!--CellPopView-->
+
+    <div id="Pseudo" class="tabcontent">
+      <div id="PseudotimeInput">
+        <h3>For a given cell population, compare gene expression between two conditions:</h3>
+        <p>Select cell embedding:
+        <select id="pseudo_cell_embed" onclick="pseudoPlot()"></select></p>
+      </div>
+      <button class="pseudoAnalysis"><b>Pseudotime Plot</b></button>
+    </div><!--Pseudo-->
 
     <div id="GD" class=tabcontent>
       <div id="GDinput">
@@ -2185,11 +2195,13 @@ function init(){
     //add layout to EMBED, DUAL, and CLI checkbox
     var embedLay = document.getElementById("EMBEDlayout");
     var dualLay = document.getElementById("DUALlayout");
+    var pseudoLay = document.getElementById("pseudo_cell_embed");
     htmlCheck="";
     for(const ix of Object.keys(window.store.getState().annoMatrix.schema.layout.obs)){
       var one = window.store.getState().annoMatrix.schema.layout.obs[ix].name
       embedLay.add(createOpt(one));
       dualLay.add(createOpt(one));
+      pseudoLay.add(createOpt(one));
       htmlCheck += '<label><input class="eIDlayouts" type="checkbox" value="'+one+'"/> '+one+' </label>';
     }
     $('#CLIlayout').html(htmlCheck.replace(/eID/g,'CLI'));
@@ -5577,13 +5589,19 @@ function CellPopTable(){
   } 
 }
 
+function pseudoPlot(){
+
+  var embed = document.getElementById("pseudo_cell_embed").value;
+
+}
+
 var database_URL;
 var databaseSearch_URL;
 
 function detectOrganism(){
 
 var D = {'method':'ymlPARSE',
-  'addr':'/'+window.store.getState().config.displayNames.dataset+'.yml'};
+  'addr':'/YAML/'+window.store.getState().config.displayNames.dataset+'.yml'};
 
 $.ajax({
   type:"POST",
@@ -5603,12 +5621,7 @@ $.ajax({
 })
 }
 
-//window.onload = function(){
- // setTimeout(detectOrganism(), 5000);
-//}
-
 var data
-
 
 function table_to_csv(rows){
 
@@ -5805,6 +5818,49 @@ function gsDB_dropdown(){
  }
 }
 
+function lookAround(){
+  //console.log(window.store.getState().annoMatrix);
+
+  //console.log(window.store.getState().annoMatrix._gcInfo);
+
+  //console.log(window.store.getState().annoMatrix._cache);
+
+  //console.log("Overall Object");
+  //console.log(window.store.getState().annoMatrix._cache.emb);
+
+  //console.log("Extract Embedding Data");
+  //console.log(window.store.getState().annoMatrix._cache.emb._columns);
+
+  //console.log("plsWork");
+
+  //console.log(window.store.getState().annoMatrix._cache.emb.colIndex.index)
+
+  elements = window.store.getState().annoMatrix.schema.layout.obs;
+
+  console.log(elements);
+
+  console.log(window.store.getState().annoMatrix)
+
+  console.log(window.store.getState().annoMatrix._cache)
+
+  console.log(window.store.getState().annoMatrix._cache.emb.colIndex.index)
+
+  console.log(window.store.getState().annoMatrix._cache.emb.__columns)
+
+  //plsWork = JSON.stringify(window.store.getState().annoMatrix._cache.emb);
+
+  //console.log(plsWork);
+
+  //plsWork2 = JSON.parse(plsWork);
+
+  //console.log(plsWork2._columns);
+
+  
+}
+
+setTimeout(function(){
+  lookAround();
+}, 3000);
 
 function helpText(x){
   if (x=='table'){
