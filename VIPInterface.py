@@ -1630,7 +1630,7 @@ def detectOrg(data):
 
   ymlAddress = data['addr']
 
-  cwd = os.getcwd()
+  cwd = "/share/cellxgene/demo/YAML"
 
   finalAddr = cwd + ymlAddress
 
