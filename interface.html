@@ -3330,6 +3330,7 @@ function ADDGsetAdd(idx){//Geneset_Name Geneset_Genes
   window.biogen = geneNames;
   ADDGref();
   gsDB_dropdown()
+  detectOrganism();
 }
 function ADDGsetDel(grpName){
   delete window.bioGeneGrp[grpName];
@@ -5602,6 +5603,10 @@ $.ajax({
 })
 }
 
+//window.onload = function(){
+ // setTimeout(detectOrganism(), 5000);
+//}
+
 var data
 
 
@@ -5754,11 +5759,12 @@ function add_DEG_GeneSet(){
   window.biogen = geneNames;
   ADDGref();
   gsDB_dropdown();
+  detectOrganism();
 }
 
 function geneset_to_database(){
  
-  var url = "https://plasmodb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=";
+ var url = databaseSearch_URL;
  
  const grpName = document.getElementById("gene_set").value;
  
