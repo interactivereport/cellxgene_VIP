@@ -547,8 +547,8 @@
       <button class="tablinks" onclick="selFun(event, 'SANK')">Sankey Diagram</button>
       <button class="tablinks" onclick="selFun(event, 'STACBAR')">Stacked Barplot</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
-      <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells()">Cell Population View</button>
-      <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1')">DEG</button>
+      <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells();detectOrganism()">Cell Population View</button>
+      <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1');detectOrganism()">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
       <button id="browserBT" class="tablinks" onclick="selFun(event, 'BROW')" style="display: none;">Multiome</button>
@@ -2161,7 +2161,7 @@ function init(){
     densS.add(createOpt('None'));
     densG.add(createOpt('None'));
     //--------------------------------------------------------------------------
-    //add gene annotation categories
+    //add gene annotation categories (CellPopViw Tab)
 
     var featureCats = Object.entries(store.getState().annoMatrix.schema.annotations.var.columns)
 
@@ -3330,6 +3330,7 @@ function ADDGsetAdd(idx){//Geneset_Name Geneset_Genes
   window.biogen = geneNames;
   ADDGref();
   gsDB_dropdown()
+  detectOrganism();
 }
 function ADDGsetDel(grpName){
   delete window.bioGeneGrp[grpName];
@@ -4281,7 +4282,7 @@ function DEGfind(){
         lengthMenu:[[10,50,100,200],[10,50,100,200]],
         order:[3,"asc"],
         buttons:['csv', {
-          text:'PlasmoDB (Up)',
+          text:'SearchDB (Up)',
           action: function(e, dt, node, config) {
 
             var allData = table.rows().data();
@@ -4290,21 +4291,23 @@ function DEGfind(){
 
             var LFC = document.getElementById("DEG_LFC").value;
             
-            searchPDB(csv,'up',LFC);
+            searchDB(csv,'up',degTabLFC);
 
             return;
           }
         }, {
-          text:'PlasmoDB (Down)',
+          text:'SearchDB (Down)',
           action: function(e, dt, node, config) {
 
             var allData = table.rows().data();
 
             csv = table_to_csv(allData);
 
+            csv = table_to_csv(allData);
+
             var LFC = document.getElementById("DEG_LFC").value;
             
-            searchPDB(csv,'down',LFC);
+            searchDB(csv,'down',degTabLFC);
 
             return;
           }
@@ -4317,9 +4320,10 @@ function DEGfind(){
          render: function(data, type, row, meta){
           
            geneName = data.replace("-","_");
-           geneName = geneName.split('.')[0];
 
-           data="<a href='https://plasmodb.org/plasmo/app/record/gene/"+geneName+"' target='_blank'>"+data+"</a>";
+           url = window.database_URL;
+
+           data="<a href='"+url+geneName+"' target='_blank'>"+data+"</a>";
  
            return data;
  
@@ -5514,7 +5518,7 @@ function CellPopTable(){
         lengthMenu:[[10,50,100,200],[10,50,100,200]],
         order:[3,"asc"],
         buttons:['csv', {
-          text:'PlasmoDB (Up)',
+          text:'SearchDB (Up)',
           action: function(e, dt, node, config) {
 
             var allData = table.rows().data();
@@ -5523,12 +5527,12 @@ function CellPopTable(){
 
             var LFC = document.getElementById("DEG_LFC").value;
             
-            searchPDB(csv,'up',LFC);
+            searchDB(csv,'up',LFC);
 
             return;
           }
         }, {
-          text:'PlasmoDB (Down)',
+          text:'SearchDB (Down)',
           action: function(e, dt, node, config) {
 
             var allData = table.rows().data();
@@ -5537,11 +5541,10 @@ function CellPopTable(){
 
             var LFC = document.getElementById("DEG_LFC").value;
             
-            searchPDB(csv,'down',LFC);
+            searchDB(csv,'down',LFC);
 
             return;
           }
-
         }],
         data:tableD,
         columns:tableTitle,
@@ -5550,9 +5553,10 @@ function CellPopTable(){
         render: function(data, type, row, meta){
         
           geneName = data.replace("-","_");
-          geneName = geneName.split('.')[0];
 
-          data="<a href='https://plasmodb.org/plasmo/app/record/gene/"+geneName+"' target='_blank'>"+data+"</a>";
+          url = window.database_URL;
+
+          data="<a href='"+url+geneName+"' target='_blank'>"+data+"</a>";
 
           return data;
         }
@@ -5573,25 +5577,58 @@ function CellPopTable(){
   } 
 }
 
-function table_to_csv(rows){
+var database_URL;
+var databaseSearch_URL;
 
-  rowList = []
+function detectOrganism(){
 
-  for (let i = 0; i < 200; i++) {
-    rowList.push(rows[i]);
+var D = {'method':'ymlPARSE',
+  'addr':'/YAML/'+window.store.getState().config.displayNames.dataset+'.yml'};
+
+$.ajax({
+  type:"POST",
+  url: VIPurl,
+  data:JSON.stringify(D),
+  contentType: 'application/json;charset=UTF-8',//
+  success: function(res){
+
+    database_URL = res['url'];
+
+    databaseSearch_URL = res['url2'];
+
+  },
+  error: function() {
+    console.log('error!');
   }
-
-  let csv = '';
-
-  rowList.forEach(function(rowArray) {
-    let rowList = rowArray.join(",");
-    csv += rowList + "\r\n";
-  });
-
-  return csv;
+})
 }
 
-function searchPDB(csv,direc,threshold){
+//window.onload = function(){
+ // setTimeout(detectOrganism(), 5000);
+//}
+
+var data
+
+
+function table_to_csv(rows){
+
+rowList = []
+
+for (let i = 0; i < 200; i++) {
+  rowList.push(rows[i]);
+}
+
+let csv = '';
+
+rowList.forEach(function(rowArray) {
+  let rowList = rowArray.join(",");
+  csv += rowList + "\r\n";
+});
+
+return csv;
+}
+
+function searchDB(csv,direc,threshold){
 
   csv = csv.replace(/"/g, '');
   var csv_split = csv.split("\n");
@@ -5628,12 +5665,12 @@ function searchPDB(csv,direc,threshold){
   for (element of geneList) {
               
     element = element.replace("-","_");
-    element = element.split('.')[0];
               
     preppedGenes.push(element);
     }
 
-  var url = "https://plasmodb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=";
+  
+  url = window.databaseSearch_URL;
 
   for (element of preppedGenes) {
 
@@ -5722,11 +5759,12 @@ function add_DEG_GeneSet(){
   window.biogen = geneNames;
   ADDGref();
   gsDB_dropdown();
+  detectOrganism();
 }
 
 function geneset_to_database(){
  
-  var url = "https://plasmodb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=";
+ var url = databaseSearch_URL;
  
  const grpName = document.getElementById("gene_set").value;
  
@@ -5770,7 +5808,7 @@ function gsDB_dropdown(){
 
 function helpText(x){
   if (x=='table'){
-    $("#Table_Help").text('CSV: Download Table as CSV. PlasmoDB (Up): Explore PlasmoDB with Table Genes whose LFC value exceeds threshold. PlasmoDB (Down): Explore PlasmoDB with Table Genes whose LFC value falls below threshold.');
+    $("#Table_Help").text('CSV: Download Table as CSV. SearchDB (Up): Explore the relevant database with Table Genes whose LFC value exceeds threshold. SearchDB (Down): Explore the relevant database with Table Genes whose LFC value falls below threshold.');
   }
 }
 
