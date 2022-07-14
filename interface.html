@@ -671,11 +671,12 @@
 
     <div id="Pseudo" class="tabcontent">
       <div id="PseudotimeInput">
-        <h3>For a given cell population, compare gene expression between two conditions:</h3>
+        <h3>Display Pseudotime Inference results within Cellxgene_VIP:</h3>
         <p>Select cell embedding:
-        <select id="pseudo_cell_embed" onclick="pseudoPlot()"></select></p>
+        <select id="pseudo_cell_embed"></select></p>
       </div>
-      <button class="pseudoAnalysis"><b>Pseudotime Plot</b></button>
+      <button class="pseudoAnalysis" onclick="pseudoPlot()"><b>Pseudotime Plot</b></button>
+      <p id="pseudoFig"></p>
     </div><!--Pseudo-->
 
     <div id="GD" class=tabcontent>
@@ -5591,7 +5592,33 @@ function CellPopTable(){
 
 function pseudoPlot(){
 
-  var embed = document.getElementById("pseudo_cell_embed").value;
+  console.log("function start");
+
+  phate0 = window.store.getState().annoMatrix._cache.emb.__columns[2];
+  phate1 = window.store.getState().annoMatrix._cache.emb.__columns[3];
+
+  var D = {
+  'method':'pseudo',
+  'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+  'addr':'/YAML/'+window.store.getState().config.displayNames.dataset+'.yml',
+  'dim1':phate0,
+  'dim2':phate1};
+
+  $.ajax({
+  type:"POST",
+  url: VIPurl,
+  data:JSON.stringify(D),
+  contentType: 'application/json;charset=UTF-8',//
+  success: function(res){
+
+    showImg('pseudoFig',res);
+
+  },
+  error: function() {
+    console.log('error!');
+  }
+})
+
 
 }
 

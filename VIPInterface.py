@@ -297,7 +297,8 @@ def distributeTask(aTask):
     'plotBW':plotBW,
     'CPV':cellpopview,
     'CPVTable':cpvtable,
-    'ymlPARSE':detectOrg
+    'ymlPARSE':detectOrg,
+    'pseudo':pseudoPlot
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1638,3 +1639,53 @@ def detectOrg(data):
     data = yaml.load(f, Loader=SafeLoader)
   
   return data
+
+def pseudoPlot(data):
+  dim1 = data["dim1"]
+  dim2 = data["dim2"]
+
+  dim1 = dim1.values()
+  dim2 = dim2.values()
+
+  ymlAddress = data['addr']
+
+  cwd = os.getcwd()
+
+  finalAddr = cwd + ymlAddress
+
+  scd = app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset'])
+
+  #ppr.pprint(scd.data.obsm)
+
+  #embed['X_%s'%one] = pd.DataFrame(scD.data.obsm['X_%s'%one][selC][:,[0,1]],columns=['%s1'%one,'%s2'%one],index=cNames)
+
+  #ppr.pprint(scd)
+
+  embed = []
+
+  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+    embed = scD.data.obsm["X_phate"]
+
+  #ppr.pprint(embed)
+
+  phate1 = []
+  phate2 = []
+
+  for x in embed:
+    phate1.append(x[0])
+    phate2.append(x[1])
+
+  with open(finalAddr) as f:
+    yml = yaml.load(f, Loader=SafeLoader)
+
+  curve1 = yml['dim1']
+  curve2 = yml['dim2']
+
+  plt.scatter(phate1,phate2,label = "stars", color = "green", 
+                marker = "*",  s =30)
+  
+  plt.plot(curve1,curve2)
+
+  pseudoPlot = plt.gcf()
+
+  return iostreamFig(pseudoPlot)
