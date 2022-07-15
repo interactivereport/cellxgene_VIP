@@ -672,11 +672,13 @@
     <div id="Pseudo" class="tabcontent">
       <div id="PseudotimeInput">
         <h3>Display Pseudotime Inference results within Cellxgene_VIP:</h3>
-        <p>Select cell embedding:
-        <select id="pseudo_cell_embed"></select></p>
+        <p>Select an annotation category:
+        <select id="pseudo_cell_annot"></select></p>
       </div>
       <button class="pseudoAnalysis" onclick="pseudoPlot()"><b>Pseudotime Plot</b></button>
+      <div id="pseudoSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <p id="pseudoFig"></p>
+      <p id="pseudoNote" style="color:red;"></p>
     </div><!--Pseudo-->
 
     <div id="GD" class=tabcontent>
@@ -2151,6 +2153,7 @@ function init(){
     var tVIP = document.getElementById("tVIPgrp");
     var CPVGrp = document.getElementById("CPV_ClusterKey");
     var CPVGrp2 = document.getElementById("CPV_ConditionKey");
+    var pseudoAnnot = document.getElementById("pseudo_cell_annot");
 
     for(const one of grps){
       if (one.startsWith(">")) continue;
@@ -2168,6 +2171,7 @@ function init(){
       tVIP.add(createOpt(one));
       CPVGrp.add(createOpt(one));
       CPVGrp2.add(createOpt(one));
+      pseudoAnnot.add(createOpt(one));
     }
     densS.add(createOpt('None'));
     densG.add(createOpt('None'));
@@ -2196,13 +2200,12 @@ function init(){
     //add layout to EMBED, DUAL, and CLI checkbox
     var embedLay = document.getElementById("EMBEDlayout");
     var dualLay = document.getElementById("DUALlayout");
-    var pseudoLay = document.getElementById("pseudo_cell_embed");
+
     htmlCheck="";
     for(const ix of Object.keys(window.store.getState().annoMatrix.schema.layout.obs)){
       var one = window.store.getState().annoMatrix.schema.layout.obs[ix].name
       embedLay.add(createOpt(one));
       dualLay.add(createOpt(one));
-      pseudoLay.add(createOpt(one));
       htmlCheck += '<label><input class="eIDlayouts" type="checkbox" value="'+one+'"/> '+one+' </label>';
     }
     $('#CLIlayout').html(htmlCheck.replace(/eID/g,'CLI'));
@@ -5592,25 +5595,24 @@ function CellPopTable(){
 
 function pseudoPlot(){
 
-  console.log("function start");
-
-  //phate0 = window.store.getState().annoMatrix._cache.emb.__columns[2];
-  //phate1 = window.store.getState().annoMatrix._cache.emb.__columns[3];
-
   var cells = AllCells;
 
   var grp = [];
+  
+  var annot = document.getElementById("pseudo_cell_annot").value;
 
+  grp.push(annot);
 
+  document.getElementById("pseudoSpin").style.visibility="visible";
 
   var D = {
   'method':'pseudo',
   'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
   'addr':'/YAML/'+window.store.getState().config.displayNames.dataset+'.yml',
-  'layout':'phate',
   'cells':cells,
   'genes':[],
-  'grp':grp
+  'grp':grp,
+  'annot':annot
   };
 
   $.ajax({
@@ -5619,6 +5621,15 @@ function pseudoPlot(){
   data:JSON.stringify(D),
   contentType: 'application/json;charset=UTF-8',//
   success: function(res){
+
+    if(res.startsWith('ERROR')){
+      $("#pseudoNote").text(res);
+      document.getElementById("pseudoSpin").style.visibility="hidden";
+        return;
+      }
+    
+
+    document.getElementById("pseudoSpin").style.visibility="hidden";
 
     showImg('pseudoFig',res);
 
@@ -5853,50 +5864,6 @@ function gsDB_dropdown(){
    dbGS.add(createOpt(one));
  }
 }
-
-function lookAround(){
-  //console.log(window.store.getState().annoMatrix);
-
-  //console.log(window.store.getState().annoMatrix._gcInfo);
-
-  //console.log(window.store.getState().annoMatrix._cache);
-
-  //console.log("Overall Object");
-  //console.log(window.store.getState().annoMatrix._cache.emb);
-
-  //console.log("Extract Embedding Data");
-  //console.log(window.store.getState().annoMatrix._cache.emb._columns);
-
-  //console.log("plsWork");
-
-  //console.log(window.store.getState().annoMatrix._cache.emb.colIndex.index)
-
-  elements = window.store.getState().annoMatrix.schema.layout.obs;
-
-  console.log(elements);
-
-  console.log(window.store.getState().annoMatrix)
-
-  console.log(window.store.getState().annoMatrix._cache)
-
-  console.log(window.store.getState().annoMatrix._cache.emb.colIndex.index)
-
-  console.log(window.store.getState().annoMatrix._cache.emb.__columns)
-
-  //plsWork = JSON.stringify(window.store.getState().annoMatrix._cache.emb);
-
-  //console.log(plsWork);
-
-  //plsWork2 = JSON.parse(plsWork);
-
-  //console.log(plsWork2._columns);
-
-  
-}
-
-setTimeout(function(){
-  lookAround();
-}, 3000);
 
 function helpText(x){
   if (x=='table'){
