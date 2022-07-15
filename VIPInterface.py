@@ -1641,19 +1641,19 @@ def detectOrg(data):
   return data
 
 def pseudoPlot(data):
-  dim1 = data["dim1"]
-  dim2 = data["dim2"]
+  #dim1 = data["dim1"]
+  #dim2 = data["dim2"]
 
-  dim1 = dim1.values()
-  dim2 = dim2.values()
+  #dim1 = dim1.values()
+  #dim2 = dim2.values()
 
-  ymlAddress = data['addr']
+  ppr.pprint('pseudoPlot start')
 
-  cwd = os.getcwd()
+  aData = createData(data)
 
-  finalAddr = cwd + ymlAddress
+  #ppr.pprint(aData)
 
-  scd = app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset'])
+  #scd = app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset'])
 
   #ppr.pprint(scd.data.obsm)
 
@@ -1661,19 +1661,25 @@ def pseudoPlot(data):
 
   #ppr.pprint(scd)
 
-  embed = []
+  #embed = []
 
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-    embed = scD.data.obsm["X_phate"]
+  #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+    #embed = scD.data.obsm["X_phate"]
 
   #ppr.pprint(embed)
 
-  phate1 = []
-  phate2 = []
+  #phate1 = []
+  #phate2 = []
 
-  for x in embed:
-    phate1.append(x[0])
-    phate2.append(x[1])
+  #for x in embed:
+    #phate1.append(x[0])
+    #phate2.append(x[1])
+
+  ymlAddress = data['addr']
+
+  cwd = os.getcwd()
+
+  finalAddr = cwd + ymlAddress
 
   with open(finalAddr) as f:
     yml = yaml.load(f, Loader=SafeLoader)
@@ -1681,9 +1687,10 @@ def pseudoPlot(data):
   curve1 = yml['dim1']
   curve2 = yml['dim2']
 
-  plt.scatter(phate1,phate2,label = "stars", color = "green", 
-                marker = "*",  s =30)
+  #plt.scatter(phate1,phate2,label = "stars", color = "green", 
+                #marker = "*",  s =30)
   
+  sc.pl.embedding(aData,"X_phate",return_fig=True)
   plt.plot(curve1,curve2)
 
   pseudoPlot = plt.gcf()

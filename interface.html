@@ -548,7 +548,7 @@
       <button class="tablinks" onclick="selFun(event, 'STACBAR')">Stacked Barplot</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells();detectOrganism()">Cell Population View</button>
-      <button class="tablinks" onclick="selFun(event, 'Pseudo')">Pseudotime Inference</button>
+      <button class="tablinks" onclick="selFun(event, 'Pseudo');getAllCells()">Pseudotime Inference</button>
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1');detectOrganism()">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
@@ -5594,15 +5594,24 @@ function pseudoPlot(){
 
   console.log("function start");
 
-  phate0 = window.store.getState().annoMatrix._cache.emb.__columns[2];
-  phate1 = window.store.getState().annoMatrix._cache.emb.__columns[3];
+  //phate0 = window.store.getState().annoMatrix._cache.emb.__columns[2];
+  //phate1 = window.store.getState().annoMatrix._cache.emb.__columns[3];
+
+  var cells = AllCells;
+
+  var grp = [];
+
+
 
   var D = {
   'method':'pseudo',
   'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
   'addr':'/YAML/'+window.store.getState().config.displayNames.dataset+'.yml',
-  'dim1':phate0,
-  'dim2':phate1};
+  'layout':'phate',
+  'cells':cells,
+  'genes':[],
+  'grp':grp
+  };
 
   $.ajax({
   type:"POST",
