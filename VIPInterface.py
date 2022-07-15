@@ -1653,13 +1653,15 @@ def pseudoPlot(data):
   with open(finalAddr) as f:
     yml = yaml.load(f, Loader=SafeLoader)
 
-  # Extract YAML data
+  # Pseudotime Data Check
 
   if 'includePseudo' not in yml.keys():
     return("ERROR - No Pseudotime Data available.")
 
-  curve1 = yml['dim1']
-  curve2 = yml['dim2']
+  #curve1 = yml['dim1']
+  #curve2 = yml['dim2']
+
+  # Extract Embedding Key
 
   embed = yml['pseudoEmbed']
 
@@ -1674,7 +1676,15 @@ def pseudoPlot(data):
   annot = data['annot']
 
   sc.pl.embedding(aData,"X_phate",color=annot,return_fig=True)
-  plt.plot(curve1,curve2)
+
+  # Extract and Plot Pseudotime Lineages
+
+  for x in yml.keys():
+    if x.split('_')[0] == 'Lineage':
+        line = yml[x]
+        dim1 = line['dim1']
+        dim2 = line['dim2']
+        plt.plot(dim1,dim2)
 
   pseudoPlot = plt.gcf()
 
