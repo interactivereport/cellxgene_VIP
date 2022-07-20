@@ -1,3 +1,4 @@
+from turtle import color
 import requests
 import json
 import traceback
@@ -1681,7 +1682,7 @@ def pseudoPlot(data):
         line = yml[x]
         dim1 = line['dim1']
         dim2 = line['dim2']
-        plt.plot(dim1,dim2)
+        plt.plot(dim1,dim2, color="black")
 
   pseudoPlot = plt.gcf()
 
