@@ -672,7 +672,7 @@
     <div id="Pseudo" class="tabcontent">
       <div id="PseudotimeInput">
         <h3>Display Pseudotime Inference results within Cellxgene_VIP:</h3>
-        <p>Select an annotation category:
+        <p>Colour by:
         <select id="pseudo_cell_annot"></select></p>
       </div>
       <button class="pseudoAnalysis" onclick="pseudoPlot()"><b>Pseudotime Plot</b></button>
@@ -2176,7 +2176,8 @@ function init(){
     densS.add(createOpt('None'));
     densG.add(createOpt('None'));
     //--------------------------------------------------------------------------
-    //add gene annotation categories (CellPopViw Tab)
+    
+    // add gene annotation categories (CellPopViw Tab)
 
     var featureCats = Object.entries(store.getState().annoMatrix.schema.annotations.var.columns)
 

@@ -1658,9 +1658,6 @@ def pseudoPlot(data):
   if 'includePseudo' not in yml.keys():
     return("ERROR - No Pseudotime Data available.")
 
-  #curve1 = yml['dim1']
-  #curve2 = yml['dim2']
-
   # Extract Embedding Key
 
   embed = yml['pseudoEmbed']
