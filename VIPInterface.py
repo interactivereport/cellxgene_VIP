@@ -1673,7 +1673,12 @@ def pseudoPlot(data):
   
   annot = data['annot']
 
-  sc.pl.embedding(aData,"X_phate",color=annot,return_fig=True)
+  if "pseudo" in annot:
+    aData.obs[annot] = aData.obs[annot].astype(float)
+    sc.pl.embedding(aData,"X_phate",color=annot,return_fig=True,color_map="Purples")
+  else:
+    sc.pl.embedding(aData,"X_phate",color=annot,return_fig=True)
+
 
   # Extract and Plot Pseudotime Lineages
 

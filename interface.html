@@ -2176,6 +2176,17 @@ function init(){
     densS.add(createOpt('None'));
     densG.add(createOpt('None'));
     //--------------------------------------------------------------------------
+    // add Pseudotime Annotation
+
+    var names = window.store.getState().annoMatrix.schema.annotations.obsByName;
+
+    annots = Object.keys(names);
+
+    for(const one of annots){
+      if(one.startsWith("pseudo")){
+        pseudoAnnot.add(createOpt(one));
+      }
+    }
     
     // add gene annotation categories (CellPopViw Tab)
 
