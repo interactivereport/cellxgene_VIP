@@ -298,7 +298,7 @@ def distributeTask(aTask):
     'plotBW':plotBW,
     'CPV':cellpopview,
     'CPVTable':cpvtable,
-    'ymlPARSE':detectOrg,
+    'ymlPARSE':parseYAML,
     'pseudo':pseudoPlot
   }.get(aTask,errorTask)
 
@@ -1628,11 +1628,11 @@ def cpvtable(data):
   return json.dumps(deg)
 
 
-def detectOrg(data):
+def parseYAML(data):
 
   ymlAddress = data['addr']
 
-  cwd = os.getcwd()
+  cwd = "/share/cellxgene/demo/YAML"
 
   finalAddr = cwd + ymlAddress
 
@@ -1645,14 +1645,7 @@ def pseudoPlot(data):
   
   # Read YAML File
 
-  ymlAddress = data['addr']
-
-  cwd = os.getcwd()
-
-  finalAddr = cwd + ymlAddress
-
-  with open(finalAddr) as f:
-    yml = yaml.load(f, Loader=SafeLoader)
+  yml = parseYAML(data)
 
   # Pseudotime Data Check
 
