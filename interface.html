@@ -548,6 +548,7 @@
       <button class="tablinks" onclick="selFun(event, 'STACBAR')">Stacked Barplot</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells();detectOrganism()">Cell Population View</button>
+      <button class="tablinks" onclick="selFun(event, 'Pseudo');getAllCells()">Pseudotime Inference</button>
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1');detectOrganism()">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
@@ -667,6 +668,18 @@
       <p></p>
       <table id="CPVdatatable" class="display"></table>
     </div><!--CellPopView-->
+
+    <div id="Pseudo" class="tabcontent">
+      <div id="PseudotimeInput">
+        <h3>Display Pseudotime Inference results within Cellxgene_VIP:</h3>
+        <p>Colour by:
+        <select id="pseudo_cell_annot"></select></p>
+      </div>
+      <button class="pseudoAnalysis" onclick="pseudoPlot()"><b>Pseudotime Plot</b></button>
+      <div id="pseudoSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+      <p id="pseudoFig"></p>
+      <p id="pseudoNote" style="color:red;"></p>
+    </div><!--Pseudo-->
 
     <div id="GD" class=tabcontent>
       <div id="GDinput">
@@ -2140,6 +2153,7 @@ function init(){
     var tVIP = document.getElementById("tVIPgrp");
     var CPVGrp = document.getElementById("CPV_ClusterKey");
     var CPVGrp2 = document.getElementById("CPV_ConditionKey");
+    var pseudoAnnot = document.getElementById("pseudo_cell_annot");
 
     for(const one of grps){
       if (one.startsWith(">")) continue;
@@ -2157,11 +2171,24 @@ function init(){
       tVIP.add(createOpt(one));
       CPVGrp.add(createOpt(one));
       CPVGrp2.add(createOpt(one));
+      pseudoAnnot.add(createOpt(one));
     }
     densS.add(createOpt('None'));
     densG.add(createOpt('None'));
     //--------------------------------------------------------------------------
-    //add gene annotation categories (CellPopViw Tab)
+    // add Pseudotime Annotation
+
+    var names = window.store.getState().annoMatrix.schema.annotations.obsByName;
+
+    annots = Object.keys(names);
+
+    for(const one of annots){
+      if(one.startsWith("pseudo")){
+        pseudoAnnot.add(createOpt(one));
+      }
+    }
+    
+    // add gene annotation categories (CellPopViw Tab)
 
     var featureCats = Object.entries(store.getState().annoMatrix.schema.annotations.var.columns)
 
@@ -2185,6 +2212,7 @@ function init(){
     //add layout to EMBED, DUAL, and CLI checkbox
     var embedLay = document.getElementById("EMBEDlayout");
     var dualLay = document.getElementById("DUALlayout");
+
     htmlCheck="";
     for(const ix of Object.keys(window.store.getState().annoMatrix.schema.layout.obs)){
       var one = window.store.getState().annoMatrix.schema.layout.obs[ix].name
@@ -5577,13 +5605,62 @@ function CellPopTable(){
   } 
 }
 
+function pseudoPlot(){
+
+  var cells = AllCells;
+
+  var grp = [];
+  
+  var annot = document.getElementById("pseudo_cell_annot").value;
+
+  grp.push(annot);
+
+  document.getElementById("pseudoSpin").style.visibility="visible";
+
+  var D = {
+  'method':'pseudo',
+  'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+  'addr':'/'+window.store.getState().config.displayNames.dataset+'.yml',
+  'cells':cells,
+  'genes':[],
+  'grp':grp,
+  'annot':annot
+  };
+
+  $.ajax({
+  type:"POST",
+  url: VIPurl,
+  data:JSON.stringify(D),
+  contentType: 'application/json;charset=UTF-8',//
+  success: function(res){
+
+    if(res.startsWith('ERROR')){
+      $("#pseudoNote").text(res);
+      document.getElementById("pseudoSpin").style.visibility="hidden";
+        return;
+      }
+    
+
+    document.getElementById("pseudoSpin").style.visibility="hidden";
+
+    showImg('pseudoFig',res);
+
+  },
+  error: function() {
+    console.log('error!');
+  }
+})
+
+
+}
+
 var database_URL;
 var databaseSearch_URL;
 
 function detectOrganism(){
 
 var D = {'method':'ymlPARSE',
-  'addr':'/'+window.store.getState().config.displayNames.dataset+'.yml'};
+  'addr':'/YAML/'+window.store.getState().config.displayNames.dataset+'.yml'};
 
 $.ajax({
   type:"POST",
@@ -5603,12 +5680,7 @@ $.ajax({
 })
 }
 
-//window.onload = function(){
- // setTimeout(detectOrganism(), 5000);
-//}
-
 var data
-
 
 function table_to_csv(rows){
 
@@ -5804,7 +5876,6 @@ function gsDB_dropdown(){
    dbGS.add(createOpt(one));
  }
 }
-
 
 function helpText(x){
   if (x=='table'){
