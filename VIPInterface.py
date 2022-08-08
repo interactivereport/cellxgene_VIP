@@ -1632,9 +1632,11 @@ def parseYAML(data):
 
   ymlAddress = data['addr']
 
-  cwd = "/share/cellxgene/demo/YAML"
+  #cwd = "/share/cellxgene/demo/YAML"
 
-  finalAddr = cwd + ymlAddress
+  #finalAddr = cwd + ymlAddress
+
+  finalAddr = ymlAddress
 
   with open(finalAddr) as f:
     data = yaml.load(f, Loader=SafeLoader)
