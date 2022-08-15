@@ -672,13 +672,22 @@
     <div id="Pseudo" class="tabcontent">
       <div id="PseudotimeInput">
         <h3>Display Pseudotime Inference results within Cellxgene_VIP:</h3>
+        <h4>PseudoTime Plot Options:</h4>
         <p>Colour by:
         <select id="pseudo_cell_annot"></select></p>
       </div>
+      <h4>TradeSeq Table Options:</h4>
+      <p id = "pts_to">Results Option:
+        <select id="ts_to"></select></p>
+      <p id = "pts_C" style="visibility: hidden;">Condition:
+        <select id="ts_C"></select></p>
       <button class="pseudoAnalysis" onclick="pseudoPlot()"><b>Pseudotime Plot</b></button>
+      <button class="tradeSeqTable" onclick="tsTable()"><b>TradeSeq Table</b></button>
       <div id="pseudoSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <p id="pseudoFig"></p>
       <p id="pseudoNote" style="color:red;"></p>
+      <p></p>
+      <table id="tradeSeqdatatable" class="display"></table>
     </div><!--Pseudo-->
 
     <div id="GD" class=tabcontent>
@@ -2178,15 +2187,40 @@ function init(){
     //--------------------------------------------------------------------------
     // add Pseudotime Annotation
 
-    var names = window.store.getState().annoMatrix.schema.annotations.obsByName;
+    var pseudonames = window.store.getState().annoMatrix.schema.annotations.obsByName;
 
-    annots = Object.keys(names);
+    pseudoannots = Object.keys(pseudonames);
+ 
+    var lineageCount = 0;
+ 
+   for(const one of pseudoannots){
+     if(one.startsWith("pseudo")){
+       pseudoAnnot.add(createOpt(one));
+       lineageCount += 1;
+     }
+   }
+ 
+  // TradeSeq inputs
+ 
+   var tsTO = document.getElementById("ts_to");
+   tsTO.add(createOpt("General"));
+ 
+   var tsC = document.getElementById("ts_C");
+ 
+ 
+   if (lineageCount != 0){
+     for (let x = 1; x < lineageCount+1; x++){
+       tsTO.add(createOpt("Lineage" + x))
+     }
+   }
+ 
+   //pts_C
+   if (tsTO == "General"){
+     document.getElementById("pts_C").style.visibility="hidden";
+   }else{
+     document.getElementById("pts_C").style.visibility="visible";
+   }
 
-    for(const one of annots){
-      if(one.startsWith("pseudo")){
-        pseudoAnnot.add(createOpt(one));
-      }
-    }
     
     // add gene annotation categories (CellPopViw Tab)
 
@@ -5650,9 +5684,95 @@ function pseudoPlot(){
     console.log('error!');
   }
 })
-
-
 }
+
+function tsTable(){
+ 
+  var cells = AllCells;
+  var tradeS_option = document.getElementById("ts_to").value;
+ 
+ //var table = document.getElementsByClassName("tradeSeqTable");
+ 
+  var D = {
+    'method':'tradeSeq',
+    'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+    'cells':cells,
+    'genes':[],
+    'grp':[],
+    'tableOption':tradeS_option
+  };
+ 
+  $.ajax({
+  type:"POST",
+  url: VIPurl,
+  data:JSON.stringify(D),
+  contentType: 'application/json;charset=UTF-8',//
+  success: function(res){
+    if(res.startsWith('ERROR')){
+      $("#pseudoNote").text(res);
+      document.getElementById("pseudoSpin").style.visibility="hidden";
+      return;
+    }
+    
+    resTable = res;
+ 
+    resD = JSON.parse(resTable);
+ 
+    //console.log(resD);
+  
+    tableD = resD.split(/\r?\n/);
+ 
+    //console.log(tableD);
+ 
+    //row1 = tableD[1];
+ 
+    //console.log(row1);
+ 
+    //values = row1.split(",");
+ 
+    //console.log(values);
+ 
+    let inputArray = [];
+ 
+    for (x of tableD){
+      row = x.split(",");
+      inputArray.push(row);
+    }
+ 
+    //console.log(inputArray);
+ 
+    title = inputArray[0];
+ 
+    inputArray.shift();
+    inputArray.pop();
+ 
+    inputArray.columns = title;
+ 
+    console.log(title);
+    console.log(inputArray);
+ 
+    //table.innerHTML = resD;
+ 
+    //resTable = JSON.stringify(resTable);
+ 
+    var table = $("#tradeSeqdatatable").DataTable({
+      destroy: true,
+      dom:'Blfrtip',
+      lengthMenu:[[10,50,100,200],[10,50,100,200]],
+      order:[3,"asc"],
+      buttons:['csv'],
+      data:inputArray,
+      columns:title
+    });
+ 
+ 
+  },
+  error: function() {
+    console.log('error!');
+  }
+})
+}
+
 
 var database_URL;
 var databaseSearch_URL;

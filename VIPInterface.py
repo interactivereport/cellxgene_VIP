@@ -299,7 +299,8 @@ def distributeTask(aTask):
     'CPV':cellpopview,
     'CPVTable':cpvtable,
     'ymlPARSE':parseYAML,
-    'pseudo':pseudoPlot
+    'pseudo':pseudoPlot,
+    'tradeSeq':tsTable
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1687,3 +1688,36 @@ def pseudoPlot(data):
   pseudoPlot = plt.gcf()
 
   return iostreamFig(pseudoPlot)
+
+
+def tsTable(data):
+  #table_option = data['tableOption']
+
+  ppr.pprint("function start")
+ 
+  gInfo = getVar(data)
+ 
+  c1 = gInfo["features"]
+ 
+  if data['tableOption'] == "General":
+    c2 = gInfo["waldStat_G"]
+    c3 = gInfo['df_G']
+    c4 = gInfo['p-value_G']
+ 
+  c5 = gInfo["meanLogFC"]
+ 
+  data = {
+    "Genes": c1,
+    "waldStat":c2,
+    "df":c3,
+    "p-value":c4,
+    "MeanLogFC":c5
+    }
+ 
+  deg = pd.DataFrame(data)
+ 
+  res = deg.to_csv(index=False)
+
+  ppr.pprint("function end")
+
+  return json.dumps(res)
