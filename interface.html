@@ -5560,8 +5560,14 @@ function CellPopTable(){
       resTable = resTable.join('\n');
       resTable = resTable.replace(/\\/g, '');
       resTable = resTable.replace(/"/g,"");
+
+      console.log("resTable");
+      console.log(resTable);
       
       var gInfo = resTable.split("\n")[0].split(',').slice(4);
+
+      console.log("gInfo");
+      console.log(gInfo);
       
       var tableD = d3.csvParse(resTable,function(data){
         return [].concat([data.gene,
@@ -5570,6 +5576,9 @@ function CellPopTable(){
                   (+data.qval).toExponential(2)],
                   Object.values(data).slice(4));
         });
+
+        console.log("tableD");
+        console.log(tableD);
       
       
       var tableTitle = [];
@@ -5715,54 +5724,17 @@ function tsTable(){
     }
     
     resTable = res;
- 
-    resD = JSON.parse(resTable);
- 
-    //console.log(resD);
-  
-    tableD = resD.split(/\r?\n/);
- 
-    //console.log(tableD);
- 
-    //row1 = tableD[1];
- 
-    //console.log(row1);
- 
-    //values = row1.split(",");
- 
-    //console.log(values);
- 
-    let inputArray = [];
- 
-    for (x of tableD){
-      row = x.split(",");
-      inputArray.push(row);
-    }
- 
-    //console.log(inputArray);
- 
-    title = inputArray[0];
- 
-    inputArray.shift();
-    inputArray.pop();
- 
-    inputArray.columns = title;
- 
-    console.log(title);
-    console.log(inputArray);
- 
-    //table.innerHTML = resD;
- 
-    //resTable = JSON.stringify(resTable);
- 
+
+    tableInputs = tablePrep(res);
+    
     var table = $("#tradeSeqdatatable").DataTable({
       destroy: true,
       dom:'Blfrtip',
       lengthMenu:[[10,50,100,200],[10,50,100,200]],
       order:[3,"asc"],
       buttons:['csv'],
-      data:inputArray,
-      columns:title
+      data:tableInputs[0],
+      columns:tableInputs[1]
     });
  
  
@@ -5771,6 +5743,40 @@ function tsTable(){
     console.log('error!');
   }
 })
+}
+
+function tablePrep(pandas_csv){
+
+  resTable = pandas_csv;
+ 
+  resD = JSON.parse(resTable);
+ 
+  tableD = resD.split(/\r?\n/);
+ 
+  let inputArray = [];
+ 
+  for (x of tableD){
+    row = x.split(",");
+    inputArray.push(row);
+  }
+ 
+  tstitle = inputArray[0];
+ 
+  inputArray.shift();
+  inputArray.pop();
+ 
+  inputArray.columns = tstitle; //add columns property to inputArray object
+ 
+  var tableTitle = [];
+  [].concat(tstitle).forEach(function(d){tableTitle = tableTitle.concat({title:d})});
+
+  results = [];
+
+  results[0] = inputArray;
+  results[1] = tableTitle;
+
+  return results;
+
 }
 
 
