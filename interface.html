@@ -548,7 +548,7 @@
       <button class="tablinks" onclick="selFun(event, 'STACBAR')">Stacked Barplot</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells();detectOrganism()">Cell Population View</button>
-      <button class="tablinks" onclick="selFun(event, 'Pseudo');getAllCells()">Pseudotime Inference</button>
+      <button class="tablinks" onclick="selFun(event, 'Pseudo');getAllCells();CellPopList('TS')">Pseudotime Inference</button>
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1');detectOrganism()">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
@@ -2205,7 +2205,7 @@ function init(){
    var tsTO = document.getElementById("ts_to");
    tsTO.add(createOpt("General"));
  
-   var tsC = document.getElementById("ts_C");
+   //var tsC = document.getElementById("ts_C");
  
  
    if (lineageCount != 0){
@@ -2215,13 +2215,10 @@ function init(){
    }
  
    //pts_C
-   if (tsTO == "General"){
-     document.getElementById("pts_C").style.visibility="hidden";
-   }else{
+   if (tsTO != "General"){
      document.getElementById("pts_C").style.visibility="visible";
    }
 
-    
     // add gene annotation categories (CellPopViw Tab)
 
     var featureCats = Object.entries(store.getState().annoMatrix.schema.annotations.var.columns)
@@ -3109,7 +3106,21 @@ function CellPopList(opt){
       levels.add(createOpt(one));
     }
    
-  }else{
+  }else if(opt=="TS"){
+
+    $("#ts_C").empty();
+    
+    var annCat = "Group";
+    
+    grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
+
+    var levels = document.getElementById("ts_C");
+
+    for(const one of grps[annCat]) {
+      levels.add(createOpt(one));
+    }
+
+  }else {
     var annCat = document.getElementById("CPV_ConditionKey").value;
     grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
     $("#CPV_C1").empty();
@@ -5699,6 +5710,7 @@ function tsTable(){
  
   var cells = AllCells;
   var tradeS_option = document.getElementById("ts_to").value;
+  var tsCondition = document.getElementById("ts_C").value;
  
  //var table = document.getElementsByClassName("tradeSeqTable");
  
@@ -5708,7 +5720,8 @@ function tsTable(){
     'cells':cells,
     'genes':[],
     'grp':[],
-    'tableOption':tradeS_option
+    'tableOption':tradeS_option,
+    'cond':tsCondition
   };
  
   $.ajax({

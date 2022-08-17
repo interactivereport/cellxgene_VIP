@@ -1698,12 +1698,34 @@ def tsTable(data):
   gInfo = getVar(data)
  
   c1 = gInfo["features"]
+
+  cond = data["cond"]
  
   if data['tableOption'] == "General":
     c2 = gInfo["waldStat_G"]
     c3 = gInfo['df_G']
     c4 = gInfo['p-value_G']
  
+  if data['tableOption'] == "Lineage1" and cond == "WT":
+    c2 = gInfo['waldStat_L1/WT']
+    c3 = gInfo['df_L1/WT']
+    c4 = gInfo['p-value_L1/WT']
+
+  if data['tableOption'] == "Lineage1" and cond == "ZC3H20_KO":
+    c2 = gInfo['waldStat_L1/ZC3H20_KO']
+    c3 = gInfo['df_L1/ZC3H20_KO']
+    c4 = gInfo['p-value_L1/ZC3H20_KO']
+
+  if data['tableOption'] == "Lineage2" and cond == "WT":
+    c2 = gInfo['waldStat_L2/WT']
+    c3 = gInfo['df_L2/WT']
+    c4 = gInfo['p-value_L2/WT']
+
+  if data['tableOption'] == "Lineage2" and cond == "ZC3H20_KO":
+    c2 = gInfo['waldStat_L2/ZC3H20_KO']
+    c3 = gInfo['df_L2/ZC3H20_KO']
+    c4 = gInfo['p-value_L2/ZC3H20_KO']
+
   c5 = gInfo["meanLogFC"]
  
   data = {
