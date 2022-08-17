@@ -675,13 +675,13 @@
         <h4>PseudoTime Plot Options:</h4>
         <p>Colour by:
         <select id="pseudo_cell_annot"></select></p>
+        <button class="pseudoAnalysis" onclick="pseudoPlot()"><b>Pseudotime Plot</b></button>
       </div>
       <h4>TradeSeq Table Options:</h4>
       <p id = "pts_to">Results Option:
-        <select id="ts_to"></select></p>
+        <select id="ts_to" onclick="tsDropDownUpdate()"></select></p>
       <p id = "pts_C" style="visibility: hidden;">Condition:
         <select id="ts_C"></select></p>
-      <button class="pseudoAnalysis" onclick="pseudoPlot()"><b>Pseudotime Plot</b></button>
       <button class="tradeSeqTable" onclick="tsTable()"><b>TradeSeq Table</b></button>
       <div id="pseudoSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <p id="pseudoFig"></p>
@@ -2215,9 +2215,9 @@ function init(){
    }
  
    //pts_C
-   if (tsTO != "General"){
-     document.getElementById("pts_C").style.visibility="visible";
-   }
+   //if (tsTO != "General"){
+     //document.getElementById("pts_C").style.visibility="visible";
+   //}
 
     // add gene annotation categories (CellPopViw Tab)
 
@@ -5789,6 +5789,22 @@ function tablePrep(pandas_csv){
   results[1] = tableTitle;
 
   return results;
+
+}
+
+function tsDropDownUpdate(){
+
+  var tradeS_option = document.getElementById("ts_to").value;
+
+  if (tradeS_option == "General"){
+
+    document.getElementById("pts_C").style.visibility="hidden";
+
+  }else{
+
+    document.getElementById("pts_C").style.visibility="visible";
+
+  }
 
 }
 
