@@ -29,6 +29,7 @@ import os
 import re
 import glob
 import subprocess
+import scipy.sparse
 
 strExePath = os.path.dirname(os.path.abspath(__file__))
 
@@ -300,7 +301,8 @@ def distributeTask(aTask):
     'CPVTable':cpvtable,
     'ymlPARSE':parseYAML,
     'pseudo':pseudoPlot,
-    'tradeSeq':tsTable
+    'tradeSeq':tsTable,
+    'tsPlot':tsPlot
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1743,3 +1745,47 @@ def tsTable(data):
   ppr.pprint("function end")
 
   return json.dumps(res)
+
+def tsPlot(data):
+
+ ppr.pprint("function start")
+
+ gene = data["gene"]
+
+ ppr.pprint(gene)
+
+ adata = createData(data)
+
+ ppr.pprint(adata)
+
+ expr = pd.DataFrame.sparse.from_spmatrix(adata.X, columns = adata.var.index)
+
+ ppr.pprint(expr)
+
+ gene_counts = expr[gene]
+
+ ppr.pprint(gene_counts)
+
+ pseudo = adata.obs["pseudotime_1"]
+
+ lin = adata.obs['Lineage1_WT']
+
+ gene_counts2 = [x + 1 for x in gene_counts]
+
+ ppr.pprint(len(gene_counts2))
+
+ logGenes = [np.log(x) for x in gene_counts2]
+
+ ppr.pprint(len(logGenes))
+
+ ppr.pprint("data processing complete")
+
+ #plot raw graph
+
+ plt.scatter(x = pseudo, y = logGenes)#, c = lin)
+
+ fig = plt.gcf()
+
+ return iostreamFig(fig)
+
+

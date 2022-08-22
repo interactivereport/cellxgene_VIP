@@ -683,11 +683,16 @@
       <p id = "pts_C" style="visibility: hidden;">Condition:
         <select id="ts_C"></select></p>
       <button class="tradeSeqTable" onclick="tsTable()"><b>TradeSeq Table</b></button>
+      <p></p>
+      <p>TS Plot Gene Input:</p>
+        <input type="text" id="tsGene">
+      <button class="tradeSeqPlot" onclick="tsPlot()"><b>TradeSeq Plot</b></button>
       <div id="pseudoSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <p id="pseudoFig"></p>
       <p id="pseudoNote" style="color:red;"></p>
       <p></p>
       <table id="tradeSeqdatatable" class="display"></table>
+      <p id="tradeSeqFig"></p>
     </div><!--Pseudo-->
 
     <div id="GD" class=tabcontent>
@@ -5808,6 +5813,60 @@ function tsDropDownUpdate(){
 
 }
 
+function tsPlot(){
+
+  var cells = AllCells;
+
+  var grp = [];
+
+  var annotkeys = pseudoannots;
+
+  for(const one of annotkeys){
+     if(one.startsWith("pseudo") || one.startsWith("Lineage")){
+       grp.push(one);
+     }
+   }
+  
+  var gene = document.getElementById("tsGene").value;
+
+  document.getElementById("pseudoSpin").style.visibility="visible";
+
+  var D = {
+  'method':'tsPlot',
+  'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+  'cells':cells,
+  'genes':[],
+  'gene':gene,
+  'grp':grp,
+  };
+
+  $.ajax({
+  type:"POST",
+  url: VIPurl,
+  data:JSON.stringify(D),
+  contentType: 'application/json;charset=UTF-8',//
+  success: function(res){
+
+    if(res.startsWith('ERROR')){
+      $("#pseudoNote").text(res);
+      document.getElementById("pseudoSpin").style.visibility="hidden";
+        return;
+      }
+    
+
+    document.getElementById("pseudoSpin").style.visibility="hidden";
+
+    showImg('tradeSeqFig',res);
+
+  },
+  error: function() {
+    document.getElementById("pseudoSpin").style.visibility="hidden";
+    console.log('error!');
+  }
+})
+
+
+}
 
 var database_URL;
 var databaseSearch_URL;
