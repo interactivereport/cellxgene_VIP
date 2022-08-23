@@ -820,8 +820,6 @@
         </p>
         <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.HEATgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="HEATgene"></p>
-        <p>Cluster by:
-        <select id="HEATorder"></select></p>
         <p>Choose annotation(s):</p>
         <p id="HEATgrp"></p>
         <p>Select plotting value:
@@ -858,23 +856,45 @@
           <option value='RdYlBu'>RdYlBu</option>
           <option value='RdYlGn'>RdYlGn</option>
         </select> <input id="HEATcolor_r" type="checkbox">Reverse <button onclick="hideShow($('#HEATcolorhelp'),$(this),'Color Help');">Show Color Help</button></p>
-  		<div id="HEATcolorhelp" style="display:none;">
-            <table border=0>
-              <tr valign="top"><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_sequential.png" width="300"></td><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_diverging.png" width="300"></td></tr>
-            </table>
-  		</div>
-  		<p>Select plotting methods:
-  		  <select id="HEATplotMethod">
-  		    <option value="cHeatmap">ComplexHeatmap (R)</option>
-  		    <option value="sns">Seaborn (python)</option>
-  		  </select></p>
-        <p>Gene as <input type="radio" name="HEATswapAxes" value="F" checked>Column <input type="radio" name="HEATswapAxes" value="T">Row</p>
-        <p>Width: <input id="HEATwidth" type="number" step="0.5" value="6" min="1" max="24"/>
-           Height: <input id="HEATheight" type="number" step="0.5" value="8" min="1" max="24"/>
-        </p>
-        <p>Column Format: <input id="HEATcolumnFormat" type="text" size=36 value="fontsize=4,col='black',fontface='plain'"/></p>
-        <p>Row Format: <input id="HEATrowFormat" type="text" size=36 value="fontsize=4"/></p>
-        <p>Annotation Format: <input id="HEATannoFormat" type="text" size=36 value="fontsize=6"/></p>
+    		<div id="HEATcolorhelp" style="display:none;">
+              <table border=0>
+                <tr valign="top"><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_sequential.png" width="300"></td><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_diverging.png" width="300"></td></tr>
+              </table>
+    		</div>
+    		<p>Select plotting methods:
+    		  <select id="HEATplotMethod" onchange="if($(this).val()=='cHeatmap'){$('#HEATcomplexSetting').show();$('#HEATseabornSetting').hide()}else{$('#HEATcomplexSetting').hide();$('#HEATseabornSetting').show()}">
+    		    <option value="cHeatmap">ComplexHeatmap (R)</option>
+    		    <option value="sns">Seaborn (python)</option>
+    		  </select></p>
+        <div id="HEATcomplexSetting">
+          <p>Gene as
+            <input type="radio" name="HEATswapAxes" value="F" checked onchange="$('#HEATcomplexSettingSwap').hide()">Column
+            <input type="radio" name="HEATswapAxes" value="T" onchange="$('#HEATcomplexSettingSwap').show()">Row
+            <span id="HEATcomplexSettingSwap" style="display:none"> || Max legend row: <input id="HEATcomplexSettingLegendRow" type="number" step="1" value="5" min="1" max="20"/></span>
+          </p>
+
+          <p>Width: <input id="HEATwidth" type="number" step="0.5" value="6" min="1" max="24"/>
+             Height: <input id="HEATheight" type="number" step="0.5" value="8" min="1" max="24"/>
+          </p>
+            Annotation fontsize adjust: <input id="HEATcomplexSettingFontadj" type="number" step="1" value="-4" min="-10" max="10"/>
+          <p>
+          </p>
+          <p>Cluster by:
+            <select id="HEATcomplexSortby" onchange="if($(this).val()=='Annotation'){$('#HEATorderGrp').show()}else{$('#HEATorderGrp').hide()}">
+              <option value="Annotation">Annotation</option>
+              <option value="Expression">Expression</option>
+            </select>
+          </p>
+          <div id='HEATorderGrp'>
+            <p>Change the annotation order by dragging items up or down, cluster annotations can also be removed:</p>
+            <ul id="HEATdynList" class="sortable-list"></ul><!--   -->
+          </div>
+
+        </div>
+        <div id="HEATseabornSetting" style="display:none">
+          <p>Cluster by:
+            <select id="HEATorder"></select></p>
+        </div>
       </div>
       <button class="HEATbt"  onclick="HEATplot()"><b>Plot</b></button>
       <button class="HEATsaveBT" onclick="HEATdata()" disabled>Get Data</button>
@@ -2158,7 +2178,7 @@ function init(){
       htmlCheck += '<label id="eIDgrpsCK'+one+'"><input class="eIDgrps" type="checkbox" value="'+one+'"/> '+one+' ('+grpL[one].categories.length+')</label>';
     }
     //HEAT, EMBED, SANK, STACBAR, CLI
-    $('#HEATgrp').html(htmlCheck.replace(/eID/g,'HEAT'));
+    $('#HEATgrp').html(htmlCheck.replace(/eID/g,'HEAT').replace(/value/g,'onchange="HEATorder()" value'));
     $('#CLIgrp').html(htmlCheck.replace(/eID/g,'CLI'));
     $('#EMBEDgrp').html(htmlCheck.replace(/eID/g,'EMBED'));
     $('#SANKgrp').html(htmlCheck.replace(/eID/g,'SANK').replace(/value/g,'onchange="SANKorderUpdate()" value'));
@@ -2272,23 +2292,30 @@ function init(){
             VIPurl = this.url;
             console.log("VIP ("+VIPurl+") is ready on server side.");
             //Add Description
+            console.log("Checking description ...");
             addDescription();
 
             //get GSEA Information
+            console.log("Loading GSEA ...");
             getGSEA();
 
             //for pre-computed DEG
+            console.log("Checking pre-computed DEG ...");
             enablePreDEG();
 
             //for metaCell
+            console.log("Checking Meta Cell ...");
             enableMetaCell();
 
             //for VIP test
+            console.log("Checking VIP test ...");
             enableVIPtest();
 
             // for browser track plot
+            console.log("Checking browser track ...");
             enableBrowser();
 
+            console.log("Initial server communication is completed!");
           }
         },
         error: function(request,status,error){
@@ -2559,12 +2586,56 @@ function HEATref(){
   }
   var gL = Object.keys(window.store.getState().categoricalSelection).length-1; //not considering the last one ">Description"
   addCustomCombine("HEATorder");
-  $("#HEATorder option[value='Expression']").remove();
-  x = document.getElementById("HEATorder");
+
+  var HEATorder=$.map($("#HEATorder option"),function(a) {
+    return a.value;
+  });
+  var HEATcomplexSortby=$.map($("#HEATcomplexSortby option"),function(a) {
+    return a.value;
+  });
   if(nCells<heatCell){
-    x.add(createOpt("Expression"));
+    if(!HEATorder.includes("Expression")){
+      x = document.getElementById("HEATorder");
+      x.add(createOpt("Expression"));
+    }
+    if(!HEATcomplexSortby.includes("Expression")){
+      x = document.getElementById("HEATcomplexSortby");
+      x.add(createOpt("Expression"));
+    }
+  }else{
+    if(HEATorder.includes("Expression")){
+      $("#HEATorder option[value='Expression']").remove();
+    }
+    if(HEATcomplexSortby.includes("Expression")){
+      $("#HEATcomplexSortby option[value='Expression']").remove();
+      $("#HEATcomplexSortby").change();
+    }
   }
+
   addCustomCheck("HEAT");
+}
+function HEATrm(eID){
+  console.log(eID);
+  var selElem = $("#HEATdynList").sortable('toArray');
+  selElem.splice(selElem.indexOf(eID),1);
+  var htmlCheck = "";
+  for(const one of selElem){
+    htmlCheck += "<li id='"+one+"'><label>"+one.replace("li","")+"</label> <a onClick='HEATrm(\'"+one+"\')' style='cursor: pointer; cursor: hand;'><i class='fa fa-trash-o'></i></a></li>";
+  }
+  $("#HEATdynList").html(htmlCheck);
+}
+function HEATorder(){
+  var eID="HEAT";
+  selElem=[];
+  $("."+eID+"grps").each(function(){
+    if($(this).prop("checked")){
+      selElem.push($(this).val());
+  }})
+  var htmlCheck = "";
+  for(const one of selElem){
+    htmlCheck += "<li id='"+one+"'><label>"+one.replace(eID+"li","")+"</label> <a onClick=\"HEATrm('"+one+"')\" style='cursor: pointer; cursor: hand;'><i class='fa fa-trash-o'></i></a></li>";
+  }
+  $("#"+eID+"dynList").html(htmlCheck);
 }
 function DOTref(){
   showGene('DOT');
@@ -3873,17 +3944,27 @@ function HEATcheck(){
     }
   }
 
-  var orderGrp = $("#HEATorder").val();
-  if(orderGrp=="Expression" && cells.length>heatCell){
-    $('#HEATnote').text("Cluster by expression is not available for the number of selected cells larger than "+Math.round(heatCell/1000)+"k.");
-    return;
-  }
-  if(orderGrp!="Expression" && !grps.includes(orderGrp)){
-    grps.push(orderGrp);
+  var orderGrp=[];
+  if($("#HEATplotMethod").val()=="cHeatmap"){
+    if($("#HEATcomplexSortby").val()=="Annotation"){
+      orderGrp = $("#HEATdynList").sortable('toArray');
+    }else{
+      orderGrp=["Expression"];
+    }
+  }else{
+    orderGrp = $("#HEATorder").val();
+    if(orderGrp=="Expression" && cells.length>heatCell){
+      $('#HEATnote').text("Cluster by expression is not available for the number of selected cells larger than "+Math.round(heatCell/1000)+"k.");
+      return;
+    }
+    if(orderGrp!="Expression" && !grps.includes(orderGrp)){
+      grps.push(orderGrp);
+    }
+    orderGrp = [orderGrp];
   }
 
   var grp=[],combGrp = [],combGrpOrder=[];
-  if(orderGrp=="Custom_combine" || grps.includes("Custom_combine")){
+  if(orderGrp.includes("Custom_combine") || grps.includes("Custom_combine")){
     grp = grps.filter(function(e) { return e !== 'Custom_combine' });
     grps = [...new Set(grp.concat(Object.keys(window.bioCombine)))];
     combGrp = window.bioCombine;
@@ -3914,10 +3995,12 @@ function HEATcheck(){
             'plotMethod':$("#HEATplotMethod").val(),
             'width':$("#HEATwidth").val(),
             'height':$("#HEATheight").val(),
-            'columnFormat':$("#HEATcolumnFormat").val().replaceAll("'","\\'"),
-            'rowFormat':$("#HEATrowFormat").val().replaceAll("'","\\'"),
-            'annoFormat':$("#HEATannoFormat").val().replaceAll("'","\\'"),
+            //'columnFormat':$("#HEATcolumnFormat").val().replaceAll("'","\\'"),
+            //'rowFormat':$("#HEATrowFormat").val().replaceAll("'","\\'"),
+            //'annoFormat':$("#HEATannoFormat").val().replaceAll("'","\\'"),
             'swapAxes':$("input[name='HEATswapAxes']:checked").val(),
+            'legendRow':$("#HEATcomplexSettingLegendRow").val(),
+            'fontadj':$("#HEATcomplexSettingFontadj").val(),
             'abb':window.bioAbbr,
             'combine':combGrp,
             'combineOrder':combGrpOrder,
@@ -4830,7 +4913,7 @@ function SANKcheck(){
   }})
 
   var selSank = $("#SANKdynList").sortable('toArray');
-  selSank=selSank.map(function(one){return one.replace("SANKli","");})
+  selSank=selSank.map(function(one){return one.replace("SANKli","");});
   if (selSank.length < 2) {
     $('#SANKnote').text("Please select at least two features (gene or annotation) to plot");
     return;

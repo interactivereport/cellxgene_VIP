@@ -524,21 +524,23 @@ def pHeatmap(data):
   #Xdata = pd.concat([adata.to_df(),adata.obs], axis=1, sort=False).to_csv()
   #ppr.pprint('HEAT data reading cost %f seconds' % (time.time()-sT) )
   #sT = time.time()
-  exprOrder = True
-  if data['order']!="Expression":
-    exprOrder = False;
-    adata = adata[adata.obs.sort_values(data['order']).index,]
-    #s = adata.obs[data['order']]
-    #ix = sorted(range(len(s)), key=lambda k: s[k])
-    #adata = adata[ix,]
+
+
   h = 8
   w = len(data['genes'])/3+0.3 + 2
   heatCol=data['color']
   Zscore=None
   heatCenter=None
   colTitle="Expression"
-  
+
   if data['plotMethod']=='sns':
+    exprOrder = True
+    if data['order'][0]!="Expression":
+      exprOrder = False;
+      adata = adata[adata.obs.sort_values(data['order']).index,]
+      #s = adata.obs[data['order']]
+      #ix = sorted(range(len(s)), key=lambda k: s[k])
+      #adata = adata[ix,]
     colCounter = 0
     colName =['Set1','Set3']
     grpCol = list()
@@ -566,7 +568,7 @@ def pHeatmap(data):
       colTitle="Z-score"
     #ppr.pprint('HEAT data preparing cost %f seconds' % (time.time()-sT) )
     #sT = time.time()
-  
+
     try:
       g = sns.clustermap(adata.to_df(),
                        method="ward",row_cluster=exprOrder,z_score=Zscore,cmap=heatCol,center=heatCenter,
@@ -576,8 +578,8 @@ def pHeatmap(data):
                        cbar_kws={"orientation": "horizontal","label": colTitle,"shrink": 0.5})
     except Exception as e:
       return 'ERROR: Z score calculation failed for 0 standard diviation. '+traceback.format_exc() # 'ERROR @server: {}, {}'.format(type(e),str(e))
-  
-  
+
+
     #ppr.pprint('HEAT plotting cost %f seconds' % (time.time()-sT) )
     #sT = time.time()
     g.ax_col_dendrogram.set_visible(False)
@@ -626,9 +628,11 @@ def pHeatmap(data):
     D = pd.concat([D,adata.obs],axis=1,sort=False)
     D.to_csv(strF,index=False)
     ## plot in R
-    cmd = "%s/complexHeatmap.R %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s '%s'"%(strExePath,strF,','.join(data['genes']),colTitle,exprOrder,str(data['width']),str(data['height']),heatCol,
-      data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['columnFormat']),str(data['rowFormat']),str(data['annoFormat']),str(data['swapAxes']),data['figOpt']['vectorFriendly'],data['Rlib'])
+    cmd = "%s/complexHeatmap.R %s %s %s %s %s %s %s %s %s %s %s %s %s %s '%s'"%(strExePath,strF,','.join(data['genes']),colTitle,','.join(data['order']),str(data['width']),str(data['height']),heatCol,
+      str(data['legendRow']),str(data['fontadj']),
+      data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['swapAxes']),data['figOpt']['vectorFriendly'],data['Rlib'])
     #ppr.pprint(cmd)
+    #return SyntaxError("in R: ")
     res = subprocess.run(cmd,check=True,shell=True,capture_output=True)#
     img = res.stdout.decode('utf-8')
     os.remove(strF)
