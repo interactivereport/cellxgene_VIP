@@ -366,7 +366,7 @@ predictGAM <- function(lpmatrix, df, pseudotime, conditions = NULL){
 
 gene1 = args[2]
 
-sce = readRDS("/home/ed/CXG_Testing/nTb_GAM_line.rds")
+sce = readRDS("/home/ed/CXG_Testing/nTbrucei_SCE.rds")
 
 counts = counts(sce)
 
