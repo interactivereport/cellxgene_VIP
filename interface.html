@@ -684,9 +684,6 @@
         <select id="ts_C"></select></p>
       <button class="tradeSeqTable" onclick="tsTable()"><b>TradeSeq Table</b></button>
       <p></p>
-      <p>TS Plot Gene Input:</p>
-        <input type="text" id="tsGene">
-      <button class="tradeSeqPlot" onclick="tsPlot()"><b>TradeSeq Plot</b></button>
       <div id="pseudoSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <p id="pseudoFig"></p>
       <p id="pseudoNote" style="color:red;"></p>
@@ -5679,7 +5676,7 @@ function pseudoPlot(){
   var D = {
   'method':'pseudo',
   'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
-  'addr':'/'+window.store.getState().config.displayNames.dataset+'.yml',
+  'addr':'/home/ed/data_cxg/YAML/'+window.store.getState().config.displayNames.dataset+'.yml',//'/'+window.store.getState().config.displayNames.dataset+'.yml',
   'cells':cells,
   'genes':[],
   'grp':grp,
@@ -5700,6 +5697,8 @@ function pseudoPlot(){
       }
     
 
+    console.log("pseudoplot function returned!")
+
     document.getElementById("pseudoSpin").style.visibility="hidden";
 
     showImg('pseudoFig',res);
@@ -5716,8 +5715,9 @@ function tsTable(){
   var cells = AllCells;
   var tradeS_option = document.getElementById("ts_to").value;
   var tsCondition = document.getElementById("ts_C").value;
+
+  var tsPlotGene;
  
- //var table = document.getElementsByClassName("tradeSeqTable");
  
   var D = {
     'method':'tradeSeq',
@@ -5750,18 +5750,40 @@ function tsTable(){
       dom:'Blfrtip',
       lengthMenu:[[10,50,100,200],[10,50,100,200]],
       order:[3,"asc"],
-      buttons:['csv'],
+      buttons:['csv', {
+          text:'TradeSeqPlot',
+          action: function(e, dt, node, config) {
+
+            tsPlot(tsPlotGene)
+
+            return;
+          }
+        }],
       data:tableInputs[0],
       columns:tableInputs[1]
     });
- 
- 
+
+    //Add row selection property
+
+    $('#tradeSeqdatatable tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        } else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            tsPlotGene = table.row( this ).data()[0]
+            console.log(tsPlotGene);
+        }
+    });
+
   },
   error: function() {
     console.log('error!');
   }
 })
 }
+
+
 
 function tablePrep(pandas_csv){
 
@@ -5813,7 +5835,7 @@ function tsDropDownUpdate(){
 
 }
 
-function tsPlot(){
+function tsPlot(tsgene){
 
   var cells = AllCells;
 
@@ -5827,7 +5849,12 @@ function tsPlot(){
      }
    }
   
-  var gene = document.getElementById("tsGene").value;
+  var gene = tsgene;
+
+  if(gene == null) {
+    $("#pseudoNote").text("Please select a gene from the Table.");
+    return
+  }
 
   document.getElementById("pseudoSpin").style.visibility="visible";
 
@@ -5847,12 +5874,16 @@ function tsPlot(){
   contentType: 'application/json;charset=UTF-8',//
   success: function(res){
 
+
     if(res.startsWith('ERROR')){
       $("#pseudoNote").text(res);
       document.getElementById("pseudoSpin").style.visibility="hidden";
         return;
       }
     
+
+  
+    console.log("tradeSeq function returned!")
 
     document.getElementById("pseudoSpin").style.visibility="hidden";
 

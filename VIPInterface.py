@@ -302,7 +302,7 @@ def distributeTask(aTask):
     'ymlPARSE':parseYAML,
     'pseudo':pseudoPlot,
     'tradeSeq':tsTable,
-    'tsPlot':tsPlot
+    'tsPlot':tsPlot2
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -452,11 +452,18 @@ def SGVcompare(data):
   X=pd.concat([adata.to_df(),adata.obs[data['grp']]],axis=1,sort=False)
   X[X.iloc[:,0]>=float(data['cellCutoff'])].to_csv(strF,index=False)
 
-
   strCMD = " ".join(["%s/Rscript"%data['Rpath'],strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
-  #ppr.pprint(strCMD)
+  
+
   res = subprocess.run([strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
+
+  ppr.pprint("arguments")
+  ppr.pprint(res.args)
+
+  ppr.pprint("Violins!")
+  ppr.pprint(img)
+
   os.remove(strF)
   if 'Error' in res.stderr.decode('utf-8'):
     raise SyntaxError("in R: "+res.stderr.decode('utf-8'))
@@ -1635,11 +1642,11 @@ def parseYAML(data):
 
   ymlAddress = data['addr']
 
-  cwd = "/share/cellxgene/main/YAML"
+  #cwd = "/share/cellxgene/main/YAML"
 
-  finalAddr = cwd + ymlAddress
+  #finalAddr = cwd + ymlAddress
 
-  #finalAddr = ymlAddress
+  finalAddr = ymlAddress
 
   with open(finalAddr) as f:
     data = yaml.load(f, Loader=SafeLoader)
@@ -1748,44 +1755,87 @@ def tsTable(data):
 
 def tsPlot(data):
 
- ppr.pprint("function start")
-
  gene = data["gene"]
-
- ppr.pprint(gene)
 
  adata = createData(data)
 
- ppr.pprint(adata)
+ # Extract gene-count values
 
  expr = pd.DataFrame.sparse.from_spmatrix(adata.X, columns = adata.var.index)
 
- ppr.pprint(expr)
-
  gene_counts = expr[gene]
 
- ppr.pprint(gene_counts)
+#Assmble Overall Pseudotime Variable
 
- pseudo = adata.obs["pseudotime_1"]
+ pseudo1 = adata.obs["pseudotime_1"].values
+ pseudo1 = pseudo1.astype(float)
 
- lin = adata.obs['Lineage1_WT']
+ pseudo2 = adata.obs["pseudotime_2"].values
+ pseudo2 = pseudo2.astype(float)
+
+ finalPseudo = []
+
+ for i in range(len(pseudo1)):
+   if pseudo1[i] > pseudo2[i]:
+     finalPseudo.append(pseudo1[i])
+   else:
+     finalPseudo.append(pseudo2[i])
+
+#Assemble Lineage Outputs
+
+ lin1 = adata.obs['Lineage1_WT'].values
+ lin2 = adata.obs['Lineage1_ZC3H20_KO'].values
+ lin3 = adata.obs['Lineage2_WT'].values
+ lin4 = adata.obs['Lineage2_ZC3H20_KO'].values
+
+ lin1 = lin1.astype(int)
+ lin2 = lin2.astype(int)
+ lin3 = lin3.astype(int)
+ lin4 = lin4.astype(int)
+
+ finalLineage = []
+
+ for i in range(len(lin1)):
+   if lin1[i] == 1:
+     finalLineage.append(1)
+   elif lin2[i] == 1:
+     finalLineage.append(2)
+   elif lin3[i] == 1:
+     finalLineage.append(3)
+   elif lin4[i] == 1:
+     finalLineage.append(4)
+   else:
+     finalLineage.append(0)
+
+
+ showlin = set(finalLineage)
+ ppr.pprint(showlin)
+ #Get Counts
 
  gene_counts2 = [x + 1 for x in gene_counts]
 
- ppr.pprint(len(gene_counts2))
+ #ppr.pprint(len(gene_counts2))
 
  logGenes = [np.log(x) for x in gene_counts2]
 
- ppr.pprint(len(logGenes))
-
- ppr.pprint("data processing complete")
-
  #plot raw graph
 
- plt.scatter(x = pseudo, y = logGenes)#, c = lin)
+ plt.scatter(x = finalPseudo, y = logGenes, c = finalLineage, cmap="Greens")
 
- fig = plt.gcf()
+ tradeSeqPlot = plt.gcf()
 
- return iostreamFig(fig)
+ ppr.pprint(tradeSeqPlot)
 
+ ppr.pprint("plotting complete")
 
+ return iostreamFig(tradeSeqPlot)
+
+def tsPlot2(data):
+
+  gene = data["gene"]
+
+  res = subprocess.run(['/home/ed/cellxgene_VIP/tsPlot.R',"test",gene],capture_output=True) 
+
+  img = res.stdout.decode('utf-8')
+
+  return img
