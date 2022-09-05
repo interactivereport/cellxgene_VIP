@@ -302,7 +302,7 @@ def distributeTask(aTask):
     'ymlPARSE':parseYAML,
     'pseudo':pseudoPlot,
     'tradeSeq':tsTable,
-    'tsPlot':tsPlot2
+    'tsPlot':tsPlot
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1754,7 +1754,7 @@ def tsTable(data):
   return json.dumps(res)
 
 
-def tsPlot2(data):
+def tsPlot(data):
 
   gene = data["gene"]
 
