@@ -3113,7 +3113,9 @@ function CellPopList(opt){
     $("#ts_C").empty();
     
     var annCat = tsAnnot;
-    
+
+    if(annCat){
+
     grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
     console.log(grps[annCat])
 
@@ -3121,6 +3123,10 @@ function CellPopList(opt){
 
     for(const one of grps[annCat]) {
       levels.add(createOpt(one));
+    }
+
+    }else{
+      return
     }
 
   }else {
@@ -5705,10 +5711,14 @@ function tsTable(){
  
   var cells = AllCells;
   var tradeS_option = document.getElementById("ts_to").value;
-  var tsCondition = document.getElementById("ts_C").value;
 
+  if(tsAnnot){
+    var tsCondition = document.getElementById("ts_C").value;
+  }else{
+    var tsCondition = null;
+  }
+  
   var tsPlotGene;
- 
  
   var D = {
     'method':'tradeSeq',
@@ -5756,7 +5766,7 @@ function tsTable(){
 
     //Add row selection property
 
-    $('#tradeSeqdatatable tbody').on('click', 'tr', function () {
+    $('#tradeSeqdatatable tbody').off('click').on('click', 'tr', function () {
         if ($(this).hasClass('selected')) {
             $(this).removeClass('selected');
         } else {
@@ -5816,7 +5826,7 @@ function tsDropDownUpdate(){
 
     document.getElementById("pts_C").style.visibility="hidden";
 
-  }else{
+  }else if(tsAnnot){
 
     document.getElementById("pts_C").style.visibility="visible";
 

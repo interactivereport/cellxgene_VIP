@@ -1713,11 +1713,16 @@ def tsTable(data):
     c2 = gInfo["waldStat_G"]
     c3 = gInfo['df_G']
     c4 = gInfo['p-value_G']
-  else:
+  elif cond:
     tail = "_" + tableO + "/" + cond
-    c2 = "waldStat" + tail
-    c3 = "df" + tail
-    c4 = "p-value" + tail
+    c2 = gInfo["waldStat" + tail]
+    c3 = gInfo["df" + tail]
+    c4 = gInfo["p-value" + tail]
+  else:
+    tail = "_" + tableO
+    c2 = gInfo["waldStat" + tail]
+    c3 = gInfo["df" + tail]
+    c4 = gInfo["p-value" + tail]
  
  
   c5 = gInfo["meanLogFC"]
