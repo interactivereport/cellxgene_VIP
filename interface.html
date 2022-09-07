@@ -820,7 +820,7 @@
         </p>
         <p>Choose genes ('Add Genes' first): <input id='HEATgenesAll' type="checkbox" checked onclick="$('.HEATgenes').prop('checked', this.checked);">Uncheck / Check All <span id="HEATgeneAnno"><input id="HEATgeneAnnoCK" type="checkbox" checked>Using protein atlas annotation</span></p>
         <p id="HEATgene"></p>
-        <p>Or upload a gene annotation file: <input type='file' id='HEATgeneFile' onchange="HEATgeneFileUpdate()" /></p>
+        <p>Or upload a gene annotation csv file (first column header is 'gene'): <input type='file' id='HEATgeneFile' onchange="HEATgeneFileUpdate()" /></p>
         <p>Choose categorical annotation(s):</p>
         <p id="HEATgrp"></p>
         <p>Choose continuous annotation(s):</p>
