@@ -1746,7 +1746,8 @@ def tsPlot(data):
 
   gene = data["gene"]
 
-  res = subprocess.run(['/home/ed/cellxgene_VIP/tsPlot.R',gene],capture_output=True) 
+  res = subprocess.run(['/home/cellxgene/cellxgene_VIP',gene],capture_output=True) 
+  #/home/ed/cellxgene_VIP/tsPlot.R
 
   img = res.stdout.decode('utf-8')
 
