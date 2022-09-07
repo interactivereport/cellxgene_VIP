@@ -5875,12 +5875,13 @@ function tsPlot(tsgene){
   contentType: 'application/json;charset=UTF-8',//
   success: function(res){
 
-
     if(res.startsWith('ERROR')){
       $("#pseudoNote").text(res);
       document.getElementById("pseudoSpin").style.visibility="hidden";
         return;
       }
+
+    console.log(res);
     
     document.getElementById("pseudoSpin").style.visibility="hidden";
 
