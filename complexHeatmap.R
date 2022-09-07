@@ -45,10 +45,11 @@ if(grepl("_r$",imgCol)){
 }
 
 D <- as.data.frame(data.table::fread(strCSV))
-# if clusterRow is True, remove cells with sd=0 and value<1
-clusterRow <- ifelse("Expression"%in%clusterGrps,T,F)
-if(length(genes)<2) clusterRow <- F
-if(clusterRow){
+# if clusterGene is True, remove cells with sd=0 and value<1
+clusterCell <- F
+clusterGene <- ifelse("Expression"%in%clusterGrps,T,F)
+if(length(genes)<2) clusterGene <- F
+if(clusterGene){
   mat <- as.matrix(D[,genes,drop=F])
   mat <- mat[ , colSums(is.na(mat)) == 0]
   matSD <- apply(mat,1,sd)
@@ -61,37 +62,74 @@ if(clusterRow){
     D <- D%>%arrange(!!!syms(clusterGrps))
     D <- D[,c(clusterGrps,setdiff(colnames(D),clusterGrps)),drop=F]
   }
-
   mat <- as.matrix(D[,genes,drop=F])
   mat <- mat[ , colSums(is.na(mat)) == 0]
 }
 
 ## annotation
 anno_df <- D[,!colnames(D)%in%genes,drop=F]
-anno_df <- anno_df[,sapply(anno_df,function(x)return(length(unique(x))))<50,drop=F]
-ann_col <- apply(anno_df,2,function(x){
+anno_df <- anno_df[,sapply(anno_df,function(x)return(is.numeric(x)||length(unique(x))<50)),drop=F]
+selog <- sapply(anno_df,function(x)return(is.numeric(x)&&max(x)>200))
+anno_df[,selog] <- log2(1+anno_df[,selog])
+colnames(anno_df)[selog] <- paste0("log2_",colnames(anno_df)[selog])
+ann_col <- lapply(anno_df,function(x){
   if(is.numeric(x)) {
     if(prod(range(x))<0)
-      return(list(circlize::colorRamp2(c(min(x),0,max(x)),RColorBrewer::brewer.pal(name=imgCol,n=3))))
+      return(circlize::colorRamp2(c(min(x),0,max(x)),RColorBrewer::brewer.pal(name=imgCol,n=3)))
     else
-      return(list(circlize::colorRamp2(c(min(x),median(x),max(x)),RColorBrewer::brewer.pal(name=imgCol,n=3))))
+      return(circlize::colorRamp2(c(min(x),median(x),max(x)),RColorBrewer::brewer.pal(name=imgCol,n=3)))
   }
   xN <- length(unique(x))
   if(xN<13)
-    return(list(setNames(sample(RColorBrewer::brewer.pal(name="Set3",n=12),xN),unique(x))))
-  return(list(setNames(scales::hue_pal()(xN),sort(unique(x)))))
+    return(setNames(sample(RColorBrewer::brewer.pal(name="Set3",n=12),xN),unique(x)))
+  return(setNames(scales::hue_pal()(xN),sort(unique(x))))
 })
+strGann <- gsub("HEAT","HEATgene",strCSV)
+gAnno <- NULL
+gAnnoLegend <- T
+if(file.exists(strGann)){
+  gAnno <- data.table::fread(strGann,header=T,check.names=F)
+  gAnno <- data.frame(row.names=unlist(gAnno[,1]),gAnno[,-1])
+  gAnno_col <- lapply(gAnno,function(x){
+    xN <- length(unique(x))
+    if(xN<3 && sum(!x%in%c("Y","N"))==0)
+      return(setNames(c(sample(RColorBrewer::brewer.pal(name="Set3",n=12),1),"#d9d9d9"),c("Y","N")))
+    if(xN<13)
+      return(setNames(sample(RColorBrewer::brewer.pal(name="Set3",n=12),xN),unique(x)))
+    return(setNames(scales::hue_pal()(xN),sort(unique(x))))
+  })
+  if(sum(!sapply(gAnno_col,function(x)return(length(x)==2&&sum(c("Y","N")==names(x))==2)))==0)
+    gAnnoLegend=F
+}
+rowAnno <- colAnno <- NULL
+anno_gp <- grid::gpar(fontsize=max(3,fontsize=fontsize+annFontsize))
+anno_legend_gp <- list(title_gp=gpar(fontsize = fontsize+annFontsize+2),
+                             labels_gp=gpar(fontsize=fontsize+annFontsize+1))
 if (!swapAxes) {
-  rowAnno <- HeatmapAnnotation(df=anno_df,col=unlist(ann_col,recursive=F),
-                         annotation_name_gp = grid::gpar(fontsize=max(3,fontsize=fontsize+annFontsize)), #eval(parse(text = paste0("grid::gpar(", annoFormat , ")"))),
-                         annotation_legend_param=list(title_gp=gpar(fontsize = fontsize+annFontsize+2),
-                                                      labels_gp=gpar(fontsize=fontsize+annFontsize+1)),which = "row")
+  annotation_legend_side <- "right"
+  clusterC <- clusterGene
+  clusterR <- clusterCell
+  rowAnno <- HeatmapAnnotation(df=anno_df,col=ann_col,
+                         annotation_name_gp = anno_gp,
+                         annotation_legend_param=anno_legend_gp,
+                         which = "row")
+  if(!is.null(gAnno))
+    colAnno <- HeatmapAnnotation(df=gAnno[colnames(mat),],col=gAnno_col,show_legend=gAnnoLegend,
+                           annotation_name_gp = anno_gp,
+                           annotation_legend_param=anno_legend_gp)
+
 } else {
-  colAnno <- HeatmapAnnotation(df=anno_df,col=unlist(ann_col,recursive=F),
-                         annotation_name_gp = grid::gpar(fontsize=max(3,fontsize=fontsize+annFontsize)), #eval(parse(text = paste0("grid::gpar(", annoFormat , ")"))),
-                         annotation_legend_param=list(title_gp=gpar(fontsize = fontsize+annFontsize+2),
-                                                      labels_gp=gpar(fontsize=fontsize+annFontsize+1),
-                                                      nrow=legendRow))
+  annotation_legend_side <- "top"
+  clusterR <- clusterGene
+  clusterC <- clusterCell
+  colAnno <- HeatmapAnnotation(df=anno_df,col=ann_col,
+                         annotation_name_gp = anno_gp, #eval(parse(text = paste0("grid::gpar(", annoFormat , ")"))),
+                         annotation_legend_param=c(anno_legend_gp,list(nrow=legendRow,title_position = "topcenter")))
+  if(!is.null(gAnno))
+    rowAnno <- HeatmapAnnotation(df=gAnno[colnames(mat),],col=gAnno_col,show_legend=gAnnoLegend,
+                           annotation_name_gp = anno_gp,
+                           annotation_legend_param=c(anno_legend_gp,list(nrow=legendRow,title_position = "topcenter")),
+                           which = "row")
   mat <- t(mat)
 }
 ## color for heatmap
@@ -103,20 +141,21 @@ if(length(colorSet)%%2==0){
 colorN <- length(colorSet)
 if(imgColRev) colorSet <- rev(colorSet)
 matRange <- range(mat)
+# using quantile break to deal with a few extreme values
 if(prod(matRange)<0){
-  if(max(abs(matRange))>30){
+#  if(max(abs(matRange))>30){
     colorBreak <- c(head(quantile(mat[mat<0],seq(0,1,length.out=ceiling(colorN/2))),-1),0,
                     quantile(mat[mat>0],seq(0,1,length.out=ceiling(colorN/2)))[-1])
-  }else{
-    colorBreak <- c(head(seq(matRange[1],0,length.out=ceiling(colorN/2)),-1),0,
-                    seq(0,matRange[2],length.out=ceiling(colorN/2))[-1])
-  }
+#  }else{
+#    colorBreak <- c(head(seq(matRange[1],0,length.out=ceiling(colorN/2)),-1),0,
+#                    seq(0,matRange[2],length.out=ceiling(colorN/2))[-1])
+#  }
 }else{
-  if(max(abs(matRange))>30){
+#  if(max(abs(matRange))>30){
     colorBreak <- quantile(mat[mat!=0],seq(0,1,length.out=colorN))
-  }else{
-    colorBreak <- seq(matRange[1],matRange[2],length.out=colorN)
-  }
+#  }else{
+#    colorBreak <- seq(matRange[1],matRange[2],length.out=colorN)
+#  }
 
 }
 col_fun <- circlize::colorRamp2(colorBreak,colorSet)
@@ -129,29 +168,15 @@ if(sum(strFun%in%c('png','jpeg','tiff'))>0){
 }else{
   SVGformat <- T
 }
-
-if (!swapAxes) {
-  annotation_legend_side <- "right"
-  p <- Heatmap(mat,name=heatkey,right_annotation=rowAnno,
+p <- Heatmap(mat,name=heatkey,right_annotation=rowAnno,top_annotation=colAnno,
 #             col=col_fun,column_title = paste(nrow(mat),"cells"),
-             col=col_fun,
-             column_names_gp = grid::gpar(fontsize=max(2,fontsize=fontsize+annFontsize)),#eval(parse(text = paste0("grid::gpar(", columnFormat , ")"))),
-             row_names_gp = grid::gpar(fontsize=max(2,fontsize=fontsize+annFontsize)),#eval(parse(text = paste0("grid::gpar(", rowFormat, ")"))),
-             cluster_columns=F,cluster_rows=clusterRow,clustering_method_rows="ward.D",
-             heatmap_legend_param=list(title_gp=gpar(fontsize = fontsize),
-                                       labels_gp=gpar(fontsize=fontsize-1)))
-} else {
-#print(dim(mat))
-#print(attributes(colAnno))
-annotation_legend_side <- "top"
-  p <- Heatmap(mat,name=heatkey,top_annotation=colAnno,
-             col=col_fun,
-             column_names_gp = grid::gpar(fontsize=max(2,fontsize=fontsize+annFontsize)),#eval(parse(text = paste0("grid::gpar(", rowFormat , ")"))),
-             row_names_gp = grid::gpar(fontsize=max(2,fontsize=fontsize+annFontsize)),#eval(parse(text = paste0("grid::gpar(", columnFormat, ")"))),
-             cluster_rows=F,cluster_columns=clusterRow,clustering_method_columns="ward.D",
-             heatmap_legend_param=list(title_gp=gpar(fontsize = fontsize+annFontsize+2),
-                                       labels_gp=gpar(fontsize=fontsize+annFontsize+1)))
-}
+           col=col_fun,
+           column_names_gp = anno_gp,#eval(parse(text = paste0("grid::gpar(", columnFormat , ")"))),
+           row_names_gp = anno_gp,#eval(parse(text = paste0("grid::gpar(", rowFormat, ")"))),
+           cluster_columns=clusterC,cluster_rows=clusterR,clustering_method_rows="ward.D",
+           heatmap_legend_param=list(title_gp=gpar(fontsize = fontsize),
+                                     labels_gp=gpar(fontsize=fontsize-1)))
+
 if (SVGformat) {
   if (rasterize) {
     pngFile = paste0(strImg,".png")

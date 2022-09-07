@@ -26,6 +26,7 @@ import re
 import glob
 import subprocess
 import gc #,psutil
+import errno
 
 strExePath = os.path.dirname(os.path.abspath(__file__))
 
@@ -509,6 +510,13 @@ def PGV(data):
                                 var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
   return iostreamFig(fig)
 
+def silentRM(strF):
+  try:
+    os.remove(strF)
+  except OSError as e:
+    if e.errno != errno.ENOENT:
+      raise
+
 def pHeatmap(data):
   # figure width is depends on the number of categories was choose to show
   # and the character length of each category term
@@ -520,6 +528,8 @@ def pHeatmap(data):
   #sT = time.time()
 
   adata = createData(data)
+  if len(data['grpNum'])>0:
+    adata.obs = pd.concat([adata.obs,getObsNum(data)],axis=1)
   data['grp'] += data['addGrp']
   #Xdata = pd.concat([adata.to_df(),adata.obs], axis=1, sort=False).to_csv()
   #ppr.pprint('HEAT data reading cost %f seconds' % (time.time()-sT) )
@@ -627,15 +637,33 @@ def pHeatmap(data):
       colTitle="Z-score"
     D = pd.concat([D,adata.obs],axis=1,sort=False)
     D.to_csv(strF,index=False)
+
+    if len(data['gAnno'])>0:
+      gAnno = pd.DataFrame(data['gAnno'])
+      gAnno.to_csv(strF.replace("HEAT","HEATgene"),index=False)
+    elif data['gAnnoDef']:
+      gAnno = pd.read_csv("%s/proteinatlas_protein_class.csv"%strExePath,index_col=0,header=0)
+      gNames = {i:i.upper() for i in data['genes']}
+      gAnno = gAnno.loc[list(set(gNames.values()) & set(gAnno.index)),:].iloc[:,1:]
+      for one in [i for i in gNames.values() if i not in gAnno.index]:
+        gAnno.loc[one,:] = np.nan
+      gAnno = gAnno.loc[gNames.values(),:]
+      gAnno.index=gNames.keys()
+      gAnno.fillna("N",inplace=True)
+      gAnno.to_csv(strF.replace("HEAT","HEATgene"))
+      #ppr.pprint(gAnno)
     ## plot in R
     cmd = "%s/complexHeatmap.R %s %s %s %s %s %s %s %s %s %s %s %s %s %s '%s'"%(strExePath,strF,','.join(data['genes']),colTitle,','.join(data['order']),str(data['width']),str(data['height']),heatCol,
       str(data['legendRow']),str(data['fontadj']),
       data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['swapAxes']),data['figOpt']['vectorFriendly'],data['Rlib'])
-    #ppr.pprint(cmd)
+
+    #ppp = pprint.PrettyPrinter(depth=6,width=300)
+    #ppp.pprint(cmd)
     #return SyntaxError("in R: ")
     res = subprocess.run(cmd,check=True,shell=True,capture_output=True)#
     img = res.stdout.decode('utf-8')
     os.remove(strF)
+    #silentRM(strF.replace("HEAT","HEATgene"))
     if 'Error' in res.stderr.decode('utf-8'):
       raise SyntaxError("in R: "+res.stderr.decode('utf-8'))
     return img

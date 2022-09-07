@@ -818,10 +818,13 @@
           <label><input class="HEATcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="HEATcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
         </p>
-        <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.HEATgenes').prop('checked', this.checked);">Uncheck / Check All</p>
+        <p>Choose genes ('Add Genes' first): <input id='HEATgenesAll' type="checkbox" checked onclick="$('.HEATgenes').prop('checked', this.checked);">Uncheck / Check All <span id="HEATgeneAnno"><input id="HEATgeneAnnoCK" type="checkbox" checked>Using protein atlas annotation</span></p>
         <p id="HEATgene"></p>
-        <p>Choose annotation(s):</p>
+        <p>Or upload a gene annotation file: <input type='file' id='HEATgeneFile' onchange="HEATgeneFileUpdate()" /></p>
+        <p>Choose categorical annotation(s):</p>
         <p id="HEATgrp"></p>
+        <p>Choose continuous annotation(s):</p>
+        <p id="HEATmeta"></p>
         <p>Select plotting value:
         <select id="HEATnorm">
           <option value="X">Expression</option>
@@ -2173,9 +2176,20 @@ function init(){
     $('#CLIlayout').html(htmlCheck.replace(/eID/g,'CLI'));
     //--------------------------------------------------------------------------
     htmlCheck= "";
+    var iChar = 0, charCut=50;
     for(const one of grps){
       if (one.startsWith(">")) continue;
+      if(iChar!=-1){
+        iChar = iChar+one.length;
+      }
+      if(iChar>charCut){
+        htmlCheck += '<span id="eIDgrpsHideShow" style="display: none;">';
+        iChar=-1;
+      }
       htmlCheck += '<label id="eIDgrpsCK'+one+'"><input class="eIDgrps" type="checkbox" value="'+one+'"/> '+one+' ('+grpL[one].categories.length+')</label>';
+    }
+    if(iChar==-1){
+      htmlCheck += '</span>&nbsp;&nbsp;<a href="#" onclick="hideShow($(\'#eIDgrpsHideShow\'),$(this));return false;"><font size="+2">+</font></a>'
     }
     //HEAT, EMBED, SANK, STACBAR, CLI
     $('#HEATgrp').html(htmlCheck.replace(/eID/g,'HEAT').replace(/value/g,'onchange="HEATorder()" value'));
@@ -2187,11 +2201,22 @@ function init(){
     //Continuous metadata
     htmlCheck= "";
     var names = window.store.getState().annoMatrix.schema.annotations.obsByName;
+    iChar = 0;
     for(const one of Object.keys(names).filter(function(e) { return names[e].type != "categorical" && names[e].type != "string" ;})) {
+      if(iChar!=-1){
+        iChar = iChar+one.length;
+      }
+      if(iChar>charCut){
+        htmlCheck += '<span id="eIDmetaHideShow" style="display: none;">';
+        iChar=-1;
+      }
       htmlCheck += '<label id="eIDmetasCK'+one+'"><input class="eIDmetas" type="checkbox" value="'+one+'"/> '+one+'</label>';
     }
+    if(iChar==-1){
+      htmlCheck += '</span>&nbsp;&nbsp;<a href="#" onclick="hideShow($(\'#eIDmetaHideShow\'),$(this));return false;"><font size="+2">+</font></a>'
+    }
     $('#EMBEDmeta').html(htmlCheck.replace(/eID/g,'EMBED'));
-
+    $('#HEATmeta').html(htmlCheck.replace(/eID/g,'HEAT'));
 
     //SANK
     $("#SANKorderGrp").hide();
@@ -2420,7 +2445,9 @@ function selectByCelltype(celltype) {
     window.store.dispatch({type: "store current cell selection as differential set 2", data:null});
   });
 }
-
+function delay(time) {
+  return new Promise(resolve => setTimeout(resolve, time));
+}
 function addCustomCombine(element) {
   var x = document.getElementById(element);
   //var grps = Object.keys(window.store.getState().categoricalSelection).filter(function(e) { return !(e.startsWith('>') || e.startsWith('|')) });
@@ -3922,6 +3949,47 @@ function PGVplot(acc){
 function violinData(){
 
 }
+function HEATgeneFileUpdate(){
+  //get genes annotation from file
+  const fileSelector = document.getElementById('HEATgeneFile');
+  if(fileSelector.files.length>0){
+    let fr = new FileReader();
+    fr.readAsText(fileSelector.files[0]);
+    fr.onload=function(){
+      var geneAnno = d3.csvParse(fr.result);
+      var totalG = window.store.getState().annoMatrix._cache.var.__columns[0];
+      var totalGlower = totalG.map(function(s){return s.toLowerCase();});
+      //$("#ADDGinput").val(geneAnno.map(function(d){return(d.gene)}).join(','));
+      //ADDGadd();
+      //sync();
+      var iG = geneAnno.map(function(d){
+        var ix = totalGlower.indexOf(d.gene.trim().toLowerCase());
+        if(ix !== -1){
+          d.gene = totalG[ix];
+        }else{
+          d=null;
+        }
+        return d;
+      });
+      window.HEATgene=iG.filter(n=>n);
+    }
+    fr.onerror=function(){
+      alert("Error in read user CSV files!");
+    }
+    $("#HEATgeneAnnoCK").prop('checked', false);
+    $('#HEATgeneAnno').hide();
+    if($("#HEATgenesAll").is(':checked')){
+      $('#HEATgenesAll').trigger('click');
+    }
+    $('#HEATgenesAll').prop('checked',false);
+  }else{
+    $("#HEATgeneAnnoCK").prop('checked', true);
+    $('#HEATgeneAnno').show();
+    if(!$("#HEATgenesAll").is(':checked')){
+      $('#HEATgenesAll').trigger('click');
+    }
+  }
+}
 function HEATcheck(){
   $('#HEATnote').text("");
   var cells=getCells('HEATcell');
@@ -3929,20 +3997,30 @@ function HEATcheck(){
     $('#HEATnote').text(VIPCellSelectionMsg);
     return;
   }
-
-  var genes = getGenes('HEAT');
+  //get genes annotation from file
+  const fileSelector = document.getElementById('HEATgeneFile');
+  var genes=[],gAnno=[],gAnnoDef=$("#HEATgeneAnnoCK").is(':checked');
+  if(fileSelector.files.length>0){
+    genes = window.HEATgene.map(function(d){return(d.gene)});
+    gAnno = window.HEATgene;
+    gAnnoDef = false;
+    $('#HEATnote').text("Genes obtained from gene annotation file!");
+  }else{
+    genes = getGenes('HEAT');
+  }
   if(genes.length<2){
     $('#HEATnote').text("It needs at least two genes");
     return;
   }
 
-  var grps = [];
-  x = document.getElementsByClassName('HEATgrps');
-  for(i=0;i<x.length;i++){
-    if(x[i].checked){
-      grps.push(x[i].value);
-    }
-  }
+  var grps = $(".HEATgrps:checked").map(function(){return this.value;}).get();
+  //x = document.getElementsByClassName('HEATgrps');
+  //for(i=0;i<x.length;i++){
+  //  if(x[i].checked){
+  //    grps.push(x[i].value);
+  //  }
+  //}
+  var numGrp = $(".HEATmetas:checked").map(function(){return this.value;}).get();
 
   var orderGrp=[];
   if($("#HEATplotMethod").val()=="cHeatmap"){
@@ -3988,9 +4066,12 @@ function HEATcheck(){
             'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
             'cells':cells,
             'genes':genes,
+            'gAnno':gAnno,
+            'gAnnoDef':gAnnoDef,
             'order':orderGrp,
             'norm':$("#HEATnorm").val(),
             'grp':grps,
+            'grpNum':numGrp,
             'color':color,
             'plotMethod':$("#HEATplotMethod").val(),
             'width':$("#HEATwidth").val(),
