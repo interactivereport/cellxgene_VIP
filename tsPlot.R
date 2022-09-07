@@ -29,7 +29,6 @@ PlotSmoothers <- function(models,
   
   if (is.null(names(models))) {
     rownames(models) <- rownames(counts) <- seq_len(nrow(models))
-    #print("in the is.null loop for some reason")
     message(paste0(
       "The sce object has no rownames. Assuming that the counts and the sce ",
       "objects are ordered in the same way"))
@@ -364,7 +363,7 @@ predictGAM <- function(lpmatrix, df, pseudotime, conditions = NULL){
 
 # Load Parameters
 
-gene1 = args[2]
+gene1 = args[1]
 
 sce = readRDS("/home/ed/CXG_Testing/nTbrucei_SCE.rds")
 
@@ -374,7 +373,7 @@ tempFig = "/home/ed/CXG_Testing/tempFig.png"
 
 # Plot, Convert, Format and Print
 
-img = PlotSmoothers(sce, counts, gene = gene1)#gene = "Tbrucei---Tb07.11L3.90")
+img = PlotSmoothers(sce, counts, gene = gene1)
 
 ggsave(tempFig, img)
 

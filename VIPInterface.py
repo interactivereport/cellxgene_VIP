@@ -1700,41 +1700,26 @@ def pseudoPlot(data):
 
 
 def tsTable(data):
-  #table_option = data['tableOption']
-
-  ppr.pprint("function start")
- 
+  
   gInfo = getVar(data)
  
   c1 = gInfo["features"]
 
+  tableO = data["tableOption"]
+
   cond = data["cond"]
  
-  if data['tableOption'] == "General":
+  if tableO == "General":
     c2 = gInfo["waldStat_G"]
     c3 = gInfo['df_G']
     c4 = gInfo['p-value_G']
+  else:
+    tail = "_" + tableO + "/" + cond
+    c2 = "waldStat" + tail
+    c3 = "df" + tail
+    c4 = "p-value" + tail
  
-  if data['tableOption'] == "Lineage1" and cond == "WT":
-    c2 = gInfo['waldStat_L1/WT']
-    c3 = gInfo['df_L1/WT']
-    c4 = gInfo['p-value_L1/WT']
-
-  if data['tableOption'] == "Lineage1" and cond == "ZC3H20_KO":
-    c2 = gInfo['waldStat_L1/ZC3H20_KO']
-    c3 = gInfo['df_L1/ZC3H20_KO']
-    c4 = gInfo['p-value_L1/ZC3H20_KO']
-
-  if data['tableOption'] == "Lineage2" and cond == "WT":
-    c2 = gInfo['waldStat_L2/WT']
-    c3 = gInfo['df_L2/WT']
-    c4 = gInfo['p-value_L2/WT']
-
-  if data['tableOption'] == "Lineage2" and cond == "ZC3H20_KO":
-    c2 = gInfo['waldStat_L2/ZC3H20_KO']
-    c3 = gInfo['df_L2/ZC3H20_KO']
-    c4 = gInfo['p-value_L2/ZC3H20_KO']
-
+ 
   c5 = gInfo["meanLogFC"]
  
   data = {
@@ -1749,8 +1734,6 @@ def tsTable(data):
  
   res = deg.to_csv(index=False)
 
-  ppr.pprint("function end")
-
   return json.dumps(res)
 
 
@@ -1758,7 +1741,7 @@ def tsPlot(data):
 
   gene = data["gene"]
 
-  res = subprocess.run(['/home/ed/cellxgene_VIP/tsPlot.R',"test",gene],capture_output=True) 
+  res = subprocess.run(['/home/ed/cellxgene_VIP/tsPlot.R',gene],capture_output=True) 
 
   img = res.stdout.decode('utf-8')
 

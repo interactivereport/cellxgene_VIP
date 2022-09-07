@@ -547,7 +547,7 @@
       <button class="tablinks" onclick="selFun(event, 'SANK')">Sankey Diagram</button>
       <button class="tablinks" onclick="selFun(event, 'STACBAR')">Stacked Barplot</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
-      <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells();detectOrganism()">Cell Population View</button>
+      <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells()">Cell Population View</button>
       <button class="tablinks" onclick="selFun(event, 'Pseudo');getAllCells();CellPopList('TS')">Pseudotime Inference</button>
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1');detectOrganism()">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
@@ -3112,9 +3112,10 @@ function CellPopList(opt){
 
     $("#ts_C").empty();
     
-    var annCat = "Group";
+    var annCat = tsAnnot;
     
     grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
+    console.log(grps[annCat])
 
     var levels = document.getElementById("ts_C");
 
@@ -5573,14 +5574,8 @@ function CellPopTable(){
       resTable = resTable.join('\n');
       resTable = resTable.replace(/\\/g, '');
       resTable = resTable.replace(/"/g,"");
-
-      console.log("resTable");
-      console.log(resTable);
       
       var gInfo = resTable.split("\n")[0].split(',').slice(4);
-
-      console.log("gInfo");
-      console.log(gInfo);
       
       var tableD = d3.csvParse(resTable,function(data){
         return [].concat([data.gene,
@@ -5588,11 +5583,7 @@ function CellPopTable(){
                   (+data.pval).toExponential(2),
                   (+data.qval).toExponential(2)],
                   Object.values(data).slice(4));
-        });
-
-        console.log("tableD");
-        console.log(tableD);
-      
+        });      
       
       var tableTitle = [];
       [].concat(['Gene',"Log Fold Change","p-value","padj"],gInfo).forEach(function(d){tableTitle = tableTitle.concat({title:d})});
@@ -5749,7 +5740,7 @@ function tsTable(){
       destroy: true,
       dom:'Blfrtip',
       lengthMenu:[[10,50,100,200],[10,50,100,200]],
-      order:[3,"asc"],
+      order:[[1, 'desc']],
       buttons:['csv', {
           text:'TradeSeqPlot',
           action: function(e, dt, node, config) {
@@ -5782,8 +5773,6 @@ function tsTable(){
   }
 })
 }
-
-
 
 function tablePrep(pandas_csv){
 
@@ -5881,10 +5870,6 @@ function tsPlot(tsgene){
         return;
       }
     
-
-  
-    console.log("tradeSeq function returned!")
-
     document.getElementById("pseudoSpin").style.visibility="hidden";
 
     showImg('tradeSeqFig',res);
@@ -5892,20 +5877,21 @@ function tsPlot(tsgene){
   },
   error: function() {
     document.getElementById("pseudoSpin").style.visibility="hidden";
-    console.log('error!');
   }
 })
-
-
 }
 
 var database_URL;
 var databaseSearch_URL;
 
-function detectOrganism(){
+var tsAnnot;
 
-var D = {'method':'ymlPARSE',
-  'addr':'/'+window.store.getState().config.displayNames.dataset+'.yml'};
+function yamlPARSE(){
+
+var D = 
+{'method':'ymlPARSE',
+'addr':'/home/ed/data_cxg/YAML/'+window.store.getState().config.displayNames.dataset+'.yml'//'/'+window.store.getState().config.displayNames.dataset+'.yml'};
+}
 
 $.ajax({
   type:"POST",
@@ -5914,9 +5900,11 @@ $.ajax({
   contentType: 'application/json;charset=UTF-8',//
   success: function(res){
 
-    database_URL = res['url'];
+  database_URL = res['url'];
 
-    databaseSearch_URL = res['url2'];
+  databaseSearch_URL = res['url2'];
+
+  tsAnnot = res['tsAnnot']
 
   },
   error: function() {
@@ -5924,6 +5912,10 @@ $.ajax({
   }
 })
 }
+
+setTimeout(function(){
+  yamlPARSE();
+}, 3000);
 
 var data
 
