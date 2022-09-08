@@ -4,7 +4,7 @@ args = commandArgs(trailingOnly = TRUE)
 suppressMessages(suppressWarnings(require(ggplot2)))
 suppressMessages(suppressWarnings(require(readr)))
 suppressMessages(suppressWarnings(require(SummarizedExperiment)))
-suppressMessages(suppressWarnings(if (!require("SingleCellExperiment")) install.packages("SingleCellExperiment")))
+suppressMessages(suppressWarnings(if (!require("SingleCellExperiment")) BiocManager::install("SingleCellExperiment")))
 suppressMessages(suppressWarnings(require(SingleCellExperiment)))
 
 #Big Block of Functions
