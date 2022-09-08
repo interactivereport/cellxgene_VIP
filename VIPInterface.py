@@ -1751,6 +1751,6 @@ def tsPlot(data):
 
   img = res.stdout.decode('utf-8')
 
-  err = res.stderr
+  #err = res.stderr
 
-  return err
+  return img
