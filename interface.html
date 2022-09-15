@@ -683,6 +683,7 @@
       <p id = "pts_C" style="visibility: hidden;">Condition:
         <select id="ts_C"></select></p>
       <button class="tradeSeqTable" onclick="tsTable()"><b>TradeSeq Table</b></button>
+      <button class="Rpy2" onclick="rpyTest()"><b>Rpy2 Test</b></button>
       <p></p>
       <div id="pseudoSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <p id="pseudoFig"></p>
@@ -2196,7 +2197,7 @@ function init(){
     var lineageCount = 0;
  
    for(const one of pseudoannots){
-     if(one.startsWith("pseudo")){
+     if(one.startsWith("pseudotime_")){
        pseudoAnnot.add(createOpt(one));
        lineageCount += 1;
      }
@@ -5757,7 +5758,8 @@ function tsTable(){
           text:'TradeSeqPlot',
           action: function(e, dt, node, config) {
 
-            tsPlot(tsPlotGene)
+            //tsPlot(tsPlotGene)
+            rpyTest(tsPlotGene)
 
             return;
           }
@@ -5892,6 +5894,44 @@ function tsPlot(tsgene){
     document.getElementById("pseudoSpin").style.visibility="hidden";
   }
 })
+}
+
+function rpyTest(tsgene){
+
+  var cells = AllCells;
+
+  var gene = tsgene;
+
+  var D = {
+  'method':'rpy2',
+  'dataset': window.store.getState().config.displayNames.dataset,
+  'cells':cells,
+  'genes':[],
+  'gene':tsgene,
+  'grp':[]
+  };
+
+  document.getElementById("pseudoSpin").style.visibility="visible";
+
+  $.ajax({
+  type:"POST",
+  url: VIPurl,
+  data:JSON.stringify(D),
+  contentType: 'application/json;charset=UTF-8',//
+  success: function(res){
+
+    document.getElementById("pseudoSpin").style.visibility="hidden";
+
+    console.log("Ajax block complete!")
+
+    showImg('tradeSeqFig',res)
+    
+  },
+  error: function() {
+    document.getElementById("pseudoSpin").style.visibility="hidden";
+  }
+})
+
 }
 
 var database_URL;

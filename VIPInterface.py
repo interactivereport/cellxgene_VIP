@@ -30,6 +30,10 @@ import re
 import glob
 import subprocess
 import scipy.sparse
+import rpy2
+import rpy2.robjects as ro
+from rpy2.robjects.conversion import localconverter
+import anndata2ri
 
 strExePath = os.path.dirname(os.path.abspath(__file__))
 
@@ -302,7 +306,8 @@ def distributeTask(aTask):
     'ymlPARSE':parseYAML,
     'pseudo':pseudoPlot,
     'tradeSeq':tsTable,
-    'tsPlot':tsPlot
+    'tsPlot':tsPlot,
+    'rpy2':Rpy2
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1746,11 +1751,51 @@ def tsPlot(data):
 
   gene = data["gene"]
 
-  res = subprocess.run(['/home/cellxgene/cellxgene_VIP/tsPlot.R',gene],capture_output=True) 
+  res = subprocess.run(['/home/ed/cellxgene_VIP/tsPlot.R',gene],capture_output=True) 
   #/home/ed/cellxgene_VIP/tsPlot.R
 
   img = res.stdout.decode('utf-8')
 
-  #err = res.stderr
+  err = res.stderr
+  ppr.pprint(err)
 
   return img
+
+def Rpy2(data):
+  
+  #Read in Data
+
+  adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei.h5ad")
+
+  #Convert sparse matrix to dense in order to avoid conversion e
+
+  adata.X = adata.X.todense()
+
+  # Source function file
+  r = ro.r
+  r['source']('/home/ed/cellxgene_VIP/tsPlot2.R')
+
+  #Convert anndata to SCE within embedded R global environment
+  with localconverter(anndata2ri.converter):
+      ro.globalenv['some_data'] = adata
+      
+  res = ro.r('''
+    x = PlotSmoothers(some_data,gene = "Tb927.7.970")
+    tempFig = "/home/ed/CXG_Testing/tempFig.png"
+    ggsave(tempFig, x)
+
+    fig = base64enc::dataURI(file = tempFig, mime = "image/png")
+    fig = gsub("data:image/png;base64,","",fig)
+
+    a <- file.remove(tempFig)
+
+    fig
+    ''')
+
+  ppr.pprint(res[0])
+
+  img = res[0]
+
+  return img
+
+
