@@ -27,6 +27,7 @@ import glob
 import subprocess
 import gc #,psutil
 import errno
+from pathlib import Path
 
 strExePath = os.path.dirname(os.path.abspath(__file__))
 
@@ -57,6 +58,7 @@ def route(data,appConfig):
   #ppr.pprint(data)
   try:
     getLock(jobLock)
+    setTimeStamp(data)
     taskRes = distributeTask(data["method"])(data)
     freeLock(jobLock)
     gc.collect()
@@ -1354,6 +1356,10 @@ def getDesp(data):
     for line in fp:
       txt = "%s<br>%s"%(txt,line)
   return txt
+
+def setTimeStamp(data):
+  strF = re.sub("h5ad$","timestamp",data["h5ad"])
+  Path(strF).touch()
 
 def getPreDEGname(data):
   strF = re.sub("h5ad$","db",data["h5ad"])
