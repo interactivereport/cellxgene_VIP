@@ -1001,13 +1001,13 @@ def MARK(data):
   keepG = [key for key,val in vCount.items() if val>2]
   adata = adata[adata.obs[data["grp"][0]].isin(keepG),:]
 
-  if len(adata.obs[data['grp'][0]].unique())<2:
-    return 'ERROR @server: {}'.format('Less than 2 groups in selected cells! Please use DEG for 2 groups')
+  if (len(adata.obs[data['grp'][0]].unique())<2) and (data['markMethod']=="logreg"):
+    return 'ERROR @server: {}'.format('Less than 2 groups in selected cells! Please select a different method or use the DEG interface for 2 groups')
     #return json.dumps([[['name','scores'],['None','0']],Msg('Less than 3 groups in selected cells!Please use DEG for 2 groups')])
 
   sc.tl.rank_genes_groups(adata,groupby=data["grp"][0],n_genes=int(data['geneN']),method=data['markMethod'],pts=True)#
   ppr.pprint(int(data['geneN']))
-  sc.pl.rank_genes_groups(adata,n_genes=int(data['geneN']),ncols=min([2,len(adata.obs[data['grp'][0]].unique())]),show=False)
+  sc.pl.rank_genes_groups(adata,n_genes=int(data['geneN']),ncols=min([3,len(adata.obs[data['grp'][0]].unique())]),show=False)
   fig =plt.gcf()
 
   gScore = adata.uns['rank_genes_groups']
