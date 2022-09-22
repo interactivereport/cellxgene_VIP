@@ -366,11 +366,12 @@ predictGAM <- function(lpmatrix, df, pseudotime, conditions = NULL){
 
 gene1 = args[1]
 
-sce = readRDS("/share/cellxgene/main/SCE/nTbrucei_SCE.rds")
+#sce = readRDS("/share/cellxgene/main/SCE/nTbrucei_SCE.rds")
+sce = readRDS("/home/ed/CXG_Testing/nTbrucei_SCE.rds")
 
 counts = counts(sce)
 
-tempFig = "/share/cellxgene/main/SCE/tempFig.png"
+tempFig = "/home/ed/CXG_Testing/tempFig.png"
 
 # Plot, Convert, Format and Print
 

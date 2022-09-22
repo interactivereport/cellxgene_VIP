@@ -1647,11 +1647,11 @@ def parseYAML(data):
 
   ymlAddress = data['addr']
 
-  cwd = "/share/cellxgene/main/YAML"
+  #cwd = "/share/cellxgene/main/YAML"
 
-  finalAddr = cwd + ymlAddress
+  #finalAddr = cwd + ymlAddress
 
-  #finalAddr = ymlAddress
+  finalAddr = ymlAddress
 
   with open(finalAddr) as f:
     data = yaml.load(f, Loader=SafeLoader)
@@ -1771,6 +1771,10 @@ def Rpy2(data):
 
   adata.X = adata.X.todense()
 
+  gene = data["gene"]
+
+  ro.globalenv['gene1'] = gene
+
   # Source function file
   r = ro.r
   r['source']('/home/ed/cellxgene_VIP/tsPlot2.R')
@@ -1780,7 +1784,7 @@ def Rpy2(data):
       ro.globalenv['some_data'] = adata
       
   res = ro.r('''
-    x = PlotSmoothers(some_data,gene = "Tb927.7.970")
+    x = PlotSmoothers(some_data,gene = gene1)
     tempFig = "/home/ed/CXG_Testing/tempFig.png"
     ggsave(tempFig, x)
 
