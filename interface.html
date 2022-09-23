@@ -5681,12 +5681,15 @@ function pseudoPlot(){
   var D = {
   'method':'pseudo',
   'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
-  'addr':'/home/ed/data_cxg/YAML/'+window.store.getState().config.displayNames.dataset+'.yml',//'/'+window.store.getState().config.displayNames.dataset+'.yml',
+  'addr':'/'+window.store.getState().config.displayNames.dataset+'.yml',//'/
   'cells':cells,
   'genes':[],
   'grp':grp,
   'annot':annot
   };
+
+  // '/home/ed/data_cxg/YAML/'+window.store.getState().config.displayNames.dataset+'.yml'
+  // '/'+window.store.getState().config.displayNames.dataset+'.yml',
 
   $.ajax({
   type:"POST",
@@ -5746,7 +5749,7 @@ function tsTable(){
   success: function(res){
     if(res.startsWith('ERROR')){
       $("#pseudoNote").text(res);
-      document.getElementById("TradeSeqSpin").style.visibility="hidden";
+      document.getElementById("tradeSeqSpin").style.visibility="hidden";
       return;
     }
     
@@ -5865,7 +5868,7 @@ function tsPlot(tsgene){
   var gene = tsgene;
 
   if(gene == null) {
-    $("#pseudoNote").text("Please select a gene from the Table.");
+    $("#tradeSeqNote").text("Please select a gene from the Table.");
     return
   }
 
@@ -5901,7 +5904,7 @@ function tsPlot(tsgene){
 
   },
   error: function() {
-    document.getElementById("pseudoSpin").style.visibility="hidden";
+    document.getElementById("tradeSeqSpin").style.visibility="hidden";
   }
 })
 }
