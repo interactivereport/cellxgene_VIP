@@ -1647,11 +1647,13 @@ def parseYAML(data):
 
   ymlAddress = data['addr']
 
-  cwd = "/share/cellxgene/main/YAML"
+  #cwd = "/share/cellxgene/main/YAML"
 
-  finalAddr = cwd + ymlAddress
+  #finalAddr = cwd + ymlAddress
 
-  #finalAddr = ymlAddress
+  finalAddr = ymlAddress
+
+  #ppr.pprint(finalAddr)
 
   with open(finalAddr) as f:
     data = yaml.load(f, Loader=SafeLoader)
@@ -1751,8 +1753,9 @@ def tsPlot(data):
 
   gene = data["gene"]
 
-  res = subprocess.run(['/home/cellxgene/cellxgene_VIP/tsPlot.R',gene],capture_output=True) 
+  res = subprocess.run(['/home/ed/cellxgene_VIP/tsPlot.R',gene],capture_output=True) 
   #/home/ed/cellxgene_VIP/tsPlot.R
+  #/home/cellxgene/cellxgene_VIP/tsPlot.R
 
   img = res.stdout.decode('utf-8')
 
@@ -1765,8 +1768,9 @@ def Rpy2(data):
   
   #Read in Data
 
-  adata = sc.read_h5ad("/share/cellxgene/main/nTbrucei.h5ad")
+  adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei.h5ad")
   #/home/ed/data_cxg/nTbrucei.h5ad
+  #/share/cellxgene/main/nTbrucei.h5ad
 
   #Convert sparse matrix to dense in order to avoid conversion e
 
@@ -1778,8 +1782,9 @@ def Rpy2(data):
 
   # Source function file
   r = ro.r
-  r['source']('/home/cellxgene/cellxgene_VIP/tsPlot2.R')
+  r['source']('/home/ed/cellxgene_VIP/tsPlot2.R')
   #/home/ed/cellxgene_VIP/tsPlot2.R
+  #/home/cellxgene/cellxgene_VIP/tsPlot2.R
 
   #Convert anndata to SCE within embedded R global environment
   with localconverter(anndata2ri.converter):
@@ -1787,7 +1792,7 @@ def Rpy2(data):
       
   res = ro.r('''
     x = PlotSmoothers(some_data,gene = gene1)
-    tempFig = "/share/cellxgene/main/SCE/tempFig.png"
+    tempFig = "/home/ed/CXG_Testing/tempFig.png"
     ggsave(tempFig, x)
 
     fig = base64enc::dataURI(file = tempFig, mime = "image/png")
