@@ -1699,6 +1699,6 @@ def getDesp_2(data):
 
   aut = yml["Author(s)"]
 
-  txt = "<br>"+desc+"<br>"+paper+"<br>"+"Authors: "+aut
+  txt = "<br>"+desc+"<br>"+paper+"<br>"+"Authors: "+aut+"<br>"+'<a href="http://cellatlas.mvls.gla.ac.uk/data/table.html">Available Data Sets</a>'
   
   return txt
