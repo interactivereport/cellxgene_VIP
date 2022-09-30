@@ -1925,14 +1925,20 @@ function addDescription(){
   $.ajax({
         type: "POST",
         url: VIPurl,
-        data:JSON.stringify({'method':"Description",'dataset': window.store.getState().config.displayNames.dataset+'.h5ad'}),
+        data:JSON.stringify({'method':"Description",
+        'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+        'addr':'/home/ed/data_cxg/YAML/'+window.store.getState().config.displayNames.dataset+'.yml'}),
         contentType: 'application/json;charset=UTF-8',
         success: function(res){
           if(res.length==0){
             console.log('No description available!');
             return;
           }
+          
           var appendDIV = $("[data-testclass='category']").parent();
+          //var appendDIV = $("[class='bp3-dialog-body]'").parent()
+          console.log(appendDIV)
+          
           appendDIV.append("<div id='dataDescription' style='overflow-wrap: break-word;word-wrap: break-word;'>"+res+"</div>");
           for(const one of res.split("<br>")){
             if(one.startsWith("Scaling Default")){

@@ -290,7 +290,7 @@ def distributeTask(aTask):
     'mergeMeta': mergeMeta,
     'isMeta': isMeta,
     'testVIPready':testVIPready,
-    'Description':getDesp,
+    'Description':getDesp_2,
     'GSEAgs':getGSEA,
 	'SPATIAL':SPATIAL,
     'saveTest':saveTest,
@@ -1298,6 +1298,7 @@ def getDesp(data):
   with open(strF,'r') as fp:
     for line in fp:
       txt = "%s<br>%s"%(txt,line)
+  ppr.pprint(txt)
   return txt
 
 def getPreDEGname(data):
@@ -1632,9 +1633,11 @@ def parseYAML(data):
 
   ymlAddress = data['addr']
 
-  cwd = "/share/cellxgene/demo/YAML"
+  #cwd = "/share/cellxgene/demo/YAML"
 
-  finalAddr = cwd + ymlAddress
+  #finalAddr = cwd + ymlAddress
+
+  finalAddr = ymlAddress
 
   with open(finalAddr) as f:
     data = yaml.load(f, Loader=SafeLoader)
@@ -1685,3 +1688,17 @@ def pseudoPlot(data):
   pseudoPlot = plt.gcf()
 
   return iostreamFig(pseudoPlot)
+
+def getDesp_2(data):
+
+  yml = parseYAML(data)
+
+  desc = yml["Description"]
+
+  paper = yml["Original_Paper"]
+
+  aut = yml["Author(s)"]
+
+  txt = "<br>"+desc+"<br>"+paper+"<br>"+"Authors: "+aut
+  
+  return txt
