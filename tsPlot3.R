@@ -1,15 +1,19 @@
 #!/usr/bin/env Rscript
-#args = commandArgs(trailingOnly = TRUE)
+args = commandArgs(trailingOnly = TRUE)
 
 suppressMessages(suppressWarnings(require(ggplot2)))
 suppressMessages(suppressWarnings(require(readr)))
 suppressMessages(suppressWarnings(require(SummarizedExperiment)))
+#suppressMessages(suppressWarnings(if (!require("SingleCellExperiment")) BiocManager::install("SingleCellExperiment")))
+#BiocManager::install("SingleCellExperiment")
 suppressMessages(suppressWarnings(require(SingleCellExperiment)))
-
+suppressMessages(suppressWarnings(require(Seurat)))
+suppressMessages(suppressWarnings(require(tidyr)))
 
 #Big Block of Functions
 
-PlotSmoothers <- function(models,  
+PlotSmoothers <- function(models, 
+                                      counts, 
                                       gene, 
                                       nPoints = 100, 
                                       lwd = 2,
@@ -21,15 +25,13 @@ PlotSmoothers <- function(models,
                                       alpha = 2/3,
                                       pointCol = NULL,
                                       curvesCols = NULL,
-                                      plotLineages = TRUE)
+                                      plotLineages = FALSE)
 {
 
-  counts(models) <- assay(models, "X")
-  counts = counts(models)
+  counts = as.matrix(counts)
   
   if (is.null(names(models))) {
     rownames(models) <- rownames(counts) <- seq_len(nrow(models))
-    #print("in the is.null loop for some reason")
     message(paste0(
       "The sce object has no rownames. Assuming that the counts and the sce ",
       "objects are ordered in the same way"))
@@ -47,58 +49,21 @@ PlotSmoothers <- function(models,
     id = gene
   } else id <- gene
   
-  #Create dm, X slingshotColData
 
-  df = colData(models)
-
-  dm = df[ , grepl( "dm." , names( df ) ) ]
-  dm= as.data.frame(dm)
-  colnames(dm) = gsub(pattern = "dm.", replacement = "", x = colnames(dm))
-
-  X = df[ , grepl( "X." , names( df ) ) ]
-  X = as.data.frame(X)
-
-  Xcols = c("U","s(t1):l1_1.1", "s(t1):l1_1.2", "s(t1):l1_1.3", "s(t1):l1_1.4", "s(t1):l1_1.5", "s(t1):l1_1.6",
-  "s(t1):l1_1.7", "s(t1):l1_1.8", "s(t1):l1_1.9", "s(t1):l1_2.1", "s(t1):l1_2.2", "s(t1):l1_2.3", "s(t1):l1_2.4",
-  "s(t1):l1_2.5", "s(t1):l1_2.6", "s(t1):l1_2.7", "s(t1):l1_2.8" ,"s(t1):l1_2.9", "s(t2):l2_1.1", "s(t2):l2_1.2",
-  "s(t2):l2_1.3", "s(t2):l2_1.4", "s(t2):l2_1.5", "s(t2):l2_1.6", "s(t2):l2_1.7", "s(t2):l2_1.8", "s(t2):l2_1.9",
-  "s(t2):l2_2.1", "s(t2):l2_2.2", "s(t2):l2_2.3", "s(t2):l2_2.4", "s(t2):l2_2.5", "s(t2):l2_2.6", "s(t2):l2_2.7",
-  "s(t2):l2_2.8","s(t2):l2_2.9")
-
-  colnames(X) = Xcols
-              
-  toMatch <- c("pseudotime.", "cellWeights.")
-  
-  slingshotColData = df[ , grepl((paste(toMatch,collapse="|")), names( df )) ]
-  
-  slingshotColData$pseudotime_1 = NULL
-  slingshotColData$pseudotime_2 = NULL
-  
-  conditions = df$conditions
-
-   #Construct Beta
-  
-  df2 = rowData(models)
-  
-  all_beta = df2[ , grepl( "beta." , names( df2 ) ) ]
-  beta = all_beta[id,]
-  beta = as.data.frame(beta)
-
-  #dm <- colData(models)$tradeSeq$dm # design matrix
-  #y <- unname(counts[names(models),][id,]) 
-  y <- unname(counts[id,])
+  dm <- colData(models)$tradeSeq$dm # design matrix
+  y <- unname(counts[names(models),][id,]) 
   
 
-  #X <- colData(models)$tradeSeq$X # linear predictor
-  #slingshotColData <- colData(models)$slingshot
+  X <- colData(models)$tradeSeq$X # linear predictor
+  slingshotColData <- colData(models)$slingshot
   pseudotime <- slingshotColData[,grep(x = colnames(slingshotColData),
                                        pattern = "pseudotime")]
   nLineages <- length(grep(x = colnames(dm), pattern = "t[1-9]"))
-  #beta <- rowData(models)$tradeSeq[id, ]$beta[[1]]
+  beta <- rowData(models)$tradeSeq[id, ]$beta[[1]]
   if(any(is.na(beta))){
     stop("Some coefficients for this gene are NA. Cannot plot this gene.")
   }
-  #conditions <- colData(models)$tradeSeq$conditions
+  conditions <- colData(models)$tradeSeq$conditions
   nConditions <- nlevels(conditions)
   
   # Construct time variable based on cell assignments.
@@ -130,6 +95,15 @@ PlotSmoothers <- function(models,
   } else {
     col <- lcol
   }
+
+  message("Y Check")
+  message(y[1])
+  message(head(y))
+  message(tail(y))
+
+  message("time check")
+  message(head(timeAll))
+  message(tail(timeAll))
   
   # plot raw data
   df <- data.frame("time" = timeAll,
@@ -206,6 +180,7 @@ PlotSmoothers <- function(models,
   return(p)
 }
 
+#Necessary UTIL functions 
 
 ## get predictor matrix for a range of pseudotimes of a smoother.
 .getPredictRangeDf <- function(dm, lineageId, conditionId = NULL, nPoints = 100){
@@ -394,3 +369,157 @@ predictGAM <- function(lpmatrix, df, pseudotime, conditions = NULL){
   colnames(Xout) <- colnames(lpmatrix)
   return(Xout)
 }
+
+#Getting Smoother lines for each condition
+predictSmoother <- function(models,gene,nPoints = 100,tidy = TRUE){
+
+# check if all gene IDs provided are present in the models object.
+if (is(gene, "character")) {
+  if (!all(gene %in% rownames(models))) {
+    stop("Not all gene IDs are present in the models object.")
+    }
+  id <- match(gene, rownames(models))
+    } else id <- gene
+
+# get tradeSeq info
+dm <- colData(models)$tradeSeq$dm # design matrix
+X <- colData(models)$tradeSeq$X # linear predictor
+slingshotColData <- colData(models)$slingshot
+pseudotime <- slingshotColData[,grep(x = colnames(slingshotColData),
+                                                 pattern = "pseudotime")]
+                                      
+if (is.null(dim(pseudotime))) pseudotime <- matrix(pseudotime, ncol = 1)
+  betaMat <- rowData(models)$tradeSeq$beta[[1]]
+  beta <- as.matrix(betaMat[id,])
+  rownames(beta) <- gene
+  condPresent <- suppressWarnings({
+  !is.null(SummarizedExperiment::colData(models)$tradeSeq$conditions)
+  })
+
+if(!condPresent){
+  yhatMat <- .predictSmooth(dm = dm,
+    X = X,
+    beta = beta,
+    pseudotime = pseudotime,
+    gene = gene,
+    nPoints = nPoints,
+    tidy = tidy)
+} else if(condPresent){
+  conditions <- SummarizedExperiment::colData(models)$tradeSeq$conditions
+  yhatMat <- .predictSmooth_conditions(dm = dm,
+                                      X = X,
+                                      beta = beta,
+                                      pseudotime = pseudotime,
+                                      gene = gene,
+                                      nPoints = nPoints,
+                                      conditions = conditions,
+                                      tidy = tidy)
+}
+return(yhatMat)
+  
+} # end of function
+
+
+.predictSmooth_conditions <- function(dm, X, beta, pseudotime, gene, nPoints, conditions, tidy){
+  
+  nCurves <- length(grep(x = colnames(dm), pattern = "t[1-9]"))
+  nConditions <- nlevels(conditions)
+
+  # get predictor matrix
+  if (tidy) out <- list()
+  for (jj in seq_len(nCurves)) {
+    if (tidy) out_cond <- list()
+    for(kk in seq_len(nConditions)){
+      df <- .getPredictRangeDf(dm, lineageId = jj, conditionId = kk,
+                               nPoints = nPoints)
+      Xdf <- predictGAM(lpmatrix = X,
+                        df = df,
+                        pseudotime = pseudotime,
+                        conditions = conditions)
+      if(kk == 1) XallCond <- Xdf
+      if(kk > 1) XallCond <- rbind(XallCond, Xdf)
+      if (tidy) {
+        out_cond[[kk]] <- data.frame(lineage = jj, time = df[, paste0("t",jj)],
+                                     condition = levels(conditions)[kk])
+      }
+    }
+    if (jj == 1) Xall <- XallCond
+    if (jj > 1) Xall <- rbind(Xall, XallCond)
+    if (tidy) out[[jj]] <- do.call(rbind, out_cond)
+  }
+  if (tidy) outAll <- do.call(rbind, out)
+
+  # loop over all genes
+  yhatMat <- matrix(NA, nrow = length(gene), ncol = nCurves * nConditions * nPoints)
+  rownames(yhatMat) <- gene
+  pointNames <- expand.grid(1:nCurves, 1:nConditions)
+  baseNames <- paste0("lineage", pointNames[,1], "_condition",
+                      levels(conditions)[pointNames[,2]])
+  colnames(yhatMat) <- c(sapply(baseNames, paste0, "_point",1:nPoints))
+  for (jj in 1:length(gene)) {
+    yhat <- c(exp(t(Xall %*% t(beta[as.character(gene[jj]), ,
+                                    drop = FALSE])) +
+                    df$offset[1]))
+    yhatMat[jj, ] <- yhat
+  }
+  ## return output
+  if (!tidy) {
+    return(yhatMat)
+  } else {
+    outList <- list()
+    for (gg in seq_len(length(gene))){
+      curOut <- outAll
+      curOut$gene <- gene[gg]
+      curOut$yhat <- yhatMat[gg,]
+      outList[[gg]] <- curOut
+    }
+    return(do.call(rbind, outList))
+  }
+}
+
+
+
+
+#-----------------
+
+# Load Parameters
+
+gene1 = args[1]
+gene1 = paste("Tbrucei---", gene1, sep="")
+
+#sce = readRDS("/share/cellxgene/main/SCE/nTbrucei_SCE.rds")
+#sce = readRDS("/home/ed/CXG_Testing/nTbrucei_SCE.rds")
+sce = readRDS("/home/ed/CXG_Testing/nTbrucei_SCE_2.rds")
+#sce = readRDS("/home/ed/CXG_Testing/nTbrucei_SCE_3.rds")
+
+counts = counts(sce)
+
+tempFig = "/home/ed/CXG_Testing/tempFig.png"
+#tempFig = "/share/cellxgene/main/SCE/tempFig.png"
+
+# Plot, Convert, Format and Print
+
+smooth = predictSmoother(sce,gene1)
+smooth_WT = subset(smooth,condition == "WT")
+smooth_WT = subset(smooth_WT, lineage = "1")
+smooth_WT = pivot_wider(smooth_WT, names_from = gene, values_from = yhat)
+
+smooth_ZC3H20 <- subset(smooth, condition == "ZC3H20_KO")
+smooth_ZC3H20 <- subset(smooth_ZC3H20, lineage == "2")
+smooth_ZC3H20 <- pivot_wider(smooth_ZC3H20, names_from = gene, values_from = yhat)
+
+
+#img = PlotSmoothers(sce, counts, gene = gene1)
+#img = PlotSmoothers(sce, counts, gene = gene1, lwd = 0.3, size = 1/10, plotLineages = FALSE, pointCol = "Group") + NoLegend() + geom_line(data = smooth_WT, aes(x = smooth_WT$time, y = smooth_WT[[gene1]]), color="#f8766d") + geom_line(data = smooth_ZC3H20, aes(x = smooth_ZC3H20$time, y = smooth_ZC3H20[[gene1]]), color="#00bfc4") 
+img = PlotSmoothers(sce, counts, gene = gene1, lwd = 0.3, size = 1/10, plotLineages = FALSE, pointCol = "Group") + NoLegend() + geom_line(data = smooth_WT, aes(x = time, y = .data[[gene1]]), color="#f8766d") + geom_line(data = smooth_ZC3H20, aes(x = time, y = .data[[gene1]]), color="#00bfc4") 
+
+
+ggsave(tempFig, img)
+
+fig = base64enc::dataURI(file = tempFig, mime = "image/png")
+cat(gsub("data:image/png;base64,","",fig))
+
+#a <- file.remove(tempFig)
+  
+
+

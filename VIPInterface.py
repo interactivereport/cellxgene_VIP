@@ -1753,14 +1753,14 @@ def tsPlot(data):
 
   gene = data["gene"]
 
-  res = subprocess.run(['/home/ed/cellxgene_VIP/tsPlot.R',gene],capture_output=True) 
+  res = subprocess.run(['/home/ed/cellxgene_VIP/tsPlot3.R',gene],capture_output=True) 
   #/home/ed/cellxgene_VIP/tsPlot.R
   #/home/cellxgene/cellxgene_VIP/tsPlot.R
 
   img = res.stdout.decode('utf-8')
 
-  #err = res.stderr
-  #ppr.pprint(err)
+  err = res.stderr
+  ppr.pprint(err)
 
   return img
 
@@ -1768,7 +1768,7 @@ def Rpy2(data):
   
   #Read in Data
 
-  adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei.h5ad")
+  adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei3.h5ad")
   #/home/ed/data_cxg/nTbrucei.h5ad
   #/share/cellxgene/main/nTbrucei.h5ad
 
@@ -1782,7 +1782,8 @@ def Rpy2(data):
 
   # Source function file
   r = ro.r
-  r['source']('/home/ed/cellxgene_VIP/tsPlot2.R')
+  r['source']('/home/ed/cellxgene_VIP/tsPlot4.R')
+  #r['source']('/home/ed/cellxgene_VIP/tsPlot2.R')
   #/home/ed/cellxgene_VIP/tsPlot2.R
   #/home/cellxgene/cellxgene_VIP/tsPlot2.R
 
@@ -1791,7 +1792,27 @@ def Rpy2(data):
       ro.globalenv['some_data'] = adata
       
   res = ro.r('''
-    x = PlotSmoothers(some_data,gene = gene1)
+
+    message("Predict Smoother starts")
+
+    smooth = predictSmoother(some_data,gene1)
+    smooth_WT = subset(smooth,condition == "WT")
+    smooth_WT = subset(smooth_WT, lineage = "1")
+    smooth_WT = pivot_wider(smooth_WT, names_from = gene, values_from = yhat)
+
+    smooth_ZC3H20 <- subset(smooth, condition == "ZC3H20_KO")
+    smooth_ZC3H20 <- subset(smooth_ZC3H20, lineage == "2")
+    smooth_ZC3H20 <- pivot_wider(smooth_ZC3H20, names_from = gene, values_from = yhat)
+
+    message("Predict Smoother ends, start of Plotting Function")
+
+    x = PlotSmoothers(some_data, gene = gene1, lwd = 0.3, size = 1/10, plotLineages = FALSE, pointCol = "Group") + 
+    NoLegend() + geom_line(data = smooth_WT, aes(x = time, y = .data[[gene1]]), color="#f8766d") + 
+    geom_line(data = smooth_ZC3H20, aes(x = time, y = .data[[gene1]]), color="#00bfc4") 
+
+    message("end of plotting function")
+
+    #x = PlotSmoothers(some_data,gene = gene1)
     tempFig = "/home/ed/CXG_Testing/tempFig.png"
     ggsave(tempFig, x)
 

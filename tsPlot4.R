@@ -5,6 +5,8 @@ suppressMessages(suppressWarnings(require(ggplot2)))
 suppressMessages(suppressWarnings(require(readr)))
 suppressMessages(suppressWarnings(require(SummarizedExperiment)))
 suppressMessages(suppressWarnings(require(SingleCellExperiment)))
+suppressMessages(suppressWarnings(require(Seurat)))
+suppressMessages(suppressWarnings(require(tidyr)))
 
 
 #Big Block of Functions
@@ -58,6 +60,9 @@ PlotSmoothers <- function(models,
   X = df[ , grepl( "X." , names( df ) ) ]
   X = as.data.frame(X)
 
+  #message("Unedited Column Names")
+  #message(colnames(X))
+
   Xcols = c("U","s(t1):l1_1.1", "s(t1):l1_1.2", "s(t1):l1_1.3", "s(t1):l1_1.4", "s(t1):l1_1.5", "s(t1):l1_1.6",
   "s(t1):l1_1.7", "s(t1):l1_1.8", "s(t1):l1_1.9", "s(t1):l1_2.1", "s(t1):l1_2.2", "s(t1):l1_2.3", "s(t1):l1_2.4",
   "s(t1):l1_2.5", "s(t1):l1_2.6", "s(t1):l1_2.7", "s(t1):l1_2.8" ,"s(t1):l1_2.9", "s(t2):l2_1.1", "s(t2):l2_1.2",
@@ -66,6 +71,9 @@ PlotSmoothers <- function(models,
   "s(t2):l2_2.8","s(t2):l2_2.9")
 
   colnames(X) = Xcols
+
+  message("Edited Column Names")
+  message(colnames(X))
               
   toMatch <- c("pseudotime.", "cellWeights.")
   
@@ -87,7 +95,7 @@ PlotSmoothers <- function(models,
   #dm <- colData(models)$tradeSeq$dm # design matrix
   #y <- unname(counts[names(models),][id,]) 
   y <- unname(counts[id,])
-  
+  y = round(y)
 
   #X <- colData(models)$tradeSeq$X # linear predictor
   #slingshotColData <- colData(models)$slingshot
@@ -131,6 +139,16 @@ PlotSmoothers <- function(models,
     col <- lcol
   }
   
+
+  message("Y Check")
+  message(y[1])
+  message(head(y))
+  message(tail(y))
+
+  message("time check")
+  message(head(timeAll))
+  message(tail(timeAll))
+
   # plot raw data
   df <- data.frame("time" = timeAll,
                    "gene_count" = y,
@@ -393,4 +411,155 @@ predictGAM <- function(lpmatrix, df, pseudotime, conditions = NULL){
   # return
   colnames(Xout) <- colnames(lpmatrix)
   return(Xout)
+}
+
+#Getting Smoother lines for each condition
+predictSmoother <- function(models,gene,nPoints = 100,tidy = TRUE){
+
+# check if all gene IDs provided are present in the models object.
+if (is(gene, "character")) {
+  if (!all(gene %in% rownames(models))) {
+    stop("Not all gene IDs are present in the models object.")
+    }
+  id <- match(gene, rownames(models))
+    } else id <- gene
+
+#get dm, X, and slingshotColData
+df = colData(models)
+
+dm = df[ , grepl( "dm." , names( df ) ) ]
+dm= as.data.frame(dm)
+colnames(dm) = gsub(pattern = "dm.", replacement = "", x = colnames(dm))
+
+X = df[ , grepl( "X." , names( df ) ) ]
+X = as.data.frame(X)
+
+Xcols = c("U","s(t1):l1_1.1", "s(t1):l1_1.2", "s(t1):l1_1.3", "s(t1):l1_1.4", "s(t1):l1_1.5", "s(t1):l1_1.6",
+"s(t1):l1_1.7", "s(t1):l1_1.8", "s(t1):l1_1.9", "s(t1):l1_2.1", "s(t1):l1_2.2", "s(t1):l1_2.3", "s(t1):l1_2.4",
+"s(t1):l1_2.5", "s(t1):l1_2.6", "s(t1):l1_2.7", "s(t1):l1_2.8" ,"s(t1):l1_2.9", "s(t2):l2_1.1", "s(t2):l2_1.2",
+"s(t2):l2_1.3", "s(t2):l2_1.4", "s(t2):l2_1.5", "s(t2):l2_1.6", "s(t2):l2_1.7", "s(t2):l2_1.8", "s(t2):l2_1.9",
+"s(t2):l2_2.1", "s(t2):l2_2.2", "s(t2):l2_2.3", "s(t2):l2_2.4", "s(t2):l2_2.5", "s(t2):l2_2.6", "s(t2):l2_2.7",
+"s(t2):l2_2.8","s(t2):l2_2.9")
+
+colnames(X) = Xcols
+              
+toMatch <- c("pseudotime.", "cellWeights.")
+  
+slingshotColData = df[ , grepl((paste(toMatch,collapse="|")), names( df )) ]
+  
+slingshotColData$pseudotime_1 = NULL
+slingshotColData$pseudotime_2 = NULL
+  
+#Construct Beta
+  
+df2 = rowData(models)
+  
+all_beta = df2[ , grepl( "beta." , names( df2 ) ) ]
+beta = all_beta[id,]
+beta = as.data.frame(beta)
+
+# get tradeSeq info
+#dm <- colData(models)$tradeSeq$dm # design matrix
+#X <- colData(models)$tradeSeq$X # linear predictor
+
+#slingshotColData <- colData(models)$slingshot
+pseudotime <- slingshotColData[,grep(x = colnames(slingshotColData),
+                                                 pattern = "pseudotime")]
+                                      
+if (is.null(dim(pseudotime))) pseudotime <- matrix(pseudotime, ncol = 1)
+  #betaMat <- rowData(models)$tradeSeq$beta[[1]]
+  #beta <- as.matrix(betaMat[id,])
+  #rownames(beta) <- gene
+  df2 = rowData(models)
+  
+  all_beta = df2[ , grepl( "beta." , names( df2 ) ) ]
+  beta = all_beta[id,]
+  beta = as.data.frame(beta)
+
+  #condPresent <- suppressWarnings({
+  #!is.null(SummarizedExperiment::colData(models)$tradeSeq$conditions)
+  #})
+
+  condPresent = 1 
+
+if(!condPresent){
+  yhatMat <- .predictSmooth(dm = dm,
+    X = X,
+    beta = beta,
+    pseudotime = pseudotime,
+    gene = gene,
+    nPoints = nPoints,
+    tidy = tidy)
+} else if(condPresent){
+  #conditions <- SummarizedExperiment::colData(models)$tradeSeq$conditions
+  conditions = df$conditions
+  yhatMat <- .predictSmooth_conditions(dm = dm,
+                                      X = X,
+                                      beta = beta,
+                                      pseudotime = pseudotime,
+                                      gene = gene,
+                                      nPoints = nPoints,
+                                      conditions = conditions,
+                                      tidy = tidy)
+}
+return(yhatMat)
+  
+} # end of function
+
+
+.predictSmooth_conditions <- function(dm, X, beta, pseudotime, gene, nPoints, conditions, tidy){
+  
+  nCurves <- length(grep(x = colnames(dm), pattern = "t[1-9]"))
+  nConditions <- nlevels(conditions)
+
+  # get predictor matrix
+  if (tidy) out <- list()
+  for (jj in seq_len(nCurves)) {
+    if (tidy) out_cond <- list()
+    for(kk in seq_len(nConditions)){
+      df <- .getPredictRangeDf(dm, lineageId = jj, conditionId = kk,
+                               nPoints = nPoints)
+      Xdf <- predictGAM(lpmatrix = X,
+                        df = df,
+                        pseudotime = pseudotime,
+                        conditions = conditions)
+      if(kk == 1) XallCond <- Xdf
+      if(kk > 1) XallCond <- rbind(XallCond, Xdf)
+      if (tidy) {
+        out_cond[[kk]] <- data.frame(lineage = jj, time = df[, paste0("t",jj)],
+                                     condition = levels(conditions)[kk])
+      }
+    }
+    if (jj == 1) Xall <- XallCond
+    if (jj > 1) Xall <- rbind(Xall, XallCond)
+    if (tidy) out[[jj]] <- do.call(rbind, out_cond)
+  }
+  if (tidy) outAll <- do.call(rbind, out)
+
+  # loop over all genes
+  yhatMat <- matrix(NA, nrow = length(gene), ncol = nCurves * nConditions * nPoints)
+  rownames(yhatMat) <- gene
+  pointNames <- expand.grid(1:nCurves, 1:nConditions)
+  baseNames <- paste0("lineage", pointNames[,1], "_condition",
+                      levels(conditions)[pointNames[,2]])
+  colnames(yhatMat) <- c(sapply(baseNames, paste0, "_point",1:nPoints))
+  for (jj in 1:length(gene)) {
+    yhat <- c(exp(t(Xall %*% t(beta[as.character(gene[jj]), ,
+                                    drop = FALSE])) +
+                    df$offset[1]))
+    yhatMat[jj, ] <- yhat
+  }
+  ## return output
+  if (!tidy) {
+    return(yhatMat)
+  } else {
+    outList <- list()
+    for (gg in seq_len(length(gene))){
+      curOut <- outAll
+      curOut$gene <- gene[gg]
+      curOut$yhat <- yhatMat[gg,]
+      outList[[gg]] <- curOut
+    }
+    return(do.call(rbind, outList))
+  }
 }
