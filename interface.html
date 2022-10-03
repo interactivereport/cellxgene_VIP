@@ -1926,14 +1926,15 @@ function addDescription(){
         type: "POST",
         url: VIPurl,
         data:JSON.stringify({'method':"Description",
-        'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
-        'addr':'/'+window.store.getState().config.displayNames.dataset+'.yml'}),
+        'Dataset': window.store.getState().config.displayNames.dataset,
+        'addr':'/home/ed/data_cxg/YAML/'+window.store.getState().config.displayNames.dataset+'.yml'}),
         contentType: 'application/json;charset=UTF-8',
         success: function(res){
           if(res.length==0){
             console.log('No description available!');
             return;
           }
+          //'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
           //'/'+window.store.getState().config.displayNames.dataset+'.yml'
           //'/home/ed/data_cxg/YAML/'+window.store.getState().config.displayNames.dataset+'.yml'
           var appendDIV = $("[data-testclass='category']").parent();

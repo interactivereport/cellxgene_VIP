@@ -1634,11 +1634,11 @@ def parseYAML(data):
   ymlAddress = data['addr']
 
   #cwd = "/share/cellxgene/demo/YAML"
-  cwd = "/share/cellxgene/main/YAML"
+  #cwd = "/share/cellxgene/main/YAML"
 
-  finalAddr = cwd + ymlAddress
+  #finalAddr = cwd + ymlAddress
 
-  #finalAddr = ymlAddress
+  finalAddr = ymlAddress
 
   with open(finalAddr) as f:
     data = yaml.load(f, Loader=SafeLoader)
@@ -1700,6 +1700,14 @@ def getDesp_2(data):
 
   aut = yml["Author(s)"]
 
-  txt = "<br>"+desc+"<br>"+paper+"<br>"+"Authors: "+aut+"<br>"+'<a href="http://cellatlas.mvls.gla.ac.uk/data/table.html">Available Data Sets</a>'
+  dataset = data['Dataset']
+
+  #'<a href="http://cellatlas.mvls.gla.ac.uk/data/table.html">Available Data Sets</a>'
+
+  url = "http://cellatlas.mvls.gla.ac.uk/data/table.html" + "#" + dataset
+
+  full_url = "<a href="+url+">Available Data Sets</a>"
+  
+  txt = "<br>"+"<b>"+"Data Source:"+"</b>"+"<br>"+desc+"<br>"+paper+"<br>"+"<b>"+"Authors: "+"</b>"+aut+"<br>"+full_url
   
   return txt
