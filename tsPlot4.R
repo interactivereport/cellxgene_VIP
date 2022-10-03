@@ -428,7 +428,7 @@ if (is(gene, "character")) {
 df = colData(models)
 
 dm = df[ , grepl( "dm." , names( df ) ) ]
-dm= as.data.frame(dm)
+dm = as.data.frame(dm)
 colnames(dm) = gsub(pattern = "dm.", replacement = "", x = colnames(dm))
 
 X = df[ , grepl( "X." , names( df ) ) ]

@@ -1769,10 +1769,11 @@ def Rpy2(data):
   #Read in Data
 
   adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei3.h5ad")
+  #adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei.h5ad")
   #/home/ed/data_cxg/nTbrucei.h5ad
   #/share/cellxgene/main/nTbrucei.h5ad
 
-  #Convert sparse matrix to dense in order to avoid conversion e
+  #Convert sparse matrix to dense in order to avoid conversion error
 
   adata.X = adata.X.todense()
 
