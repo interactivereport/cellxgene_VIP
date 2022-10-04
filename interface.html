@@ -548,7 +548,7 @@
       <button class="tablinks" onclick="selFun(event, 'STACBAR')">Stacked Barplot</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells()">Cell Population View</button>
-      <button class="tablinks" onclick="selFun(event, 'Pseudo');getAllCells();CellPopList('TS')">Pseudotime Inference</button>
+      <button class="tablinks" onclick="selFun(event, 'Pseudo');getAllCells()">Pseudotime Inference</button>
       <button class="tablinks" onclick="selFun(event, 'TradeSeq');getAllCells();CellPopList('TS')">TradeSeq</button>
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1');detectOrganism()">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
@@ -685,9 +685,11 @@
 
     <div id="TradeSeq" class="tabcontent">
       <h3>Display TradeSeq Analysis0 results within Cellxgene_VIP:</h3>
-      <p id = "pts_to">Table Options:
+      <h4>Table Options:</h4>
+      <p id = "pts_to">Lineage:
         <select id="ts_to" onclick="tsDropDownUpdate()"></select></p>
-      <p id = "pts_C" style="visibility: hidden;">Condition:
+      <h4>Plot Options:</h4>
+      <p id = "pts_C">Condition:
         <select id="ts_C"></select></p>
       <button class="tradeSeqTable" onclick="tsTable()"><b>TradeSeq Table</b></button>
       <p></p>
@@ -2213,9 +2215,6 @@ function init(){
    var tsTO = document.getElementById("ts_to");
    tsTO.add(createOpt("General"));
  
-   //var tsC = document.getElementById("ts_C");
- 
- 
    if (lineageCount != 0){
      for (let x = 1; x < lineageCount+1; x++){
        tsTO.add(createOpt("Lineage" + x))
@@ -3120,12 +3119,15 @@ function CellPopList(opt){
     
     var annCat = tsAnnot;
 
+    console.log(annCat)
+
     if(annCat){
 
     grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
     console.log(grps[annCat])
 
     var levels = document.getElementById("ts_C");
+    levels.add(createOpt("General"));
 
     for(const one of grps[annCat]) {
       levels.add(createOpt(one));
@@ -5964,8 +5966,11 @@ function yamlPARSE(){
 
 var D = 
 {'method':'ymlPARSE',
-'addr':'/'+window.store.getState().config.displayNames.dataset+'.yml'
+'addr':'/home/ed/data_cxg/YAML/'+window.store.getState().config.displayNames.dataset+'.yml'
 }
+
+//'/home/ed/data_cxg/YAML/'+window.store.getState().config.displayNames.dataset+'.yml',
+//'/'+window.store.getState().config.displayNames.dataset+'.yml'
 
 $.ajax({
   type:"POST",
@@ -5979,6 +5984,8 @@ $.ajax({
   databaseSearch_URL = res['url2'];
 
   tsAnnot = res['tsAnnot']
+
+  console.log(tsAnnot)
 
   },
   error: function() {

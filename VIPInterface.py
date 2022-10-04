@@ -1796,7 +1796,10 @@ def Rpy2(data):
 
     message("Predict Smoother starts")
 
-    smooth = predictSmoother(some_data,gene1)
+    #smooth = predictSmoother(some_data,gene1)
+
+    smooth = read.csv("/home/ed/extra_stuff/smoothPAD2_local.csv")
+
     smooth_WT = subset(smooth,condition == "WT")
     smooth_WT = subset(smooth_WT, lineage = "1")
     smooth_WT = pivot_wider(smooth_WT, names_from = gene, values_from = yhat)
@@ -1808,8 +1811,8 @@ def Rpy2(data):
     message("Predict Smoother ends, start of Plotting Function")
 
     x = PlotSmoothers(some_data, gene = gene1, lwd = 0.3, size = 1/10, plotLineages = FALSE, pointCol = "Group") + 
-    NoLegend() + geom_line(data = smooth_WT, aes(x = time, y = .data[[gene1]]), color="#f8766d") + 
-    geom_line(data = smooth_ZC3H20, aes(x = time, y = .data[[gene1]]), color="#00bfc4") 
+    NoLegend() + geom_smooth(data = smooth_WT, aes(x = time, y = .data[[gene1]]), color="#f8766d") + 
+    geom_smooth(data = smooth_ZC3H20, aes(x = time, y = .data[[gene1]]), color="#00bfc4") 
 
     message("end of plotting function")
 
