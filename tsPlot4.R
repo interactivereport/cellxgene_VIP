@@ -8,7 +8,6 @@ suppressMessages(suppressWarnings(require(SingleCellExperiment)))
 suppressMessages(suppressWarnings(require(Seurat)))
 suppressMessages(suppressWarnings(require(tidyr)))
 
-
 #Big Block of Functions
 
 PlotSmoothers <- function(models,  

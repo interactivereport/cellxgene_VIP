@@ -549,6 +549,7 @@
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells()">Cell Population View</button>
       <button class="tablinks" onclick="selFun(event, 'Pseudo');getAllCells()">Pseudotime Inference</button>
+      <button class="tablinks" onclick="selFun(event, 'SlingShot');getAllCells()">SlingShot Trajectory Inference</button>
       <button class="tablinks" onclick="selFun(event, 'TradeSeq');getAllCells();CellPopList('TS')">TradeSeq</button>
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1');detectOrganism()">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
@@ -683,15 +684,34 @@
       </div>
     </div><!--Pseudo-->
 
+    <div id="SlingShot" class="tabcontent">
+      <div id="SlingShotInput">
+        <h3>Run SlingShot Trajectory Inference within Cellxgene_VIP:</h3>
+        <h4>SlingShot Options:</h4>
+        <p>Starting Cluster:
+        <select id="starting clus"></select></p>
+        <p>Starting Cluster:
+          <select id="End_Cluster"></select></p>
+        <button class="slingshotAnalysis" onclick="slingshotPlot()"><b>SlingShot Plot</b></button>
+        <div id="slingshotSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+        <p id="slingshotNote" style="color:red;"></p>
+        <p id="slingshotFig"></p>
+      </div>
+    </div><!--SlingShot-->
+
     <div id="TradeSeq" class="tabcontent">
       <h3>Display TradeSeq Analysis0 results within Cellxgene_VIP:</h3>
       <h4>Table Options:</h4>
       <p id = "pts_to">Lineage:
-        <select id="ts_to" onclick="tsDropDownUpdate()"></select></p>
-      <h4>Plot Options:</h4>
-      <p id = "pts_C">Condition:
+        <select id="ts_to" onclick = "tsDropDownUpdate()"></select></p>
+      <p id = "pts_C" style="visibility: hidden;">Condition:
         <select id="ts_C"></select></p>
       <button class="tradeSeqTable" onclick="tsTable()"><b>TradeSeq Table</b></button>
+      <h4>Plot Options:</h4>
+      <p>Choose lineage(s):</p>
+      <p id = "tsLins">Lineage</p>
+      <p>Choose condition(s):</p>
+      <p id = "tsConds">Condition</p>
       <p></p>
       <div id="tradeSeqSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <p id="tradeSeqNote" style="color:red;"></p>
@@ -2220,7 +2240,12 @@ function init(){
        tsTO.add(createOpt("Lineage" + x))
      }
    }
- 
+
+  
+  // TradeSeq Plotting Function Check Boxes
+
+  
+
    //pts_C
    //if (tsTO != "General"){
      //document.getElementById("pts_C").style.visibility="visible";
@@ -3127,17 +3152,42 @@ function CellPopList(opt){
     console.log(grps[annCat])
 
     var levels = document.getElementById("ts_C");
-    levels.add(createOpt("General"));
 
     for(const one of grps[annCat]) {
       levels.add(createOpt(one));
     }
+    }
+    //tsPlotGeneral = "All";
 
-    }else{
-      return
+    var pseudonames = window.store.getState().annoMatrix.schema.annotations.obsByName;
+
+    pseudoannots = Object.keys(pseudonames);
+
+    htmlcheckLins = '';
+
+    lin_no = 1;
+
+    for(const one of pseudoannots){
+      if(one.startsWith("pseudotime_")){
+        htmlcheckLins += '<label id="tsLineages'+lin_no+'"><input class="tsLinCheckBox" type="checkbox" value="'+lin_no+'"/> '+lin_no+'</label>';
+        lin_no += 1;
+      }
+      $('#tsLins').html(htmlcheckLins);
     }
 
-  }else {
+    htmlCheck= '';
+
+    var annCat = tsAnnot;
+
+    if(annCat){
+      grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
+      for(const one of grps[annCat]) {
+        htmlCheck += '<label id="tsConditions'+one+'"><input class="tsCondCheckBox" type="checkbox" value="'+one+'"/> '+one+'</label>';
+      }
+      $('#tsConds').html(htmlCheck);
+    }
+
+  }else{
     var annCat = document.getElementById("CPV_ConditionKey").value;
     grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
     $("#CPV_C1").empty();
@@ -5474,7 +5524,6 @@ function CellPopPlot(){
 
   var geneMetaData = document.getElementById("gene_MetaCat").value;
   
-  var cells = AllCells;
 
   if(CPV_Con1 == CPV_Con2) {
     $("#CPVnote").text('Please input two different conditions');
@@ -5484,14 +5533,14 @@ function CellPopPlot(){
   //let grp = [...new Set(CPV_CK,CPV_CK2)];
   let grp = [...new Set([$("#CPV_ClusterKey").val(),$("#CPV_ConditionKey").val()])];
 
-  if(CPV_CK && CPV_C && CPV_C2 && CPV_Con1 && CPV_Con2 && cells) {
+  if(CPV_CK && CPV_C && CPV_C2 && CPV_Con1 && CPV_Con2 && AllCells) {
     
     var D = {'method':'CPV',
 		'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
 		'Cluster':CPV_C,
 		'ClusterKey':CPV_CK,
 		'ConditionKey':CPV_CK2,
-    'cells':cells,
+    'cells':AllCells, // Int32 Array, specifies the use of every cell in dataset
     'genes':[],
     'grp':grp,
     'gMD':geneMetaData,
@@ -5543,7 +5592,6 @@ function CellPopTable(){
 
   var geneMetaData = document.getElementById("gene_MetaCat").value;
   
-  var cells = AllCells;
 
   if(CPV_Con1 == CPV_Con2) {
     $("#CPVnote").text('Please input two different conditions');
@@ -5552,14 +5600,14 @@ function CellPopTable(){
 
   let grp = [...new Set([$("#CPV_ClusterKey").val(),$("#CPV_ConditionKey").val()])];
 
-  if(CPV_CK && CPV_C && CPV_C2 && CPV_Con1 && CPV_Con2 && cells) {
+  if(CPV_CK && CPV_C && CPV_C2 && CPV_Con1 && CPV_Con2 && AllCells) {
     
     var D = {'method':'CPVTable',
 		'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
 		'Cluster':CPV_C,
 		'ClusterKey':CPV_CK,
 		'ConditionKey':CPV_CK2,
-    'cells':cells,
+    'cells':AllCells, // Int32 Array, specifies the use of every cell in dataset
     'genes':[],
     'grp':grp,
     'gMD':geneMetaData,
@@ -5670,8 +5718,6 @@ function CellPopTable(){
 
 function pseudoPlot(){
 
-  var cells = AllCells;
-
   var grp = [];
   
   var annot = document.getElementById("pseudo_cell_annot").value;
@@ -5684,7 +5730,7 @@ function pseudoPlot(){
   'method':'pseudo',
   'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
   'addr':'/home/ed/data_cxg/YAML/'+window.store.getState().config.displayNames.dataset+'.yml',//'/
-  'cells':cells,
+  'cells':AllCells, // Int32 Array, specifies the use of every cell in dataset
   'genes':[],
   'grp':grp,
   'annot':annot
@@ -5722,13 +5768,15 @@ function pseudoPlot(){
 
 function tsTable(){
  
-  var cells = AllCells;
   var tradeS_option = document.getElementById("ts_to").value;
+  
+  isVis = document.getElementById("pts_C").style.value
+  console.log(isVis)
 
-  if(tsAnnot){
-    var tsCondition = document.getElementById("ts_C").value;
-  }else{
+  if(isVis == "hidden"){
     var tsCondition = null;
+  }else{
+    var tsCondition = document.getElementById("ts_C").value;
   }
   
   var tsPlotGene;
@@ -5736,7 +5784,7 @@ function tsTable(){
   var D = {
     'method':'tradeSeq',
     'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
-    'cells':cells,
+    'cells':AllCells, // Int32 Array, specifies the use of every cell in dataset
     'genes':[],
     'grp':[],
     'tableOption':tradeS_option,
@@ -5855,8 +5903,6 @@ function tsDropDownUpdate(){
 
 function tsPlot(tsgene){
 
-  var cells = AllCells;
-
   var grp = [];
 
   var annotkeys = pseudoannots;
@@ -5867,9 +5913,7 @@ function tsPlot(tsgene){
      }
    }
   
-  var gene = tsgene;
-
-  if(gene == null) {
+  if(tsgene == null) {
     $("#tradeSeqNote").text("Please select a gene from the Table.");
     return
   }
@@ -5879,9 +5923,9 @@ function tsPlot(tsgene){
   var D = {
   'method':'tsPlot',
   'dataset': window.store.getState().config.displayNames.dataset,
-  'cells':cells,
+  'cells':AllCells,
   'genes':[],
-  'gene':gene,
+  'gene':tsgene,
   'grp':grp,
   };
 
@@ -5913,17 +5957,21 @@ function tsPlot(tsgene){
 
 function rpyTest(tsgene){
 
-  var cells = AllCells;
+  linCheckBoxes = document.querySelectorAll('input[class=tsLinCheckBox]:checked'); // get currently checked boxes as a NodeList
+  linCheckBoxes = Array.from(linCheckBoxes).map(c => c.value) // get currently checked boxes as an Array
 
-  var gene = tsgene;
+  conCheckBoxes = document.querySelectorAll('input[class=tsCondCheckBox]:checked');
+  conCheckBoxes = Array.from(conCheckBoxes).map(c => c.value)
 
   var D = {
-  'method':'rpy2',
+  'method':'dyrpy2',
   'dataset': window.store.getState().config.displayNames.dataset,
-  'cells':cells,
+  'cells':AllCells,
   'genes':[],
   'gene':tsgene,
-  'grp':[]
+  'grp':[],
+  'conditions':conCheckBoxes,
+  'lineages':linCheckBoxes
   };
 
   document.getElementById("tradeSeqSpin").style.visibility="visible";
@@ -5952,6 +6000,37 @@ function rpyTest(tsgene){
     document.getElementById("tradeSeqSpin").style.visibility="hidden";
   }
 })
+
+}
+
+
+function slingshotPlot(){
+
+  document.getElementById("slingshotSpin").style.visibility="visible";
+ 
+  var D = 
+{
+'method':'slingshot'
+}
+
+
+$.ajax({
+  type:"POST",
+  url: VIPurl,
+  data:JSON.stringify(D),
+  contentType: 'application/json;charset=UTF-8',//
+  success: function(res){
+
+    console.log(res)
+    document.getElementById("slingshotSpin").style.visibility="hidden";
+    showImg('slingshotFig',res)
+  
+  },
+  error: function() {
+    console.log('error!');
+  }
+})
+
 
 }
 
@@ -5994,9 +6073,11 @@ $.ajax({
 })
 }
 
+
+
 setTimeout(function(){
   yamlPARSE();
-}, 3000);
+}, 8000);
 
 var data
 
@@ -6081,7 +6162,7 @@ function getAllCells(){
   AllCells = Int32Array.from({length:window.store.getState().annoMatrix.nObs},(v,k)=>k);
 }
 
-var AllCells;
+var AllCells; 
 
 var DE_Counter = 0;
 

@@ -34,6 +34,7 @@ import rpy2
 import rpy2.robjects as ro
 from rpy2.robjects.conversion import localconverter
 import anndata2ri
+from datetime import datetime
 
 strExePath = os.path.dirname(os.path.abspath(__file__))
 
@@ -307,7 +308,9 @@ def distributeTask(aTask):
     'pseudo':pseudoPlot,
     'tradeSeq':tsTable,
     'tsPlot':tsPlot,
-    'rpy2':Rpy2
+    'rpy2':Rpy2,
+    'dyrpy2':dynamicRpy2,
+    'slingshot':dypseudoPlot
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1834,4 +1837,196 @@ def Rpy2(data):
 
   return img
 
+def dynamicRpy2(data):
+  
+  #Read in Data
 
+  ppr.pprint("reading in data")
+
+  dateTimeObj = datetime.now()
+  start = dateTimeObj
+  timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
+  ppr.pprint(timestampStr)
+
+  adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei3.h5ad") #corrected count matrix data
+  #adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei_4.h5ad") #corrected + dense
+
+  dateTimeObj = datetime.now()
+  timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
+  ppr.pprint(timestampStr)
+
+  #Convert sparse matrix to dense in order to avoid conversion error
+
+  ppr.pprint("dense matrix conversion")
+
+  adata.X = adata.X.todense()
+
+  dateTimeObj = datetime.now()
+  timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
+  print(timestampStr)
+
+  dateTimeObj = datetime.now()
+  timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
+  ppr.pprint(timestampStr)
+
+  ppr.pprint("Rpy2 convrsion")
+
+  #Convert anndata to SCE within embedded R global environment
+  with localconverter(anndata2ri.converter):
+      ro.globalenv['some_data'] = adata
+
+  dateTimeObj = datetime.now()
+  timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
+  ppr.pprint(timestampStr)
+
+  #read in plotting parameters
+
+  gene = data["gene"]
+
+  conditions = data["conditions"]
+
+  lineages = data["lineages"]
+
+  #send plotting parameters to 
+
+  ro.globalenv['gene1'] = gene
+  ro.globalenv['conds'] = conditions
+  ro.globalenv['lins'] = lineages
+
+  ppr.pprint("sourcing function file")
+
+  # Source function file
+  r = ro.r
+  r['source']('/home/ed/cellxgene_VIP/tsPlot4.R')
+  
+  dateTimeObj = datetime.now()
+  timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
+  ppr.pprint(timestampStr)
+
+  ppr.pprint("running R code")
+
+  dateTimeObj = datetime.now()
+  timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
+  ppr.pprint(timestampStr)
+
+  res = ro.r('''
+
+    smooth = predictSmoother(some_data,gene1)
+
+    #create color palette
+    no_cols = length(conds) * length(lins)
+    colList = rainbow(no_cols)
+
+    #iterate over every combination
+    #lines = vector()
+    smoothList = list()
+
+    i = 1
+    
+    for(x in conds){
+
+      for(y in lins){
+        str1 = paste(x, as.character(y))
+        smooth_con = subset(smooth, condition == x)
+        smooth_con_lin = subset(smooth_con, lineage == as.character(y))
+        finalSmooth = pivot_wider(smooth_con_lin, names_from = gene, values_from = yhat)
+        finalSmooth = as.data.frame(finalSmooth)
+        finalSmooth$combo = str1
+        smoothList[[i]] = finalSmooth
+        i = i + 1
+        #line = geom_smooth(data = finalSmooth, aes(x = time, y = .data[[gene1]]))
+        #line = geom_smooth(data = finalSmooth, aes(x = time, y = .data[[gene1]]),color=colList[length(lines)+1])
+        #lines = c(lines,line)  
+      }
+  }
+
+    smoothCombo = do.call("rbind",smoothList)
+
+    x = PlotSmoothers(some_data, gene = gene1, lwd = 0.3, size = 1/10, plotLineages = FALSE, pointCol = "Group") + 
+    geom_smooth(data = smoothCombo, aes(x = time, y = .data[[gene1]],group = combo, colour = combo))
+    #NoLegend() 
+
+    #for(l in lines){
+      #x = x + l
+    #}
+
+    tempFig = "/home/ed/CXG_Testing/tempFig.png"
+    ggsave(tempFig, x)
+
+    fig = base64enc::dataURI(file = tempFig, mime = "image/png")
+    fig = gsub("data:image/png;base64,","",fig)
+
+    a <- file.remove(tempFig)
+
+    fig
+    ''')
+
+  dateTimeObj = datetime.now()
+  end = dateTimeObj
+  timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
+  ppr.pprint(timestampStr)
+
+  total_run_time = end - start
+  ppr.pprint(total_run_time)
+
+  img = res[0]
+
+  return img
+
+
+def dypseudoPlot(data):
+
+  #read in data
+
+  adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei3.h5ad") #correct count matrix data
+
+  #Convert sparse matrix to dense in order to avoid conversion error
+
+  adata.X = adata.X.todense()
+
+  #Convert anndata to SCE within embedded R global environment
+  with localconverter(anndata2ri.converter):
+      ro.globalenv['some_data'] = adata
+
+  
+  res = ro.r('''
+
+    suppressMessages(suppressWarnings(require(ggplot2)))
+    suppressMessages(suppressWarnings(require(readr)))
+    suppressMessages(suppressWarnings(require(SummarizedExperiment)))
+    suppressMessages(suppressWarnings(require(SingleCellExperiment)))
+    suppressMessages(suppressWarnings(require(Seurat)))
+    suppressMessages(suppressWarnings(require(tidyr)))
+    suppressMessages(suppressWarnings(require(slingshot)))
+
+    message("run slingshot function")
+
+    some_data <- slingshot(some_data, reducedDim = 'PHATE', clusterLabels = some_data@colData@listData[["Cell_Type"]], start.clus = "LS A.1") 
+
+    message("run plotting function")
+
+    x = plot(reducedDims(some_data)$PHATE) + lines(SlingshotDataSet(some_data))
+
+
+    tempFig = "/home/ed/CXG_Testing/tempFig.png"
+    ggsave(tempFig, x)
+
+    fig = base64enc::dataURI(file = tempFig, mime = "image/png")
+    fig = gsub("data:image/png;base64,","",fig)
+
+    a <- file.remove(tempFig)
+
+    fig
+    ''')
+
+  #ppr.pprint(res[0])
+
+  img = res[0]
+
+
+  return img
+
+
+  #r['source']('/home/ed/cellxgene_VIP/tsPlot2.R')
+  #/home/ed/cellxgene_VIP/tsPlot2.R
+  #/home/cellxgene/cellxgene_VIP/tsPlot2.R
