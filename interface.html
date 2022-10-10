@@ -708,10 +708,8 @@
         <select id="ts_C"></select></p>
       <button class="tradeSeqTable" onclick="tsTable()"><b>TradeSeq Table</b></button>
       <h4>Plot Options:</h4>
-      <p>Choose lineage(s):</p>
-      <p id = "tsLins">Lineage</p>
-      <p>Choose condition(s):</p>
-      <p id = "tsConds">Condition</p>
+      <p>Choose lineage-condition combinations to plot:</p>
+      <p id = "tsCombos">Combos</p>
       <p></p>
       <div id="tradeSeqSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <p id="tradeSeqNote" style="color:red;"></p>
@@ -3140,6 +3138,8 @@ function CellPopList(opt){
    
   }else if(opt=="TS"){
 
+    // Create TradeSeq Table Options "Conditions" dropdown menu
+
     $("#ts_C").empty();
     
     var annCat = tsAnnot;
@@ -3149,43 +3149,49 @@ function CellPopList(opt){
     if(annCat){
 
     grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
-    console.log(grps[annCat])
 
-    var levels = document.getElementById("ts_C");
+    var tsC_levels = document.getElementById("ts_C");
 
     for(const one of grps[annCat]) {
-      levels.add(createOpt(one));
+      tsC_levels.add(createOpt(one));
     }
     }
-    //tsPlotGeneral = "All";
+    
+    // Create TradeSeq Plot Option dropdown menus
 
     var pseudonames = window.store.getState().annoMatrix.schema.annotations.obsByName;
 
     pseudoannots = Object.keys(pseudonames);
 
-    htmlcheckLins = '';
-
+    htmlCheckCombo = '';
     lin_no = 1;
+    selectList = [];
 
     for(const one of pseudoannots){
       if(one.startsWith("pseudotime_")){
-        htmlcheckLins += '<label id="tsLineages'+lin_no+'"><input class="tsLinCheckBox" type="checkbox" value="'+lin_no+'"/> '+lin_no+'</label>';
+        htmlCheckCombo += "<p>Lineage "+lin_no+":</p>"
+        htmlCheckCombo += "<select class='TradeSeqDropDowns' lineage='"+lin_no+"'></select></p>";
         lin_no += 1;
       }
-      $('#tsLins').html(htmlcheckLins);
+      $('#tsCombos').html(htmlCheckCombo);
     }
 
-    htmlCheck= '';
+    // Populate TradeSeq Lineage-Condition dropdown menus
 
-    var annCat = tsAnnot;
+    tsDropDowns = document.getElementsByClassName('TradeSeqDropDowns');
+    console.log(tsDropDowns)
 
-    if(annCat){
+    for(x in tsDropDowns){
+      console.log(tsDropDowns[x])
+      drop = tsDropDowns[x]
       grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
       for(const one of grps[annCat]) {
-        htmlCheck += '<label id="tsConditions'+one+'"><input class="tsCondCheckBox" type="checkbox" value="'+one+'"/> '+one+'</label>';
+        drop.add(createOpt(one));
       }
-      $('#tsConds').html(htmlCheck);
+      drop.add(createOpt("All"));
+      drop.add(createOpt("None"));
     }
+
 
   }else{
     var annCat = document.getElementById("CPV_ConditionKey").value;
@@ -5957,11 +5963,31 @@ function tsPlot(tsgene){
 
 function rpyTest(tsgene){
 
-  linCheckBoxes = document.querySelectorAll('input[class=tsLinCheckBox]:checked'); // get currently checked boxes as a NodeList
-  linCheckBoxes = Array.from(linCheckBoxes).map(c => c.value) // get currently checked boxes as an Array
+  comboList = [];
+  var c = 0;
+  
+  for(x in tsDropDowns){ // list of elements with class-name "TradeSeqDropDowns", created in CellPopList
+    if(c == tsDropDowns.length) break;
+    c ++;    
+    
+    val = tsDropDowns[x].value;
+    
+    if(val != "None"){
 
-  conCheckBoxes = document.querySelectorAll('input[class=tsCondCheckBox]:checked');
-  conCheckBoxes = Array.from(conCheckBoxes).map(c => c.value)
+      lin = tsDropDowns[x].getAttribute("lineage")
+
+      combo = [lin,val]
+
+      comboList.push(combo)
+
+    }
+
+  }
+
+  if(comboList.length == 0) {
+    $("#tradeSeqnote").text('Please select at least one lineage-condition combination');
+    return
+  }
 
   var D = {
   'method':'dyrpy2',
@@ -5970,8 +5996,7 @@ function rpyTest(tsgene){
   'genes':[],
   'gene':tsgene,
   'grp':[],
-  'conditions':conCheckBoxes,
-  'lineages':linCheckBoxes
+  'combos':comboList
   };
 
   document.getElementById("tradeSeqSpin").style.visibility="visible";

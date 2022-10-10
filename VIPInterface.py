@@ -1648,6 +1648,8 @@ def cpvtable(data):
 
 def parseYAML(data):
 
+  ppr.pprint(strExePath) 
+
   ymlAddress = data['addr']
 
   #cwd = "/share/cellxgene/main/YAML"
@@ -1859,17 +1861,21 @@ def dynamicRpy2(data):
 
   ppr.pprint("dense matrix conversion")
 
+  dateTimeObj = datetime.now()
+  timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
+  print(timestampStr)
+
   adata.X = adata.X.todense()
 
   dateTimeObj = datetime.now()
   timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
   print(timestampStr)
 
+  ppr.pprint("Rpy2 convrsion")
+
   dateTimeObj = datetime.now()
   timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
   ppr.pprint(timestampStr)
-
-  ppr.pprint("Rpy2 convrsion")
 
   #Convert anndata to SCE within embedded R global environment
   with localconverter(anndata2ri.converter):
@@ -1883,21 +1889,24 @@ def dynamicRpy2(data):
 
   gene = data["gene"]
 
-  conditions = data["conditions"]
-
-  lineages = data["lineages"]
+  combinations = data["combos"]
 
   #send plotting parameters to 
 
   ro.globalenv['gene1'] = gene
-  ro.globalenv['conds'] = conditions
-  ro.globalenv['lins'] = lineages
+  ro.globalenv['combos'] = combinations
 
   ppr.pprint("sourcing function file")
 
+  dateTimeObj = datetime.now()
+  timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
+  ppr.pprint(timestampStr)
+
   # Source function file
   r = ro.r
-  r['source']('/home/ed/cellxgene_VIP/tsPlot4.R')
+  #r['source']('/home/ed/cellxgene_VIP/tsPlot4.R')
+  r['source'](strExePath+'/tsPlot4.R')
+  
   
   dateTimeObj = datetime.now()
   timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
@@ -1914,42 +1923,50 @@ def dynamicRpy2(data):
     smooth = predictSmoother(some_data,gene1)
 
     #create color palette
-    no_cols = length(conds) * length(lins)
-    colList = rainbow(no_cols)
+    colList = rainbow(length(combos))
 
     #iterate over every combination
-    #lines = vector()
+
     smoothList = list()
 
     i = 1
     
-    for(x in conds){
-
-      for(y in lins){
-        str1 = paste(x, as.character(y))
-        smooth_con = subset(smooth, condition == x)
-        smooth_con_lin = subset(smooth_con, lineage == as.character(y))
+    for(x in combos){
+      lin = x[1]
+      cond = x[2]
+      if(cond != "All"){
+        str1 = paste(cond,lin)
+        smooth_con = subset(smooth, condition == cond)
+        smooth_con_lin = subset(smooth_con, lineage == lin)
         finalSmooth = pivot_wider(smooth_con_lin, names_from = gene, values_from = yhat)
         finalSmooth = as.data.frame(finalSmooth)
         finalSmooth$combo = str1
         smoothList[[i]] = finalSmooth
         i = i + 1
-        #line = geom_smooth(data = finalSmooth, aes(x = time, y = .data[[gene1]]))
-        #line = geom_smooth(data = finalSmooth, aes(x = time, y = .data[[gene1]]),color=colList[length(lines)+1])
-        #lines = c(lines,line)  
+      }else{
+
+        allConds = unique(smooth$condition)
+
+        for(c in allConds){
+          str1 = paste(c,lin)
+          smooth_con = subset(smooth, condition == c)
+          smooth_con_lin = subset(smooth_con, lineage == lin)
+          finalSmooth = pivot_wider(smooth_con_lin, names_from = gene, values_from = yhat)
+          finalSmooth = as.data.frame(finalSmooth)
+          finalSmooth$combo = str1
+          smoothList[[i]] = finalSmooth
+          i = i + 1
+        }
+
       }
-  }
+
+    }
 
     smoothCombo = do.call("rbind",smoothList)
 
     x = PlotSmoothers(some_data, gene = gene1, lwd = 0.3, size = 1/10, plotLineages = FALSE, pointCol = "Group") + 
     geom_smooth(data = smoothCombo, aes(x = time, y = .data[[gene1]],group = combo, colour = combo))
-    #NoLegend() 
-
-    #for(l in lines){
-      #x = x + l
-    #}
-
+   
     tempFig = "/home/ed/CXG_Testing/tempFig.png"
     ggsave(tempFig, x)
 

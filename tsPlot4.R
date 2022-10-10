@@ -59,9 +59,6 @@ PlotSmoothers <- function(models,
   X = df[ , grepl( "X." , names( df ) ) ]
   X = as.data.frame(X)
 
-  #message("Unedited Column Names")
-  #message(colnames(X))
-
   Xcols = c("U","s(t1):l1_1.1", "s(t1):l1_1.2", "s(t1):l1_1.3", "s(t1):l1_1.4", "s(t1):l1_1.5", "s(t1):l1_1.6",
   "s(t1):l1_1.7", "s(t1):l1_1.8", "s(t1):l1_1.9", "s(t1):l1_2.1", "s(t1):l1_2.2", "s(t1):l1_2.3", "s(t1):l1_2.4",
   "s(t1):l1_2.5", "s(t1):l1_2.6", "s(t1):l1_2.7", "s(t1):l1_2.8" ,"s(t1):l1_2.9", "s(t2):l2_1.1", "s(t2):l2_1.2",
@@ -70,9 +67,6 @@ PlotSmoothers <- function(models,
   "s(t2):l2_2.8","s(t2):l2_2.9")
 
   colnames(X) = Xcols
-
-  message("Edited Column Names")
-  message(colnames(X))
               
   toMatch <- c("pseudotime.", "cellWeights.")
   
@@ -138,15 +132,6 @@ PlotSmoothers <- function(models,
     col <- lcol
   }
   
-
-  message("Y Check")
-  message(y[1])
-  message(head(y))
-  message(tail(y))
-
-  message("time check")
-  message(head(timeAll))
-  message(tail(timeAll))
 
   # plot raw data
   df <- data.frame("time" = timeAll,
