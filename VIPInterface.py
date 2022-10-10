@@ -29,6 +29,10 @@ import os
 import re
 import glob
 import subprocess
+import rpy2
+import rpy2.robjects as ro
+from rpy2.robjects.conversion import localconverter
+import anndata2ri
 
 strExePath = os.path.dirname(os.path.abspath(__file__))
 
@@ -1687,3 +1691,53 @@ def pseudoPlot(data):
   pseudoPlot = plt.gcf()
 
   return iostreamFig(pseudoPlot)
+
+def dypseudoPlot(data):
+
+  #read in data
+
+  adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei_3.h5ad") #correct count matrix data
+
+  #Convert sparse matrix to dense in order to avoid conversion error
+
+  adata.X = adata.X.todense()
+
+  #Convert anndata to SCE within embedded R global environment
+  with localconverter(anndata2ri.converter):
+      ro.globalenv['some_data'] = adata
+
+  
+  res = ro.r('''
+
+    suppressMessages(suppressWarnings(require(ggplot2)))
+    suppressMessages(suppressWarnings(require(readr)))
+    suppressMessages(suppressWarnings(require(SummarizedExperiment)))
+    suppressMessages(suppressWarnings(require(SingleCellExperiment)))
+    suppressMessages(suppressWarnings(require(Seurat)))
+    suppressMessages(suppressWarnings(require(tidyr)))
+    suppressMessages(suppressWarnings(require(slingshot)))
+
+    message("run slingshot function")
+
+    some_data <- slingshot(some_data, reducedDim = 'PHATE', clusterLabels = some_data@colData@listData[["Cell_Type"]], start.clus = "LS A.1") 
+
+    message("run plotting function")
+
+    x = plot(reducedDims(some_data)$PHATE) + lines(SlingshotDataSet(some_data))
+
+    tempFig = "/home/ed/CXG_Testing/tempFig.png"
+    ggsave(tempFig, x)
+
+    fig = base64enc::dataURI(file = tempFig, mime = "image/png")
+    fig = gsub("data:image/png;base64,","",fig)
+
+    a <- file.remove(tempFig)
+
+    fig
+    ''')
+
+  #ppr.pprint(res[0])
+
+  img = res[0]
+
+  return img
