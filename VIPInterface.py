@@ -303,7 +303,8 @@ def distributeTask(aTask):
     'CPV':cellpopview,
     'CPVTable':cpvtable,
     'ymlPARSE':parseYAML,
-    'pseudo':pseudoPlot
+    'pseudo':pseudoPlot,
+    'slingshot':dypseudoPlot
   }.get(aTask,errorTask)
 
 def HELLO(data):
