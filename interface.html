@@ -549,6 +549,7 @@
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells();detectOrganism()">Cell Population View</button>
       <button class="tablinks" onclick="selFun(event, 'Pseudo');getAllCells()">Pseudotime Inference</button>
+      <button class="tablinks" onclick="selFun(event, 'SlingShot');getAllCells()">SlingShot Trajectory Inference</button>
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1');detectOrganism()">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
@@ -680,6 +681,22 @@
       <p id="pseudoFig"></p>
       <p id="pseudoNote" style="color:red;"></p>
     </div><!--Pseudo-->
+
+    <div id="SlingShot" class="tabcontent">
+      <div id="SlingShotInput">
+        <h3>Run SlingShot Trajectory Inference within Cellxgene_VIP:</h3>
+        <h4>SlingShot Options:</h4>
+        <p>Starting Cluster:
+        <select id="starting clus"></select></p>
+        <p>Starting Cluster:
+          <select id="End_Cluster"></select></p>
+        <button class="slingshotAnalysis" onclick="slingshotPlot()"><b>SlingShot Plot</b></button>
+        <div id="slingshotSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+        <p id="slingshotNote" style="color:red;"></p>
+        <p id="slingshotFig"></p>
+      </div>
+    </div><!--SlingShot→
+
 
     <div id="GD" class=tabcontent>
       <div id="GDinput">
@@ -5650,9 +5667,38 @@ function pseudoPlot(){
     console.log('error!');
   }
 })
+}
+
+function slingshotPlot(){
+
+document.getElementById("slingshotSpin").style.visibility="visible";
+
+var D = 
+{
+'method':'slingshot'
+}
+
+
+$.ajax({
+type:"POST",
+url: VIPurl,
+data:JSON.stringify(D),
+contentType: 'application/json;charset=UTF-8',//
+success: function(res){
+
+  console.log(res)
+  document.getElementById("slingshotSpin").style.visibility="hidden";
+  showImg('slingshotFig',res)
+
+},
+error: function() {
+  console.log('error!');
+}
+})
 
 
 }
+
 
 var database_URL;
 var databaseSearch_URL;
