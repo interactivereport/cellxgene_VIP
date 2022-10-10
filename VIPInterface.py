@@ -1851,8 +1851,9 @@ def dynamicRpy2(data):
   timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
   ppr.pprint(timestampStr)
 
-  adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei3.h5ad") #corrected count matrix data
-  #adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei_4.h5ad") #corrected + dense
+  #adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei3.h5ad") # corrected count matrix data
+  #adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei_4.h5ad") # corrected + dense
+  adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei_3.h5ad") # corrected + Xcol in .uns
 
   dateTimeObj = datetime.now()
   timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
@@ -1872,7 +1873,7 @@ def dynamicRpy2(data):
   timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
   print(timestampStr)
 
-  ppr.pprint("Rpy2 convrsion")
+  ppr.pprint("Rpy2 conversion")
 
   dateTimeObj = datetime.now()
   timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
@@ -1892,10 +1893,17 @@ def dynamicRpy2(data):
 
   combinations = data["combos"]
 
+  Xcolumns = adata.uns["tradeSeq_Xcols"]
+  ppr.pprint(Xcolumns)
+  ppr.pprint(type(Xcolumns))
+
+  Xcolumns = Xcolumns.tolist()
+
   #send plotting parameters to 
 
   ro.globalenv['gene1'] = gene
   ro.globalenv['combos'] = combinations
+  ro.globalenv['Xcols'] = Xcolumns
 
   ppr.pprint("sourcing function file")
 
@@ -1977,7 +1985,7 @@ def dynamicRpy2(data):
 
     smoothCombo = do.call("rbind",smoothList)
 
-    x = PlotSmoothers(some_data, gene = gene1, lwd = 0.3, size = 1/10, plotLineages = FALSE, pointCol = "Group") + 
+    x = PlotSmoothers(some_data, gene = gene1, Xcolnames = Xcols, lwd = 0.3, size = 1/10, plotLineages = FALSE, pointCol = "Group") + 
     geom_smooth(data = smoothCombo, aes(x = time, y = .data[[gene1]],group = combo, colour = combo))
    
     #tempFig = "/home/ed/CXG_Testing/tempFig.png"

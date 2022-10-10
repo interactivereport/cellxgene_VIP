@@ -11,7 +11,8 @@ suppressMessages(suppressWarnings(require(tidyr)))
 #Big Block of Functions
 
 PlotSmoothers <- function(models,  
-                                      gene, 
+                                      gene,
+                                      Xcolnames, 
                                       nPoints = 100, 
                                       lwd = 2,
                                       size = 2/3,
@@ -58,13 +59,6 @@ PlotSmoothers <- function(models,
 
   X = df[ , grepl( "X." , names( df ) ) ]
   X = as.data.frame(X)
-
-  Xcols = c("U","s(t1):l1_1.1", "s(t1):l1_1.2", "s(t1):l1_1.3", "s(t1):l1_1.4", "s(t1):l1_1.5", "s(t1):l1_1.6",
-  "s(t1):l1_1.7", "s(t1):l1_1.8", "s(t1):l1_1.9", "s(t1):l1_2.1", "s(t1):l1_2.2", "s(t1):l1_2.3", "s(t1):l1_2.4",
-  "s(t1):l1_2.5", "s(t1):l1_2.6", "s(t1):l1_2.7", "s(t1):l1_2.8" ,"s(t1):l1_2.9", "s(t2):l2_1.1", "s(t2):l2_1.2",
-  "s(t2):l2_1.3", "s(t2):l2_1.4", "s(t2):l2_1.5", "s(t2):l2_1.6", "s(t2):l2_1.7", "s(t2):l2_1.8", "s(t2):l2_1.9",
-  "s(t2):l2_2.1", "s(t2):l2_2.2", "s(t2):l2_2.3", "s(t2):l2_2.4", "s(t2):l2_2.5", "s(t2):l2_2.6", "s(t2):l2_2.7",
-  "s(t2):l2_2.8","s(t2):l2_2.9")
 
   colnames(X) = Xcols
               
