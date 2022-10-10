@@ -35,6 +35,7 @@ import rpy2.robjects as ro
 from rpy2.robjects.conversion import localconverter
 import anndata2ri
 from datetime import datetime
+import random
 
 strExePath = os.path.dirname(os.path.abspath(__file__))
 
@@ -1907,7 +1908,6 @@ def dynamicRpy2(data):
   #r['source']('/home/ed/cellxgene_VIP/tsPlot4.R')
   r['source'](strExePath+'/tsPlot4.R')
   
-  
   dateTimeObj = datetime.now()
   timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
   ppr.pprint(timestampStr)
@@ -1917,6 +1917,19 @@ def dynamicRpy2(data):
   dateTimeObj = datetime.now()
   timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
   ppr.pprint(timestampStr)
+
+  # Generate SessionID
+
+  valList = []
+
+  for i in range(10):
+    value = random.randint(0,10)
+    valList.append(value)
+    
+  session_id = ''.join([str(n) for n in valList])
+  ro.globalenv['s_id'] = session_id
+
+  ro.globalenv["strPath"] = strExePath
 
   res = ro.r('''
 
@@ -1967,7 +1980,9 @@ def dynamicRpy2(data):
     x = PlotSmoothers(some_data, gene = gene1, lwd = 0.3, size = 1/10, plotLineages = FALSE, pointCol = "Group") + 
     geom_smooth(data = smoothCombo, aes(x = time, y = .data[[gene1]],group = combo, colour = combo))
    
-    tempFig = "/home/ed/CXG_Testing/tempFig.png"
+    #tempFig = "/home/ed/CXG_Testing/tempFig.png"
+    #tempFig = strPath + "/tempFig_" + s_id + ".png"
+    tempFig = paste(strPath,"/tempFig_",s_id,".png", sep="")
     ggsave(tempFig, x)
 
     fig = base64enc::dataURI(file = tempFig, mime = "image/png")
@@ -2024,7 +2039,6 @@ def dypseudoPlot(data):
 
     x = plot(reducedDims(some_data)$PHATE) + lines(SlingshotDataSet(some_data))
 
-
     tempFig = "/home/ed/CXG_Testing/tempFig.png"
     ggsave(tempFig, x)
 
@@ -2039,7 +2053,6 @@ def dypseudoPlot(data):
   #ppr.pprint(res[0])
 
   img = res[0]
-
 
   return img
 
