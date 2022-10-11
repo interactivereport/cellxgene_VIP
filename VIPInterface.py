@@ -1717,14 +1717,70 @@ def dypseudoPlot(data):
     suppressMessages(suppressWarnings(require(Seurat)))
     suppressMessages(suppressWarnings(require(tidyr)))
     suppressMessages(suppressWarnings(require(slingshot)))
+    suppressMessages(suppressWarnings(require(dplyr)))
+
+    message("create ggplot")
+
+    rd = reducedDim(some_data, "PHATE")
+
+    colnames(rd) = c("Dim1", "Dim2")
+
+    cl = some_data$Cell_Type
+
+    df <- data.frame(rd, "cl" = as.character(cl))
+
+    p <- ggplot(df, aes(x = Dim1, y = Dim2)) +
+    geom_point(aes(fill = cl), col = "grey70", shape = 21) + 
+    theme_classic()
 
     message("run slingshot function")
 
     some_data <- slingshot(some_data, reducedDim = 'PHATE', clusterLabels = some_data@colData@listData[["Cell_Type"]], start.clus = "LS A.1") 
+    
 
-    message("run plotting function")
+    #message("run plotting function")
 
-    x = plot(reducedDims(some_data)$PHATE) + lines(SlingshotDataSet(some_data))
+    #x = plot(reducedDims(some_data)$PHATE) + lines(SlingshotDataSet(some_data))
+
+    message("add curves to plot")
+
+    #curves <- slingCurves(some_data, as.df = TRUE)
+
+    curves = slingCurves(some_data)
+    saveRDS(curves, "/home/ed/extra_stuff/some_data_curves.rds")
+
+    curveList = list()
+
+    i = 1
+
+    for (x in curves){
+  
+    dims = x$s
+    colnames(dims) = c("Dim1","Dim2")
+    dims = as.data.frame(dims)
+  
+    ord = seq(1:length(dims$Dim1))
+    dims$Order = ord
+  
+    message(head(x$ord))
+
+    dims$Lineage = i
+  
+    curveList[[i]] = dims
+    i = i + 1
+  
+    }
+
+    curveCombo = do.call("rbind",curveList)
+    message(head(curveCombo))
+    message("Order Column")
+    message(head(curveCombo$Order))
+
+    #colnames(curves) <- c("Dim1", "Dim2","Order","Lineage")
+
+    x = p + geom_path(data = curveCombo %>% arrange(Order),
+              aes(group = Lineage)) 
+
 
     tempFig = "/home/ed/CXG_Testing/tempFig.png"
     ggsave(tempFig, x)
