@@ -310,8 +310,7 @@ def distributeTask(aTask):
     'tradeSeq':tsTable,
     'tsPlot':tsPlot,
     'rpy2':Rpy2,
-    'dyrpy2':dynamicRpy2,
-    'slingshot':dypseudoPlot
+    'dyrpy2':dynamicRpy2
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1853,7 +1852,11 @@ def dynamicRpy2(data):
 
   #adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei3.h5ad") # corrected count matrix data
   #adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei_4.h5ad") # corrected + dense
-  adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei_3.h5ad") # corrected + Xcol in .uns
+  #adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei_3.h5ad") # corrected + Xcol in .uns
+  
+  with app.get_data_adaptor() as data_adaptor:
+    adata = data_adaptor.data
+  
 
   dateTimeObj = datetime.now()
   timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
@@ -1865,13 +1868,17 @@ def dynamicRpy2(data):
 
   dateTimeObj = datetime.now()
   timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
-  print(timestampStr)
+  ppr.pprint(timestampStr)
 
-  adata.X = adata.X.todense()
+  ppr.pprint(adata.X)
+  ppr.pprint(type(adata.X))
+  
+  if not isinstance(adata.X,np.matrix):
+    adata.X = adata.X.todense()
 
   dateTimeObj = datetime.now()
   timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
-  print(timestampStr)
+  ppr.pprint(timestampStr)
 
   ppr.pprint("Rpy2 conversion")
 
