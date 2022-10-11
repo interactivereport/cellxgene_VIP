@@ -1855,7 +1855,7 @@ def dynamicRpy2(data):
   #adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei_3.h5ad") # corrected + Xcol in .uns
   
   with app.get_data_adaptor() as data_adaptor:
-    adata = data_adaptor.data
+    adata = data_adaptor.data.copy()
   
 
   dateTimeObj = datetime.now()
@@ -1873,8 +1873,8 @@ def dynamicRpy2(data):
   ppr.pprint(adata.X)
   ppr.pprint(type(adata.X))
   
-  if not isinstance(adata.X,np.matrix):
-    adata.X = adata.X.todense()
+  #if not isinstance(adata.X,np.matrix):
+  adata.X = adata.X.todense()
 
   dateTimeObj = datetime.now()
   timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
