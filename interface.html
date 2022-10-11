@@ -686,10 +686,14 @@
       <div id="SlingShotInput">
         <h3>Run SlingShot Trajectory Inference within Cellxgene_VIP:</h3>
         <h4>SlingShot Options:</h4>
+        <p>Select an Embedding:
+        <select id="slingshotEmbed"></select></p>
+        <p>Select an Annotation:
+        <select id="slingshot_cluster_key" onclick="CellPopList('slingshot')"></select></p>
         <p>Starting Cluster:
-        <select id="starting clus"></select></p>
+        <select id="slingshot_start_clus"></select></p>
         <p>Starting Cluster:
-          <select id="End_Cluster"></select></p>
+        <select id="slingshot_end_clus"></select></p>
         <button class="slingshotAnalysis" onclick="slingshotPlot()"><b>SlingShot Plot</b></button>
         <div id="slingshotSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
         <p id="slingshotNote" style="color:red;"></p>
@@ -2171,6 +2175,7 @@ function init(){
     var CPVGrp = document.getElementById("CPV_ClusterKey");
     var CPVGrp2 = document.getElementById("CPV_ConditionKey");
     var pseudoAnnot = document.getElementById("pseudo_cell_annot");
+    var slingshotAnnot = document.getElementById("slingshot_cluster_key");
 
     for(const one of grps){
       if (one.startsWith(">")) continue;
@@ -2189,6 +2194,7 @@ function init(){
       CPVGrp.add(createOpt(one));
       CPVGrp2.add(createOpt(one));
       pseudoAnnot.add(createOpt(one));
+      slingshotAnnot.add(createOpt(one));
     }
     densS.add(createOpt('None'));
     densG.add(createOpt('None'));
@@ -2229,12 +2235,14 @@ function init(){
     //add layout to EMBED, DUAL, and CLI checkbox
     var embedLay = document.getElementById("EMBEDlayout");
     var dualLay = document.getElementById("DUALlayout");
+    var slingshotLay = document.getElementById("slingshotEmbed") // add layout to SlingShot select menu
 
     htmlCheck="";
     for(const ix of Object.keys(window.store.getState().annoMatrix.schema.layout.obs)){
       var one = window.store.getState().annoMatrix.schema.layout.obs[ix].name
       embedLay.add(createOpt(one));
       dualLay.add(createOpt(one));
+      slingshotLay.add(createOpt(one));
       htmlCheck += '<label><input class="eIDlayouts" type="checkbox" value="'+one+'"/> '+one+' </label>';
     }
     $('#CLIlayout').html(htmlCheck.replace(/eID/g,'CLI'));
@@ -3092,6 +3100,24 @@ function CellPopList(opt){
       levels.add(createOpt(one));
     }
    
+  }else if(opt=="slingshot"){
+    
+    var annCat = document.getElementById("slingshot_cluster_key").value;
+    grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
+
+    $("#slingshot_start_clus").empty();
+    $("#slingshot_end_clus").empty();
+
+    var ss_start = document.getElementById("slingshot_start_clus");
+    var ss_end = document.getElementById("slingshot_end_clus");
+
+    for(const one of grps[annCat]) {
+      ss_start.add(createOpt(one));
+      ss_end.add(createOpt(one));
+    }
+
+
+
   }else{
     var annCat = document.getElementById("CPV_ConditionKey").value;
     grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
