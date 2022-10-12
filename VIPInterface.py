@@ -1697,17 +1697,40 @@ def dypseudoPlot(data):
 
   #read in data
 
-  adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei_3.h5ad") #correct count matrix data
+  #adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei_3.h5ad") #correct count matrix data
+
+  adata = createData(data) #create minimal annData object
+
+  ppr.pprint(adata)
+
+  ppr.pprint("created annData object")
 
   #Convert sparse matrix to dense in order to avoid conversion error
 
   adata.X = adata.X.todense()
 
-  #Convert anndata to SCE within embedded R global environment
+  ppr.pprint("finished todense() conversion")
+
+  #Convert anndata to SCE within embedded R environment
   with localconverter(anndata2ri.converter):
       ro.globalenv['some_data'] = adata
 
-  
+  ppr.pprint("finished Rpy2 conversion")
+
+  #read in variables and send to embedded R environment
+
+  embedding = data["layout"]
+  clusterKey = data['grp'][0]
+  starting_cluster = data["start_clus"]
+  ending_cluster = data["end_clus"]
+
+  ro.globalenv['embed'] = embedding
+  ro.globalenv['cluster_labels'] = clusterKey
+  ro.globalenv['end_clus'] = ending_cluster
+  ro.globalenv['start_clus'] = starting_cluster
+
+  ppr.pprint("sent variables to R, starting to run R code")
+
   res = ro.r('''
 
     suppressMessages(suppressWarnings(require(ggplot2)))
@@ -1721,11 +1744,13 @@ def dypseudoPlot(data):
 
     message("create ggplot")
 
-    rd = reducedDim(some_data, "PHATE")
+    embed = toupper(embed)
+
+    rd = reducedDim(some_data, embed)
 
     colnames(rd) = c("Dim1", "Dim2")
 
-    cl = some_data$Cell_Type
+    cl = some_data[[cluster_labels]]
 
     df <- data.frame(rd, "cl" = as.character(cl))
 
@@ -1735,8 +1760,12 @@ def dypseudoPlot(data):
 
     message("run slingshot function")
 
-    some_data <- slingshot(some_data, reducedDim = 'PHATE', clusterLabels = some_data@colData@listData[["Cell_Type"]], start.clus = "LS A.1") 
+    some_data <- slingshot(some_data, reducedDim = embed, clusterLabels = some_data@colData@listData[[cluster_labels]], start.clus = start_clus) 
     
+    message("finished running slingshot")
+
+    #sds = SlingshotDataSet(some_data) 
+    #saveRDS(sds, "/home/ed/extra_stuff/sds.rds")
 
     #message("run plotting function")
 
@@ -1747,7 +1776,8 @@ def dypseudoPlot(data):
     #curves <- slingCurves(some_data, as.df = TRUE)
 
     curves = slingCurves(some_data)
-    saveRDS(curves, "/home/ed/extra_stuff/some_data_curves.rds")
+    #saveRDS(curves, "/home/ed/extra_stuff/some_data_curves.rds")
+    #saveRDS(some_data, "/home/ed/extra_stuff/some_data_2.rds")
 
     curveList = list()
 
@@ -1759,7 +1789,8 @@ def dypseudoPlot(data):
     colnames(dims) = c("Dim1","Dim2")
     dims = as.data.frame(dims)
   
-    ord = seq(1:length(dims$Dim1))
+    #ord = seq(1:length(dims$Dim1))
+    ord = x$ord
     dims$Order = ord
   
     message(head(x$ord))
@@ -1778,8 +1809,8 @@ def dypseudoPlot(data):
 
     #colnames(curves) <- c("Dim1", "Dim2","Order","Lineage")
 
-    x = p + geom_path(data = curveCombo %>% arrange(Order),
-              aes(group = Lineage)) 
+    x = p + geom_line(data = curveCombo %>% arrange(Order),
+              aes(group = Lineage, col = as.character(Lineage))) 
 
 
     tempFig = "/home/ed/CXG_Testing/tempFig.png"

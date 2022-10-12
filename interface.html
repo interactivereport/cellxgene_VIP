@@ -3116,7 +3116,8 @@ function CellPopList(opt){
       ss_end.add(createOpt(one));
     }
 
-
+    ss_start.add(createOpt("Null"));
+    ss_end.add(createOpt("Null"));
 
   }else{
     var annCat = document.getElementById("CPV_ConditionKey").value;
@@ -5699,9 +5700,29 @@ function slingshotPlot(){
 
 document.getElementById("slingshotSpin").style.visibility="visible";
 
+var grp = [];
+
+ss_grp = document.getElementById("slingshot_cluster_key").value;
+
+grp.push(ss_grp)
+
+ss_embedding = document.getElementById("slingshotEmbed").value;
+
+ss_start_clus = document.getElementById("slingshot_start_clus").value;
+
+ss_end_clus = document.getElementById("slingshot_end_clus").value;
+
+
 var D = 
 {
-'method':'slingshot'
+'method':'slingshot',
+'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+'cells': AllCells,
+'genes':[],
+'layout':ss_embedding,
+'grp':grp,
+'start_clus':ss_start_clus,
+'end_clus':ss_end_clus
 }
 
 
