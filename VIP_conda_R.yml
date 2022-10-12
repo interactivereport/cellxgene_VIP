@@ -224,3 +224,6 @@ dependencies:
     - urllib3==1.25.11
     - webencodings==0.5.1
     - werkzeug==1.0.1
+#    - r-ggh4x==0.1.2
+#    - hdf5=1.10.6
+#    - r-devtools=2.2.2
