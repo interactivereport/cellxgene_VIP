@@ -32,7 +32,7 @@ from pathlib import Path
 strExePath = os.path.dirname(os.path.abspath(__file__))
 
 import pprint
-ppr = pprint.PrettyPrinter(depth=6)
+ppr = pprint.PrettyPrinter(depth=6,width=500)
 
 import server.compute.diffexp_generic as diffDefault
 import pickle
@@ -267,6 +267,7 @@ def distributeTask(aTask):
     'SGV':SGV,
     'SGVcompare':SGVcompare,
     'PGV':PGV,
+    'PGVcompare':PGVcompare,
     'VIOdata':VIOdata,
     'HEATplot':pHeatmap,
     'HEATdata':HeatData,
@@ -511,6 +512,24 @@ def PGV(data):
     axes = sc.pl.stacked_violin(adata,data['genes'],groupby=data['grp'][0],show=False,ax=fig.gca(),swap_axes=swapAx,
                                 var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
   return iostreamFig(fig)
+
+def PGVcompare(data):
+  adata = createData(data)
+  #adata = geneFiltering(adata,data['cutoff'],1)
+  sc.pp.filter_cells(adata,min_counts=float(data['cutoff']))
+  if len(adata)==0:
+    raise ValueError('No cells in the condition!')
+  strF = ('%s/PGVcompare%f.csv' % (data["CLItmp"],time.time()))
+  X=pd.concat([adata.to_df(),adata.obs[data['grp']]],axis=1,sort=False).to_csv(strF,index_label="cellID")
+
+  # plot in R
+  strCMD = " ".join(["Rscript",strExePath+'/complex_vlnplot_multiple.R',strF,','.join(data['genes']),data['grp'][0],data['grp'][1],str(data['width']),str(data['height']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
+  res = subprocess.run(strCMD,shell=True,capture_output=True)
+  img = res.stdout.decode('utf-8')
+  os.remove(strF)
+  if 'Error' in res.stderr.decode('utf-8'):
+    raise SyntaxError("in R: "+res.stderr.decode('utf-8'))
+  return img
 
 def silentRM(strF):
   try:
