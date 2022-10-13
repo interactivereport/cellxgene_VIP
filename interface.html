@@ -550,6 +550,7 @@
       <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells();detectOrganism()">Cell Population View</button>
       <button class="tablinks" onclick="selFun(event, 'Pseudo');getAllCells()">Pseudotime Inference</button>
       <button class="tablinks" onclick="selFun(event, 'SlingShot');getAllCells()">SlingShot Trajectory Inference</button>
+      <button class="tablinks" onclick="selFun(event, 'PAGA');getAllCells()">PAGA Trajectory Inference</button>
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1');detectOrganism()">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
@@ -699,7 +700,22 @@
         <p id="slingshotNote" style="color:red;"></p>
         <p id="slingshotFig"></p>
       </div>
-    </div><!--SlingShot→
+    </div><!--SlingShot-->
+
+    <div id="PAGA" class="tabcontent">
+      <div id="pagaInput">
+        <h3>Run PAGA Trajectory Inference within Cellxgene_VIP:</h3>
+        <h4>PAGA Options:</h4>
+        <p>Select an Embedding:
+        <select id="pagaEmbed"></select></p>
+        <p>Select an Categorical Annotation:
+        <select id="paga_cluster_key"></select></p>
+        <button class="pagaAnalysis" onclick="pagaPlot()"><b>PAGA Plot</b></button>
+        <div id="pagaSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+        <p id="pagaNote" style="color:red;"></p>
+        <p id="pagaFig"></p>
+      </div>
+    </div><!--PAGA-->
 
 
     <div id="GD" class=tabcontent>
@@ -2176,6 +2192,7 @@ function init(){
     var CPVGrp2 = document.getElementById("CPV_ConditionKey");
     var pseudoAnnot = document.getElementById("pseudo_cell_annot");
     var slingshotAnnot = document.getElementById("slingshot_cluster_key");
+    var pagaAnnot = document.getElementById("paga_cluster_key");
 
     for(const one of grps){
       if (one.startsWith(">")) continue;
@@ -2195,6 +2212,7 @@ function init(){
       CPVGrp2.add(createOpt(one));
       pseudoAnnot.add(createOpt(one));
       slingshotAnnot.add(createOpt(one));
+      pagaAnnot.add(createOpt(one));
     }
     densS.add(createOpt('None'));
     densG.add(createOpt('None'));
@@ -2236,6 +2254,7 @@ function init(){
     var embedLay = document.getElementById("EMBEDlayout");
     var dualLay = document.getElementById("DUALlayout");
     var slingshotLay = document.getElementById("slingshotEmbed") // add layout to SlingShot select menu
+    var pagaLay = document.getElementById("pagaEmbed") // add layout to PAGA select menu
 
     htmlCheck="";
     for(const ix of Object.keys(window.store.getState().annoMatrix.schema.layout.obs)){
@@ -2243,6 +2262,7 @@ function init(){
       embedLay.add(createOpt(one));
       dualLay.add(createOpt(one));
       slingshotLay.add(createOpt(one));
+      pagaLay.add(createOpt(one));
       htmlCheck += '<label><input class="eIDlayouts" type="checkbox" value="'+one+'"/> '+one+' </label>';
     }
     $('#CLIlayout').html(htmlCheck.replace(/eID/g,'CLI'));
@@ -5736,6 +5756,47 @@ success: function(res){
   console.log(res)
   document.getElementById("slingshotSpin").style.visibility="hidden";
   showImg('slingshotFig',res)
+
+},
+error: function() {
+  console.log('error!');
+}
+})
+}
+
+function pagaPlot(){
+
+  document.getElementById("pagaSpin").style.visibility="visible";
+
+  var grp = [];
+
+  paga_grp = document.getElementById("paga_cluster_key").value;
+
+  grp.push(paga_grp)
+
+  paga_embedding = document.getElementById("pagaEmbed").value;
+
+  var D = 
+  {
+  'method':'PAGA',
+  'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+  'cells': AllCells,
+  'genes':[],
+  'layout':paga_embedding,
+  'grp':grp
+  }
+
+
+$.ajax({
+type:"POST",
+url: VIPurl,
+data:JSON.stringify(D),
+contentType: 'application/json;charset=UTF-8',//
+success: function(res){
+
+  console.log(res)
+  document.getElementById("pagaSpin").style.visibility="hidden";
+  showImg('pagaFig',res)
 
 },
 error: function() {

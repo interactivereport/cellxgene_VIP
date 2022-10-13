@@ -304,7 +304,8 @@ def distributeTask(aTask):
     'CPVTable':cpvtable,
     'ymlPARSE':parseYAML,
     'pseudo':pseudoPlot,
-    'slingshot':dypseudoPlot
+    'slingshot':dypseudoPlot,
+    'PAGA':pagaAnalysis
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1829,3 +1830,25 @@ def dypseudoPlot(data):
   img = res[0]
 
   return img
+
+def pagaAnalysis(data):
+
+  #create annData object
+
+  adata = createData(data)
+
+  embed = data["layout"]
+
+  annot = data["grp"][0]
+
+  embedding = "X_" + embed
+
+  sc.pp.neighbors(adata, n_neighbors=10, use_rep=embedding)
+
+  sc.tl.paga(adata, groups=annot) #run PAGA
+
+  sc.pl.paga(adata, color=annot)
+
+  fig = plt.gcf()
+
+  return iostreamFig(fig)
