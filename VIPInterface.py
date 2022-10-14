@@ -1700,9 +1700,9 @@ def getDesp_2(data):
 
   aut = yml["Author(s)"]
 
-  dataset = data['Dataset']
+  hashtag = yml['table_hashtag']
 
-  url = "http://cellatlas.mvls.gla.ac.uk/data/table.html" + "#" + dataset
+  url = "http://cellatlas.mvls.gla.ac.uk/data/table.html" + "#" + hashtag
 
   full_url = "<a href="+url+">Available Data Sets</a>"
   
