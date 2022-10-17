@@ -1,0 +1,7 @@
+url: https://plasmodb.org/plasmo/app/record/gene/
+url2: https://plasmodb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=
+Description: Plasmodium Bergheii Differentiation in the Erythropoietic Niches.
+Original_Paper: <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9045723/">"Host cell maturation modulates parasite invasion and sexual differentiation in Plasmodium berghei."</a>
+Author(s): Franziska Hentzschel et al.
+table_hashtag: Pb
+
