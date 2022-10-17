@@ -1743,6 +1743,8 @@ def dypseudoPlot(data):
     suppressMessages(suppressWarnings(require(slingshot)))
     suppressMessages(suppressWarnings(require(dplyr)))
 
+    message(getRversion())
+
     message("create ggplot")
 
     embed = toupper(embed)
@@ -1765,52 +1767,55 @@ def dypseudoPlot(data):
     
     message("finished running slingshot")
 
-    #sds = SlingshotDataSet(some_data) 
+    sds = SlingshotDataSet(some_data) 
     #saveRDS(sds, "/home/ed/extra_stuff/sds.rds")
 
-    #message("run plotting function")
+    message("run plotting function")
 
     #x = plot(reducedDims(some_data)$PHATE) + lines(SlingshotDataSet(some_data))
 
     message("add curves to plot")
 
-    #curves <- slingCurves(some_data, as.df = TRUE)
+    curves <- slingCurves(some_data, as.df = TRUE)
 
-    curves = slingCurves(some_data)
+    #curves = slingCurves(some_data)
     #saveRDS(curves, "/home/ed/extra_stuff/some_data_curves.rds")
     #saveRDS(some_data, "/home/ed/extra_stuff/some_data_2.rds")
 
-    curveList = list()
+    #curveList = list()
 
-    i = 1
+    #i = 1
 
-    for (x in curves){
+    #for (x in curves){
   
-    dims = x$s
-    colnames(dims) = c("Dim1","Dim2")
-    dims = as.data.frame(dims)
+    #dims = x$s
+    #colnames(dims) = c("Dim1","Dim2")
+    #dims = as.data.frame(dims)
   
     #ord = seq(1:length(dims$Dim1))
-    ord = x$ord
-    dims$Order = ord
+    #ord = x$ord
+    #dims$Order = ord
   
-    message(head(x$ord))
+    #message(head(x$ord))
 
-    dims$Lineage = i
+    #dims$Lineage = i
   
-    curveList[[i]] = dims
-    i = i + 1
+    #curveList[[i]] = dims
+    #i = i + 1
   
-    }
+    #}
 
-    curveCombo = do.call("rbind",curveList)
-    message(head(curveCombo))
-    message("Order Column")
-    message(head(curveCombo$Order))
+    #curveCombo = do.call("rbind",curveList)
+    #message(head(curveCombo))
+    #message("Order Column")
+    #message(head(curveCombo$Order))
 
     #colnames(curves) <- c("Dim1", "Dim2","Order","Lineage")
 
-    x = p + geom_line(data = curveCombo %>% arrange(Order),
+    #x = p + geom_line(data = curveCombo %>% arrange(Order),
+              #aes(group = Lineage, col = as.character(Lineage))) 
+
+    x = p + geom_line(data = curves %>% arrange(Order),
               aes(group = Lineage, col = as.character(Lineage))) 
 
 
