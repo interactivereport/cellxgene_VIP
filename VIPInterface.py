@@ -33,6 +33,7 @@ import rpy2
 import rpy2.robjects as ro
 from rpy2.robjects.conversion import localconverter
 import anndata2ri
+import scprep
 
 strExePath = os.path.dirname(os.path.abspath(__file__))
 
@@ -304,7 +305,7 @@ def distributeTask(aTask):
     'CPVTable':cpvtable,
     'ymlPARSE':parseYAML,
     'pseudo':pseudoPlot,
-    'slingshot':dypseudoPlot,
+    'slingshot':dypseudoPlot_2,
     'PAGA':pagaAnalysis
   }.get(aTask,errorTask)
 
@@ -1853,6 +1854,38 @@ def pagaAnalysis(data):
   sc.tl.paga(adata, groups=annot) #run PAGA
 
   sc.pl.paga(adata, color=annot)
+
+  fig = plt.gcf()
+
+  return iostreamFig(fig)
+
+def dypseudoPlot_2(data):
+  
+  adata = createData(data)
+
+  embed = data["layout"]
+
+  embedding = "X_" + embed
+
+  r_dims = adata.obsm[embedding]
+
+  clusterKey = data['grp'][0]
+  starting_cluster = data["start_clus"]
+  ending_cluster = data["end_clus"]
+
+  clusters = adata.obs[clusterKey]
+
+  results = scprep.run.Slingshot(r_dims,clusters, start_cluster = starting_cluster)
+
+  ax = scprep.plot.scatter2d(
+     r_dims,
+     c=results['pseudotime'][:,0],
+     cmap='magma',
+     legend_title='Branch 1'
+)
+
+  for curve in results['curves']:
+    ax.plot(curve[:,0], curve[:,1], c='k', linewidth=3)
 
   fig = plt.gcf()
 
