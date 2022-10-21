@@ -1875,7 +1875,14 @@ def dypseudoPlot_2(data):
 
   clusters = adata.obs[clusterKey]
 
-  results = scprep.run.Slingshot(r_dims,clusters, start_cluster = starting_cluster)
+  if starting_cluster == "Null" and ending_cluster == "Null":
+    results = scprep.run.Slingshot(r_dims,clusters)
+  elif ending_cluster == "Null":
+    results = scprep.run.Slingshot(r_dims,clusters, start_cluster = starting_cluster)
+  elif starting_cluster == "Null":
+    results = scprep.run.Slingshot(r_dims,clusters, end_cluster = ending_cluster)
+  else:
+    results = scprep.run.Slingshot(r_dims,clusters, start_cluster = starting_cluster, end_cluster = ending_cluster)
 
   ax = scprep.plot.scatter2d(
      r_dims,

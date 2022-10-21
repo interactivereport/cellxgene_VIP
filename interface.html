@@ -548,9 +548,7 @@
       <button class="tablinks" onclick="selFun(event, 'STACBAR')">Stacked Barplot</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells();detectOrganism()">Cell Population View</button>
-      <button class="tablinks" onclick="selFun(event, 'Pseudo');getAllCells()">Pseudotime Inference</button>
-      <button class="tablinks" onclick="selFun(event, 'SlingShot');getAllCells()">SlingShot Trajectory Inference</button>
-      <button class="tablinks" onclick="selFun(event, 'PAGA');getAllCells()">PAGA Trajectory Inference</button>
+      <button class="tablinks" onclick="selFun(event, 'TIA');defaultTopSel('TIA','pseudo_tab');getAllCells()">Trajectory Inference</button>
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1');detectOrganism()">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
@@ -670,53 +668,6 @@
       <p></p>
       <table id="CPVdatatable" class="display"></table>
     </div><!--CellPopView-->
-
-    <div id="Pseudo" class="tabcontent">
-      <div id="PseudotimeInput">
-        <h3>Display Pseudotime Inference results within Cellxgene_VIP:</h3>
-        <p>Colour by:
-        <select id="pseudo_cell_annot"></select></p>
-      </div>
-      <button class="pseudoAnalysis" onclick="pseudoPlot()"><b>Pseudotime Plot</b></button>
-      <div id="pseudoSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <p id="pseudoFig"></p>
-      <p id="pseudoNote" style="color:red;"></p>
-    </div><!--Pseudo-->
-
-    <div id="SlingShot" class="tabcontent">
-      <div id="SlingShotInput">
-        <h3>Run SlingShot Trajectory Inference within Cellxgene_VIP:</h3>
-        <h4>SlingShot Options:</h4>
-        <p>Select an Embedding:
-        <select id="slingshotEmbed"></select></p>
-        <p>Select an Annotation:
-        <select id="slingshot_cluster_key" onclick="CellPopList('slingshot')"></select></p>
-        <p>Starting Cluster:
-        <select id="slingshot_start_clus"></select></p>
-        <p>Starting Cluster:
-        <select id="slingshot_end_clus"></select></p>
-        <button class="slingshotAnalysis" onclick="slingshotPlot()"><b>SlingShot Plot</b></button>
-        <div id="slingshotSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-        <p id="slingshotNote" style="color:red;"></p>
-        <p id="slingshotFig"></p>
-      </div>
-    </div><!--SlingShot-->
-
-    <div id="PAGA" class="tabcontent">
-      <div id="pagaInput">
-        <h3>Run PAGA Trajectory Inference within Cellxgene_VIP:</h3>
-        <h4>PAGA Options:</h4>
-        <p>Select an Embedding:
-        <select id="pagaEmbed"></select></p>
-        <p>Select an Categorical Annotation:
-        <select id="paga_cluster_key"></select></p>
-        <button class="pagaAnalysis" onclick="pagaPlot()"><b>PAGA Plot</b></button>
-        <div id="pagaSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-        <p id="pagaNote" style="color:red;"></p>
-        <p id="pagaFig"></p>
-      </div>
-    </div><!--PAGA-->
-
 
     <div id="GD" class=tabcontent>
       <div id="GDinput">
@@ -1022,10 +973,10 @@
           <option value='RdYlGn'>RdYlGn</option>
         </select>  <input id="DOTcolor_r" type="checkbox">Reverse <button onclick="hideShow($('#DOTcolorhelp'),$(this),'Color Help');">Show Color Help</button></p>
     		<div id="DOTcolorhelp" style="display:none;">
-              <table border=0>
-                <tr valign="top"><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_sequential.png" width="300"></td><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_diverging.png" width="300"></td></tr>
-              </table>
-    		</div>
+          <table border=0>
+            <tr valign="top"><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_sequential.png" width="300"></td><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_diverging.png" width="300"></td></tr>
+          </table>
+    </div>
 
         <pre id="DOTnote" style="color:red;">Note: Unscaled data is used as the visualiztion is hard to interpret for scaled or corrected matrices in which zero counts had been replaced by other values. Scaling option in Global Setting does not apply to Dot plot</pre>
       </div>
@@ -1731,6 +1682,60 @@
       <br><button onclick="loadClick()">load</button>
       <div id="LOADnote"></div>
     </div>
+
+    <div id="TIA" class="tabcontent">
+      <div class="topTab">
+        <button id="pseudo_tab" class="TIAlinks" onclick="selTop(event, 'Pseudo','TIA')">Pseudotime</button>
+        <button id="paga_tab" class="TIAlinks" onclick="selTop(event, 'PAGA','TIA')">PAGA</button>
+        <button id="slingshot_tab" class="TIAlinks" onclick="selTop(event, 'SlingShot','TIA')">SlingShot</button>
+      </div><!--TIA-->
+  
+    <div id="Pseudo" class="TIAcontent">
+      <div id="PseudotimeInput">
+        <h3>Display Pseudotime Inference results within Cellxgene_VIP:</h3>
+        <p>Colour by:
+        <select id="pseudo_cell_annot"></select></p>
+      </div>
+      <button class="pseudoAnalysis" onclick="pseudoPlot()"><b>Pseudotime Plot</b></button>
+      <div id="pseudoSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+      <p id="pseudoFig"></p>
+      <p id="pseudoNote" style="color:red;"></p>
+    </div><!--Pseudo-->
+
+    <div id="SlingShot" class="TIAcontent">
+      <div id="SlingShotInput">
+        <h3>Run SlingShot Trajectory Inference within Cellxgene_VIP:</h3>
+        <h4>SlingShot Options:</h4>
+        <p>Select an Embedding:
+        <select id="slingshotEmbed"></select></p>
+        <p>Select an Annotation:
+        <select id="slingshot_cluster_key" onclick="CellPopList('slingshot')"></select></p>
+        <p>Starting Cluster:
+        <select id="slingshot_start_clus"></select></p>
+        <p>Starting Cluster:
+        <select id="slingshot_end_clus"></select></p>
+        <button class="slingshotAnalysis" onclick="slingshotPlot()"><b>SlingShot Plot</b></button>
+        <div id="slingshotSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+        <p id="slingshotNote" style="color:red;"></p>
+        <p id="slingshotFig"></p>
+      </div>
+    </div><!--SlingShot-->
+
+    <div id="PAGA" class="TIAcontent">
+      <div id="pagaInput">
+        <h3>Run PAGA Trajectory Inference within Cellxgene_VIP:</h3>
+        <h4>PAGA Options:</h4>
+        <p>Select an Embedding:
+        <select id="pagaEmbed"></select></p>
+        <p>Select an Categorical Annotation:
+        <select id="paga_cluster_key"></select></p>
+        <button class="pagaAnalysis" onclick="pagaPlot()"><b>PAGA Plot</b></button>
+        <div id="pagaSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+        <p id="pagaNote" style="color:red;"></p>
+        <p id="pagaFig"></p>
+      </div>
+    </div><!--PAGA-->
+
   </div>
 </div>
 
