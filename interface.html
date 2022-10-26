@@ -1922,6 +1922,9 @@ function createOpt(val){
   return(opt)
 }
 function addDescription(){
+
+  console.log(window.store.getState().config.displayNames.dataset)
+  
   $.ajax({
         type: "POST",
         url: VIPurl,
