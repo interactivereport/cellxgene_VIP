@@ -1924,7 +1924,7 @@ function createOpt(val){
 function addDescription(){
 
   console.log(window.store.getState().config.displayNames.dataset)
-  
+
   $.ajax({
         type: "POST",
         url: VIPurl,
@@ -1932,6 +1932,7 @@ function addDescription(){
         "Dataset": window.store.getState().config.displayNames.dataset}),
         contentType: 'application/json;charset=UTF-8',
         success: function(res){
+          console.log(res);
           if(res.length==0){
             console.log('No description available!');
             return;
