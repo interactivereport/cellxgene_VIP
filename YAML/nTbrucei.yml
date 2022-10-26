@@ -1,5 +1,9 @@
 url: https://tritrypdb.org/tritrypdb/app/record/gene/
 url2: https://tritrypdb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=
+Description: Trypanosoma Brucei Blood Stages
+Original_Paper: <a href="https://www.nature.com/articles/s41467-021-25607-2">"Single cell transcriptomic analysis of bloodstream form Trypanosoma brucei reconstructs cell cycle progression and different>
+Author(s): Emma M. Briggs et al.
+table_hashtag: Tbrucei
 includePseudo:
 includeTS:
 tsAnnot: Group 
