@@ -3,3 +3,4 @@ url2: https://tritrypdb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene
 Description: Single Cell transcriptomic analysis in the mouse brain during chronic Trypanosoma brucei infection.
 Original_Paper: <a href="https://www.biorxiv.org/content/10.1101/2022.03.25.485502v2">"Integrative single cell and spatial transcriptomic analysis reveal reciprocal microglia-plasma cell crosstalk in the mouse brain during chronic Trypanosoma brucei infection."</a>
 Author(s): Juan Quintana et al.
+table_hashtag: tbrucei_brain_spatial_naive
