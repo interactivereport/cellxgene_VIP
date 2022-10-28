@@ -1,5 +1,5 @@
 # What's new
-## Upgrade to cellxgene v 1.1.1
+* Upgrade to cellxgene v 1.1.1
 
 # Cellxgene VIP unleashes full power of interactive visualization and integrative analysis of scRNA-seq, spatial transcriptomics, and multiome data
 
