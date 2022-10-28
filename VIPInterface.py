@@ -2,7 +2,7 @@ import requests
 import json
 import traceback
 import sqlite3
-import server.app.decode_fbs as decode_fbs
+#import server.app.decode_fbs as decode_fbs
 import scanpy as sc
 import anndata as ad
 import pandas as pd
@@ -34,7 +34,7 @@ strExePath = os.path.dirname(os.path.abspath(__file__))
 import pprint
 ppr = pprint.PrettyPrinter(depth=6,width=500)
 
-import server.compute.diffexp_generic as diffDefault
+import server.common.compute.diffexp_generic as diffDefault
 import pickle
 from pyarrow import feather
 
@@ -50,11 +50,11 @@ def getLock(lock):
     while not lock.acquire():
         time.sleep(1.0)
 def freeLock(lock):
-    lock.release()
+  lock.release()
 
 def route(data,appConfig):
-  #ppr.pprint("current working dir:%s"%os.getcwd())
   data = initialization(data,appConfig)
+  #ppr.pprint(appConfig.server_config.single_dataset__datapath)
   #ppr.pprint(data)
   try:
     getLock(jobLock)
@@ -67,10 +67,16 @@ def route(data,appConfig):
     return taskRes
   except Exception as e:
     freeLock(jobLock)
-    return 'ERROR @server: '+traceback.format_exc() # 'ERROR @server: {}, {}'.format(type(e),str(e))
-  #return distributeTask(data["method"])(data)
+    return 'ERROR @server: '+traceback.format_exc()
 
 import server.app.app as app
+class getAdapter(object):
+    def __init__(self, adapter):
+        self.adapter = adapter
+    def __enter__(self):
+        return self.adapter
+    def __exit__(self):
+        return
 
 def initialization(data,appConfig):
   # obtain the server host information
@@ -80,22 +86,28 @@ def initialization(data,appConfig):
   data.update(VIPenv)
 
   # updatting the hosting data information
-  if appConfig.is_multi_dataset():
-    data["url_dataroot"]=appConfig.server_config.multi_dataset__dataroot['d']['base_url']
-    data['h5ad']=os.path.join(appConfig.server_config.multi_dataset__dataroot['d']['dataroot'], data["dataset"])
-  else:
-    data["url_dataroot"]=None
-    data["dataset"]=None
-    data['h5ad']=appConfig.server_config.single_dataset__datapath
-
+  # v1.1.1 no multi datasets option
+  # if appConfig.is_multi_dataset():
+  #  data["url_dataroot"]=appConfig.server_config.multi_dataset__dataroot['d']['base_url']
+  #  data['h5ad']=os.path.join(appConfig.server_config.multi_dataset__dataroot['d']['dataroot'], data["dataset"])
+  # else:
+  #  data["url_dataroot"]=None
+  #  data["dataset"]=None
+  #  data['h5ad']=appConfig.server_config.single_dataset__datapath
+  data["url_dataroot"]=None
+  data["dataset"]=None
+  data['h5ad']=appConfig.server_config.single_dataset__datapath
   # setting the plotting options
   if 'figOpt' in data.keys():
     setFigureOpt(data['figOpt'])
 
   # get the var (gene) and obv index
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-    data['obs_index'] = scD.get_schema()["annotations"]["obs"]["index"]
-    data['var_index'] = scD.get_schema()["annotations"]["var"]["index"]
+  #ppr.pprint(dir(appConfig.server_config.data_adaptor))
+  #with app.get_data_adaptor() as scD:
+  data['data_adapter'] = appConfig.server_config.data_adaptor
+  scD=appConfig.server_config.data_adaptor
+  data['obs_index'] = scD.get_schema()["annotations"]["obs"]["index"]
+  data['var_index'] = scD.get_schema()["annotations"]["var"]["index"]
   return data
 
 def setFigureOpt(opt):
@@ -106,7 +118,9 @@ def getObs(data):
   selC = list(data['cells'].values())
   cNames = ["cell%d" %i for i in selC]
   ## obtain the category annotation
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  scD=data['data_adapter']
+  if scD is not None:
     selAnno = [data['obs_index']]+data['grp']
     dAnno = list(scD.get_obs_keys())
     anno = []
@@ -137,7 +151,9 @@ def getObsNum(data):
   cNames = ["cell%d" %i for i in selC]
   ## obtain the category annotation
   obs = pd.DataFrame()
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  scD=data['data_adapter']
+  if scD is not None:
     selAnno = data['grpNum']
     dAnno = list(scD.get_obs_keys())
     sel = list(set(selAnno)&set(dAnno))
@@ -148,7 +164,9 @@ def getObsNum(data):
 
 def getVar(data):
   ## obtain the gene annotation
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  scD=data['data_adapter']
+  if scD is not None:
     gInfo = scD.data.var
   gInfo.index = list(gInfo[data['var_index']])
   gInfo = gInfo.drop([data['var_index']],axis=1)
@@ -183,7 +201,9 @@ def createData(data):
   fSparse = False
   X = []
   if 'genes' in data.keys():
-    with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+    #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+    scD=data['data_adapter']
+    if scD is not None:
       if not type(scD.data.X) is np.ndarray:
         fSparse = True
       if len(data['genes'])>0:
@@ -212,7 +232,9 @@ def createData(data):
       layout = [layout]
     if len(layout)>0:
       for one in layout:
-        with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+        #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+        scD=data['data_adapter']
+        if scD is not None:
           embed['X_%s'%one] = pd.DataFrame(scD.data.obsm['X_%s'%one][selC][:,[0,1]],columns=['%s1'%one,'%s2'%one],index=cNames)
   #ppr.pprint("finished layout ...")
   ## obtain the category annotation
@@ -325,7 +347,9 @@ def Msg(msg):
   return iostreamFig(fig)
 
 def SPATIAL(data):
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  scD=data['data_adapter']
+  if scD is not None:
     #ppr.pprint(vars(scD.data.uns["spatial"]))
     spatial=scD.data.uns["spatial"]
     if (data['embedding'] == "get_spatial_list"):
@@ -386,7 +410,9 @@ def SPATIAL(data):
   return json.dumps([returnD, imgD])
 
 def MINX(data):
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  scD=data['data_adapter']
+  if scD is not None:
     minV = min(scD.data.X[0])
   return '%.1f'%minV
 
@@ -784,10 +810,14 @@ def DEG(data):
   if data['DEmethod']=='default':
     if sum(mask[0]==True)<10 or sum(mask[1]==True)<10:
       raise ValueError('Less than 10 cells in a group!')
-    with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-      res = diffDefault.diffexp_ttest(scD,mask[0].to_numpy(),mask[1].to_numpy(),scD.data.shape[1])# shape[cells as rows, genes as columns]
+    #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+    scD=data['data_adapter']
+    if scD is not None:
+      #res = diffDefault.diffexp_ttest(scD,mask[0].to_numpy(),mask[1].to_numpy(),scD.data.shape[1])# shape[cells as rows, genes as columns]
+      res = scD.compute_diffexp_ttest(mask[0].to_numpy(),mask[1].to_numpy(),scD.data.shape[1]-1,0.01)
       gNames = list(scD.data.var[data['var_index']])
-    deg = pd.DataFrame(res,columns=['gID','log2fc','pval','qval'])
+    deg = pd.DataFrame(res['positive']+res['negative'],columns=['gID','log2fc','pval','qval'])
+    deg = deg.drop_duplicates(ignore_index=True)
     gName = pd.Series([gNames[i] for i in deg['gID']],name='gene')
     deg = pd.concat([deg,gName],axis=1).loc[:,['gene','log2fc','pval','qval']]
   else:
@@ -1484,7 +1514,9 @@ except Exception as e:
 def mergeMeta(data):
   selC = list(data['cells'].values())
   ## obtain the category annotation
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  scD=data['data_adapter']
+  if scD is not None:
     if not 'cellN' in scD.data.obs:
       raise ValueError('This is not a metacell data!')
     obs = scD.data.obs.loc[selC,[data['obs_index'],'cellN']]
@@ -1503,7 +1535,9 @@ def mergeMeta(data):
   return data['METAurl']+"/d/"+os.path.basename(strOut)+"/"
 
 def isMeta(data):
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  scD=data['data_adapter']
+  if scD is not None:
     if not 'cellN' in scD.data.obs:
       return "FALSE"
   strPath = re.sub(".h5ad$","",data["h5ad"])
@@ -1538,7 +1572,9 @@ def plotBW(data):
     if os.path.isfile(strType) and len(data['genes'])>0:
         with open(strType,"r") as f:
             grp = f.readline().strip()
-        with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+        #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+        scD=data['data_adapter']
+        if scD is not None:
           dAnno = list(scD.get_obs_keys())
           if grp in dAnno:
               grpFlag = True

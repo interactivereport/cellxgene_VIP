@@ -1736,12 +1736,12 @@ function checkLoading(){
     }
     if (loadingCycle > 300) return true;
     //console.log("Loaded Annotation:"+store.getState().annoMatrix._cache.obs.__columns.length);
-    var annoNum = 0;
-    var columns = store.getState().annoMatrix.schema.annotations.obs.columns;
-    for (var i=0;i<columns.length;i++) {
-      if (columns[i].type === "categorical" && columns[i].categories.length<2) continue;
-      annoNum ++;
-    }
+    var annoNum = store.getState().annoMatrix.schema.annotations.obs.columns.length;
+    //var columns = store.getState().annoMatrix.schema.annotations.obs.columns;
+    //for (var i=0;i<columns.length;i++) {
+    //  if (columns[i].type === "categorical" && columns[i].categories.length<2) continue;
+    //  annoNum ++;
+    //}
 
     if (Object.keys(store.getState().annoMatrix.schema.annotations.obsByName).includes(store.getState().annoMatrix.schema.annotations.obs.index)) annoNum--;
     if (Object.keys(store.getState().annoMatrix.schema.annotations.obsByName).includes(">Description")) annoNum--;
