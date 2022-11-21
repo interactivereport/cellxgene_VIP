@@ -1648,19 +1648,11 @@ def cpvtable(data):
 
 def parseYAML(data):
 
-  ppr.pprint(strExePath) 
+  dataset = data["Dataset"]
 
-  ymlAddress = data['addr']
+  ymlAddress = strExePath + "/YAML/" + dataset + ".yml"
 
-  #cwd = "/share/cellxgene/main/YAML"
-
-  #finalAddr = cwd + ymlAddress
-
-  finalAddr = ymlAddress
-
-  #ppr.pprint(finalAddr)
-
-  with open(finalAddr) as f:
+  with open(ymlAddress) as f:
     data = yaml.load(f, Loader=SafeLoader)
   
   return data

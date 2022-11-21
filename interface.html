@@ -550,7 +550,7 @@
       <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells()">Cell Population View</button>
       <button class="tablinks" onclick="selFun(event, 'Pseudo');getAllCells()">Pseudotime Inference</button>
       <button class="tablinks" onclick="selFun(event, 'TradeSeq');getAllCells();CellPopList('TS')">TradeSeq</button>
-      <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1');detectOrganism()">DEG</button>
+      <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1')">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
       <button id="browserBT" class="tablinks" onclick="selFun(event, 'BROW')" style="display: none;">Multiome</button>
@@ -2390,6 +2390,9 @@ function init(){
             //Add Description
             addDescription();
 
+            //Parse YAML file
+            yamlPARSE();
+
             //get GSEA Information
             getGSEA();
 
@@ -3461,7 +3464,6 @@ function ADDGsetAdd(idx){//Geneset_Name Geneset_Genes
   window.biogen = geneNames;
   ADDGref();
   gsDB_dropdown()
-  detectOrganism();
 }
 function ADDGsetDel(grpName){
   delete window.bioGeneGrp[grpName];
@@ -6025,11 +6027,8 @@ function yamlPARSE(){
 
 var D = 
 {'method':'ymlPARSE',
-'addr':'/home/ed/data_cxg/YAML/'+window.store.getState().config.displayNames.dataset+'.yml'
-}
+"Dataset": window.store.getState().config.displayNames.dataset}
 
-//'/home/ed/data_cxg/YAML/'+window.store.getState().config.displayNames.dataset+'.yml',
-//'/'+window.store.getState().config.displayNames.dataset+'.yml'
 
 $.ajax({
   type:"POST",
@@ -6210,7 +6209,6 @@ function add_DEG_GeneSet(){
   window.biogen = geneNames;
   ADDGref();
   gsDB_dropdown();
-  detectOrganism();
 }
 
 function geneset_to_database(){
