@@ -5808,15 +5808,7 @@ function tsTable(){
       buttons:['csv', {
           text:'TradeSeqPlot',
           action: function(e, dt, node, config) {
-
             tsPlot(tsPlotGene)
-
-            return;
-          }
-        },{
-          text:'TradeSeqPlot(Rpy2)',
-          action: function(e, dt, node, config) {
-            rpyTest(tsPlotGene)
             return;
           }
         }],
@@ -5896,60 +5888,6 @@ function tsDropDownUpdate(){
 
 function tsPlot(tsgene){
 
-  var grp = [];
-
-  var annotkeys = pseudoannots;
-
-  for(const one of annotkeys){
-     if(one.startsWith("pseudo") || one.startsWith("Lineage")){
-       grp.push(one);
-     }
-   }
-  
-  if(tsgene == null) {
-    $("#tradeSeqNote").text("Please select a gene from the Table.");
-    return
-  }
-
-  document.getElementById("tradeSeqSpin").style.visibility="visible";
-
-  var D = {
-  'method':'tsPlot',
-  'dataset': window.store.getState().config.displayNames.dataset,
-  'cells':AllCells,
-  'genes':[],
-  'gene':tsgene,
-  'grp':grp,
-  };
-
-  $.ajax({
-  type:"POST",
-  url: VIPurl,
-  data:JSON.stringify(D),
-  contentType: 'application/json;charset=UTF-8',//
-  success: function(res){
-
-    if(res.startsWith('ERROR')){
-      $("#tradeSeqNote").text(res);
-      document.getElementById("tradeSeqSpin").style.visibility="hidden";
-        return;
-      }
-
-    console.log(res);
-    
-    document.getElementById("tradeSeqSpin").style.visibility="hidden";
-
-    showImg('tradeSeqFig',res);
-
-  },
-  error: function() {
-    document.getElementById("tradeSeqSpin").style.visibility="hidden";
-  }
-})
-}
-
-function rpyTest(tsgene){
-
   comboList = [];
   var c = 0;
   
@@ -5977,7 +5915,7 @@ function rpyTest(tsgene){
   }
 
   var D = {
-  'method':'dyrpy2',
+  'method':'tradeSeqPlotting',
   'dataset': window.store.getState().config.displayNames.dataset,
   'cells':AllCells,
   'genes':[],

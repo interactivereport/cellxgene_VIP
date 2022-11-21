@@ -308,9 +308,7 @@ def distributeTask(aTask):
     'ymlPARSE':parseYAML,
     'pseudo':pseudoPlot,
     'tradeSeq':tsTable,
-    'tsPlot':tsPlot,
-    'rpy2':Rpy2,
-    'dyrpy2':dynamicRpy2
+    'tradeSeqPlotting':tradeSeqPlot
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1745,138 +1743,16 @@ def tsTable(data):
 
   return json.dumps(res)
 
-
-def tsPlot(data):
-
-  gene = data["gene"]
-
-  res = subprocess.run(['/home/ed/cellxgene_VIP/tsPlot3.R',gene],capture_output=True) 
-  #/home/ed/cellxgene_VIP/tsPlot.R
-  #/home/cellxgene/cellxgene_VIP/tsPlot.R
-
-  img = res.stdout.decode('utf-8')
-
-  err = res.stderr
-  ppr.pprint(err)
-
-  return img
-
-def Rpy2(data):
+def tradeSeqPlot(data):
   
   #Read in Data
-
-  adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei3.h5ad")
-  #adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei.h5ad")
-  #/home/ed/data_cxg/nTbrucei.h5ad
-  #/share/cellxgene/main/nTbrucei.h5ad
-
-  #Convert sparse matrix to dense in order to avoid conversion error
-
-  adata.X = adata.X.todense()
-
-  gene = data["gene"]
-
-  ro.globalenv['gene1'] = gene
-
-  # Source function file
-  r = ro.r
-  r['source']('/home/ed/cellxgene_VIP/tsPlot4.R')
-  #r['source']('/home/ed/cellxgene_VIP/tsPlot2.R')
-  #/home/ed/cellxgene_VIP/tsPlot2.R
-  #/home/cellxgene/cellxgene_VIP/tsPlot2.R
-
-  #Convert anndata to SCE within embedded R global environment
-  with localconverter(anndata2ri.converter):
-      ro.globalenv['some_data'] = adata
-      
-  res = ro.r('''
-
-    message("Predict Smoother starts")
-
-    #smooth = predictSmoother(some_data,gene1)
-
-    smooth = read.csv("/home/ed/extra_stuff/smoothPAD2_local.csv")
-
-    smooth_WT = subset(smooth,condition == "WT")
-    smooth_WT = subset(smooth_WT, lineage = "1")
-    smooth_WT = pivot_wider(smooth_WT, names_from = gene, values_from = yhat)
-
-    smooth_ZC3H20 <- subset(smooth, condition == "ZC3H20_KO")
-    smooth_ZC3H20 <- subset(smooth_ZC3H20, lineage == "2")
-    smooth_ZC3H20 <- pivot_wider(smooth_ZC3H20, names_from = gene, values_from = yhat)
-
-    message("Predict Smoother ends, start of Plotting Function")
-
-    x = PlotSmoothers(some_data, gene = gene1, lwd = 0.3, size = 1/10, plotLineages = FALSE, pointCol = "Group") + 
-    NoLegend() + geom_smooth(data = smooth_WT, aes(x = time, y = .data[[gene1]]), color="#f8766d") + 
-    geom_smooth(data = smooth_ZC3H20, aes(x = time, y = .data[[gene1]]), color="#00bfc4") 
-
-    message("end of plotting function")
-
-    #x = PlotSmoothers(some_data,gene = gene1)
-    tempFig = "/home/ed/CXG_Testing/tempFig.png"
-    ggsave(tempFig, x)
-
-    fig = base64enc::dataURI(file = tempFig, mime = "image/png")
-    fig = gsub("data:image/png;base64,","",fig)
-
-    a <- file.remove(tempFig)
-
-    fig
-    ''')
-
-  #ppr.pprint(res[0])
-
-  img = res[0]
-
-  return img
-
-def dynamicRpy2(data):
-  
-  #Read in Data
-
-  ppr.pprint("reading in data")
-
-  dateTimeObj = datetime.now()
-  start = dateTimeObj
-  timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
-  ppr.pprint(timestampStr)
-
-  #adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei3.h5ad") # corrected count matrix data
-  #adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei_4.h5ad") # corrected + dense
-  #adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei_3.h5ad") # corrected + Xcol in .uns
   
   with app.get_data_adaptor() as data_adaptor:
     adata = data_adaptor.data.copy()
   
-
-  dateTimeObj = datetime.now()
-  timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
-  ppr.pprint(timestampStr)
-
   #Convert sparse matrix to dense in order to avoid conversion error
 
-  ppr.pprint("dense matrix conversion")
-
-  dateTimeObj = datetime.now()
-  timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
-  ppr.pprint(timestampStr)
-
-  ppr.pprint(adata.X)
-  ppr.pprint(type(adata.X))
-  
-  #if not isinstance(adata.X,np.matrix):
   adata.X = adata.X.todense()
-
-  dateTimeObj = datetime.now()
-  timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
-  ppr.pprint(timestampStr)
-
-  ppr.pprint("Rpy2 conversion")
-
-  dateTimeObj = datetime.now()
-  timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
-  ppr.pprint(timestampStr)
 
   #Convert anndata to SCE within embedded R global environment
   with localconverter(anndata2ri.converter):
@@ -1893,8 +1769,6 @@ def dynamicRpy2(data):
   combinations = data["combos"]
 
   Xcolumns = adata.uns["tradeSeq_Xcols"]
-  ppr.pprint(Xcolumns)
-  ppr.pprint(type(Xcolumns))
 
   Xcolumns = Xcolumns.tolist()
 
@@ -1904,27 +1778,11 @@ def dynamicRpy2(data):
   ro.globalenv['combos'] = combinations
   ro.globalenv['Xcols'] = Xcolumns
 
-  ppr.pprint("sourcing function file")
-
-  dateTimeObj = datetime.now()
-  timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
-  ppr.pprint(timestampStr)
-
   # Source function file
   r = ro.r
   #r['source']('/home/ed/cellxgene_VIP/tsPlot4.R')
   r['source'](strExePath+'/tsPlot4.R')
   
-  dateTimeObj = datetime.now()
-  timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
-  ppr.pprint(timestampStr)
-
-  ppr.pprint("running R code")
-
-  dateTimeObj = datetime.now()
-  timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
-  ppr.pprint(timestampStr)
-
   # Generate SessionID
 
   valList = []
@@ -1987,26 +1845,16 @@ def dynamicRpy2(data):
     x = PlotSmoothers(some_data, gene = gene1, Xcolnames = Xcols, lwd = 0.3, size = 1/10, plotLineages = FALSE, pointCol = "Group") + 
     geom_smooth(data = smoothCombo, aes(x = time, y = .data[[gene1]],group = combo, colour = combo))
    
-    #tempFig = "/home/ed/CXG_Testing/tempFig.png"
-    #tempFig = strPath + "/tempFig_" + s_id + ".png"
-    tempFig = paste(strPath,"/tempFig_",s_id,".png", sep="")
-    ggsave(tempFig, x)
+    tempID = paste(s_id,".png",sep="")
+    ggsave(tempID, x)
 
-    fig = base64enc::dataURI(file = tempFig, mime = "image/png")
+    fig = base64enc::dataURI(file = tempID, mime = "image/png")
     fig = gsub("data:image/png;base64,","",fig)
 
-    a <- file.remove(tempFig)
+    file.remove(tempID)
 
     fig
     ''')
-
-  dateTimeObj = datetime.now()
-  end = dateTimeObj
-  timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
-  ppr.pprint(timestampStr)
-
-  total_run_time = end - start
-  ppr.pprint(total_run_time)
 
   img = res[0]
 
