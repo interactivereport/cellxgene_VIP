@@ -5686,6 +5686,8 @@ function pseudoPlot(){
 
   grp.push(annot);
 
+  if (includePseudo){ // YAML file lever
+
   document.getElementById("pseudoSpin").style.visibility="visible";
 
   var D = {
@@ -5720,6 +5722,10 @@ function pseudoPlot(){
     console.log('error!');
   }
 })
+}else{  // YAML file lever
+  $("#pseudoNote").text("No Pseudotime Data available.");
+  return; 
+}
 }
 
 function slingshotPlot(){
