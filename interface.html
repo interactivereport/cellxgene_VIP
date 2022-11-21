@@ -5760,6 +5760,8 @@ function pseudoPlot(){
 }
 
 function tsTable(){
+
+  if (includeTradeSeq){ //YAML file lever
  
   var tradeS_option = document.getElementById("ts_to").value;
   
@@ -5825,7 +5827,6 @@ function tsTable(){
             table.$('tr.selected').removeClass('selected');
             $(this).addClass('selected');
             tsPlotGene = table.row( this ).data()[0]
-            console.log(tsPlotGene);
         }
     });
 
@@ -5834,6 +5835,10 @@ function tsTable(){
     console.log('error!');
   }
 })
+}else{ // YAML file lever
+  $("#tradeSeqNote").text('No TradeSeq Data available.')
+  return
+}
 }
 
 function tablePrep(pandas_csv){
@@ -5958,6 +5963,7 @@ var database_URL;
 var databaseSearch_URL;
 
 var tsAnnot;
+var includeTradeSeq;
 
 function yamlPARSE(){
 
@@ -5979,6 +5985,8 @@ $.ajax({
 
   tsAnnot = res['tsAnnot']
 
+  includeTradeSeq = res['includeTS']
+
   console.log(tsAnnot)
 
   },
@@ -5987,12 +5995,6 @@ $.ajax({
   }
 })
 }
-
-
-
-setTimeout(function(){
-  yamlPARSE();
-}, 8000);
 
 var data
 
