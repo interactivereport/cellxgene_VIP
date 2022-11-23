@@ -1692,36 +1692,35 @@ def getClusterMarkers(data):
   with app.get_data_adaptor() as data_adaptor:
     aData = data_adaptor.data.copy()
 
-  #ppr.pprint(aData)
+  aData.var_names = aData.var["features"]
 
   annot = data["annot"]
 
-  ppr.pprint(annot)
+  nval = int(data["n_value"])
 
-  #ppr.pprint(aData.obs[annot])
+  deMethod = data["DEmethod"]
 
-  sc.tl.rank_genes_groups(aData, "Parasite_Stage", method='wilcoxon')
+  sc.tl.rank_genes_groups(aData, annot, method=deMethod, use_raw=False)
 
   result = aData.uns['rank_genes_groups']
   groups = result['names'].dtype.names
 
   genes = []
-  for x in groups: #get top two genes for each cluster
-    y = pd.DataFrame(aData.uns['rank_genes_groups']['names'][x]).head(2).values
-    genes.append(y[0][0])
-    genes.append(y[1][0])
+  for x in groups: #get top marker genes for each cluster
+    y = pd.DataFrame(aData.uns['rank_genes_groups']['names'][x]).head(nval).values
+    for gene in y:
+      genes.append(gene[0])
 
   pvals = []
-  for x in groups: #get p-values of each pair
-    y = pd.DataFrame(aData.uns['rank_genes_groups']['pvals_adj'][x]).head(2).values
-    pvals.append(y[0][0])
-    pvals.append(y[1][0])
+  for x in groups: #get p-value of each marker gene
+    y = pd.DataFrame(aData.uns['rank_genes_groups']['pvals_adj'][x]).head(nval).values
+    for pval in y:
+      pvals.append(pval[0])
 
   clusters = []
-  for x in groups: #get p-values of each pair
-    clusters.append(x)
-    clusters.append(x)
-
+  for x in groups: #create Cluster Label 
+    for i in range(nval):
+      clusters.append(x)
 
   d = {'Cluster':clusters,'Genes':genes,"pvalue_adjusted":pvals}
 
