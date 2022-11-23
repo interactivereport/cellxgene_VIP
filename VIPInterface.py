@@ -300,7 +300,7 @@ def distributeTask(aTask):
     'CPVTable':cpvtable,
     'ymlPARSE':parseYAML,
     'pseudo':pseudoPlot,
-    'cmAnalysis':getClusterMarkers
+    'cmAnalysis':get_cluster_markers
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1688,45 +1688,45 @@ def pseudoPlot(data):
 
   return iostreamFig(pseudoPlot)
 
-def getClusterMarkers(data):
+def get_cluster_markers(data):
 
   with app.get_data_adaptor() as data_adaptor:
-    aData = data_adaptor.data.copy()
+    adata = data_adaptor.data.copy()
 
-  aData.var_names = aData.var["features"]
+  adata.var_names = adata.var["features"]
 
   annot = data["annot"]
 
   nval = int(data["n_value"])
 
-  deMethod = data["DEmethod"]
+  de_method = data["DEmethod"]
 
-  sc.tl.rank_genes_groups(aData, annot, method=deMethod, use_raw=False)
+  sc.tl.rank_genes_groups(adata, annot, method=de_method, use_raw=False)
 
-  result = aData.uns['rank_genes_groups']
+  result = adata.uns['rank_genes_groups']
   groups = result['names'].dtype.names
 
   genes = []
   for x in groups: #get top marker genes for each cluster
-    y = pd.DataFrame(aData.uns['rank_genes_groups']['names'][x]).head(nval).values
+    y = pd.DataFrame(adata.uns['rank_genes_groups']['names'][x]).head(nval).values
     for gene in y:
       genes.append(gene[0])
 
   pvals = []
   for x in groups: #get p-value of each marker gene
-    y = pd.DataFrame(aData.uns['rank_genes_groups']['pvals_adj'][x]).head(nval).values
+    y = pd.DataFrame(adata.uns['rank_genes_groups']['pvals_adj'][x]).head(nval).values
     for pval in y:
       val = float(pval[0])
-      finalVal = round(val,5)
-      pvals.append(finalVal)
+      final_val = round(val,5)
+      pvals.append(final_val)
 
   lfcs = []
   for x in groups: #get log-fold-change of each marker gene
-    y = pd.DataFrame(aData.uns['rank_genes_groups']['logfoldchanges'][x]).head(nval).values
+    y = pd.DataFrame(adata.uns['rank_genes_groups']['logfoldchanges'][x]).head(nval).values
     for lfc in y:
       val = float(lfc[0])
-      finalVal = round(val,2)
-      lfcs.append(finalVal)
+      final_val = round(val,2)
+      lfcs.append(final_val)
 
   clusters = []
   for x in groups: #create Cluster Label 

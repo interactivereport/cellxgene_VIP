@@ -689,7 +689,7 @@
           <option value="10">10</option> 
           </select></p>
       </div>
-      <button class="cm_analysis" onclick="clusterMarker_Table()"><b>Cluster Marker Table</b></button>
+      <button class="cm_analysis" onclick="cluster_marker_table()"><b>Cluster Marker Table</b></button>
       <div id="cmSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <p></p>
       <table id="cmTable" class="display"></table>
@@ -5681,13 +5681,13 @@ function pseudoPlot(){
 })
 }
 
-function clusterMarker_Table() {
+function cluster_marker_table() {
 
-  var cmAnnotation = document.getElementById("cm_annot").value; //get desired annotation
+  var cmAnnotation = document.getElementById("cm_annot").value; // Annotation Category 
 
   var deMethod = document.getElementById("cm_de_method").value;
 
-  var cmNVal = document.getElementById("cm_n_val").value;
+  var cm_NVal = document.getElementById("cm_n_val").value;
 
   document.getElementById("cmSpin").style.visibility="visible";
 
@@ -5695,7 +5695,7 @@ function clusterMarker_Table() {
   'method':'cmAnalysis',
   'annot': cmAnnotation,
   "DEmethod":deMethod,
-  "n_value":cmNVal
+  "n_value":cm_NVal
   };
 
   $.ajax({
