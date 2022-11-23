@@ -1690,10 +1690,12 @@ def pseudoPlot(data):
 
 def get_cluster_markers(data):
 
-  with app.get_data_adaptor() as data_adaptor:
+  with app.get_data_adaptor() as data_adaptor: # Generate copy of currently loaded dataset.
     adata = data_adaptor.data.copy()
 
-  adata.var_names = adata.var["features"]
+  adata.var_names = adata.var["features"] # Ensure gene names are correct.
+
+  # Read in necessary variables
 
   annot = data["annot"]
 
@@ -1701,19 +1703,23 @@ def get_cluster_markers(data):
 
   de_method = data["DEmethod"]
 
+  # Generate Cluster Markers
+
   sc.tl.rank_genes_groups(adata, annot, method=de_method, use_raw=False)
 
   result = adata.uns['rank_genes_groups']
   groups = result['names'].dtype.names
 
+  # Extract top markers for each Cluster.
+
   genes = []
-  for x in groups: #get top marker genes for each cluster
+  for x in groups: # Get top marker genes for each Cluster.
     y = pd.DataFrame(adata.uns['rank_genes_groups']['names'][x]).head(nval).values
     for gene in y:
       genes.append(gene[0])
 
   pvals = []
-  for x in groups: #get p-value of each marker gene
+  for x in groups: # Get p-value of each marker gene.
     y = pd.DataFrame(adata.uns['rank_genes_groups']['pvals_adj'][x]).head(nval).values
     for pval in y:
       val = float(pval[0])
@@ -1721,7 +1727,7 @@ def get_cluster_markers(data):
       pvals.append(final_val)
 
   lfcs = []
-  for x in groups: #get log-fold-change of each marker gene
+  for x in groups: # Get log-fold-change of each marker gene.
     y = pd.DataFrame(adata.uns['rank_genes_groups']['logfoldchanges'][x]).head(nval).values
     for lfc in y:
       val = float(lfc[0])
@@ -1729,7 +1735,7 @@ def get_cluster_markers(data):
       lfcs.append(final_val)
 
   clusters = []
-  for x in groups: #create Cluster Label 
+  for x in groups: # Create Cluster Label column
     for i in range(nval):
       clusters.append(x)
 
