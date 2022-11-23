@@ -676,14 +676,14 @@
         <p>Select Annotation:
         <select id="cm_annot"></select></p>
         <p>Select Method:
-          <select id="cm_method">
+          <select id="cm_de_method">
           <option value="wilcoxon">Wilcoxon</option>
           <option value="t-test">T-test</option>
           <option value="logreg">Logistic Regression</option>
           <option value="t-test_overestim_var">T-test (overestim_var)</option>      
           </select></p>
         <p>Select number of marker genes to return (per group):
-          <select id="cm_n_count">
+          <select id="cm_n_val">
           <option value="2">2</option>
           <option value="5">5</option>
           <option value="10">10</option> 
@@ -5685,17 +5685,17 @@ function clusterMarker_Table() {
 
   var cmAnnotation = document.getElementById("cm_annot").value; //get desired annotation
 
-  var cmDEMethod = document.getElementById("cm_method").value;
+  var deMethod = document.getElementById("cm_de_method").value;
 
-  var cmNCount = document.getElementById("cm_n_count").value;
+  var cmNVal = document.getElementById("cm_n_val").value;
 
   document.getElementById("cmSpin").style.visibility="visible";
 
   var D = {
   'method':'cmAnalysis',
   'annot': cmAnnotation,
-  "DEmethod":cmDEMethod,
-  "n_value":cmNCount
+  "DEmethod":deMethod,
+  "n_value":cmNVal
   };
 
   $.ajax({
