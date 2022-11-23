@@ -548,7 +548,7 @@
       <button class="tablinks" onclick="selFun(event, 'STACBAR')">Stacked Barplot</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells();detectOrganism()">Cell Population View</button>
-      <button class="tablinks" onclick="selFun(event, 'ClusterMarkers')">Cluster Markers</button>
+      <button class="tablinks" onclick="selFun(event, 'ClusterMarkers');detectOrganism()">Cluster Markers</button>
       <button class="tablinks" onclick="selFun(event, 'Pseudo');getAllCells()">Pseudotime Inference</button>
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1');detectOrganism()">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
@@ -5727,7 +5727,21 @@ function clusterMarker_Table() {
      lengthMenu:[[10,50,100,200],[10,50,100,200]],
      buttons:["csv"],
      data:tableInputs[0],
-     columns:tableInputs[1]
+     columns:tableInputs[1],
+     columnDefs:[
+        {targets:1,
+        render: function(data, type, row, meta){
+        
+          geneName = data.replace("-","_");
+
+          url = window.database_URL;
+
+          data="<a href='"+url+geneName+"' target='_blank'>"+data+"</a>";
+
+          return data;
+        }
+        }
+       ]
    });
 
   },
@@ -5790,6 +5804,8 @@ $.ajax({
     database_URL = res['url'];
 
     databaseSearch_URL = res['url2'];
+
+    console.log(database_URL)
 
   },
   error: function() {

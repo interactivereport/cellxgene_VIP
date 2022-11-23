@@ -1633,7 +1633,8 @@ def parseYAML(data):
 
   ymlAddress = data['addr']
 
-  cwd = "/share/cellxgene/demo/YAML"
+  #cwd = "/share/cellxgene/demo/YAML"
+  cwd = "/home/ed/data_cxg/YAML"
 
   finalAddr = cwd + ymlAddress
 
@@ -1715,14 +1716,24 @@ def getClusterMarkers(data):
   for x in groups: #get p-value of each marker gene
     y = pd.DataFrame(aData.uns['rank_genes_groups']['pvals_adj'][x]).head(nval).values
     for pval in y:
-      pvals.append(pval[0])
+      val = float(pval[0])
+      finalVal = round(val,5)
+      pvals.append(finalVal)
+
+  lfcs = []
+  for x in groups: #get log-fold-change of each marker gene
+    y = pd.DataFrame(aData.uns['rank_genes_groups']['logfoldchanges'][x]).head(nval).values
+    for lfc in y:
+      val = float(lfc[0])
+      finalVal = round(val,2)
+      lfcs.append(finalVal)
 
   clusters = []
   for x in groups: #create Cluster Label 
     for i in range(nval):
       clusters.append(x)
 
-  d = {'Cluster':clusters,'Genes':genes,"pvalue_adjusted":pvals}
+  d = {'Cluster':clusters,'Genes':genes,"LogFoldChange":lfcs,"pvalue_adjusted":pvals}
 
   df = pd.DataFrame(data=d)
 
