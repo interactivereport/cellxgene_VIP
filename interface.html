@@ -5713,9 +5713,7 @@ function cluster_marker_table() {
 
     document.getElementById("cmSpin").style.visibility="hidden";
 
-    resTable = res
-
-    tableInputs = tablePrep(resTable)
+    tableInputs = tablePrep(res)
 
     var table = $("#cmTable").DataTable({
      destroy: true,
@@ -5724,7 +5722,7 @@ function cluster_marker_table() {
      buttons:["csv"],
      data:tableInputs[0],
      columns:tableInputs[1],
-     columnDefs:[
+     columnDefs:[ // Convert gene names to hyper-links.
         {targets:1,
         render: function(data, type, row, meta){
         
@@ -5748,7 +5746,7 @@ function cluster_marker_table() {
 
 }
 
-function tablePrep(pandas_csv){ // reformats Pandas_CSV files into a structure easily compatible with Jquery Datatables. 
+function tablePrep(pandas_csv){ // reformats Pandas_CSV files into a structure compatible with Jquery Datatables. 
 
   resTable = pandas_csv;
 
