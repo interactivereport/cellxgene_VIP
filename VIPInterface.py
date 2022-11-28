@@ -300,7 +300,8 @@ def distributeTask(aTask):
     'CPVTable':cpvtable,
     'ymlPARSE':parseYAML,
     'pseudo':pseudoPlot,
-    'cmAnalysis':get_cluster_markers
+    'cmAnalysis':get_cluster_markers,
+    'geneNameToID':gene_search
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1743,3 +1744,20 @@ def get_cluster_markers(data):
   res = df.to_csv(index=False)
 
   return json.dumps(res)
+
+def gene_search(data):
+
+  gene = data["geneName"].upper()
+
+  with app.get_data_adaptor() as data_adaptor: # Generate copy of currently loaded dataset.
+    adata = data_adaptor.data.copy()
+
+  dict = adata.uns["id_lookup_table"]
+
+  if gene.upper() in dict:
+    id = dict[gene]
+    res = id.replace("_","-")
+  else:
+    res = "ERROR: Gene not found in data."
+
+  return res

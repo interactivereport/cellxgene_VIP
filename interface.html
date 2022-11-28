@@ -550,6 +550,7 @@
       <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells()">Cell Population View</button>
       <button class="tablinks" onclick="selFun(event, 'ClusterMarkers')">Cluster Markers</button>
       <button class="tablinks" onclick="selFun(event, 'Pseudo');getAllCells()">Pseudotime Inference</button>
+      <button class="tablinks" onclick="selFun(event, 'geneSearch');getAllCells()">Gene Search</button>
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1')">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
@@ -707,6 +708,17 @@
       <p id="pseudoFig"></p>
       <p id="pseudoNote" style="color:red;"></p>
     </div><!--Pseudo-->
+
+    <div id="geneSearch" class="tabcontent">
+      <div id="gsInput">
+        <h3>Input Gene Name:</h3>
+        <p>
+        <input type="text" id="gs_geneName"></p>
+      </div>
+      <button class="geneSearch" onclick="geneSearch()"><b>Search</b></button>
+      <div id="geneSearchSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+      <p id="gsNote"></p>
+    </div><!--geneSearch-->
 
     <div id="GD" class=tabcontent>
       <div id="GDinput">
@@ -5779,6 +5791,42 @@ function tablePrep(pandas_csv){ // reformats Pandas_CSV files into a structure c
 
   return results;
 
+}
+
+function geneSearch(){
+
+var gene = document.getElementById("gs_geneName").value
+
+var D = {
+'method':'geneNameToID',
+'geneName':gene
+};
+
+$.ajax({
+type:"POST",
+url: VIPurl,
+data:JSON.stringify(D),
+contentType: 'application/json;charset=UTF-8',//
+success: function(res){
+
+  if(res.startsWith('ERROR')){
+    document.getElementById("gsNote").style.color="red";
+    $("#gsNote").text(res);
+    document.getElementById("geneSearchSpin").style.visibility="hidden";
+      return;
+    }
+  
+
+  document.getElementById("geneSearchSpin").style.visibility="hidden";
+  
+  document.getElementById("gsNote").style.color="green";
+  $("#gsNote").text(res);
+
+},
+error: function() {
+  console.log('error!');
+}
+})
 }
 
 var database_URL;
