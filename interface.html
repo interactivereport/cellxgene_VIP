@@ -670,32 +670,6 @@
       <table id="CPVdatatable" class="display"></table>
     </div><!--CellPopView-->
 
-    <div id="ClusterMarkers" class="tabcontent">
-      <div id="cmInput">
-        <h3>Get Cluster Marker Genes:</h3>
-        <p>Select Annotation:
-        <select id="cm_annot"></select></p>
-        <p>Select Method:
-          <select id="cm_de_method">
-          <option value="wilcoxon">Wilcoxon</option>
-          <option value="t-test">T-test</option>
-          <option value="logreg">Logistic Regression</option>
-          <option value="t-test_overestim_var">T-test (overestim_var)</option>      
-          </select></p>
-        <p>Select number of marker genes to return (per group):
-          <select id="cm_n_val">
-          <option value="2">2</option>
-          <option value="5">5</option>
-          <option value="10">10</option> 
-          </select></p>
-      </div>
-      <button class="cm_analysis" onclick="cluster_marker_table()"><b>Cluster Marker Table</b></button>
-      <div id="cmSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <p></p>
-      <table id="cmTable" class="display"></table>
-      <p id="cmNote" style="color:red;"></p>
-    </div><!--Pseudo-->
-
     <div id="Pseudo" class="tabcontent">
       <div id="PseudotimeInput">
         <h3>Display Pseudotime Inference results within Cellxgene_VIP:</h3>
@@ -5680,71 +5654,6 @@ function pseudoPlot(){
     console.log('error!');
   }
 })
-}
-
-function cluster_marker_table() {
-
-  var cmAnnotation = document.getElementById("cm_annot").value; // Annotation Category to generate Cluster Markers for
-
-  var deMethod = document.getElementById("cm_de_method").value; // DE Method to use when comparing gene expression between clusters
-
-  var cm_NVal = document.getElementById("cm_n_val").value; // Number of marker genes to return (per cluster)
-
-  document.getElementById("cmSpin").style.visibility="visible";
-
-  var D = {
-  'method':'cmAnalysis',
-  'annot': cmAnnotation,
-  "DEmethod":deMethod,
-  "n_value":cm_NVal
-  };
-
-  $.ajax({
-  type:"POST",
-  url: VIPurl,
-  data:JSON.stringify(D),
-  contentType: 'application/json;charset=UTF-8',//
-  success: function(res){
-
-    if(res.startsWith('ERROR')){
-      $("#cmNote").text(res);
-      document.getElementById("cmSpin").style.visibility="hidden";
-        return;
-      }
-
-    document.getElementById("cmSpin").style.visibility="hidden";
-
-    tableInputs = tablePrep(res)
-
-    var table = $("#cmTable").DataTable({
-     destroy: true,
-     dom:'Blfrtip',
-     lengthMenu:[[10,50,100,200],[10,50,100,200]],
-     buttons:["csv"],
-     data:tableInputs[0],
-     columns:tableInputs[1],
-     columnDefs:[ // Convert gene names to hyper-links.
-        {targets:1,
-        render: function(data, type, row, meta){
-        
-          geneName = data.replace("-","_");
-
-          url = window.database_URL;
-
-          data="<a href='"+url+geneName+"' target='_blank'>"+data+"</a>";
-
-          return data;
-        }
-        }
-       ]
-   });
-
-  },
-  error: function() {
-    console.log('error!');
-  }
-})
-
 }
 
 function tablePrep(pandas_csv){ // reformats Pandas_CSV files into a structure compatible with Jquery Datatables. 
