@@ -2155,7 +2155,6 @@ function init(){
     var CPVGrp = document.getElementById("CPV_ClusterKey");
     var CPVGrp2 = document.getElementById("CPV_ConditionKey");
     var pseudoAnnot = document.getElementById("pseudo_cell_annot");
-    var cmAnnot = document.getElementById("cm_annot")
 
     for(const one of grps){
       if (one.startsWith(">")) continue;
@@ -2174,7 +2173,6 @@ function init(){
       CPVGrp.add(createOpt(one));
       CPVGrp2.add(createOpt(one));
       pseudoAnnot.add(createOpt(one));
-      cmAnnot.add(createOpt(one));
     }
     densS.add(createOpt('None'));
     densG.add(createOpt('None'));
