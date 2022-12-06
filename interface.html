@@ -711,13 +711,18 @@
 
     <div id="geneSearch" class="tabcontent">
       <div id="gsInput">
-        <h3>Input Gene Name:</h3>
+        <h3>Search by Gene Name:</h3>
         <p>
         <input type="text" id="gs_geneName"></p>
+        <button class="geneSearch" onclick="geneSearch('nameSearch')"><b>Search</b></button>
+        <p id="gsNameNote"></p>
+        <h3>Search by Function:</h3>
+        <p>
+        <input type="text" id="gs_geneFunction"></p>
       </div>
-      <button class="geneSearch" onclick="geneSearch()"><b>Search</b></button>
+      <button class="geneSearch" onclick="geneSearch('functionSearch')"><b>Search</b></button>
       <div id="geneSearchSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <p id="gsNote"></p>
+      <p id="gsFunctionNote"></p>
     </div><!--geneSearch-->
 
     <div id="GD" class=tabcontent>
@@ -5793,13 +5798,20 @@ function tablePrep(pandas_csv){ // reformats Pandas_CSV files into a structure c
 
 }
 
-function geneSearch(){
+function geneSearch(searchVal){
 
-var gene = document.getElementById("gs_geneName").value
+if(searchVal == "nameSearch"){
+  var input = document.getElementById("gs_geneName").value;
+  var output = "gsNameNote";
+}else if (searchVal == "functionSearch"){
+  var input = document.getElementById("gs_geneFunction").value;
+  var output = "gsFunctionNote";
+}
+
 
 var D = {
-'method':'geneNameToID',
-'geneName':gene
+'method':searchVal,
+'searchInput':input
 };
 
 $.ajax({
@@ -5810,8 +5822,8 @@ contentType: 'application/json;charset=UTF-8',//
 success: function(res){
 
   if(res.startsWith('ERROR')){
-    document.getElementById("gsNote").style.color="red";
-    $("#gsNote").text(res);
+    document.getElementById(output).style.color="red";
+    $('#'+output).text(res);
     document.getElementById("geneSearchSpin").style.visibility="hidden";
       return;
     }
@@ -5819,8 +5831,8 @@ success: function(res){
 
   document.getElementById("geneSearchSpin").style.visibility="hidden";
   
-  document.getElementById("gsNote").style.color="green";
-  $("#gsNote").text(res);
+  document.getElementById(output).style.color="green";
+  $("#"+output).text(res);
 
 },
 error: function() {

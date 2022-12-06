@@ -301,7 +301,8 @@ def distributeTask(aTask):
     'ymlPARSE':parseYAML,
     'pseudo':pseudoPlot,
     'cmAnalysis':get_cluster_markers,
-    'geneNameToID':gene_search
+    'nameSearch':gene_search,
+    'functionSearch': function_search
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1747,7 +1748,7 @@ def get_cluster_markers(data):
 
 def gene_search(data):
 
-  gene = data["geneName"].upper()
+  gene = data["searchInput"].upper()
 
   with app.get_data_adaptor() as data_adaptor: # Generate copy of currently loaded dataset.
     adata = data_adaptor.data.copy()
@@ -1756,6 +1757,23 @@ def gene_search(data):
 
   if gene.upper() in dict:
     id = dict[gene]
+    res = id.replace("_","-")
+  else:
+    res = "ERROR: Gene not found in data."
+
+  return res
+
+def function_search(data):
+
+  function = data["searchInput"].upper()
+
+  with app.get_data_adaptor() as data_adaptor: # Generate copy of currently loaded dataset.
+    adata = data_adaptor.data.copy()
+
+  dict = adata.uns["function_lookup_table"]
+
+  if function in dict:
+    id = dict[function]
     res = id.replace("_","-")
   else:
     res = "ERROR: Gene not found in data."
