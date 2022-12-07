@@ -5878,31 +5878,22 @@ $.ajax({
 })
 }
 
+//gene name search box autocomplete functionality 
 var geneNameAutoComplete = document.getElementById("gs_geneName")
 var nameResultsHTML = document.getElementById("geneNameResults")
 
 geneNameAutoComplete.oninput = function() {
   let results = []
-  let userInput = this.value.toUpperCase();
+  let userInput = this.value.toUpperCase(); //get current contents of text box
   nameResultsHTML.innerHTML = '';
 
   if (userInput.length > 2){
-    results = getResults(userInput)
+    results = getResults(userInput,geneNamesGS) //get all gene names matching the user input
     nameResultsHTML.style.display = "block"
     for (i = 0; i < results.length; i ++){
-      nameResultsHTML.innerHTML += "<li>" + results[i] + "</li>";
+      nameResultsHTML.innerHTML += "<li>" + results[i] + "</li>"; //add all matching gene names to results list
     }
   }
-}
-
-function getResults(input) {
-  const results = [];
-  for (i = 0; i < geneNamesGS.length; i++) {
-    if (input === geneNamesGS[i].slice(0, input.length)) {
-      results.push(geneNamesGS[i]);
-    }
-  }
-  return results;
 }
 
 nameResultsHTML.onclick = function (event) {
@@ -5911,8 +5902,39 @@ nameResultsHTML.onclick = function (event) {
   this.innerHTML = "";
 };
 
+//gene function search box autocomplete functionality 
 var geneFunctionAutoComplete = document.getElementById("gs_geneFunction")
 var functionResultsHTML = document.getElementById("geneFunctionResults")
+
+geneFunctionAutoComplete.oninput = function() {
+  let results = []
+  let userInput = this.value.toUpperCase(); //get current contents of text box
+  functionResultsHTML.innerHTML = '';
+
+  if (userInput.length > 2){
+    results = getResults(userInput,geneFunctionsGS) //get all gene functions matching the user input
+    functionResultsHTML.style.display = "block"
+    for (i = 0; i < results.length; i ++){
+      functionResultsHTML.innerHTML += "<li>" + results[i] + "</li>"; //add all matching gene functions to results list
+    }
+  }
+}
+
+functionResultsHTML.onclick = function (event) {
+  const setValue = event.target.innerText;
+  geneFunctionAutoComplete.value = setValue;
+  this.innerHTML = "";
+};
+
+function getResults(input,datasource) {
+  const results = [];
+  for (i = 0; i < datasource.length; i++) {
+    if (input === datasource[i].slice(0, input.length)) {
+      results.push(datasource[i]);
+    }
+  }
+  return results;
+}
 
 var database_URL;
 var databaseSearch_URL;
