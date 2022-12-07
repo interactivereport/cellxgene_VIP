@@ -5878,55 +5878,58 @@ $.ajax({
 })
 }
 
-//gene name search box autocomplete functionality 
+//Add Autocomplete Functionality
+
 var geneNameAutoComplete = document.getElementById("gs_geneName")
 var nameResultsHTML = document.getElementById("geneNameResults")
 
-geneNameAutoComplete.oninput = function() {
-  let results = []
-  let userInput = this.value.toUpperCase(); //get current contents of text box
-  nameResultsHTML.innerHTML = '';
-
-  if (userInput.length > 2){
-    results = getResults(userInput,geneNamesGS) //get all gene names matching the user input
-    nameResultsHTML.style.display = "block"
-    for (i = 0; i < results.length; i ++){
-      nameResultsHTML.innerHTML += "<li>" + results[i] + "</li>"; //add all matching gene names to results list
-    }
-  }
-}
-
-nameResultsHTML.onclick = function (event) {
-  const setValue = event.target.innerText;
-  geneNameAutoComplete.value = setValue;
-  this.innerHTML = "";
-};
-
-//gene function search box autocomplete functionality 
 var geneFunctionAutoComplete = document.getElementById("gs_geneFunction")
 var functionResultsHTML = document.getElementById("geneFunctionResults")
 
-geneFunctionAutoComplete.oninput = function() {
+//Define generic autocomplete behavior for textboxes
+
+function addAutoComplete(searchbox,resultList,source){
+  searchbox.oninput = function() {
   let results = []
   let userInput = this.value.toUpperCase(); //get current contents of text box
-  functionResultsHTML.innerHTML = '';
+  resultList.innerHTML = '';
+
+  if(source == "names"){
+    datasource = geneNamesGS
+  }else{
+    datasource = geneFunctionsGS
+  }
 
   if (userInput.length > 2){
-    results = getResults(userInput,geneFunctionsGS) //get all gene functions matching the user input
-    functionResultsHTML.style.display = "block"
+    results = getResults(userInput,datasource) //get all datasource elements matching the user input
+    resultList.style.display = "block"
     for (i = 0; i < results.length; i ++){
-      functionResultsHTML.innerHTML += "<li>" + results[i] + "</li>"; //add all matching gene functions to results list
+      resultList.innerHTML += "<li>" + results[i] + "</li>"; //add all matching elements to results list
     }
   }
 }
+}
 
-functionResultsHTML.onclick = function (event) {
-  const setValue = event.target.innerText;
-  geneFunctionAutoComplete.value = setValue;
-  this.innerHTML = "";
-};
+//add autocomplete to gene name and gene function search boxes
+addAutoComplete(geneNameAutoComplete,nameResultsHTML,"names")
+addAutoComplete(geneFunctionAutoComplete,functionResultsHTML,"functions")
 
-function getResults(input,datasource) {
+//let users populate search box by clicking on an autocomplete option
+function addPopulateByClick(resultsList,searchbox){
+
+  resultsList.onclick = function (event) { 
+    const setValue = event.target.innerText;
+    searchbox.value = setValue;
+    this.innerHTML = "";
+  };
+}
+
+addPopulateByClick(nameResultsHTML,geneNameAutoComplete)
+addPopulateByClick(functionResultsHTML,geneFunctionAutoComplete)
+
+//get all datasource items matching the user-input
+function getResults(input,datasource) { 
+  console.log(datasource)
   const results = [];
   for (i = 0; i < datasource.length; i++) {
     if (input === datasource[i].slice(0, input.length)) {
