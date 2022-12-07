@@ -547,9 +547,9 @@
       <button class="tablinks" onclick="selFun(event, 'SANK')">Sankey Diagram</button>
       <button class="tablinks" onclick="selFun(event, 'STACBAR')">Stacked Barplot</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
-      <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells();detectOrganism()">Cell Population View</button>
+      <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells()">Cell Population View</button>
       <button class="tablinks" onclick="selFun(event, 'Pseudo');getAllCells()">Pseudotime Inference</button>
-      <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1');detectOrganism()">DEG</button>
+      <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1')">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
       <button id="browserBT" class="tablinks" onclick="selFun(event, 'BROW')" style="display: none;">Multiome</button>
@@ -2344,6 +2344,9 @@ function init(){
             //Add Description
             addDescription();
 
+            //Parse YAML file
+            yamlPARSE();
+
             //get GSEA Information
             getGSEA();
 
@@ -3358,7 +3361,6 @@ function ADDGsetAdd(idx){//Geneset_Name Geneset_Genes
   window.biogen = geneNames;
   ADDGref();
   gsDB_dropdown()
-  detectOrganism();
 }
 function ADDGsetDel(grpName){
   delete window.bioGeneGrp[grpName];
@@ -5619,8 +5621,7 @@ function pseudoPlot(){
 
   var D = {
   'method':'pseudo',
-  'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
-  'addr':'/'+window.store.getState().config.displayNames.dataset+'.yml',
+  'Dataset': window.store.getState().config.displayNames.dataset,
   'cells':cells,
   'genes':[],
   'grp':grp,
@@ -5650,17 +5651,49 @@ function pseudoPlot(){
     console.log('error!');
   }
 })
+}
 
+function tablePrep(pandas_csv){ // reformats Pandas_CSV files into a structure compatible with Jquery Datatables. 
+
+  resTable = pandas_csv;
+
+  resD = JSON.parse(resTable);
+
+  tableD = resD.split(/\r?\n/);
+
+  let inputArray = [];
+
+  for (x of tableD){
+    row = x.split(",");
+    inputArray.push(row);
+  }
+
+  tstitle = inputArray[0];
+
+  inputArray.shift();
+  inputArray.pop();
+
+  inputArray.columns = tstitle; //add columns property to inputArray object
+
+  var tableTitle = [];
+  [].concat(tstitle).forEach(function(d){tableTitle = tableTitle.concat({title:d})});
+
+  results = [];
+
+  results[0] = inputArray;
+  results[1] = tableTitle;
+
+  return results;
 
 }
 
 var database_URL;
 var databaseSearch_URL;
 
-function detectOrganism(){
+function yamlPARSE(){
 
 var D = {'method':'ymlPARSE',
-  'addr':'/'+window.store.getState().config.displayNames.dataset+'.yml'};
+  'Dataset': window.store.getState().config.displayNames.dataset};
 
 $.ajax({
   type:"POST",
@@ -5831,7 +5864,6 @@ function add_DEG_GeneSet(){
   window.biogen = geneNames;
   ADDGref();
   gsDB_dropdown();
-  detectOrganism();
 }
 
 function geneset_to_database(){
