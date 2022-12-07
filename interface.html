@@ -714,11 +714,13 @@
         <h3>Search by Gene Name:</h3>
         <p>
         <input type="text" id="gs_geneName"></p>
+        <ul id="geneNameResults"></ul>
         <button class="geneSearch" onclick="geneSearch('nameSearch')"><b>Search</b></button>
         <p id="gsNameNote"></p>
         <h3>Search by Function:</h3>
         <p>
         <input type="text" id="gs_geneFunction"></p>
+        <ul id="geneFunctionResults"></ul>
       </div>
       <button class="geneSearch" onclick="geneSearch('functionSearch')"><b>Search</b></button>
       <div id="geneSearchSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
@@ -2392,6 +2394,9 @@ function init(){
 
             //Parse YAML file
             yamlPARSE();
+
+            //get gene name and function information
+            get_names_and_functions()
 
             //get GSEA Information
             getGSEA();
@@ -5840,6 +5845,74 @@ error: function() {
 }
 })
 }
+
+var geneNamesGS;
+var geneFunctionsGS;
+
+function get_names_and_functions(){
+
+var D = {'method':'get_names_and_functions'};
+
+$.ajax({
+  type:"POST",
+  url: VIPurl,
+  data:JSON.stringify(D),
+  contentType: 'application/json;charset=UTF-8',//
+  success: function(res){
+
+    resLists = JSON.parse(res)
+
+    console.log(resLists)
+
+    geneNamesGS = resLists[0];
+
+    geneFunctionsGS = resLists[1];
+
+    console.log(geneNamesGS)
+    console.log(geneFunctionsGS)
+
+  },
+  error: function() {
+    console.log('error!');
+  }
+})
+}
+
+var geneNameAutoComplete = document.getElementById("gs_geneName")
+var nameResultsHTML = document.getElementById("geneNameResults")
+
+geneNameAutoComplete.oninput = function() {
+  let results = []
+  let userInput = this.value.toUpperCase();
+  nameResultsHTML.innerHTML = '';
+
+  if (userInput.length > 2){
+    results = getResults(userInput)
+    nameResultsHTML.style.display = "block"
+    for (i = 0; i < results.length; i ++){
+      nameResultsHTML.innerHTML += "<li>" + results[i] + "</li>";
+    }
+  }
+}
+
+function getResults(input) {
+  const results = [];
+  for (i = 0; i < geneNamesGS.length; i++) {
+    if (input === geneNamesGS[i].slice(0, input.length)) {
+      results.push(geneNamesGS[i]);
+    }
+  }
+  return results;
+}
+
+nameResultsHTML.onclick = function (event) {
+  const setValue = event.target.innerText;
+  geneNameAutoComplete.value = setValue;
+  this.innerHTML = "";
+};
+
+var geneFunctionAutoComplete = document.getElementById("gs_geneFunction")
+var functionResultsHTML = document.getElementById("geneFunctionResults")
 
 var database_URL;
 var databaseSearch_URL;

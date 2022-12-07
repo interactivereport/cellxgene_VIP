@@ -302,7 +302,8 @@ def distributeTask(aTask):
     'pseudo':pseudoPlot,
     'cmAnalysis':get_cluster_markers,
     'nameSearch':gene_search,
-    'functionSearch': function_search
+    'functionSearch': function_search,
+    'get_names_and_functions':getNamesAndFunctions
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1779,3 +1780,17 @@ def function_search(data):
     res = "ERROR: Gene not found in data."
 
   return res
+
+def getNamesAndFunctions(data):
+
+  with app.get_data_adaptor() as data_adaptor: # Generate copy of currently loaded dataset.
+    adata = data_adaptor.data.copy()
+
+  names = list(adata.uns["id_lookup_table"].keys())
+
+  functions = list(adata.uns["function_lookup_table"].keys())
+
+  res = [names,functions]
+
+  return json.dumps(res)
+
