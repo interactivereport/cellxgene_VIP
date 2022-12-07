@@ -5839,7 +5839,14 @@ success: function(res){
   document.getElementById("geneSearchSpin").style.visibility="hidden";
   
   document.getElementById(output).style.color="green";
-  $("#"+output).text(res);
+
+  geneName = res.replace("-","_");
+  url = window.database_URL;
+
+  data="<a href='"+url+geneName+"' target='_blank'>"+res+"</a>";
+ 
+
+  document.getElementById(output).innerHTML = data
 
 },
 error: function() {
