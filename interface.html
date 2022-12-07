@@ -5805,6 +5805,8 @@ function tablePrep(pandas_csv){ // reformats Pandas_CSV files into a structure c
 
 function geneSearch(searchVal){
 
+document.getElementById("geneSearchSpin").style.visibility="visible";
+
 if(searchVal == "nameSearch"){
   var input = document.getElementById("gs_geneName").value;
   var output = "gsNameNote";
@@ -5862,14 +5864,9 @@ $.ajax({
 
     resLists = JSON.parse(res)
 
-    console.log(resLists)
-
     geneNamesGS = resLists[0];
 
     geneFunctionsGS = resLists[1];
-
-    console.log(geneNamesGS)
-    console.log(geneFunctionsGS)
 
   },
   error: function() {
@@ -5892,7 +5889,7 @@ function addAutoComplete(searchbox,resultList,source){
   searchbox.oninput = function() {
   let results = []
   let userInput = this.value.toUpperCase(); //get current contents of text box
-  resultList.innerHTML = '';
+  resultList.innerHTML = ''; //empty the results list, in case it contains old results
 
   if(source == "names"){
     datasource = geneNamesGS
@@ -5904,7 +5901,7 @@ function addAutoComplete(searchbox,resultList,source){
     results = getResults(userInput,datasource) //get all datasource elements matching the user input
     resultList.style.display = "block"
     for (i = 0; i < results.length; i ++){
-      resultList.innerHTML += "<li>" + results[i] + "</li>"; //add all matching elements to results list
+      resultList.innerHTML += "<li>" + results[i] + "</li>"; //add all matching elements to the results list
     }
   }
 }
@@ -5929,7 +5926,6 @@ addPopulateByClick(functionResultsHTML,geneFunctionAutoComplete)
 
 //get all datasource items matching the user-input
 function getResults(input,datasource) { 
-  console.log(datasource)
   const results = [];
   for (i = 0; i < datasource.length; i++) {
     if (input === datasource[i].slice(0, input.length)) {
