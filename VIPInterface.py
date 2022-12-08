@@ -18,6 +18,7 @@ import plotly.graph_objects as go
 import plotly.io as plotIO
 import base64
 import math
+import scipy
 from io import BytesIO
 import sys
 import time
@@ -315,9 +316,10 @@ def distributeTask(aTask):
     'testVIPready':testVIPready,
     'Description':getDesp,
     'GSEAgs':getGSEA,
-	'SPATIAL':SPATIAL,
+    'SPATIAL':SPATIAL,
     'saveTest':saveTest,
     'getBWinfo':getBWinfo,
+    'GSP':GSP,
     'plotBW':plotBW
   }.get(aTask,errorTask)
 
@@ -889,6 +891,91 @@ def DEG(data):
   #ppr.pprint(GSEAtable.sort_values('pval'))
   return json.dumps([deg.to_csv(index=False),img,GSEAtable.to_csv(index=False),GSEAimg])#json.dumps([deg.values.tolist(),img])
 
+def specificity_score(adata=None, ctype_col:str=None, ctypes:list=None, ctype_sets:list=None, glist:list=None):
+  if not (adata and ctype_col):
+    raise ValueError('No adata or No ctype_col_name provided!')
+  
+  if not (ctypes and ctype_sets):
+    ctypes = adata.obs[ctype_col].unique().tolist()
+    ctype_dict = {_: set([_]) for _ in ctypes}
+  else:
+    if len(ctypes)!=len(ctype_sets):
+      raise ValueError("Please check your cell type partition!")
+    if len(ctypes)>1:
+      sumset = ctype_sets[0]
+      for nextset in ctype_sets[1:]:
+        if sumset.intersection(nextset):
+          raise ValueError("Self-defined cell type partitions have overlap!!")
+        else:
+          sumset = sumset.union(nextset)    
+    ctype_dict = {ctypes[i]: ctype_sets[i] for i in range(len(ctypes))}
+    
+  if glist and len(glist):
+    adata = adata[:, adata.var_names.isin(set(glist))]
+    if adata.shape[-1]==0:
+      raise ValueError("No gene found! Pls check your gene list!")
+    
+  adata_dict = {ctype:adata[adata.obs[ctype_col].isin(ctype_dict[ctype])] for ctype in ctypes}
+  mean_exp_dict = {ctype: np.squeeze(np.asarray(adata_dict[ctype].X.sum(axis=0))) / adata_dict[ctype].n_obs for ctype in ctypes}
+  df = pd.DataFrame(data=mean_exp_dict, index=adata_dict[ctypes[0]].var_names)
+  df['all'] = df.sum(axis=1)
+  for col in df.columns:
+    df[col] = df[col]/df['all']
+    
+  # assign nan for genes not found
+  # gene in glist order
+  if glist and len(glist): df = df.reindex(glist)   
+  return df
+def restoreX(d):
+  if d.max()<50:
+    d1 = np.exp(d)
+    d2 = np.exp2(d)
+    if abs(d1-d1.round()).sum()<abs(d2-d2.round()).sum():
+      d = d1
+      ppr.pprint("...exp is taken")
+    else:
+      d = d2
+      ppr.pprint("...exp2 is taken")
+    if d.min()>0.1 and (d==d.min()).sum()>100:
+      d = d-d.min()
+      ppr.pprint("...min value %f is taken"%d.min())
+  return(d)
+def GSP(data):
+  data['figOpt']['scale']='No'
+  D = createData(data)
+  if scipy.sparse.issparse(D.X):
+    D.X.data = restoreX(D.X.data)
+  else:
+    D.X = restoreX(D.X)
+  grp = data['grp'][0]
+  X = specificity_score(adata=D,ctype_col=grp)
+  if 'all' in X.columns:
+    Xshow=X.drop('all',axis=1)
+  else:
+    Xshow = X
+  # plot depends on the gene number
+  if X.shape[0]==1:
+    XT = Xshow.T
+    gene = XT.columns[0]
+    XT[grp] = XT.index
+    fig = plt.figure()
+    #ax = XT.plot.bar(x=grp,y=gene)
+    ax = sns.barplot(data=XT,x=grp,y=gene)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=90)#rotation=45, horizontalalignment='right'
+    img = iostreamFig(fig)
+  elif X.shape[0]<20:
+    fig = plt.figure(figsize=[0.8*Xshow.shape[1],0.5*Xshow.shape[0]+0.1*max([len(x) for x in Xshow.columns])])
+    ax = sns.heatmap(Xshow,annot=True,fmt=".1f",cmap=sns.cubehelix_palette(as_cmap=True))
+    img = iostreamFig(fig)
+  else:
+    g = sns.clustermap(
+      Xshow.sample(min(1000,X.shape[0])),
+      method="ward",col_cluster=False,
+      yticklabels=False,xticklabels=True)
+    img = iostreamFig(g)
+  X.insert(0,"gene",X.index)
+  return json.dumps([X.to_csv(index=False),img])
+
 def DOT(data):
   #ppr.pprint("DOT, starting ...")
   updateGene(data)
@@ -1142,6 +1229,7 @@ def DENS(data):
   #ppr.pprint("plotting plot cost: %f seconds" % plotT)
   #ppr.pprint("plotting total cost: %f seconds" % (time.time()-sT))
   return iostreamFig(fig)
+
 
 def SANK(data):
   updateGene(data)

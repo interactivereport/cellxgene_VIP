@@ -545,6 +545,7 @@
       <button class="tablinks" onclick="selFun(event, 'DUAL')">Dual Genes</button>
       <button class="tablinks" onclick="selFun(event, 'SANK')">Sankey Diagram</button>
       <button class="tablinks" onclick="selFun(event, 'STACBAR')">Stacked Barplot</button>
+      <button class="tablinks" onclick="selFun(event, 'GSP')">Gene Specificity</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1')">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
@@ -934,6 +935,31 @@
       <div id="HEATdata" style="visibility: hidden;"></div>
 
     </div><!--HEAT-->
+
+    <div id="GSP" class="tabcontent">
+      <h3>Gene specificity for groups in an annotation</h3>
+      <div id="GSPinput">
+        <p>Choose cell selection(s):
+          <label><input class="GSPcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
+          <label><input class="GSPcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
+        </p>
+        <p>Choose genes (If no gene select, all gene will be used.): <input id='GSPgenesAll' type="checkbox" checked onclick="$('.GSPgenes').prop('checked', this.checked);">Uncheck / Check All</p>
+        <p id="GSPgene"></p>
+        Select an annotation for specificity:
+        <select id="GSPgrp"></select></p>
+      </div>
+      <button class="GSPbt" onclick="GSPplot()"><b>Plot</b></button>
+      <!-- <button class="SGVsaveBT" onclick="SGVplot('data')">Get Data</button> -->
+      <button onclick="ZoomIn('GSPresize')">Zoom In</button>
+      <button onclick="ZoomOut('GSPresize')">Zoom Out</button>
+      <button class="GSPpngBT" onclick="saveImg('GSPimg')" disabled>Save</button>
+      <button onclick="hideShow($('#GSPinput'),$(this));">Hide Input</button>
+      <pre id="GSPnote" style="color:red;"></pre>
+      <div id="GSPspin" class="loading style-2" style="display:none"><div class="loading-wheel"></div></div>
+      <!-- <table id="GSPtable" class="display"></table> -->
+      <div id="GSPtableDIV"></div>
+      <div id="GSPresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6"><p id="GSPfig"></p></div>
+    </div><!-- Gene specificity -->
 
     <div id="DOT" class="tabcontent">
       <div id="DOTinput">
@@ -2169,6 +2195,7 @@ function init(){
     var densG = document.getElementById("DENSgrp");
     var embed = document.getElementById("EMBEDsplit");
     var tVIP = document.getElementById("tVIPgrp");
+    var GSPgrp = document.getElementById("GSPgrp");
 
     for(const one of grps){
       if (one.startsWith(">")) continue;
@@ -2186,6 +2213,7 @@ function init(){
       densG.add(createOpt(one));
       embed.add(createOpt(one));
       tVIP.add(createOpt(one));
+      GSPgrp.add(createOpt(one));
     }
     densS.add(createOpt('None'));
     densG.add(createOpt('None'));
@@ -2424,6 +2452,7 @@ function sync(){
   CLIref();
   preDEGVolcanoref("preDEGvolcano");
   preDEGmultiref();
+  GSPref();
   if(window.store.getState().colors.colorAccessor != null){
     $('#tVIPgrp').val(window.store.getState().colors.colorAccessor);
   }
@@ -2631,6 +2660,9 @@ function PGVref(){
 }
 function PGVcomparref(){
   showGene('PGVcompare');
+}
+function GSPref(){
+  showGene("GSP");
 }
 function HEATref(){
   showGene('HEAT');
@@ -4407,6 +4439,7 @@ function DEGfind(){
   $(".DEGpngBT").prop('disabled',true);
   $('#DEGtable').empty();
   $('#GSEAtable').empty();
+  //$('#GSPtable').empty();
   showImg('DEGfig',"");
   showImg('GSEAfig',"");
   $("#DEGinteractive").html("");
@@ -4424,7 +4457,7 @@ function DEGfind(){
         $('#DEGnote').text(res);
         return;
       }
-      resD = JSON.parse(res);
+      var resD = JSON.parse(res);
       //showImg('DEGfig',resD[1]);
       // the default color and label
       var selOpt=[];
@@ -4649,6 +4682,82 @@ function preDEGmultiplot(eID){
   });
 
 }
+function GSPplot(){
+  $('#GSPnote').text("");
+  var genes =getGenes('GSP');
+  if(genes.length==0){
+    $('#GSPnote').text("All genes will be used, please be patient!");
+  }
+  var cells=getCells('GSPcell');
+  if(cells.length==0){
+    $('#GSPnote').text(VIPCellSelectionMsg);
+    return;
+  }
+  var grp = [$("#GSPgrp").val()];
+  var D={'method':'GSP',
+          'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+          'cells':cells,
+          'genes':genes,
+          'grp':grp,
+          'abb':window.bioAbbr,
+          'figOpt':window.figOpt};
+  $(".GSPbt").prop('disabled',true);
+  $("#GSPspin").show();
+  $("#GSPtableDIV").empty();
+  $("#GSPtableDIV").append('<table id="GSPtable" class="display" width="100%"></table>');
+  $("#GSPfig").empty();
+
+  $.ajax({
+    type:"POST",
+    url: VIPurl,
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(res){
+      $(".GSPbt").prop("disabled",false);
+      $("#GSPspin").hide();
+      if(res.startsWith('ERROR')){
+        $('#GSPnote').text(res);
+        document.getElementById("GSPfig").innerHTML = '';
+        return;
+      }
+      var resD = JSON.parse(res);
+      showImg('GSPfig',resD[1])
+      // process table
+      var tableD = d3.csvParse(resD[0],function(data){
+        return Object.values(data);
+        });
+      var tableTitle = [];
+      resD[0].split("\n")[0].split(',').forEach(function(d){tableTitle = tableTitle.concat({title:d})});
+      //create download file name
+      var dt= new Date($.now());
+      const offset = dt.getTimezoneOffset();
+      var dt1 = new Date(dt.getTime() - (offset*60*1000));
+      var filename="VIP_geneSpecificity_"+dt1.toISOString().replaceAll("T","_").replaceAll(":","");
+
+      var table = $('#GSPtable').DataTable({
+        destroy: true,
+        dom:'Blfrtip',
+        lengthMenu:[[10,50,100,200],[10,50,100,200]],
+        //order:[3,"asc"],
+        buttons:[{
+          extend: 'csv',
+          filename:filename,
+        }],
+        data:tableD,
+        columns:tableTitle
+      });
+      $(".GSPpngBT").prop('disabled',false);
+    },
+    error: function(request,status,error){
+      $('#GSPnote').text(request.status+request.responseText);
+      document.getElementById("GSPfig").innerHTML = '<img id="GSPpng" src="data:image/png;base64," width=100% height="auto"/>';// height="450" width="450"
+      $(".GSPbt").prop("disabled",false);
+      $("#GSPspin").hide();
+      //document.getElementById("GSPspin").style.visibility="hidden";
+    }
+  })
+}
+
 function DOTplot(){
   $('#DOTnote').text("");
   var genes =getGenes('DOT');
