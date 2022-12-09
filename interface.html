@@ -5686,7 +5686,7 @@ function pseudoPlot(){
 
   grp.push(annot);
 
-  if (includePseudo){ // YAML file lever
+  if (includePseudo == true){ // YAML file lever
 
   document.getElementById("pseudoSpin").style.visibility="visible";
 
@@ -5839,6 +5839,8 @@ $.ajax({
     database_URL = res['url'];
 
     databaseSearch_URL = res['url2'];
+
+    includePseudo = res['includePseudo']
 
   },
   error: function() {

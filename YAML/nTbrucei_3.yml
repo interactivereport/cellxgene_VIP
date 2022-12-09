@@ -1,6 +1,6 @@
 url: https://tritrypdb.org/tritrypdb/app/record/gene/
 url2: https://tritrypdb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=
-includePseudo:
+includePseudo: True
 includeTS:
 tsAnnot: Group 
 pseudoEmbed: phate
