@@ -1652,35 +1652,40 @@ def pseudoPlot(data):
 
   yml = parseYAML(data)
 
+  # Pseudotime Data Check
+
+  if 'includePseudo' not in yml.keys():
+    return("ERROR - No Pseudotime Data available.")
+
   # Extract Embedding Key
 
   embed = yml['pseudoEmbed']
 
-  # Create AnnData Object
+  # Get copy of AnnData Object
 
-  data['layout'] = embed
-
-  aData = createData(data)
+  with app.get_data_adaptor() as data_adaptor:
+    aData = data_adaptor.data.copy()
 
   # Plot Graph
   
   annot = data['annot']
 
-  if "pseudo" in annot:
-    aData.obs[annot] = aData.obs[annot].astype(float)
-    sc.pl.embedding(aData,"X_phate",color=annot,return_fig=True,color_map="Purples")
-  else:
-    sc.pl.embedding(aData,"X_phate",color=annot,return_fig=True)
+  embedding = "X_" + embed
 
+  if "pseudo" in annot: # if 'annot' equals a pseudotime variable, plot as a continous variable.
+    aData.obs[annot] = aData.obs[annot].astype(float)
+    sc.pl.embedding(aData,embedding,color=annot,return_fig=True,color_map="Purples")
+  else:
+    sc.pl.embedding(aData,embedding,color=annot,return_fig=True)
 
   # Extract and Plot Pseudotime Lineages
-
-  for x in yml.keys():
-    if x.split('_')[0] == 'Lineage':
-        line = yml[x]
-        dim1 = line['dim1']
-        dim2 = line['dim2']
-        plt.plot(dim1,dim2, color="black")
+  
+  for x in aData.uns:
+    if x.startswith("Lineage"):
+      line = aData.uns[x]
+      dim1 = line['dim1']
+      dim2 = line['dim2']
+      plt.plot(dim1,dim2, color="black")
 
   pseudoPlot = plt.gcf()
 
