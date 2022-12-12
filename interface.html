@@ -2176,7 +2176,6 @@ function init(){
     var CPVGrp = document.getElementById("CPV_ClusterKey");
     var CPVGrp2 = document.getElementById("CPV_ConditionKey");
     var pseudoAnnot = document.getElementById("pseudo_cell_annot");
-    var slingshotAnnot = document.getElementById("slingshot_cluster_key");
     var pagaAnnot = document.getElementById("paga_cluster_key");
 
     for(const one of grps){
@@ -2196,7 +2195,6 @@ function init(){
       CPVGrp.add(createOpt(one));
       CPVGrp2.add(createOpt(one));
       pseudoAnnot.add(createOpt(one));
-      slingshotAnnot.add(createOpt(one));
       pagaAnnot.add(createOpt(one));
     }
     densS.add(createOpt('None'));
@@ -2238,7 +2236,6 @@ function init(){
     //add layout to EMBED, DUAL, and CLI checkbox
     var embedLay = document.getElementById("EMBEDlayout");
     var dualLay = document.getElementById("DUALlayout");
-    var slingshotLay = document.getElementById("slingshotEmbed") // add layout to SlingShot select menu
     var pagaLay = document.getElementById("pagaEmbed") // add layout to PAGA select menu
 
     htmlCheck="";
@@ -2246,7 +2243,6 @@ function init(){
       var one = window.store.getState().annoMatrix.schema.layout.obs[ix].name
       embedLay.add(createOpt(one));
       dualLay.add(createOpt(one));
-      slingshotLay.add(createOpt(one));
       pagaLay.add(createOpt(one));
       htmlCheck += '<label><input class="eIDlayouts" type="checkbox" value="'+one+'"/> '+one+' </label>';
     }
@@ -3108,25 +3104,6 @@ function CellPopList(opt){
       levels.add(createOpt(one));
     }
    
-  }else if(opt=="slingshot"){
-    
-    var annCat = document.getElementById("slingshot_cluster_key").value;
-    grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
-
-    $("#slingshot_start_clus").empty();
-    $("#slingshot_end_clus").empty();
-
-    var ss_start = document.getElementById("slingshot_start_clus");
-    var ss_end = document.getElementById("slingshot_end_clus");
-
-    for(const one of grps[annCat]) {
-      ss_start.add(createOpt(one));
-      ss_end.add(createOpt(one));
-    }
-
-    ss_start.add(createOpt("Null"));
-    ss_end.add(createOpt("Null"));
-
   }else{
     var annCat = document.getElementById("CPV_ConditionKey").value;
     grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
