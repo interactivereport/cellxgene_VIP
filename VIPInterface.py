@@ -305,7 +305,6 @@ def distributeTask(aTask):
     'CPVTable':cpvtable,
     'ymlPARSE':parseYAML,
     'pseudo':pseudoPlot,
-    'slingshot':dypseudoPlot_2,
     'PAGA':pagaAnalysis
   }.get(aTask,errorTask)
 
@@ -1691,148 +1690,6 @@ def pseudoPlot(data):
 
   return iostreamFig(pseudoPlot)
 
-def dypseudoPlot(data):
-
-  #read in data
-
-  #adata = sc.read_h5ad("/home/ed/data_cxg/nTbrucei_3.h5ad") #correct count matrix data
-
-  adata = createData(data) #create minimal annData object
-
-  ppr.pprint(adata)
-
-  ppr.pprint("created annData object")
-
-  #Convert sparse matrix to dense in order to avoid conversion error
-
-  adata.X = adata.X.todense()
-
-  ppr.pprint("finished todense() conversion")
-
-  #Convert anndata to SCE within embedded R environment
-  with localconverter(anndata2ri.converter):
-      ro.globalenv['some_data'] = adata
-
-  ppr.pprint("finished Rpy2 conversion")
-
-  #read in variables and send to embedded R environment
-
-  embedding = data["layout"]
-  clusterKey = data['grp'][0]
-  starting_cluster = data["start_clus"]
-  ending_cluster = data["end_clus"]
-
-  ro.globalenv['embed'] = embedding
-  ro.globalenv['cluster_labels'] = clusterKey
-  ro.globalenv['end_clus'] = ending_cluster
-  ro.globalenv['start_clus'] = starting_cluster
-
-  ppr.pprint("sent variables to R, starting to run R code")
-
-  res = ro.r('''
-
-    suppressMessages(suppressWarnings(require(ggplot2)))
-    suppressMessages(suppressWarnings(require(readr)))
-    suppressMessages(suppressWarnings(require(SummarizedExperiment)))
-    suppressMessages(suppressWarnings(require(SingleCellExperiment)))
-    suppressMessages(suppressWarnings(require(Seurat)))
-    suppressMessages(suppressWarnings(require(tidyr)))
-    suppressMessages(suppressWarnings(require(slingshot)))
-    suppressMessages(suppressWarnings(require(dplyr)))
-
-    message(getRversion())
-
-    message("create ggplot")
-
-    embed = toupper(embed)
-
-    rd = reducedDim(some_data, embed)
-
-    colnames(rd) = c("Dim1", "Dim2")
-
-    cl = some_data[[cluster_labels]]
-
-    df <- data.frame(rd, "cl" = as.character(cl))
-
-    p <- ggplot(df, aes(x = Dim1, y = Dim2)) +
-    geom_point(aes(fill = cl), col = "grey70", shape = 21) + 
-    theme_classic()
-
-    message("run slingshot function")
-
-    some_data <- slingshot(some_data, reducedDim = embed, clusterLabels = some_data@colData@listData[[cluster_labels]], start.clus = start_clus) 
-    
-    message("finished running slingshot")
-
-    sds = SlingshotDataSet(some_data) 
-    #saveRDS(sds, "/home/ed/extra_stuff/sds.rds")
-
-    message("run plotting function")
-
-    #x = plot(reducedDims(some_data)$PHATE) + lines(SlingshotDataSet(some_data))
-
-    message("add curves to plot")
-
-    curves <- slingCurves(some_data, as.df = TRUE)
-
-    #curves = slingCurves(some_data)
-    #saveRDS(curves, "/home/ed/extra_stuff/some_data_curves.rds")
-    #saveRDS(some_data, "/home/ed/extra_stuff/some_data_2.rds")
-
-    #curveList = list()
-
-    #i = 1
-
-    #for (x in curves){
-  
-    #dims = x$s
-    #colnames(dims) = c("Dim1","Dim2")
-    #dims = as.data.frame(dims)
-  
-    #ord = seq(1:length(dims$Dim1))
-    #ord = x$ord
-    #dims$Order = ord
-  
-    #message(head(x$ord))
-
-    #dims$Lineage = i
-  
-    #curveList[[i]] = dims
-    #i = i + 1
-  
-    #}
-
-    #curveCombo = do.call("rbind",curveList)
-    #message(head(curveCombo))
-    #message("Order Column")
-    #message(head(curveCombo$Order))
-
-    #colnames(curves) <- c("Dim1", "Dim2","Order","Lineage")
-
-    #x = p + geom_line(data = curveCombo %>% arrange(Order),
-              #aes(group = Lineage, col = as.character(Lineage))) 
-
-    x = p + geom_line(data = curves %>% arrange(Order),
-              aes(group = Lineage, col = as.character(Lineage))) 
-
-
-    tempFig = "/home/ed/CXG_Testing/tempFig.png"
-    ggsave(tempFig, x)
-
-    fig = base64enc::dataURI(file = tempFig, mime = "image/png")
-    fig = gsub("data:image/png;base64,","",fig)
-
-    a <- file.remove(tempFig)
-
-    fig
-    ''')
-
-  #ppr.pprint(res[0])
-
-  img = res[0]
-
-  return img
-
 def pagaAnalysis(data):
 
   #create annData object
@@ -1850,45 +1707,6 @@ def pagaAnalysis(data):
   sc.tl.paga(adata, groups=annot) #run PAGA
 
   sc.pl.paga(adata, color=annot)
-
-  fig = plt.gcf()
-
-  return iostreamFig(fig)
-
-def dypseudoPlot_2(data):
-  
-  adata = createData(data)
-
-  embed = data["layout"]
-
-  embedding = "X_" + embed
-
-  r_dims = adata.obsm[embedding]
-
-  clusterKey = data['grp'][0]
-  starting_cluster = data["start_clus"]
-  ending_cluster = data["end_clus"]
-
-  clusters = adata.obs[clusterKey]
-
-  if starting_cluster == "Null" and ending_cluster == "Null":
-    results = scprep.run.Slingshot(r_dims,clusters)
-  elif ending_cluster == "Null":
-    results = scprep.run.Slingshot(r_dims,clusters, start_cluster = starting_cluster)
-  elif starting_cluster == "Null":
-    results = scprep.run.Slingshot(r_dims,clusters, end_cluster = ending_cluster)
-  else:
-    results = scprep.run.Slingshot(r_dims,clusters, start_cluster = starting_cluster, end_cluster = ending_cluster)
-
-  ax = scprep.plot.scatter2d(
-     r_dims,
-     c=results['pseudotime'][:,0],
-     cmap='magma',
-     legend_title='Branch 1'
-)
-
-  for curve in results['curves']:
-    ax.plot(curve[:,0], curve[:,1], c='k', linewidth=3)
 
   fig = plt.gcf()
 
