@@ -1660,8 +1660,6 @@ def pseudoPlot(data):
 
   aData = createData(data)
 
-  ppr.pprint(aData)
-
   # Plot Graph
   
   annot = data['annot']
