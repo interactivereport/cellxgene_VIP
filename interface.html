@@ -1922,17 +1922,24 @@ function createOpt(val){
   return(opt)
 }
 function addDescription(){
+
+  if (includeDesc == true){ //YAML file lever 
   $.ajax({
         type: "POST",
         url: VIPurl,
-        data:JSON.stringify({'method':"Description",'dataset': window.store.getState().config.displayNames.dataset+'.h5ad'}),
+        data:JSON.stringify({'method':"Description",
+        "Dataset": window.store.getState().config.displayNames.dataset}),
         contentType: 'application/json;charset=UTF-8',
         success: function(res){
+          console.log(res);
           if(res.length==0){
             console.log('No description available!');
             return;
           }
           var appendDIV = $("[data-testclass='category']").parent();
+          //var appendDIV = $("[class='bp3-dialog-body]'").parent()
+          console.log(appendDIV)
+          
           appendDIV.append("<div id='dataDescription' style='overflow-wrap: break-word;word-wrap: break-word;'>"+res+"</div>");
           for(const one of res.split("<br>")){
             if(one.startsWith("Scaling Default")){
@@ -1957,6 +1964,9 @@ function addDescription(){
           console.log(request.status+': cannot get description ...');
         }
       });
+    }else{ //YAML file lever
+      return
+    }
 }
 function getGSEA(){
   $.ajax({
@@ -2341,6 +2351,10 @@ function init(){
             window.bioInit=true;
             VIPurl = this.url;
             console.log("VIP ("+VIPurl+") is ready on server side.");
+            
+            //Parse YAML file
+            yamlPARSE();
+            
             //Add Description
             addDescription();
 
@@ -5689,11 +5703,12 @@ function tablePrep(pandas_csv){ // reformats Pandas_CSV files into a structure c
 
 var database_URL;
 var databaseSearch_URL;
+var includeDesc;
 
 function yamlPARSE(){
 
 var D = {'method':'ymlPARSE',
-  'Dataset': window.store.getState().config.displayNames.dataset};
+"Dataset": window.store.getState().config.displayNames.dataset};
 
 $.ajax({
   type:"POST",
@@ -5705,6 +5720,8 @@ $.ajax({
     database_URL = res['url'];
 
     databaseSearch_URL = res['url2'];
+
+    includeDesc = res['includeDescription']
 
   },
   error: function() {
