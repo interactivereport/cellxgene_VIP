@@ -1938,7 +1938,6 @@ function addDescription(){
           }
           var appendDIV = $("[data-testclass='category']").parent();
           //var appendDIV = $("[class='bp3-dialog-body]'").parent()
-          console.log(appendDIV)
           
           appendDIV.append("<div id='dataDescription' style='overflow-wrap: break-word;word-wrap: break-word;'>"+res+"</div>");
           for(const one of res.split("<br>")){
@@ -2351,13 +2350,7 @@ function init(){
             window.bioInit=true;
             VIPurl = this.url;
             console.log("VIP ("+VIPurl+") is ready on server side.");
-            
-            //Parse YAML file
-            yamlPARSE();
-            
-            //Add Description
-            addDescription();
-
+                        
             //Parse YAML file
             yamlPARSE();
 
@@ -5722,6 +5715,9 @@ $.ajax({
     databaseSearch_URL = res['url2'];
 
     includeDesc = res['includeDescription']
+
+    //Add Description
+    addDescription();
 
   },
   error: function() {
