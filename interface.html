@@ -2358,6 +2358,9 @@ function init(){
             //Add Description
             addDescription();
 
+            //Parse YAML file
+            yamlPARSE();
+
             //get GSEA Information
             getGSEA();
 
@@ -5632,8 +5635,7 @@ function pseudoPlot(){
 
   var D = {
   'method':'pseudo',
-  'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
-  'addr':'/'+window.store.getState().config.displayNames.dataset+'.yml',
+  'Dataset': window.store.getState().config.displayNames.dataset,
   'cells':cells,
   'genes':[],
   'grp':grp,
@@ -5663,7 +5665,39 @@ function pseudoPlot(){
     console.log('error!');
   }
 })
+}
 
+function tablePrep(pandas_csv){ // reformats Pandas_CSV files into a structure compatible with Jquery Datatables. 
+
+  resTable = pandas_csv;
+
+  resD = JSON.parse(resTable);
+
+  tableD = resD.split(/\r?\n/);
+
+  let inputArray = [];
+
+  for (x of tableD){
+    row = x.split(",");
+    inputArray.push(row);
+  }
+
+  tstitle = inputArray[0];
+
+  inputArray.shift();
+  inputArray.pop();
+
+  inputArray.columns = tstitle; //add columns property to inputArray object
+
+  var tableTitle = [];
+  [].concat(tstitle).forEach(function(d){tableTitle = tableTitle.concat({title:d})});
+
+  results = [];
+
+  results[0] = inputArray;
+  results[1] = tableTitle;
+
+  return results;
 
 }
 
