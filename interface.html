@@ -1923,8 +1923,7 @@ function createOpt(val){
 }
 function addDescription(){
 
-  console.log(window.store.getState().config.displayNames.dataset)
-
+  if (includeDesc == true){ //YAML file lever 
   $.ajax({
         type: "POST",
         url: VIPurl,
@@ -1937,9 +1936,6 @@ function addDescription(){
             console.log('No description available!');
             return;
           }
-          //'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
-          //'/'+window.store.getState().config.displayNames.dataset+'.yml'
-          //'/home/ed/data_cxg/YAML/'+window.store.getState().config.displayNames.dataset+'.yml'
           var appendDIV = $("[data-testclass='category']").parent();
           //var appendDIV = $("[class='bp3-dialog-body]'").parent()
           console.log(appendDIV)
@@ -1968,6 +1964,9 @@ function addDescription(){
           console.log(request.status+': cannot get description ...');
         }
       });
+    }else{ //YAML file lever
+      return
+    }
 }
 function getGSEA(){
   $.ajax({
@@ -2352,11 +2351,12 @@ function init(){
             window.bioInit=true;
             VIPurl = this.url;
             console.log("VIP ("+VIPurl+") is ready on server side.");
-            //Add Description
-            addDescription();
-
+            
             //Parse YAML file
             yamlPARSE();
+            
+            //Add Description
+            addDescription();
 
             //get GSEA Information
             getGSEA();
@@ -5669,6 +5669,7 @@ function pseudoPlot(){
 
 var database_URL;
 var databaseSearch_URL;
+var includeDesc;
 
 function yamlPARSE(){
 
@@ -5685,6 +5686,8 @@ $.ajax({
     database_URL = res['url'];
 
     databaseSearch_URL = res['url2'];
+
+    includeDesc = res['includeDescription']
 
   },
   error: function() {

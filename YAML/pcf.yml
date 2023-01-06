@@ -1,5 +1,6 @@
 url: https://tritrypdb.org/tritrypdb/app/record/gene/
 url2: https://tritrypdb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=
+includeDescription: true
 Description: African trypanosomes proliferate as bloodstream forms and procyclic forms in the mammal and tsetse fly midgut, respectively. Using single cell transcriptomics on unsynchronised cell populations, we have obtained high resolution cell cycle regulated transcriptomes of both procyclic and slender bloodstream form Trypanosoma brucei without prior cell sorting or synchronisation. Additionally, we describe an efficient freeze-thawing protocol that allows single cell transcriptomic analysis of cryopreserved T. brucei. Chromium from 10x genomics was used to sequence individual transcriptomes for BSF and PCF parasites. Fresh and frozen samples for each life cycle form were integrated, dimensional reduced and labelled for cell cycle phase, the results of which can be interrogated here for PCF.
 Original_Paper: <a href="https://www.nature.com">Profiling the bloodstream form and procyclic form Trypanosoma brucei cell cycle using single cell transcriptomics.</a>
 Author(s): Emma M. Briggs et al.
