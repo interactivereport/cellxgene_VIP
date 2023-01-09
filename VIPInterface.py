@@ -29,11 +29,6 @@ import os
 import re
 import glob
 import subprocess
-import rpy2
-import rpy2.robjects as ro
-from rpy2.robjects.conversion import localconverter
-import anndata2ri
-import scprep
 
 strExePath = os.path.dirname(os.path.abspath(__file__))
 
