@@ -642,11 +642,11 @@
       <div id="CellPopInput">
         <h3>For a given cell population, compare gene expression between two conditions:</h3>
         <p>Select Cell Population Annotation:
-        <select id="CPV_ClusterKey" onclick="CellPopList('cluster')"></select></p>
+        <select id="CPV_ClusterKey" onclick="CellPopList('CPV_ClusterKey',['CPV_Cluster'])"></select></p>
         <p>Select a Cell Population:
         <select id="CPV_Cluster"></select></p>
     <p>Select Condition Annotation:
-      <select id="CPV_ConditionKey" onclick="CellPopList('condition')"></select></p>
+      <select id="CPV_ConditionKey" onclick="CellPopList('CPV_ConditionKey',['CPV_C1','CPV_C2'])"></select></p>
 	  <p>Select Condition 1:
       <select id="CPV_C1"></select></p>
         <p>Select Condition 2:
@@ -3070,39 +3070,26 @@ function CLIref(){
   $(".CLIlayouts:checkbox[value='umap_harmony']").prop("checked","true");
 }
 
-function CellPopList(opt){
+
+function CellPopList(parent_dropdown, child_dropdown_list){
+
   var grps = {};
 
-  if(opt=="cluster"){
-    var annCat = document.getElementById("CPV_ClusterKey").value;
-    grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
+  var annCat = document.getElementById(parent_dropdown).value;
+  grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
 
-    $("#CPV_Cluster").empty();
+  for(const child of child_dropdown_list){
 
-    var levels = document.getElementById("CPV_Cluster");
+    childJQ = "#" + child;
 
-    for(const one of grps[annCat]) {
-      levels.add(createOpt(one));
-    }
-   
-  }else{
-    var annCat = document.getElementById("CPV_ConditionKey").value;
-    grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
-    $("#CPV_C1").empty();
-    $("#CPV_C2").empty();
+    $(childJQ).empty();
 
-    var levels1 = document.getElementById("CPV_C1");
-    var levels2 = document.getElementById("CPV_C2");
+    var levels = document.getElementById(child);
 
     for(const one of grps[annCat]) {
-      levels1.add(createOpt(one));
+    levels.add(createOpt(one));
     }
-
-    for(const one of grps[annCat]) {
-      levels2.add(createOpt(one));
-    }
-   } 
-  
+  }
 }
 
 // process annotation
