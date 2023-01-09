@@ -548,7 +548,7 @@
       <button class="tablinks" onclick="selFun(event, 'STACBAR')">Stacked Barplot</button>
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells()">Cell Population View</button>
-      <button class="tablinks" onclick="selFun(event, 'Pseudo');getAllCells()">Pseudotime Inference</button>
+      <button class="tablinks" onclick="selFun(event, 'TIA');defaultTopSel('TIA','pseudo_tab');getAllCells()">Trajectory Inference</button>
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1')">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
@@ -668,18 +668,6 @@
       <p></p>
       <table id="CPVdatatable" class="display"></table>
     </div><!--CellPopView-->
-
-    <div id="Pseudo" class="tabcontent">
-      <div id="PseudotimeInput">
-        <h3>Display Pseudotime Inference results within Cellxgene_VIP:</h3>
-        <p>Colour by:
-        <select id="pseudo_cell_annot"></select></p>
-      </div>
-      <button class="pseudoAnalysis" onclick="pseudoPlot()"><b>Pseudotime Plot</b></button>
-      <div id="pseudoSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <p id="pseudoFig"></p>
-      <p id="pseudoNote" style="color:red;"></p>
-    </div><!--Pseudo-->
 
     <div id="GD" class=tabcontent>
       <div id="GDinput">
@@ -985,10 +973,10 @@
           <option value='RdYlGn'>RdYlGn</option>
         </select>  <input id="DOTcolor_r" type="checkbox">Reverse <button onclick="hideShow($('#DOTcolorhelp'),$(this),'Color Help');">Show Color Help</button></p>
     		<div id="DOTcolorhelp" style="display:none;">
-              <table border=0>
-                <tr valign="top"><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_sequential.png" width="300"></td><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_diverging.png" width="300"></td></tr>
-              </table>
-    		</div>
+          <table border=0>
+            <tr valign="top"><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_sequential.png" width="300"></td><td><img src="https://interactivereport.github.io/cellxgene_VIP/static/color_brewer_diverging.png" width="300"></td></tr>
+          </table>
+    </div>
 
         <pre id="DOTnote" style="color:red;">Note: Unscaled data is used as the visualiztion is hard to interpret for scaled or corrected matrices in which zero counts had been replaced by other values. Scaling option in Global Setting does not apply to Dot plot</pre>
       </div>
@@ -1694,6 +1682,40 @@
       <br><button onclick="loadClick()">load</button>
       <div id="LOADnote"></div>
     </div>
+
+    <div id="TIA" class="tabcontent">
+      <div class="topTab">
+        <button id="pseudo_tab" class="TIAlinks" onclick="selTop(event, 'Pseudo','TIA')">Pseudotime</button>
+        <button id="paga_tab" class="TIAlinks" onclick="selTop(event, 'PAGA','TIA')">PAGA</button>
+      </div><!--TIA-->
+  
+    <div id="Pseudo" class="TIAcontent">
+      <div id="PseudotimeInput">
+        <h3>Display Pseudotime Inference results within Cellxgene_VIP:</h3>
+        <p>Colour by:
+        <select id="pseudo_cell_annot"></select></p>
+      </div>
+      <button class="pseudoAnalysis" onclick="pseudoPlot()"><b>Pseudotime Plot</b></button>
+      <div id="pseudoSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+      <p id="pseudoFig"></p>
+      <p id="pseudoNote" style="color:red;"></p>
+    </div><!--Pseudo-->
+
+    <div id="PAGA" class="TIAcontent">
+      <div id="pagaInput">
+        <h3>Run PAGA Trajectory Inference within Cellxgene_VIP:</h3>
+        <h4>PAGA Options:</h4>
+        <p>Select an Embedding:
+        <select id="pagaEmbed"></select></p>
+        <p>Select an Categorical Annotation:
+        <select id="paga_cluster_key"></select></p>
+        <button class="pagaAnalysis" onclick="pagaPlot()"><b>PAGA Plot</b></button>
+        <div id="pagaSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+        <p id="pagaNote" style="color:red;"></p>
+        <p id="pagaFig"></p>
+      </div>
+    </div><!--PAGA-->
+
   </div>
 </div>
 
@@ -2163,6 +2185,7 @@ function init(){
     var CPVGrp = document.getElementById("CPV_ClusterKey");
     var CPVGrp2 = document.getElementById("CPV_ConditionKey");
     var pseudoAnnot = document.getElementById("pseudo_cell_annot");
+    var pagaAnnot = document.getElementById("paga_cluster_key");
 
     for(const one of grps){
       if (one.startsWith(">")) continue;
@@ -2181,6 +2204,7 @@ function init(){
       CPVGrp.add(createOpt(one));
       CPVGrp2.add(createOpt(one));
       pseudoAnnot.add(createOpt(one));
+      pagaAnnot.add(createOpt(one));
     }
     densS.add(createOpt('None'));
     densG.add(createOpt('None'));
@@ -2221,12 +2245,14 @@ function init(){
     //add layout to EMBED, DUAL, and CLI checkbox
     var embedLay = document.getElementById("EMBEDlayout");
     var dualLay = document.getElementById("DUALlayout");
+    var pagaLay = document.getElementById("pagaEmbed") // add layout to PAGA select menu
 
     htmlCheck="";
     for(const ix of Object.keys(window.store.getState().annoMatrix.schema.layout.obs)){
       var one = window.store.getState().annoMatrix.schema.layout.obs[ix].name
       embedLay.add(createOpt(one));
       dualLay.add(createOpt(one));
+      pagaLay.add(createOpt(one));
       htmlCheck += '<label><input class="eIDlayouts" type="checkbox" value="'+one+'"/> '+one+' </label>';
     }
     $('#CLIlayout').html(htmlCheck.replace(/eID/g,'CLI'));
@@ -2351,6 +2377,9 @@ function init(){
             VIPurl = this.url;
             console.log("VIP ("+VIPurl+") is ready on server side.");
                         
+            //Parse YAML file
+            yamlPARSE();
+
             //Parse YAML file
             yamlPARSE();
 
@@ -5611,6 +5640,8 @@ function pseudoPlot(){
 
   grp.push(annot);
 
+  if (includePseudo == true){ // YAML file lever
+
   document.getElementById("pseudoSpin").style.visibility="visible";
 
   var D = {
@@ -5645,7 +5676,53 @@ function pseudoPlot(){
     console.log('error!');
   }
 })
+
+}else{  // YAML file lever
+  $("#pseudoNote").text("No Pseudotime Data available.");
+  return; 
 }
+}
+
+function pagaPlot(){
+
+  document.getElementById("pagaSpin").style.visibility="visible";
+
+  var grp = [];
+
+  paga_grp = document.getElementById("paga_cluster_key").value;
+
+  grp.push(paga_grp)
+
+  paga_embedding = document.getElementById("pagaEmbed").value;
+
+  var D = 
+  {
+  'method':'PAGA',
+  'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+  'cells': AllCells,
+  'genes':[],
+  'layout':paga_embedding,
+  'grp':grp
+  }
+
+
+$.ajax({
+type:"POST",
+url: VIPurl,
+data:JSON.stringify(D),
+contentType: 'application/json;charset=UTF-8',//
+success: function(res){
+
+  document.getElementById("pagaSpin").style.visibility="hidden";
+  showImg('pagaFig',res)
+
+},
+error: function() {
+  console.log('error!');
+}
+})
+}
+
 
 function tablePrep(pandas_csv){ // reformats Pandas_CSV files into a structure compatible with Jquery Datatables. 
 
@@ -5681,8 +5758,10 @@ function tablePrep(pandas_csv){ // reformats Pandas_CSV files into a structure c
 
 }
 
+
 var database_URL;
 var databaseSearch_URL;
+var includePseudo;
 var includeDesc;
 
 function yamlPARSE(){
@@ -5701,11 +5780,12 @@ $.ajax({
 
     databaseSearch_URL = res['url2'];
 
+    includePseudo = res['includePseudo']
+
     includeDesc = res['includeDescription']
 
     //Add Description
     addDescription();
-
   },
   error: function() {
     console.log('error!');

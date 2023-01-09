@@ -29,6 +29,11 @@ import os
 import re
 import glob
 import subprocess
+import rpy2
+import rpy2.robjects as ro
+from rpy2.robjects.conversion import localconverter
+import anndata2ri
+import scprep
 
 strExePath = os.path.dirname(os.path.abspath(__file__))
 
@@ -299,7 +304,8 @@ def distributeTask(aTask):
     'CPV':cellpopview,
     'CPVTable':cpvtable,
     'ymlPARSE':parseYAML,
-    'pseudo':pseudoPlot
+    'pseudo':pseudoPlot,
+    'PAGA':pagaAnalysis
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1632,7 +1638,7 @@ def cpvtable(data):
 def parseYAML(data):
 
   dataset = data["Dataset"]
-  
+
   ymlAddress = strExePath + "/YAML/" + dataset + ".yml"
 
   with open(ymlAddress) as f:
@@ -1646,44 +1652,62 @@ def pseudoPlot(data):
 
   yml = parseYAML(data)
 
-  # Pseudotime Data Check
-
-  if 'includePseudo' not in yml.keys():
-    return("ERROR - No Pseudotime Data available.")
-
   # Extract Embedding Key
 
   embed = yml['pseudoEmbed']
 
-  # Create AnnData Object
+  # Get copy of AnnData Object
 
-  data['layout'] = embed
-
-  aData = createData(data)
+  with app.get_data_adaptor() as data_adaptor:
+    aData = data_adaptor.data.copy()
 
   # Plot Graph
   
   annot = data['annot']
 
-  if "pseudo" in annot:
-    aData.obs[annot] = aData.obs[annot].astype(float)
-    sc.pl.embedding(aData,embed,color=annot,return_fig=True,color_map="Purples")
-  else:
-    sc.pl.embedding(aData,embed,color=annot,return_fig=True)
+  embedding = "X_" + embed
 
+  if "pseudo" in annot: # if 'annot' equals a pseudotime variable, plot as a continous variable.
+    aData.obs[annot] = aData.obs[annot].astype(float)
+    sc.pl.embedding(aData,embedding,color=annot,return_fig=True,color_map="Purples")
+  else:
+    sc.pl.embedding(aData,embedding,color=annot,return_fig=True)
 
   # Extract and Plot Pseudotime Lineages
-
-  for x in yml.keys():
-    if x.split('_')[0] == 'Lineage':
-        line = yml[x]
-        dim1 = line['dim1']
-        dim2 = line['dim2']
-        plt.plot(dim1,dim2, color="black")
+  
+  for x in aData.uns:
+    if x.startswith("Lineage"):
+      line = aData.uns[x]
+      dim1 = line['dim1']
+      dim2 = line['dim2']
+      plt.plot(dim1,dim2, color="black")
 
   pseudoPlot = plt.gcf()
 
   return iostreamFig(pseudoPlot)
+
+
+def pagaAnalysis(data):
+
+  #create annData object
+
+  adata = createData(data)
+
+  embed = data["layout"]
+
+  annot = data["grp"][0]
+
+  embedding = "X_" + embed
+
+  sc.pp.neighbors(adata, n_neighbors=10, use_rep=embedding)
+
+  sc.tl.paga(adata, groups=annot) #run PAGA
+
+  sc.pl.paga(adata, color=annot)
+
+  fig = plt.gcf()
+
+  return iostreamFig(fig)
 
 def getDesp_2(data):
 
