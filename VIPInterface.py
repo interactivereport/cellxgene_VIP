@@ -1651,11 +1651,6 @@ def pseudoPlot(data):
 
   yml = parseYAML(data)
 
-  # Pseudotime Data Check
-
-  if 'includePseudo' not in yml.keys():
-    return("ERROR - No Pseudotime Data available.")
-
   # Extract Embedding Key
 
   embed = yml['pseudoEmbed']
