@@ -295,7 +295,7 @@ def distributeTask(aTask):
     'mergeMeta': mergeMeta,
     'isMeta': isMeta,
     'testVIPready':testVIPready,
-    'Description':getDesp,
+    'Description':getDesp_2,
     'GSEAgs':getGSEA,
 	'SPATIAL':SPATIAL,
     'saveTest':saveTest,
@@ -1304,6 +1304,7 @@ def getDesp(data):
   with open(strF,'r') as fp:
     for line in fp:
       txt = "%s<br>%s"%(txt,line)
+  ppr.pprint(txt)
   return txt
 
 def getPreDEGname(data):
@@ -1685,6 +1686,7 @@ def pseudoPlot(data):
 
   return iostreamFig(pseudoPlot)
 
+
 def pagaAnalysis(data):
 
   #create annData object
@@ -1706,3 +1708,24 @@ def pagaAnalysis(data):
   fig = plt.gcf()
 
   return iostreamFig(fig)
+
+def getDesp_2(data):
+
+  yml = parseYAML(data)
+
+  desc = yml["Description"]
+
+  paper = yml["Original_Paper"]
+
+  aut = yml["Author(s)"]
+
+  hashtag = yml['table_hashtag']
+
+  url = "http://cellatlas.mvls.gla.ac.uk/data/table.html" + "#" + hashtag
+
+  full_url = "<a href="+url+">Available Data Sets</a>"
+  
+  txt = "<br>"+"<b>"+"Data Source:"+"</b>"+"<br>"+desc+"<br>"+paper+"<br>"+"<b>"+"Authors: "+"</b>"+aut+"<br>"+full_url
+  
+  return txt
+
