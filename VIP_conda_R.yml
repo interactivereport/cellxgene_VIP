@@ -97,7 +97,7 @@ dependencies:
   - python-igraph=0.8.2
   - python_abi=3.8
   - pyzmq=20.0.0
-  - r-base=4.0.0
+  - r-base=3.6.3
   - readline=8.1
   - rpy2=3.3.6
   - sed=4.8
