@@ -294,7 +294,7 @@ def distributeTask(aTask):
     'mergeMeta': mergeMeta,
     'isMeta': isMeta,
     'testVIPready':testVIPready,
-    'Description':getDesp,
+    'Description':getDesp_2,
     'GSEAgs':getGSEA,
 	'SPATIAL':SPATIAL,
     'saveTest':saveTest,
@@ -306,6 +306,7 @@ def distributeTask(aTask):
     'pseudo':pseudoPlot,
     'tradeSeq':tsTable,
     'tradeSeqPlotting':tradeSeqPlot
+    'PAGA':pagaAnalysis
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1311,6 +1312,7 @@ def getDesp(data):
   with open(strF,'r') as fp:
     for line in fp:
       txt = "%s<br>%s"%(txt,line)
+  ppr.pprint(txt)
   return txt
 
 def getPreDEGname(data):
@@ -1658,45 +1660,39 @@ def pseudoPlot(data):
 
   yml = parseYAML(data)
 
-  # Pseudotime Data Check
-
-  if 'includePseudo' not in yml.keys():
-    return("ERROR - No Pseudotime Data available.")
-
   # Extract Embedding Key
 
   embed = yml['pseudoEmbed']
 
-  # Create AnnData Object
+  # Get copy of AnnData Object
 
-  data['layout'] = embed
-
-  aData = createData(data)
+  with app.get_data_adaptor() as data_adaptor:
+    aData = data_adaptor.data.copy()
 
   # Plot Graph
   
   annot = data['annot']
 
-  if "pseudo" in annot:
-    aData.obs[annot] = aData.obs[annot].astype(float)
-    sc.pl.embedding(aData,"X_phate",color=annot,return_fig=True,color_map="Purples")
-  else:
-    sc.pl.embedding(aData,"X_phate",color=annot,return_fig=True)
+  embedding = "X_" + embed
 
+  if "pseudo" in annot: # if 'annot' equals a pseudotime variable, plot as a continous variable.
+    aData.obs[annot] = aData.obs[annot].astype(float)
+    sc.pl.embedding(aData,embedding,color=annot,return_fig=True,color_map="Purples")
+  else:
+    sc.pl.embedding(aData,embedding,color=annot,return_fig=True)
 
   # Extract and Plot Pseudotime Lineages
-
-  for x in yml.keys():
-    if x.split('_')[0] == 'Lineage':
-        line = yml[x]
-        dim1 = line['dim1']
-        dim2 = line['dim2']
-        plt.plot(dim1,dim2, color="black")
+  
+  for x in aData.uns:
+    if x.startswith("Lineage"):
+      line = aData.uns[x]
+      dim1 = line['dim1']
+      dim2 = line['dim2']
+      plt.plot(dim1,dim2, color="black")
 
   pseudoPlot = plt.gcf()
 
   return iostreamFig(pseudoPlot)
-
 
 def tsTable(data):
   
@@ -1851,4 +1847,47 @@ def tradeSeqPlot(data):
   img = res[0]
 
   return img
+
+def pagaAnalysis(data):
+
+  #create annData object
+
+  adata = createData(data)
+
+  embed = data["layout"]
+
+  annot = data["grp"][0]
+
+  embedding = "X_" + embed
+
+  sc.pp.neighbors(adata, n_neighbors=10, use_rep=embedding)
+
+  sc.tl.paga(adata, groups=annot) #run PAGA
+
+  sc.pl.paga(adata, color=annot)
+
+  fig = plt.gcf()
+
+  return iostreamFig(fig)
+
+def getDesp_2(data):
+
+  yml = parseYAML(data)
+
+  desc = yml["Description"]
+
+  paper = yml["Original_Paper"]
+
+  aut = yml["Author(s)"]
+
+  hashtag = yml['table_hashtag']
+
+  url = "http://cellatlas.mvls.gla.ac.uk/data/table.html" + "#" + hashtag
+
+  full_url = "<a href="+url+">Available Data Sets</a>"
+  
+  txt = "<br>"+"<b>"+"Data Source:"+"</b>"+"<br>"+desc+"<br>"+paper+"<br>"+"<b>"+"Authors: "+"</b>"+aut+"<br>"+full_url
+  
+  return txt
+
 

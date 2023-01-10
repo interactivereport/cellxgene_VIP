@@ -2,7 +2,7 @@
 ## obtain original index_template.html etc.
 cd cellxgene
 #git checkout bedbc87ed6178cd00a586feac3e99d4912d1c74e client/index_template.html
-git checkout bdfd9fe0a5462a0c139675fe10356765d2bbd95b client/index_template.html
+#git checkout bdfd9fe0a5462a0c139675fe10356765d2bbd95b client/index_template.html
 cd ..
 
 sed -i "s|<div id=\"root\"></div>|$(sed -e 's/[&\\/]/\\&/g; s/|/\\|/g; s/$/\\/;' -e '$s/\\$//' index_template.insert)\n&|" "cellxgene/client/index_template.html"
@@ -14,5 +14,5 @@ cd cellxgene/client; make build
 cp build/index.html $strPath/server/common/web/templates/
 rm $strPath/server/common/web/static/main-*.*
 rm $strPath/server/common/web/static/obsolete-*.*
-cp build/static/*   $strPath/server/common/web/static/
+cp -r build/static/*   $strPath/server/common/web/static/
 cd ../..
