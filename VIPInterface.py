@@ -305,7 +305,7 @@ def distributeTask(aTask):
     'ymlPARSE':parseYAML,
     'pseudo':pseudoPlot,
     'tradeSeq':tsTable,
-    'tradeSeqPlotting':tradeSeqPlot
+    'tradeSeqPlotting':tradeSeqPlot,
     'PAGA':pagaAnalysis
   }.get(aTask,errorTask)
 
