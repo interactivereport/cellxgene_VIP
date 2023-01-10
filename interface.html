@@ -3140,8 +3140,6 @@ function tradeSeq_setup(){
     
   var annCat = tsAnnot;
 
-  console.log(annCat)
-
   if(annCat){
 
   grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
@@ -3175,10 +3173,8 @@ function tradeSeq_setup(){
   // Populate TradeSeq Lineage-Condition dropdown menus
 
   tsDropDowns = document.getElementsByClassName('TradeSeqDropDowns');
-  console.log(tsDropDowns)
 
   for(x in tsDropDowns){
-    console.log(tsDropDowns[x])
     drop = tsDropDowns[x]
     grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
     for(const one of grps[annCat]) {
@@ -5754,7 +5750,6 @@ function tsTable(){
   var tradeS_option = document.getElementById("ts_to").value;
   
   isVis = document.getElementById("pts_C").style.value
-  console.log(isVis)
 
   if(isVis == "hidden"){
     var tsCondition = null;

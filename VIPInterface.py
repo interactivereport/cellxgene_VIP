@@ -29,12 +29,9 @@ import os
 import re
 import glob
 import subprocess
-import scipy.sparse
-import rpy2
 import rpy2.robjects as ro
 from rpy2.robjects.conversion import localconverter
 import anndata2ri
-from datetime import datetime
 import random
 
 strExePath = os.path.dirname(os.path.abspath(__file__))
@@ -1757,10 +1754,6 @@ def tradeSeqPlot(data):
   #Convert anndata to SCE within embedded R global environment
   with localconverter(anndata2ri.converter):
       ro.globalenv['some_data'] = adata
-
-  dateTimeObj = datetime.now()
-  timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
-  ppr.pprint(timestampStr)
 
   #read in plotting parameters
 
