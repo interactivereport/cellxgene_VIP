@@ -643,11 +643,11 @@
       <div id="CellPopInput">
         <h3>For a given cell population, compare gene expression between two conditions:</h3>
         <p>Select Cell Population Annotation:
-        <select id="CPV_ClusterKey" onclick="CellPopList('cluster')"></select></p>
+        <select id="CPV_ClusterKey" onclick="CellPopList('CPV_ClusterKey',['CPV_Cluster'])"></select></p>
         <p>Select a Cell Population:
         <select id="CPV_Cluster"></select></p>
     <p>Select Condition Annotation:
-      <select id="CPV_ConditionKey" onclick="CellPopList('condition')"></select></p>
+      <select id="CPV_ConditionKey" onclick="CellPopList('CPV_ClusterKey',['CPV_Cluster'])"></select></p>
 	  <p>Select Condition 1:
       <select id="CPV_C1"></select></p>
         <p>Select Condition 2:
@@ -3109,96 +3109,25 @@ function CLIref(){
   $(".CLIlayouts:checkbox[value='umap_harmony']").prop("checked","true");
 }
 
-function CellPopList(opt){
-  var grps = {};
+function CellPopList(parent_dropdown, child_dropdown_list){
 
-  if(opt=="cluster"){
-    var annCat = document.getElementById("CPV_ClusterKey").value;
-    grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
+var grps = {};
 
-    $("#CPV_Cluster").empty();
+var annCat = document.getElementById(parent_dropdown).value;
+grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
 
-    var levels = document.getElementById("CPV_Cluster");
+for(const child of child_dropdown_list){
 
-    for(const one of grps[annCat]) {
-      levels.add(createOpt(one));
-    }
-   
-  }else if(opt=="TS"){
+  childJQ = "#" + child;
 
-    // Create TradeSeq Table Options "Conditions" dropdown menu
+  $(childJQ).empty();
 
-    $("#ts_C").empty();
-    
-    var annCat = tsAnnot;
+  var levels = document.getElementById(child);
 
-    console.log(annCat)
-
-    if(annCat){
-
-    grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
-
-    var tsC_levels = document.getElementById("ts_C");
-
-    for(const one of grps[annCat]) {
-      tsC_levels.add(createOpt(one));
-    }
-    }
-    
-    // Create TradeSeq Plot Option dropdown menus
-
-    var pseudonames = window.store.getState().annoMatrix.schema.annotations.obsByName;
-
-    pseudoannots = Object.keys(pseudonames);
-
-    htmlCheckCombo = '';
-    lin_no = 1;
-    selectList = [];
-
-    for(const one of pseudoannots){
-      if(one.startsWith("pseudotime_")){
-        htmlCheckCombo += "<p>Lineage "+lin_no+":</p>"
-        htmlCheckCombo += "<select class='TradeSeqDropDowns' lineage='"+lin_no+"'></select></p>";
-        lin_no += 1;
-      }
-      $('#tsCombos').html(htmlCheckCombo);
-    }
-
-    // Populate TradeSeq Lineage-Condition dropdown menus
-
-    tsDropDowns = document.getElementsByClassName('TradeSeqDropDowns');
-    console.log(tsDropDowns)
-
-    for(x in tsDropDowns){
-      console.log(tsDropDowns[x])
-      drop = tsDropDowns[x]
-      grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
-      for(const one of grps[annCat]) {
-        drop.add(createOpt(one));
-      }
-      drop.add(createOpt("All"));
-      drop.add(createOpt("None"));
-    }
-
-
-  }else{
-    var annCat = document.getElementById("CPV_ConditionKey").value;
-    grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
-    $("#CPV_C1").empty();
-    $("#CPV_C2").empty();
-
-    var levels1 = document.getElementById("CPV_C1");
-    var levels2 = document.getElementById("CPV_C2");
-
-    for(const one of grps[annCat]) {
-      levels1.add(createOpt(one));
-    }
-
-    for(const one of grps[annCat]) {
-      levels2.add(createOpt(one));
-    }
-   } 
-  
+  for(const one of grps[annCat]) {
+  levels.add(createOpt(one));
+  }
+}
 }
 
 function tradeSeq_setup(){
@@ -5955,7 +5884,7 @@ function tsPlot(tsgene){
   comboList = [];
   var c = 0;
   
-  for(x in tsDropDowns){ // list of elements with class-name "TradeSeqDropDowns", created in CellPopList
+  for(x in tsDropDowns){ // list of elements with class-name "TradeSeqDropDowns", created in tradeSeq_setup
     if(c == tsDropDowns.length) break;
     c ++;    
     
