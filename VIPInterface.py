@@ -1781,7 +1781,7 @@ def tradeSeqPlot(data):
   # Source function file
   r = ro.r
   #r['source']('/home/ed/cellxgene_VIP/tsPlot4.R')
-  r['source'](strExePath+'/tsPlot4.R')
+  r['source'](strExePath+'/tsPlot.R')
   
   # Generate SessionID
 
