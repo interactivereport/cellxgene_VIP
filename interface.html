@@ -5824,7 +5824,7 @@ function tsTable(){
 }
 }
 
-function tablePrep(pandas_csv){
+function tablePrep(pandas_csv){ // converts pandas csv tables into a format easily compatible with JQ DataTables
 
   resTable = pandas_csv;
  
@@ -5929,8 +5929,6 @@ function tsPlot(tsgene){
 
     document.getElementById("tradeSeqSpin").style.visibility="hidden";
 
-    console.log("Ajax block complete!")
-
     showImg('tradeSeqFig',res)
     
   },
@@ -5969,9 +5967,6 @@ $.ajax({
   tsAnnot = res['tsAnnot']
 
   includeTradeSeq = res['includeTradeSeq']
-
-  console.log(tsAnnot)
-  console.log(includeTradeSeq)
 
   },
   error: function() {
