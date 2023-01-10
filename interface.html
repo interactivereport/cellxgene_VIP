@@ -549,7 +549,7 @@
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells()">Cell Population View</button>
       <button class="tablinks" onclick="selFun(event, 'Pseudo');getAllCells()">Pseudotime Inference</button>
-      <button class="tablinks" onclick="selFun(event, 'TradeSeq');getAllCells();CellPopList('TS')">TradeSeq</button>
+      <button class="tablinks" onclick="selFun(event, 'TradeSeq');getAllCells();tradeSeq_setup()">TradeSeq</button>
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1')">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
@@ -3199,6 +3199,65 @@ function CellPopList(opt){
     }
    } 
   
+}
+
+function tradeSeq_setup(){
+
+  var grps = {}
+
+  // Create TradeSeq Table Options "Conditions" dropdown menu
+
+  $("#ts_C").empty();
+    
+  var annCat = tsAnnot;
+
+  console.log(annCat)
+
+  if(annCat){
+
+  grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
+
+  var tsC_levels = document.getElementById("ts_C");
+
+  for(const one of grps[annCat]) {
+    tsC_levels.add(createOpt(one));
+    }
+  }
+    
+  // Create TradeSeq Plot Option dropdown menus
+
+  var pseudonames = window.store.getState().annoMatrix.schema.annotations.obsByName;
+
+  pseudoannots = Object.keys(pseudonames);
+
+  htmlCheckCombo = '';
+  lin_no = 1;
+  selectList = [];
+
+  for(const one of pseudoannots){
+    if(one.startsWith("pseudotime_")){
+      htmlCheckCombo += "<p>Lineage "+lin_no+":</p>"
+      htmlCheckCombo += "<select class='TradeSeqDropDowns' lineage='"+lin_no+"'></select></p>";
+      lin_no += 1;
+    }
+    $('#tsCombos').html(htmlCheckCombo);
+  }
+
+  // Populate TradeSeq Lineage-Condition dropdown menus
+
+  tsDropDowns = document.getElementsByClassName('TradeSeqDropDowns');
+  console.log(tsDropDowns)
+
+  for(x in tsDropDowns){
+    console.log(tsDropDowns[x])
+    drop = tsDropDowns[x]
+    grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
+    for(const one of grps[annCat]) {
+      drop.add(createOpt(one));
+    }
+    drop.add(createOpt("All"));
+    drop.add(createOpt("None"));
+  }
 }
 
 // process annotation
