@@ -5904,12 +5904,7 @@ function tsPlot(tsgene){
     $("#tradeSeqnote").text('Please select at least one lineage-condition combination');
     return
   }
-
-  if(tsgene == null){
-    $("#tradeSeqnote").text('Please select a gene from the table.');
-    return
-  }
-
+  
   var D = {
   'method':'tradeSeqPlotting',
   'dataset': window.store.getState().config.displayNames.dataset,
@@ -5944,7 +5939,6 @@ function tsPlot(tsgene){
     document.getElementById("tradeSeqSpin").style.visibility="hidden";
   }
 })
-
 }
 
 
