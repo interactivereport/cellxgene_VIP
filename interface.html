@@ -685,7 +685,8 @@
 
 
     <div id="TradeSeq" class="tabcontent">
-      <h3>Display TradeSeq Analysis0 results within Cellxgene_VIP:</h3>
+      <h3>Display TradeSeq Analysis results within Cellxgene_VIP:</h3>
+      <p id="tradeSeq_SetUpNote" style="color:green;"></p>
       <h4>Table Options:</h4>
       <p id = "pts_to">Lineage:
         <select id="ts_to" onclick = "tsDropDownUpdate()"></select></p>
@@ -3131,6 +3132,8 @@ for(const child of child_dropdown_list){
 }
 
 function tradeSeq_setup(){
+
+  $("#tradeSeq_SetUpNote").text('Generate a TradeSeq Table. Then select a Table gene in order to plot it')
 
   var grps = {}
 
@@ -5899,6 +5902,11 @@ function tsPlot(tsgene){
 
   if(comboList.length == 0) {
     $("#tradeSeqnote").text('Please select at least one lineage-condition combination');
+    return
+  }
+
+  if(tsgene == null){
+    $("#tradeSeqnote").text('Please select a gene from the table.');
     return
   }
 
