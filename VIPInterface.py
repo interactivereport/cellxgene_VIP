@@ -1780,7 +1780,6 @@ def tradeSeqPlot(data):
 
   # Source function file
   r = ro.r
-  #r['source']('/home/ed/cellxgene_VIP/tsPlot4.R')
   r['source'](strExePath+'/tsPlot.R')
   
   # Generate SessionID
@@ -1798,7 +1797,7 @@ def tradeSeqPlot(data):
 
   res = ro.r('''
 
-    smooth = predictSmoother(some_data,gene1)
+    smooth = predictSmoother(some_data,gene1,Xcols)
 
     #create color palette
     colList = rainbow(length(combos))

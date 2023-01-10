@@ -392,7 +392,7 @@ predictGAM <- function(lpmatrix, df, pseudotime, conditions = NULL){
 }
 
 #Getting Smoother lines for each condition
-predictSmoother <- function(models,gene,nPoints = 100,tidy = TRUE){
+predictSmoother <- function(models,gene,Xcolnames,nPoints = 100,tidy = TRUE){
 
 # check if all gene IDs provided are present in the models object.
 if (is(gene, "character")) {
@@ -411,13 +411,6 @@ colnames(dm) = gsub(pattern = "dm.", replacement = "", x = colnames(dm))
 
 X = df[ , grepl( "X." , names( df ) ) ]
 X = as.data.frame(X)
-
-Xcols = c("U","s(t1):l1_1.1", "s(t1):l1_1.2", "s(t1):l1_1.3", "s(t1):l1_1.4", "s(t1):l1_1.5", "s(t1):l1_1.6",
-"s(t1):l1_1.7", "s(t1):l1_1.8", "s(t1):l1_1.9", "s(t1):l1_2.1", "s(t1):l1_2.2", "s(t1):l1_2.3", "s(t1):l1_2.4",
-"s(t1):l1_2.5", "s(t1):l1_2.6", "s(t1):l1_2.7", "s(t1):l1_2.8" ,"s(t1):l1_2.9", "s(t2):l2_1.1", "s(t2):l2_1.2",
-"s(t2):l2_1.3", "s(t2):l2_1.4", "s(t2):l2_1.5", "s(t2):l2_1.6", "s(t2):l2_1.7", "s(t2):l2_1.8", "s(t2):l2_1.9",
-"s(t2):l2_2.1", "s(t2):l2_2.2", "s(t2):l2_2.3", "s(t2):l2_2.4", "s(t2):l2_2.5", "s(t2):l2_2.6", "s(t2):l2_2.7",
-"s(t2):l2_2.8","s(t2):l2_2.9")
 
 colnames(X) = Xcols
               
