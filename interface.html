@@ -549,6 +549,7 @@
       <button class="tablinks" onclick="selFun(event, 'GD')">Gene Detected</button>
       <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells()">Cell Population View</button>
       <button class="tablinks" onclick="selFun(event, 'TIA');defaultTopSel('TIA','pseudo_tab');getAllCells()">Trajectory Inference</button>
+      <button class="tablinks" onclick="selFun(event, 'TradeSeq');getAllCells();tradeSeq_setup()">TradeSeq</button>
       <button class="tablinks" onclick="selFun(event, 'DEG');defaultTopSel('DEGtop','DEGtopBT1')">DEG</button>
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
@@ -668,6 +669,26 @@
       <p></p>
       <table id="CPVdatatable" class="display"></table>
     </div><!--CellPopView-->
+
+    <div id="TradeSeq" class="tabcontent">
+      <h3>Display TradeSeq Analysis results within Cellxgene_VIP:</h3>
+      <p id="tradeSeq_SetUpNote" style="color:green;"></p>
+      <h4>Table Options:</h4>
+      <p id = "pts_to">Lineage:
+        <select id="ts_to" onclick = "tsDropDownUpdate()"></select></p>
+      <p id = "pts_C" style="visibility: hidden;">Condition:
+        <select id="ts_C"></select></p>
+      <button class="tradeSeqTable" onclick="tsTable()"><b>TradeSeq Table</b></button>
+      <h4>Plot Options:</h4>
+      <p>Choose lineage-condition combinations to plot:</p>
+      <p id = "tsCombos">Combos</p>
+      <p></p>
+      <div id="tradeSeqSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+      <p id="tradeSeqNote" style="color:red;"></p>
+      <p></p>
+      <table id="tradeSeqdatatable" class="display"></table>
+      <p id="tradeSeqFig"></p>
+    </div><!--TradeSeq-->
 
     <div id="GD" class=tabcontent>
       <div id="GDinput">
@@ -2211,16 +2232,40 @@ function init(){
     //--------------------------------------------------------------------------
     // add Pseudotime Annotation
 
-    var names = window.store.getState().annoMatrix.schema.annotations.obsByName;
+    var pseudonames = window.store.getState().annoMatrix.schema.annotations.obsByName;
 
-    annots = Object.keys(names);
+    pseudoannots = Object.keys(pseudonames);
+ 
+    var lineageCount = 0;
+ 
+   for(const one of pseudoannots){
+     if(one.startsWith("pseudotime_")){
+       pseudoAnnot.add(createOpt(one));
+       lineageCount += 1;
+     }
+   }
+ 
+  // TradeSeq inputs
+ 
+   var tsTO = document.getElementById("ts_to");
+   tsTO.add(createOpt("General"));
+ 
+   if (lineageCount != 0){
+     for (let x = 1; x < lineageCount+1; x++){
+       tsTO.add(createOpt("Lineage" + x))
+     }
+   }
 
-    for(const one of annots){
-      if(one.startsWith("pseudo")){
-        pseudoAnnot.add(createOpt(one));
-      }
-    }
-    
+  
+  // TradeSeq Plotting Function Check Boxes
+
+  
+
+   //pts_C
+   //if (tsTO != "General"){
+     //document.getElementById("pts_C").style.visibility="visible";
+   //}
+
     // add gene annotation categories (CellPopViw Tab)
 
     var featureCats = Object.entries(store.getState().annoMatrix.schema.annotations.var.columns)
@@ -3096,25 +3141,81 @@ function CLIref(){
   $(".CLIlayouts:checkbox[value='umap_harmony']").prop("checked","true");
 }
 
-
 function CellPopList(parent_dropdown, child_dropdown_list){
 
-  var grps = {};
+var grps = {};
 
-  var annCat = document.getElementById(parent_dropdown).value;
+var annCat = document.getElementById(parent_dropdown).value;
+grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
+
+for(const child of child_dropdown_list){
+
+  childJQ = "#" + child;
+
+  $(childJQ).empty();
+
+  var levels = document.getElementById(child);
+
+  for(const one of grps[annCat]) {
+  levels.add(createOpt(one));
+  }
+}
+}
+
+function tradeSeq_setup(){
+
+  $("#tradeSeq_SetUpNote").text('Generate a TradeSeq Table. Then select a Table gene in order to plot it')
+
+  var grps = {}
+
+  // Create TradeSeq Table Options "Conditions" dropdown menu
+
+  $("#ts_C").empty();
+    
+  var annCat = tsAnnot;
+
+  if(annCat){
+
   grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
 
-  for(const child of child_dropdown_list){
+  var tsC_levels = document.getElementById("ts_C");
 
-    childJQ = "#" + child;
-
-    $(childJQ).empty();
-
-    var levels = document.getElementById(child);
-
-    for(const one of grps[annCat]) {
-    levels.add(createOpt(one));
+  for(const one of grps[annCat]) {
+    tsC_levels.add(createOpt(one));
     }
+  }
+    
+  // Create TradeSeq Plot Option dropdown menus
+
+  var pseudonames = window.store.getState().annoMatrix.schema.annotations.obsByName;
+
+  pseudoannots = Object.keys(pseudonames);
+
+  htmlCheckCombo = '';
+  lin_no = 1;
+  selectList = [];
+
+  for(const one of pseudoannots){
+    if(one.startsWith("pseudotime_")){
+      htmlCheckCombo += "<p>Lineage "+lin_no+":</p>"
+      htmlCheckCombo += "<select class='TradeSeqDropDowns' lineage='"+lin_no+"'></select></p>";
+      lin_no += 1;
+    }
+    $('#tsCombos').html(htmlCheckCombo);
+  }
+
+  // Populate TradeSeq Lineage-Condition dropdown menus
+
+  tsDropDowns = document.getElementsByClassName('TradeSeqDropDowns');
+
+  for(x in tsDropDowns){
+    drop = tsDropDowns[x]
+    grps[annCat]=window.store.getState().annoMatrix.schema.annotations.obsByName[annCat].categories.map(String);
+    for(const one of grps[annCat]) {
+      drop.add(createOpt(one));
+    }
+    drop.add(createOpt("All"));
+    drop.add(createOpt("None"));
   }
 }
 
@@ -5434,7 +5535,6 @@ function CellPopPlot(){
 
   var geneMetaData = document.getElementById("gene_MetaCat").value;
   
-  var cells = AllCells;
 
   if(CPV_Con1 == CPV_Con2) {
     $("#CPVnote").text('Please input two different conditions');
@@ -5444,14 +5544,14 @@ function CellPopPlot(){
   //let grp = [...new Set(CPV_CK,CPV_CK2)];
   let grp = [...new Set([$("#CPV_ClusterKey").val(),$("#CPV_ConditionKey").val()])];
 
-  if(CPV_CK && CPV_C && CPV_C2 && CPV_Con1 && CPV_Con2 && cells) {
+  if(CPV_CK && CPV_C && CPV_C2 && CPV_Con1 && CPV_Con2 && AllCells) {
     
     var D = {'method':'CPV',
 		'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
 		'Cluster':CPV_C,
 		'ClusterKey':CPV_CK,
 		'ConditionKey':CPV_CK2,
-    'cells':cells,
+    'cells':AllCells, // Int32 Array, specifies the use of every cell in dataset
     'genes':[],
     'grp':grp,
     'gMD':geneMetaData,
@@ -5503,7 +5603,6 @@ function CellPopTable(){
 
   var geneMetaData = document.getElementById("gene_MetaCat").value;
   
-  var cells = AllCells;
 
   if(CPV_Con1 == CPV_Con2) {
     $("#CPVnote").text('Please input two different conditions');
@@ -5512,14 +5611,14 @@ function CellPopTable(){
 
   let grp = [...new Set([$("#CPV_ClusterKey").val(),$("#CPV_ConditionKey").val()])];
 
-  if(CPV_CK && CPV_C && CPV_C2 && CPV_Con1 && CPV_Con2 && cells) {
+  if(CPV_CK && CPV_C && CPV_C2 && CPV_Con1 && CPV_Con2 && AllCells) {
     
     var D = {'method':'CPVTable',
 		'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
 		'Cluster':CPV_C,
 		'ClusterKey':CPV_CK,
 		'ConditionKey':CPV_CK2,
-    'cells':cells,
+    'cells':AllCells, // Int32 Array, specifies the use of every cell in dataset
     'genes':[],
     'grp':grp,
     'gMD':geneMetaData,
@@ -5557,8 +5656,7 @@ function CellPopTable(){
                   (+data.pval).toExponential(2),
                   (+data.qval).toExponential(2)],
                   Object.values(data).slice(4));
-        });
-      
+        });      
       
       var tableTitle = [];
       [].concat(['Gene',"Log Fold Change","p-value","padj"],gInfo).forEach(function(d){tableTitle = tableTitle.concat({title:d})});
@@ -5662,8 +5760,7 @@ function pseudoPlot(){
       document.getElementById("pseudoSpin").style.visibility="hidden";
         return;
       }
-    
-
+  
     document.getElementById("pseudoSpin").style.visibility="hidden";
 
     showImg('pseudoFig',res);
@@ -5673,13 +5770,206 @@ function pseudoPlot(){
     console.log('error!');
   }
 })
-
 }else{  // YAML file lever
   $("#pseudoNote").text("No Pseudotime Data available.");
   return; 
 }
 }
 
+function tsTable(){
+
+  if (includeTradeSeq){ //YAML file lever
+ 
+  var tradeS_option = document.getElementById("ts_to").value;
+  
+  isVis = document.getElementById("pts_C").style.value
+
+  if(isVis == "hidden"){
+    var tsCondition = null;
+  }else{
+    var tsCondition = document.getElementById("ts_C").value;
+  }
+  
+  var tsPlotGene;
+ 
+  var D = {
+    'method':'tradeSeq',
+    'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+    'cells':AllCells, // Int32 Array, specifies the use of every cell in dataset
+    'genes':[],
+    'grp':[],
+    'tableOption':tradeS_option,
+    'cond':tsCondition
+  };
+ 
+  $.ajax({
+  type:"POST",
+  url: VIPurl,
+  data:JSON.stringify(D),
+  contentType: 'application/json;charset=UTF-8',//
+  success: function(res){
+    if(res.startsWith('ERROR')){
+      $("#pseudoNote").text(res);
+      document.getElementById("tradeSeqSpin").style.visibility="hidden";
+      return;
+    }
+    
+    resTable = res;
+
+    tableInputs = tablePrep(res);
+    
+    var table = $("#tradeSeqdatatable").DataTable({
+      destroy: true,
+      dom:'Blfrtip',
+      lengthMenu:[[10,50,100,200],[10,50,100,200]],
+      order:[[1, 'desc']],
+      buttons:['csv', {
+          text:'TradeSeqPlot',
+          action: function(e, dt, node, config) {
+            tsPlot(tsPlotGene)
+            return;
+          }
+        }],
+      data:tableInputs[0],
+      columns:tableInputs[1]
+    });
+
+    //Add row selection property
+
+    $('#tradeSeqdatatable tbody').off('click').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        } else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            tsPlotGene = table.row( this ).data()[0]
+        }
+    });
+
+  },
+  error: function() {
+    console.log('error!');
+  }
+})
+}else{ // YAML file lever
+  $("#tradeSeqNote").text('No TradeSeq Data available.')
+  return
+}
+}
+
+function tablePrep(pandas_csv){ // converts pandas csv tables into a format easily compatible with JQ DataTables
+
+  resTable = pandas_csv;
+ 
+  resD = JSON.parse(resTable);
+ 
+  tableD = resD.split(/\r?\n/);
+ 
+  let inputArray = [];
+  
+  for (x of tableD){
+    row = x.split(",");
+    inputArray.push(row);
+  }
+ 
+  tstitle = inputArray[0];
+ 
+  inputArray.shift();
+  inputArray.pop();
+ 
+  inputArray.columns = tstitle; //add columns property to inputArray object
+ 
+  var tableTitle = [];
+  [].concat(tstitle).forEach(function(d){tableTitle = tableTitle.concat({title:d})});
+
+  results = [];
+
+  results[0] = inputArray;
+  results[1] = tableTitle;
+
+  return results;
+
+}
+
+function tsDropDownUpdate(){
+
+  var tradeS_option = document.getElementById("ts_to").value;
+
+  if (tradeS_option == "General"){
+
+    document.getElementById("pts_C").style.visibility="hidden";
+
+  }else if(tsAnnot){
+
+    document.getElementById("pts_C").style.visibility="visible";
+
+  }
+}
+
+function tsPlot(tsgene){
+
+  comboList = [];
+  var c = 0;
+  
+  for(x in tsDropDowns){ // list of elements with class-name "TradeSeqDropDowns", created in tradeSeq_setup
+    if(c == tsDropDowns.length) break;
+    c ++;    
+    
+    val = tsDropDowns[x].value;
+    
+    if(val != "None"){
+
+      lin = tsDropDowns[x].getAttribute("lineage")
+
+      combo = [lin,val]
+
+      comboList.push(combo)
+
+    }
+
+  }
+
+  if(comboList.length == 0) {
+    $("#tradeSeqnote").text('Please select at least one lineage-condition combination');
+    return
+  }
+  
+  var D = {
+  'method':'tradeSeqPlotting',
+  'dataset': window.store.getState().config.displayNames.dataset,
+  'cells':AllCells,
+  'genes':[],
+  'gene':tsgene,
+  'grp':[],
+  'combos':comboList
+  };
+
+  document.getElementById("tradeSeqSpin").style.visibility="visible";
+
+  $.ajax({
+  type:"POST",
+  url: VIPurl,
+  data:JSON.stringify(D),
+  contentType: 'application/json;charset=UTF-8',//
+  success: function(res){
+
+    if(res.startsWith('ERROR')){
+      $("#tradeSeqNote").text(res);
+      document.getElementById("tradeSeqSpin").style.visibility="hidden";
+        return;
+      }
+
+    document.getElementById("tradeSeqSpin").style.visibility="hidden";
+
+    showImg('tradeSeqFig',res)
+    
+  },
+  error: function() {
+    document.getElementById("tradeSeqSpin").style.visibility="hidden";
+  }
+})
+}
+ 
 function pagaPlot(){
 
   document.getElementById("pagaSpin").style.visibility="visible";
@@ -5720,46 +6010,12 @@ error: function() {
 })
 }
 
-
-function tablePrep(pandas_csv){ // reformats Pandas_CSV files into a structure compatible with Jquery Datatables. 
-
-  resTable = pandas_csv;
-
-  resD = JSON.parse(resTable);
-
-  tableD = resD.split(/\r?\n/);
-
-  let inputArray = [];
-
-  for (x of tableD){
-    row = x.split(",");
-    inputArray.push(row);
-  }
-
-  tstitle = inputArray[0];
-
-  inputArray.shift();
-  inputArray.pop();
-
-  inputArray.columns = tstitle; //add columns property to inputArray object
-
-  var tableTitle = [];
-  [].concat(tstitle).forEach(function(d){tableTitle = tableTitle.concat({title:d})});
-
-  results = [];
-
-  results[0] = inputArray;
-  results[1] = tableTitle;
-
-  return results;
-
-}
-
-
 var database_URL;
 var databaseSearch_URL;
 var includePseudo;
 var includeDesc;
+var tsAnnot;
+var includeTradeSeq;
 
 function yamlPARSE(){
 
@@ -5773,16 +6029,21 @@ $.ajax({
   contentType: 'application/json;charset=UTF-8',//
   success: function(res){
 
-    database_URL = res['url'];
+  database_URL = res['url'];
 
-    databaseSearch_URL = res['url2'];
+  databaseSearch_URL = res['url2'];
 
-    includePseudo = res['includePseudo']
+  tsAnnot = res['tsAnnot']
 
-    includeDesc = res['includeDescription']
+  includeTradeSeq = res['includeTradeSeq']
 
-    //Add Description
-    addDescription();
+  includePseudo = res['includePseudo']
+
+  includeDesc = res['includeDescription']
+
+  //Add Description
+  addDescription();
+  
   },
   error: function() {
     console.log('error!');
@@ -5873,7 +6134,7 @@ function getAllCells(){
   AllCells = Int32Array.from({length:window.store.getState().annoMatrix.nObs},(v,k)=>k);
 }
 
-var AllCells;
+var AllCells; 
 
 var DE_Counter = 0;
 
