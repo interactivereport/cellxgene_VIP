@@ -462,12 +462,6 @@ def SGVcompare(data):
   res = subprocess.run([strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
 
-  ppr.pprint("arguments")
-  ppr.pprint(res.args)
-
-  ppr.pprint("Violins!")
-  ppr.pprint(img)
-
   os.remove(strF)
   if 'Error' in res.stderr.decode('utf-8'):
     raise SyntaxError("in R: "+res.stderr.decode('utf-8'))
