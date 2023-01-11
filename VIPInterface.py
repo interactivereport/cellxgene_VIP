@@ -1763,7 +1763,8 @@ def tradeSeqPlot(data):
 
   # Source function file
   r = ro.r
-  r['source'](strExePath+'/tsPlot.R')
+  #r['source'](strExePath+'/tsPlot.R')
+  r['source']('/home/cxg-adm/anaconda3/envs/VIP/lib/python3.8/site-packages/server/app/tsPlot.R')
   
   # Generate SessionID
 
