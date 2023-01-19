@@ -85,7 +85,7 @@ dependencies:
   - zlib=1.2.11
   - pip:
     - aniso8601==8.1.1
-    - anndata==0.7.4
+    - anndata==0.8.0
     - attrs==20.3.0
     - batchglm==0.7.4
     - bleach==3.2.3
@@ -113,7 +113,7 @@ dependencies:
     - fsspec==0.7.4
     - get-version==2.1
     - gunicorn==20.0.4
-    - h5py==2.10.0
+    - h5py==3.7.0
     - idna==2.10
     - iniconfig==1.1.1
     - itsdangerous==1.1.0
