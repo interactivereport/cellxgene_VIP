@@ -6001,7 +6001,6 @@ var functionResultsHTML = document.getElementById("geneFunctionResults")
 
 function addAutoComplete(searchbox,resultList,source){
   if (includeGeneS == true){
-  console.log("autocomplete on")
   searchbox.oninput = function() {
   let results = []
   let userInput = this.value.toUpperCase(); //get current contents of text box
@@ -6022,7 +6021,6 @@ function addAutoComplete(searchbox,resultList,source){
   }
 }
 }else{
-  console.log(includeGeneS)
   return
 }
 }
