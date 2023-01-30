@@ -304,6 +304,9 @@ def distributeTask(aTask):
     'CPVTable':cpvtable,
     'ymlPARSE':parseYAML,
     'pseudo':pseudoPlot,
+    'nameSearch':gene_search,
+    'functionSearch': function_search,
+    'get_names_and_functions':getNamesAndFunctions,
     'tradeSeq':tsTable,
     'tradeSeqPlotting':tradeSeqPlot,
     'PAGA':pagaAnalysis
@@ -1885,4 +1888,51 @@ def getDesp_2(data):
   
   return txt
 
+
+def gene_search(data):
+
+  gene = data["searchInput"].upper()
+
+  with app.get_data_adaptor() as data_adaptor: # Generate copy of currently loaded dataset.
+    adata = data_adaptor.data.copy()
+
+  dict = adata.uns["id_lookup_table"]
+
+  if gene.upper() in dict:
+    id = dict[gene]
+    res = id.replace("_","-")
+  else:
+    res = "ERROR: Gene not found in data."
+
+  return res
+
+def function_search(data):
+
+  function = data["searchInput"].upper()
+
+  with app.get_data_adaptor() as data_adaptor: # Generate copy of currently loaded dataset.
+    adata = data_adaptor.data.copy()
+
+  dict = adata.uns["function_lookup_table"]
+
+  if function in dict:
+    id = dict[function]
+    res = id.replace("_","-")
+  else:
+    res = "ERROR: Gene not found in data."
+
+  return res
+
+def getNamesAndFunctions(data):
+
+  with app.get_data_adaptor() as data_adaptor: # Generate copy of currently loaded dataset.
+    adata = data_adaptor.data.copy()
+
+  names = list(adata.uns["id_lookup_table"].keys())
+
+  functions = list(adata.uns["function_lookup_table"].keys())
+
+  res = [names,functions]
+
+  return json.dumps(res)
 

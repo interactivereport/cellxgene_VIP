@@ -535,6 +535,7 @@
   <div id="panel-left">
     <div class="tab">
       <button class="tablinks" onclick="selFun(event, 'ADDG')"><b>Add Genes</b></button>
+      <button class="tablinks" onclick="selFun(event, 'geneSearch');getAllCells()">Advanced Gene Search</button>
       <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells()">Cell Population View</button>
       <button class="tablinks" onclick="selFun(event, 'TIA');defaultTopSel('TIA','pseudo_tab');getAllCells()">Trajectory Inference</button>
       <button class="tablinks" onclick="selFun(event, 'TradeSeq');getAllCells();tradeSeq_setup()">TradeSeq</button>
@@ -689,6 +690,24 @@
       <table id="tradeSeqdatatable" class="display"></table>
       <p id="tradeSeqFig"></p>
     </div><!--TradeSeq-->
+
+    <div id="geneSearch" class="tabcontent">
+      <div id="gsInput">
+        <h3>Search by Gene Name:</h3>
+        <p>
+        <input type="text" id="gs_geneName"></p>
+        <ul id="geneNameResults"></ul>
+        <button class="geneSearch" onclick="geneSearch('nameSearch')"><b>Search</b></button>
+        <p id="gsNameNote"></p>
+        <h3>Search by Function:</h3>
+        <p>
+        <input type="text" id="gs_geneFunction"></p>
+        <ul id="geneFunctionResults"></ul>
+      </div>
+      <button class="geneSearch" onclick="geneSearch('functionSearch')"><b>Search</b></button>
+      <div id="geneSearchSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+      <p id="gsFunctionNote"></p>
+    </div><!--geneSearch-->
 
     <div id="GD" class=tabcontent>
       <div id="GDinput">
@@ -2412,6 +2431,9 @@ function init(){
             VIPurl = this.url;
             console.log("VIP ("+VIPurl+") is ready on server side.");
                         
+            //Parse YAML file
+            yamlPARSE();
+
             //Parse YAML file
             yamlPARSE();
 
@@ -5881,6 +5903,149 @@ function tablePrep(pandas_csv){ // converts pandas csv tables into a format easi
 
 }
 
+function geneSearch(searchVal){
+
+if(searchVal == "nameSearch"){
+  var input = document.getElementById("gs_geneName").value;
+  var output = "gsNameNote";
+}else if (searchVal == "functionSearch"){
+  var input = document.getElementById("gs_geneFunction").value;
+  var output = "gsFunctionNote";
+}
+
+if (includeGeneS == true){
+
+document.getElementById("geneSearchSpin").style.visibility="visible";
+
+var D = {
+'method':searchVal,
+'searchInput':input
+};
+
+$.ajax({
+type:"POST",
+url: VIPurl,
+data:JSON.stringify(D),
+contentType: 'application/json;charset=UTF-8',//
+success: function(res){
+
+  if(res.startsWith('ERROR')){
+    document.getElementById(output).style.color="red";
+    $('#'+output).text(res);
+    document.getElementById("geneSearchSpin").style.visibility="hidden";
+      return;
+    }
+  
+
+  document.getElementById("geneSearchSpin").style.visibility="hidden";
+  
+  document.getElementById(output).style.color="green";
+
+  geneName = res.replace("-","_");
+  url = window.database_URL;
+
+  data="<a href='"+url+geneName+"' target='_blank'>"+res+"</a>";
+ 
+
+  document.getElementById(output).innerHTML = data
+
+},
+error: function() {
+  console.log('error!');
+}
+})
+}else{
+  
+  document.getElementById(output).style.color="red";
+  $('#'+output).text("Advanced Gene Search data not available.");
+
+}
+}
+
+var geneNamesGS;
+var geneFunctionsGS;
+
+function get_names_and_functions(){
+
+var D = {'method':'get_names_and_functions'};
+
+$.ajax({
+  type:"POST",
+  url: VIPurl,
+  data:JSON.stringify(D),
+  contentType: 'application/json;charset=UTF-8',//
+  success: function(res){
+
+    resLists = JSON.parse(res)
+
+    geneNamesGS = resLists[0];
+
+    geneFunctionsGS = resLists[1];
+
+  },
+  error: function() {
+    console.log('error!');
+  }
+})
+}
+
+//Add Autocomplete Functionality
+
+var geneNameAutoComplete = document.getElementById("gs_geneName")
+var nameResultsHTML = document.getElementById("geneNameResults")
+
+var geneFunctionAutoComplete = document.getElementById("gs_geneFunction")
+var functionResultsHTML = document.getElementById("geneFunctionResults")
+
+//Define generic autocomplete behavior for textboxes
+
+function addAutoComplete(searchbox,resultList,source){
+  if (includeGeneS == true){
+  searchbox.oninput = function() {
+  let results = []
+  let userInput = this.value.toUpperCase(); //get current contents of text box
+  resultList.innerHTML = ''; //empty the results list, in case it contains old results
+
+  if(source == "names"){
+    datasource = geneNamesGS
+  }else{
+    datasource = geneFunctionsGS
+  }
+
+  if (userInput.length > 2){
+    results = getResults(userInput,datasource) //get all datasource elements matching the user input
+    resultList.style.display = "block"
+    for (i = 0; i < results.length; i ++){
+      resultList.innerHTML += "<li>" + results[i] + "</li>"; //add all matching elements to the results list
+    }
+  }
+}
+}else{
+  return
+}
+}
+
+//let users populate search box by clicking on an autocomplete option
+function addPopulateByClick(resultsList,searchbox){
+
+  resultsList.onclick = function (event) { 
+    const setValue = event.target.innerText;
+    searchbox.value = setValue;
+    this.innerHTML = "";
+  };
+}
+
+//get all datasource items matching the user-input
+function getResults(input,datasource) { 
+  const results = [];
+  for (i = 0; i < datasource.length; i++) {
+    if (input === datasource[i].slice(0, input.length)) {
+      results.push(datasource[i]);
+    }
+  }
+  return results;
+}
+
 function tsDropDownUpdate(){
 
   var tradeS_option = document.getElementById("ts_to").value;
@@ -5898,65 +6063,65 @@ function tsDropDownUpdate(){
 
 function tsPlot(tsgene){
 
-  comboList = [];
-  var c = 0;
+comboList = [];
+var c = 0;
+
+for(x in tsDropDowns){ // list of elements with class-name "TradeSeqDropDowns", created in tradeSeq_setup
+  if(c == tsDropDowns.length) break;
+  c ++;    
   
-  for(x in tsDropDowns){ // list of elements with class-name "TradeSeqDropDowns", created in tradeSeq_setup
-    if(c == tsDropDowns.length) break;
-    c ++;    
-    
-    val = tsDropDowns[x].value;
-    
-    if(val != "None"){
+  val = tsDropDowns[x].value;
+  
+  if(val != "None"){
 
-      lin = tsDropDowns[x].getAttribute("lineage")
+    lin = tsDropDowns[x].getAttribute("lineage")
 
-      combo = [lin,val]
+    combo = [lin,val]
 
-      comboList.push(combo)
+    comboList.push(combo)
 
+  }
+
+}
+
+if(comboList.length == 0) {
+  $("#tradeSeqnote").text('Please select at least one lineage-condition combination');
+  return
+}
+
+var D = {
+'method':'tradeSeqPlotting',
+'dataset': window.store.getState().config.displayNames.dataset,
+'cells':AllCells,
+'genes':[],
+'gene':tsgene,
+'grp':[],
+'combos':comboList
+};
+
+document.getElementById("tradeSeqSpin").style.visibility="visible";
+
+$.ajax({
+type:"POST",
+url: VIPurl,
+data:JSON.stringify(D),
+contentType: 'application/json;charset=UTF-8',//
+success: function(res){
+
+  if(res.startsWith('ERROR')){
+    $("#tradeSeqNote").text(res);
+    document.getElementById("tradeSeqSpin").style.visibility="hidden";
+      return;
     }
 
-  }
+  document.getElementById("tradeSeqSpin").style.visibility="hidden";
 
-  if(comboList.length == 0) {
-    $("#tradeSeqnote").text('Please select at least one lineage-condition combination');
-    return
-  }
+  showImg('tradeSeqFig',res)
   
-  var D = {
-  'method':'tradeSeqPlotting',
-  'dataset': window.store.getState().config.displayNames.dataset,
-  'cells':AllCells,
-  'genes':[],
-  'gene':tsgene,
-  'grp':[],
-  'combos':comboList
-  };
-
-  document.getElementById("tradeSeqSpin").style.visibility="visible";
-
-  $.ajax({
-  type:"POST",
-  url: VIPurl,
-  data:JSON.stringify(D),
-  contentType: 'application/json;charset=UTF-8',//
-  success: function(res){
-
-    if(res.startsWith('ERROR')){
-      $("#tradeSeqNote").text(res);
-      document.getElementById("tradeSeqSpin").style.visibility="hidden";
-        return;
-      }
-
-    document.getElementById("tradeSeqSpin").style.visibility="hidden";
-
-    showImg('tradeSeqFig',res)
-    
-  },
-  error: function() {
-    document.getElementById("tradeSeqSpin").style.visibility="hidden";
-  }
+},
+error: function() {
+  document.getElementById("tradeSeqSpin").style.visibility="hidden";
+}
 })
 }
  
@@ -6002,6 +6167,7 @@ error: function() {
 
 var database_URL;
 var databaseSearch_URL;
+var includeGeneS;
 var includePseudo;
 var includeDesc;
 var tsAnnot;
@@ -6025,6 +6191,24 @@ $.ajax({
 
   tsAnnot = res['tsAnnot']
 
+  includeGeneS = res['includeGeneSearch']
+
+  if (includeGeneS == true){ // YAML file toggle
+      
+    //get gene name and function information
+    get_names_and_functions()
+
+    //add autocomplete to gene name and gene function search boxes
+    addAutoComplete(geneNameAutoComplete,nameResultsHTML,"names")
+    addAutoComplete(geneFunctionAutoComplete,functionResultsHTML,"functions")
+
+    //populate text box by clicking on autocomplete option
+    addPopulateByClick(nameResultsHTML,geneNameAutoComplete)
+    addPopulateByClick(functionResultsHTML,geneFunctionAutoComplete)
+
+  }
+  
+  
   includeTradeSeq = res['includeTradeSeq']
 
   includePseudo = res['includePseudo']
