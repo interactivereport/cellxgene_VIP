@@ -29,6 +29,10 @@ import os
 import re
 import glob
 import subprocess
+import rpy2.robjects as ro
+from rpy2.robjects.conversion import localconverter
+import anndata2ri
+import random
 
 strExePath = os.path.dirname(os.path.abspath(__file__))
 
@@ -290,7 +294,7 @@ def distributeTask(aTask):
     'mergeMeta': mergeMeta,
     'isMeta': isMeta,
     'testVIPready':testVIPready,
-    'Description':getDesp,
+    'Description':getDesp_2,
     'GSEAgs':getGSEA,
 	'SPATIAL':SPATIAL,
     'saveTest':saveTest,
@@ -300,10 +304,12 @@ def distributeTask(aTask):
     'CPVTable':cpvtable,
     'ymlPARSE':parseYAML,
     'pseudo':pseudoPlot,
-    'cmAnalysis':get_cluster_markers,
     'nameSearch':gene_search,
     'functionSearch': function_search,
-    'get_names_and_functions':getNamesAndFunctions
+    'get_names_and_functions':getNamesAndFunctions,
+    'tradeSeq':tsTable,
+    'tradeSeqPlotting':tradeSeqPlot,
+    'PAGA':pagaAnalysis
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -453,11 +459,12 @@ def SGVcompare(data):
   X=pd.concat([adata.to_df(),adata.obs[data['grp']]],axis=1,sort=False)
   X[X.iloc[:,0]>=float(data['cellCutoff'])].to_csv(strF,index=False)
 
-
   strCMD = " ".join(["%s/Rscript"%data['Rpath'],strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
-  #ppr.pprint(strCMD)
+  
+
   res = subprocess.run([strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
+
   os.remove(strF)
   if 'Error' in res.stderr.decode('utf-8'):
     raise SyntaxError("in R: "+res.stderr.decode('utf-8'))
@@ -1302,6 +1309,7 @@ def getDesp(data):
   with open(strF,'r') as fp:
     for line in fp:
       txt = "%s<br>%s"%(txt,line)
+  ppr.pprint(txt)
   return txt
 
 def getPreDEGname(data):
@@ -1635,7 +1643,7 @@ def cpvtable(data):
 def parseYAML(data):
 
   dataset = data["Dataset"]
-  
+
   ymlAddress = strExePath + "/YAML/" + dataset + ".yml"
 
   with open(ymlAddress) as f:
@@ -1649,103 +1657,237 @@ def pseudoPlot(data):
 
   yml = parseYAML(data)
 
-  # Pseudotime Data Check
-
-  if 'includePseudo' not in yml.keys():
-    return("ERROR - No Pseudotime Data available.")
-
   # Extract Embedding Key
 
   embed = yml['pseudoEmbed']
 
-  # Create AnnData Object
+  # Get copy of AnnData Object
 
-  data['layout'] = embed
-
-  aData = createData(data)
+  with app.get_data_adaptor() as data_adaptor:
+    aData = data_adaptor.data.copy()
 
   # Plot Graph
   
   annot = data['annot']
 
-  if "pseudo" in annot:
-    aData.obs[annot] = aData.obs[annot].astype(float)
-    sc.pl.embedding(aData,"X_phate",color=annot,return_fig=True,color_map="Purples")
-  else:
-    sc.pl.embedding(aData,"X_phate",color=annot,return_fig=True)
+  embedding = "X_" + embed
 
+  if "pseudo" in annot: # if 'annot' equals a pseudotime variable, plot as a continous variable.
+    aData.obs[annot] = aData.obs[annot].astype(float)
+    sc.pl.embedding(aData,embedding,color=annot,return_fig=True,color_map="Purples")
+  else:
+    sc.pl.embedding(aData,embedding,color=annot,return_fig=True)
 
   # Extract and Plot Pseudotime Lineages
-
-  for x in yml.keys():
-    if x.split('_')[0] == 'Lineage':
-        line = yml[x]
-        dim1 = line['dim1']
-        dim2 = line['dim2']
-        plt.plot(dim1,dim2, color="black")
+  
+  for x in aData.uns:
+    if x.startswith("Lineage"):
+      line = aData.uns[x]
+      dim1 = line['dim1']
+      dim2 = line['dim2']
+      plt.plot(dim1,dim2, color="black")
 
   pseudoPlot = plt.gcf()
 
   return iostreamFig(pseudoPlot)
 
-def get_cluster_markers(data):
+def tsTable(data):
+  
+  gInfo = getVar(data)
+ 
+  c1 = gInfo["features"]
 
-  with app.get_data_adaptor() as data_adaptor: # Generate copy of currently loaded dataset.
-    adata = data_adaptor.data.copy()
+  tableO = data["tableOption"]
 
-  adata.var_names = adata.var["features"] # Ensure gene names are correct.
-
-  # Read in necessary variables
-
-  annot = data["annot"]
-
-  nval = int(data["n_value"])
-
-  de_method = data["DEmethod"]
-
-  # Generate Cluster Markers
-
-  sc.tl.rank_genes_groups(adata, annot, method=de_method, use_raw=False)
-
-  result = adata.uns['rank_genes_groups']
-  groups = result['names'].dtype.names
-
-  # Extract top markers for each Cluster.
-
-  genes = []
-  for x in groups: # Get top marker genes for each Cluster.
-    y = pd.DataFrame(adata.uns['rank_genes_groups']['names'][x]).head(nval).values
-    for gene in y:
-      genes.append(gene[0])
-
-  pvals = []
-  for x in groups: # Get p-value of each marker gene.
-    y = pd.DataFrame(adata.uns['rank_genes_groups']['pvals_adj'][x]).head(nval).values
-    for pval in y:
-      val = float(pval[0])
-      final_val = round(val,5)
-      pvals.append(final_val)
-
-  lfcs = []
-  for x in groups: # Get log-fold-change of each marker gene.
-    y = pd.DataFrame(adata.uns['rank_genes_groups']['logfoldchanges'][x]).head(nval).values
-    for lfc in y:
-      val = float(lfc[0])
-      final_val = round(val,2)
-      lfcs.append(final_val)
-
-  clusters = []
-  for x in groups: # Create Cluster Label column
-    for i in range(nval):
-      clusters.append(x)
-
-  d = {'Cluster':clusters,'Genes':genes,"LogFoldChange":lfcs,"pvalue_adjusted":pvals}
-
-  df = pd.DataFrame(data=d)
-
-  res = df.to_csv(index=False)
+  cond = data["cond"]
+ 
+  if tableO == "General":
+    c2 = gInfo["waldStat_G"]
+    c3 = gInfo['df_G']
+    c4 = gInfo['p-value_G']
+  elif cond:
+    tail = "_" + tableO + "/" + cond
+    c2 = gInfo["waldStat" + tail]
+    c3 = gInfo["df" + tail]
+    c4 = gInfo["p-value" + tail]
+  else:
+    tail = "_" + tableO
+    c2 = gInfo["waldStat" + tail]
+    c3 = gInfo["df" + tail]
+    c4 = gInfo["p-value" + tail]
+ 
+ 
+  c5 = gInfo["meanLogFC"]
+ 
+  data = {
+    "Genes": c1,
+    "waldStat":c2,
+    "df":c3,
+    "p-value":c4,
+    "MeanLogFC":c5
+    }
+ 
+  deg = pd.DataFrame(data)
+ 
+  res = deg.to_csv(index=False)
 
   return json.dumps(res)
+
+def tradeSeqPlot(data):
+  
+  #Read in Data
+  
+  with app.get_data_adaptor() as data_adaptor:
+    adata = data_adaptor.data.copy()
+  
+  #Convert sparse matrix to dense in order to avoid conversion error
+
+  adata.X = adata.X.todense()
+
+  #Convert anndata to SCE within embedded R global environment
+  with localconverter(anndata2ri.converter):
+      ro.globalenv['some_data'] = adata
+
+  #read in plotting parameters
+
+  gene = data["gene"]
+
+  combinations = data["combos"]
+
+  Xcolumns = adata.uns["tradeSeq_Xcols"]
+
+  Xcolumns = Xcolumns.tolist()
+
+  #send plotting parameters to 
+
+  ro.globalenv['gene1'] = gene
+  ro.globalenv['combos'] = combinations
+  ro.globalenv['Xcols'] = Xcolumns
+
+  # Source function file
+  r = ro.r
+  #r['source'](strExePath+'/tsPlot.R')
+  r['source']('/home/cxg-adm/anaconda3/envs/VIP/lib/python3.8/site-packages/server/app/tsPlot.R')
+  
+  # Generate SessionID
+
+  valList = []
+
+  for i in range(10):
+    value = random.randint(0,10)
+    valList.append(value)
+    
+  session_id = ''.join([str(n) for n in valList])
+  ro.globalenv['s_id'] = session_id
+
+  ro.globalenv["strPath"] = strExePath
+
+  res = ro.r('''
+
+    smooth = predictSmoother(some_data,gene1,Xcols)
+
+    #create color palette
+    colList = rainbow(length(combos))
+
+    #iterate over every combination
+
+    smoothList = list()
+
+    i = 1
+    
+    for(x in combos){
+      lin = x[1]
+      cond = x[2]
+      if(cond != "All"){
+        str1 = paste(cond,lin)
+        smooth_con = subset(smooth, condition == cond)
+        smooth_con_lin = subset(smooth_con, lineage == lin)
+        finalSmooth = pivot_wider(smooth_con_lin, names_from = gene, values_from = yhat)
+        finalSmooth = as.data.frame(finalSmooth)
+        finalSmooth$combo = str1
+        smoothList[[i]] = finalSmooth
+        i = i + 1
+      }else{
+
+        allConds = unique(smooth$condition)
+
+        for(c in allConds){
+          str1 = paste(c,lin)
+          smooth_con = subset(smooth, condition == c)
+          smooth_con_lin = subset(smooth_con, lineage == lin)
+          finalSmooth = pivot_wider(smooth_con_lin, names_from = gene, values_from = yhat)
+          finalSmooth = as.data.frame(finalSmooth)
+          finalSmooth$combo = str1
+          smoothList[[i]] = finalSmooth
+          i = i + 1
+        }
+
+      }
+
+    }
+
+    smoothCombo = do.call("rbind",smoothList)
+
+    x = PlotSmoothers(some_data, gene = gene1, Xcolnames = Xcols, lwd = 0.3, size = 1/10, plotLineages = FALSE, pointCol = "Group") + 
+    geom_smooth(data = smoothCombo, aes(x = time, y = .data[[gene1]],group = combo, colour = combo))
+   
+    tempID = paste(s_id,".png",sep="")
+    ggsave(tempID, x)
+
+    fig = base64enc::dataURI(file = tempID, mime = "image/png")
+    fig = gsub("data:image/png;base64,","",fig)
+
+    file.remove(tempID)
+
+    fig
+    ''')
+
+  img = res[0]
+
+  return img
+
+def pagaAnalysis(data):
+
+  #create annData object
+
+  adata = createData(data)
+
+  embed = data["layout"]
+
+  annot = data["grp"][0]
+
+  embedding = "X_" + embed
+
+  sc.pp.neighbors(adata, n_neighbors=10, use_rep=embedding)
+
+  sc.tl.paga(adata, groups=annot) #run PAGA
+
+  sc.pl.paga(adata, color=annot)
+
+  fig = plt.gcf()
+
+  return iostreamFig(fig)
+
+def getDesp_2(data):
+
+  yml = parseYAML(data)
+
+  desc = yml["Description"]
+
+  paper = yml["Original_Paper"]
+
+  aut = yml["Author(s)"]
+
+  hashtag = yml['table_hashtag']
+
+  url = "http://cellatlas.mvls.gla.ac.uk/data/table.html" + "#" + hashtag
+
+  full_url = "<a href="+url+">Available Data Sets</a>"
+  
+  txt = "<br>"+"<b>"+"Data Source:"+"</b>"+"<br>"+desc+"<br>"+paper+"<br>"+"<b>"+"Authors: "+"</b>"+aut+"<br>"+full_url
+  
+  return txt
+
 
 def gene_search(data):
 

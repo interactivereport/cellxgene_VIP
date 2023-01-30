@@ -131,6 +131,7 @@ dependencies:
   - pip:
     - aniso8601==8.1.1
     - anndata==0.7.4
+    - anndata2ri==1.1
     - async-generator==1.10
     - attrs==20.3.0
     - batchglm==0.7.4
