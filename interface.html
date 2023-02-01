@@ -539,6 +539,7 @@
       <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells()">Cell Population View</button>
       <button class="tablinks" onclick="selFun(event, 'TIA');defaultTopSel('TIA','pseudo_tab');getAllCells()">Trajectory Inference</button>
       <button class="tablinks" onclick="selFun(event, 'TradeSeq');getAllCells();tradeSeq_setup()">TradeSeq</button>
+      <button class="tablinks" onclick="selFun(event, 'HostParasite');getAllCells()">Host-Parasite Interactions</button>
       <button class="tablinks" onclick="selFun(event, 'SGV');defaultTopSel('SGV','SGVsingle')">Violin</button>
       <button class="tablinks" onclick="selFun(event, 'PGV')">Stacked Violin</button>
       <button class="tablinks" onclick="selFun(event, 'HEAT')">Heatmap</button>
@@ -708,6 +709,24 @@
       <div id="geneSearchSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <p id="gsFunctionNote"></p>
     </div><!--geneSearch-->
+
+    <div id="HostParasite" class="tabcontent">
+      <div id="hpInput">
+        <h3>Run Host-Parasite Interaction analyses within VIP:</h3>
+        <p>Host-Parasite Percent Concent Violin Plots:
+        <button class="hpViol" onclick="hpAnalysis('hp_viol')"><b>Host-Parasite Violins</b></button>
+        <p id="hpViolins"></p>
+        </p>
+        <p>Host-Parasite Cluster Comparision:
+        <button class="hpCC" onclick="hpAnalysis('hp_cc_host')"><b>Cluster by Host</b></button>
+        <button class="hpCC" onclick="hpAnalysis('hp_cc_para')"><b>Cluster by Parasite</b></button>
+        <button class="hpCC" onclick="hpAnalysis('hp_cc')"><b>Find Overlap</b></button>
+      </div>
+      <div id="hpSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+      <p id="hpNote" style="color:blue;"></p>
+      <p id="hostFig"></p>
+      <p id="parasiteFig"></p>
+    </div><!--HostParasite-->
 
     <div id="GD" class=tabcontent>
       <div id="GDinput">
@@ -4433,7 +4452,6 @@ function DEGfind(){
                   (+data.qval).toExponential(2)],
                   Object.values(data).slice(4));
         });
-      
       var tableTitle = [];
       [].concat(['Gene',"Log Fold Change","p-value","padj"],gInfo).forEach(function(d){tableTitle = tableTitle.concat({title:d})});
       var table = $('#DEGtable').DataTable({
@@ -4478,14 +4496,14 @@ function DEGfind(){
 	columnDefs:[
          {targets:0,
          render: function(data, type, row, meta){
-          
-           geneName = data.replace("-","_");
 
-           url = window.database_URL;
+          geneName = data.replace("-","_");
 
-           data="<a href='"+url+geneName+"' target='_blank'>"+data+"</a>";
+          url = window.database_URL;
+
+          data="<a href='"+url+geneName+"' target='_blank'>"+data+"</a>";
  
-           return data;
+          return data;
  
          }
  
@@ -5709,11 +5727,7 @@ function CellPopTable(){
         {targets:0,
         render: function(data, type, row, meta){
         
-          geneName = data.replace("-","_");
-
-          url = window.database_URL;
-
-          data="<a href='"+url+geneName+"' target='_blank'>"+data+"</a>";
+          data = makeLink(data)
 
           return data;
         }
@@ -6162,6 +6176,112 @@ error: function() {
 })
 }
 
+function hpAnalysis(hp_option){
+
+if (isHP) {
+
+document.getElementById("hpSpin").style.visibility="visible";
+
+var D = {'method':hp_option,
+          'h_prefix':hostPrefix,
+          'p_prefix':parasitePrefix};
+
+$.ajax({
+  type:"POST",
+  url: VIPurl,
+  data:JSON.stringify(D),
+  contentType: 'application/json;charset=UTF-8',//
+  success: function(res){
+
+    document.getElementById("hpSpin").style.visibility="hidden";
+
+    if(hp_option!='hp_cc'){
+
+    resD = JSON.parse(res);
+
+    $("#hpNote").text(resD[0]);
+
+    showImg(resD[1],resD[2]);
+
+    }else{
+
+      $("#hpNote").text(res);
+
+    }
+
+  },
+  error: function() {
+    console.log('error!');
+  }
+})
+}else{
+  $("#hpNote").text("No Host-Parasite Data available.");
+}
+}
+
+var hp_Table;
+
+function get_HP(){
+
+var D = {'method':'get_hp'};
+
+$.ajax({
+  type:"POST",
+  url: VIPurl,
+  data:JSON.stringify(D),
+  contentType: 'application/json;charset=UTF-8',//
+  success: function(res){
+
+    resLists = JSON.parse(res)
+
+    featuresHP = resLists[0];
+
+    hpIndicator = resLists[1];
+
+    var result = {};
+
+    featuresHP.forEach((key, i) => result[key] = hpIndicator[i]); //generate features-HP indicator dictionary
+    
+    hp_Table = result;
+
+  },
+  error: function() {
+    console.log('error!');
+  }
+})
+}
+
+function makeLink(gene){
+
+if (isHP == true){             // Host-Parasite Specific formatting
+
+  hpIndic = hp_Table[gene]
+
+  splitgene = hpIndic.split("-")
+  
+  if (splitgene[0] == "P") {   // if parasite
+    url = window.database_URL;
+  }else{                       // if host
+    url = window.host_URL;
+  } 
+  geneName = splitgene[1]
+  hyperlink="<a href='"+url+geneName+"' target='_blank'>"+geneName+"</a>";
+
+  return hyperlink
+
+}else{                        // Standard Gene Name reformatting
+
+  geneName = gene.replace("-","_");
+
+  url = window.database_URL;
+
+  hyperlink="<a href='"+url+geneName+"' target='_blank'>"+geneName+"</a>";
+
+  return hyperlink;
+
+}
+}
+
 var database_URL;
 var databaseSearch_URL;
 var includeGeneS;
@@ -6169,6 +6289,12 @@ var includePseudo;
 var includeDesc;
 var tsAnnot;
 var includeTradeSeq;
+
+var isHP;
+var host_URL;
+
+var hostPrefix;
+var parasitePrefix;
 
 function yamlPARSE(){
 
@@ -6211,6 +6337,18 @@ $.ajax({
   includePseudo = res['includePseudo']
 
   includeDesc = res['includeDescription']
+
+  isHP = res["isHP"]
+
+  if (isHP == true){ // YAML file toggle
+
+    hostPrefix = res['host_prefix']
+    parasitePrefix = res['parasite_prefix']
+    host_URL = res["hosturl"]
+
+    get_HP()
+
+  }
 
   //Add Description
   addDescription();
