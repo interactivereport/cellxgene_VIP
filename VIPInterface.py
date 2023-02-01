@@ -309,7 +309,11 @@ def distributeTask(aTask):
     'get_names_and_functions':getNamesAndFunctions,
     'tradeSeq':tsTable,
     'tradeSeqPlotting':tradeSeqPlot,
-    'PAGA':pagaAnalysis
+    'PAGA':pagaAnalysis,
+    'hp_cc_para':hp_paraClus,
+    'hp_cc_host':hp_hostClus,
+    'hp_cc':hp_ClusterCompare,
+    'hp_viol':hpClusterViolins
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1936,3 +1940,180 @@ def getNamesAndFunctions(data):
 
   return json.dumps(res)
 
+def hp_paraClus(data):
+
+  with app.get_data_adaptor() as data_adaptor:
+    adata = data_adaptor.data
+
+  copyData = adata
+  copyData.var_names = copyData.var["Host-Parasite"].values
+
+  gene_list = copyData.var_names
+  ppr.pprint(gene_list)
+
+  parasiteGenes = []
+  parasite_prefix = data['p_prefix']
+
+  for x in gene_list:
+    if x.startswith(parasite_prefix):
+        parasiteGenes.append(x)
+
+  # Split Data ----------
+
+  parasite = copyData[:,parasiteGenes]
+
+  sc.pp.highly_variable_genes(parasite)
+
+  parasite = parasite[:, parasite.var.highly_variable]
+
+  sc.tl.pca(parasite, svd_solver='arpack')
+
+  sc.pp.neighbors(parasite, n_neighbors=10, n_pcs=40)
+
+  sc.tl.umap(parasite)
+
+  sc.tl.leiden(parasite, key_added = "parasite_clusters")
+
+  adata.obs['parasite_clusters'] = parasite.obs["parasite_clusters"]
+
+  adata.obs['parasite_clusters'] = parasite.obs["parasite_clusters"].values
+
+  fig1 = sc.pl.umap(parasite, color = ["parasite_clusters"], title = "Parasite Clusters")
+
+  fig1 = plt.gcf()
+
+  finalfig = iostreamFig(fig1)
+
+  html = "parasiteFig"
+
+  note = ""
+
+  resList = [note, html, finalfig]
+
+  return json.dumps(resList)
+
+def hp_hostClus(data):
+ 
+  with app.get_data_adaptor() as data_adaptor:
+    adata = data_adaptor.data
+
+  copyData = adata
+
+  copyData.var_names = copyData.var["Host-Parasite"].values
+
+  hostGenes = []
+  host_prefix = data['h_prefix']
+
+  for x in copyData.var_names:
+    if x.startswith(host_prefix):
+        hostGenes.append(x)
+
+  # Split Data ----------
+
+  host = copyData[:,hostGenes]
+
+  sc.pp.highly_variable_genes(host)
+
+  host = host[:, host.var.highly_variable]
+
+  sc.tl.pca(host, svd_solver='arpack')
+
+  sc.pp.neighbors(host, n_neighbors=10, n_pcs=40)
+
+  sc.tl.umap(host)
+
+  sc.tl.leiden(host, key_added = "host_clusters")
+
+  adata.obs['host_clusters'] = host.obs["host_clusters"]
+
+  adata.obs['host_clusters'] = host.obs["host_clusters"].values
+
+  fig1 = sc.pl.umap(host, color = ["host_clusters"], title = "Host Clusters")
+
+  fig1 = plt.gcf()
+
+  finalfig = iostreamFig(fig1)
+
+  html = "hostFig"
+
+  note = ""
+
+  resList = [note, html, finalfig]
+
+  return json.dumps(resList)
+
+def hp_ClusterCompare(data):
+  
+  with app.get_data_adaptor() as data_adaptor:
+    adata = data_adaptor.data.copy()
+
+  adata.var_names = adata.var["Host-Parasite"].values
+
+  paraTable = adata.obs['parasite_clusters']
+  hostTable = adata.obs['host_clusters']
+
+  paraD = {}
+  hostD = {}
+
+  for x in adata.obs['parasite_clusters'].cat.categories: # iterate over every category
+    for y in range(0,len(paraTable)): # and every cell
+      v = paraTable[y]
+      if v == x:
+        cell_label = paraTable.index[y]
+        if x not in paraD:
+          paraD[x] = [cell_label]
+        else:
+          paraD[x].append(cell_label)
+
+  for x in adata.obs['host_clusters'].cat.categories: # iterate over every category
+    for y in range(0,len(hostTable)): # and every cell
+      v = hostTable[y]
+      if v == x:
+        cell_label = hostTable.index[y]
+        if x not in hostD:
+          hostD[x] = [cell_label]
+        else:
+          hostD[x].append(cell_label)
+
+  matches = {}
+
+  for x in paraD:
+    for y in hostD:
+      c_k = str(x) + "_" + str(y)
+      p = set(paraD[x])
+      h = set(hostD[y])
+      counts = len(p.intersection(h))
+      matches[c_k] = counts
+
+  most_overlaps = max(matches,key=matches.get)
+
+  templist = most_overlaps.split("_")
+
+  restext = "Host Cluster " + templist[0] + " and Parasite Cluster " + templist[1] + " show the most overlap."
+
+  return restext
+
+def hpClusterViolins(data):
+
+  with app.get_data_adaptor() as data_adaptor:
+    adata = data_adaptor.data.copy()
+
+  #iterate over every cluster
+
+  fig = sc.pl.violin(adata, ['percent_parasite', 'percent_host'],
+             jitter=0.4, multi_panel=True, groupby="seurat_clusters")
+
+
+  ppr.pprint("violin plots done!")
+  
+  html = "hpViolins"
+
+  note = ""
+
+  fig = plt.gcf()
+
+  finalfig = iostreamFig(fig)
+
+  resList = [note, html, finalfig]
+
+  return json.dumps(resList)
