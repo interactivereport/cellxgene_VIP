@@ -1950,7 +1950,6 @@ def hp_paraClus(data):
   copyData.var_names = copyData.var["Host-Parasite"].values
 
   gene_list = copyData.var_names
-  ppr.pprint(gene_list)
 
   parasiteGenes = []
   parasite_prefix = data['p_prefix']
@@ -2103,9 +2102,6 @@ def hpClusterViolins(data):
 
   fig = sc.pl.violin(adata, ['percent_parasite', 'percent_host'],
              jitter=0.4, multi_panel=True, groupby="seurat_clusters")
-
-
-  ppr.pprint("violin plots done!")
   
   html = "hpViolins"
 
