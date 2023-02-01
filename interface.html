@@ -2453,9 +2453,6 @@ function init(){
             //Parse YAML file
             yamlPARSE();
 
-            //Parse YAML file
-            yamlPARSE();
-
             //get GSEA Information
             getGSEA();
 
@@ -6184,6 +6181,51 @@ error: function() {
 })
 }
 
+function hpAnalysis(hp_option){
+
+if (isHP) {
+
+document.getElementById("hpSpin").style.visibility="visible";
+
+var D = {'method':hp_option,
+          'h_prefix':hostPrefix,
+          'p_prefix':parasitePrefix};
+
+$.ajax({
+  type:"POST",
+  url: VIPurl,
+  data:JSON.stringify(D),
+  contentType: 'application/json;charset=UTF-8',//
+  success: function(res){
+
+    document.getElementById("hpSpin").style.visibility="hidden";
+
+    console.log(res);
+
+    if(hp_option!='hp_cc'){
+
+    resD = JSON.parse(res);
+
+    $("#hpNote").text(resD[0]);
+
+    showImg(resD[1],resD[2]);
+
+    }else{
+
+      $("#hpNote").text(res);
+
+    }
+
+  },
+  error: function() {
+    console.log('error!');
+  }
+})
+}else{
+  $("#hpNote").text("No Host-Parasite Data available.");
+}
+}
+
 var database_URL;
 var databaseSearch_URL;
 var includeGeneS;
@@ -6191,6 +6233,12 @@ var includePseudo;
 var includeDesc;
 var tsAnnot;
 var includeTradeSeq;
+
+var isHP;
+var host_URL;
+
+var hostPrefix;
+var parasitePrefix;
 
 function yamlPARSE(){
 
@@ -6233,6 +6281,13 @@ $.ajax({
   includePseudo = res['includePseudo']
 
   includeDesc = res['includeDescription']
+
+  isHP = res["isHP"]
+
+  hostPrefix = res['host_prefix']
+  parasitePrefix = res['parasite_prefix']
+
+  host_URL = res["hosturl"]
 
   //Add Description
   addDescription();
