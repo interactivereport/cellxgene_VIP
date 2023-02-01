@@ -313,7 +313,8 @@ def distributeTask(aTask):
     'hp_cc_para':hp_paraClus,
     'hp_cc_host':hp_hostClus,
     'hp_cc':hp_ClusterCompare,
-    'hp_viol':hpClusterViolins
+    'hp_viol':hpClusterViolins,
+    'get_hp':get_HostParasiteTable
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -2117,3 +2118,16 @@ def hpClusterViolins(data):
   resList = [note, html, finalfig]
 
   return json.dumps(resList)
+
+def get_HostParasiteTable(data):
+
+  with app.get_data_adaptor() as data_adaptor:
+    adata = data_adaptor.data.copy()
+
+  names = list(adata.var["features"].values)
+
+  HP = list(adata.var["Host-Parasite"].values)
+
+  res = [names,HP]
+
+  return json.dumps(res)

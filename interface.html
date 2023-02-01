@@ -4452,7 +4452,6 @@ function DEGfind(){
                   (+data.qval).toExponential(2)],
                   Object.values(data).slice(4));
         });
-      
       var tableTitle = [];
       [].concat(['Gene',"Log Fold Change","p-value","padj"],gInfo).forEach(function(d){tableTitle = tableTitle.concat({title:d})});
       var table = $('#DEGtable').DataTable({
@@ -4497,14 +4496,14 @@ function DEGfind(){
 	columnDefs:[
          {targets:0,
          render: function(data, type, row, meta){
-          
-           geneName = data.replace("-","_");
 
-           url = window.database_URL;
+          geneName = data.replace("-","_");
 
-           data="<a href='"+url+geneName+"' target='_blank'>"+data+"</a>";
+          url = window.database_URL;
+
+          data="<a href='"+url+geneName+"' target='_blank'>"+data+"</a>";
  
-           return data;
+          return data;
  
          }
  
@@ -5728,11 +5727,7 @@ function CellPopTable(){
         {targets:0,
         render: function(data, type, row, meta){
         
-          geneName = data.replace("-","_");
-
-          url = window.database_URL;
-
-          data="<a href='"+url+geneName+"' target='_blank'>"+data+"</a>";
+          data = makeLink(data)
 
           return data;
         }
@@ -6200,8 +6195,6 @@ $.ajax({
 
     document.getElementById("hpSpin").style.visibility="hidden";
 
-    console.log(res);
-
     if(hp_option!='hp_cc'){
 
     resD = JSON.parse(res);
@@ -6223,6 +6216,69 @@ $.ajax({
 })
 }else{
   $("#hpNote").text("No Host-Parasite Data available.");
+}
+}
+
+var hp_Table;
+
+function get_HP(){
+
+var D = {'method':'get_hp'};
+
+$.ajax({
+  type:"POST",
+  url: VIPurl,
+  data:JSON.stringify(D),
+  contentType: 'application/json;charset=UTF-8',//
+  success: function(res){
+
+    resLists = JSON.parse(res)
+
+    featuresHP = resLists[0];
+
+    hpIndicator = resLists[1];
+
+    var result = {};
+
+    featuresHP.forEach((key, i) => result[key] = hpIndicator[i]); //generate features-HP indicator dictionary
+    
+    hp_Table = result;
+
+  },
+  error: function() {
+    console.log('error!');
+  }
+})
+}
+
+function makeLink(gene){
+
+if (isHP == true){             // Host-Parasite Specific formatting
+
+  hpIndic = hp_Table[gene]
+
+  splitgene = hpIndic.split("-")
+  
+  if (splitgene[0] == "P") {   // if parasite
+    url = window.database_URL;
+  }else{                       // if host
+    url = window.host_URL;
+  } 
+  geneName = splitgene[1]
+  hyperlink="<a href='"+url+geneName+"' target='_blank'>"+geneName+"</a>";
+
+  return hyperlink
+
+}else{                        // Standard Gene Name reformatting
+
+  geneName = gene.replace("-","_");
+
+  url = window.database_URL;
+
+  hyperlink="<a href='"+url+geneName+"' target='_blank'>"+geneName+"</a>";
+
+  return hyperlink;
+
 }
 }
 
@@ -6284,10 +6340,15 @@ $.ajax({
 
   isHP = res["isHP"]
 
-  hostPrefix = res['host_prefix']
-  parasitePrefix = res['parasite_prefix']
+  if (isHP == true){ // YAML file toggle
 
-  host_URL = res["hosturl"]
+    hostPrefix = res['host_prefix']
+    parasitePrefix = res['parasite_prefix']
+    host_URL = res["hosturl"]
+
+    get_HP()
+
+  }
 
   //Add Description
   addDescription();
