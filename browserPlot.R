@@ -113,7 +113,7 @@ customFindRegion <- function(region,annotations=NULL,sep = c("-", "-"),extend.up
             }
         )
         if (is.null(x = region)) {
-            stop("Gene not found")
+            stop("Gene/Region is not found")
         }
     }
     region <- suppressWarnings(expr = Extend(
@@ -123,6 +123,17 @@ customFindRegion <- function(region,annotations=NULL,sep = c("-", "-"),extend.up
     )
     )
     return(region)
+}
+StringToGRanges <- function(regions, sep = c("-", "-"), ...) {
+  ranges.df <- data.frame(ranges = regions)
+  ranges.df <- tidyr::separate(
+    data = ranges.df,
+    col = "ranges",
+    sep = paste0(sep[[1]], "|", sep[[2]]),
+    into = c("chr", "start", "end")
+  )
+  granges <- makeGRangesFromDataFrame(df = ranges.df, ...)
+  return(granges)
 }
 customLookupGeneCoords <- function(annotations, gene) {
     isgene <- annotations$gene_name == gene
