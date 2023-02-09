@@ -1638,7 +1638,7 @@ def getBWinfo(data):
     strD = re.sub(".h5ad$","/",data["h5ad"])
     if os.path.isdir(strD):
         for one in os.listdir(strD):
-            if not re.search("bw$",one)==None:
+            if one.endswith("bw"):#not re.search("bw$",one)==None:
                 BWinfo["BWfile"].append(one)
             elif one=="annotation.rds":
                 BWinfo["BWannotation"]="annotation.rds"
@@ -1647,7 +1647,8 @@ def getBWinfo(data):
             elif one=="links.rds":
                 BWinfo["BWlink"]="links.rds"
             elif one=="bw.cluster":
-                BWinfo["BWcluster"]="bw.cluster"
+                BWinfo["BWcluster"]=pd.read_csv(strD+one,sep="\t",header=0) #"bw.cluster" .to_csv(index=False)
+    BWinfo["BWcluster"]=BWinfo["BWcluster"][BWinfo["BWcluster"]['Wig'].isin(BWinfo["BWfile"])].to_csv(index=False)
     return json.dumps(BWinfo)
 
 def plotBW(data):
@@ -1655,34 +1656,29 @@ def plotBW(data):
     strCSV = ('%s/BW%f.csv' % (data["CLItmp"],time.time()))
     ## select all cells
     strType = strD + 'bw.cluster'
-    data['bw']=['%s.bw'%one for one in data['bw']]
-    grpFlag = False
     if os.path.isfile(strType) and len(data['genes'])>0:
-        with open(strType,"r") as f:
-            grp = f.readline().strip()
-        #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+        clusterInfo = pd.read_csv(strType,sep="\t",header=0,index_col=0)
+        clusterInfo = clusterInfo.loc[data['bw'],:]
+        grp = []
         scD=data['data_adapter']
         if scD is not None:
           dAnno = list(scD.get_obs_keys())
-          if grp in dAnno:
-              grpFlag = True
-        if grpFlag:
-            data['grp'] = [grp]
+          grp = [i for i in clusterInfo.columns if i in dAnno]
+        if len(grp)>0:
+            data['grp'] = grp
             adata = createData(data)
-            if len(adata)==0:
-                grpFlag = False
-            else:
-                cluster = pd.read_csv(strType,sep="\t",header=None,index_col=1,skiprows=1)#delimiter="\n",
-                cluster = cluster[cluster[0].isin(data['bw'])]
-                adata = adata[adata.obs[grp].isin(list(cluster.index)),:]
-                obsCluster = pd.DataFrame(list(cluster.loc[adata.obs[grp],:][0]),index=adata.obs.index,columns=[grp])
-                pd.concat([obsCluster,adata.to_df()], axis=1, sort=False).to_csv(strCSV)
+            if len(adata)>0:
+                selC=adata.obs[grp[0]].isin(list(clusterInfo[grp[0]]))
+                for oneG in grp:
+                    selC = selC | adata.obs[oneG].isin(list(clusterInfo[oneG]))
+                adata = adata[selC,:]
+                pd.concat([adata.obs,adata.to_df()], axis=1, sort=False).to_csv(strCSV)
     ## plot in R
-    #strCMD = ' '.join([strExePath+'/browserPlot.R',strD,data['region'],str(data['exUP']),str(data['exDN']),strCSV,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
+    #strCMD = ' '.join([strExePath+'/browserPlot.R',strD,data['region'],','.join(data['bw']),str(data['exUP']),str(data['exDN']),strCSV,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
     #ppr.pprint(strCMD)
     res = subprocess.run([strExePath+'/browserPlot.R',strD,data['region'],','.join(data['bw']),str(data['exUP']),str(data['exDN']),strCSV,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
     img = res.stdout.decode('utf-8')
-    if grpFlag:
+    if len(adata)>0:
         os.remove(strCSV)
     if 'Error' in res.stderr.decode('utf-8'):
         raise SyntaxError("in R: "+res.stderr.decode('utf-8'))

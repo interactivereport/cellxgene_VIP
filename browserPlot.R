@@ -16,7 +16,7 @@ main <- function(){
     ## process input ----
     args <- commandArgs(trailingOnly=TRUE)
     suppressMessages(suppressWarnings(load(tail(args,1))))
-    strPath <- args[1]
+    strPath <- paste0(normalizePath(args[1]),"/")
     region <- args[2]
     bwList <- unlist(strsplit(args[3],","))
     extend.upstream <- as.numeric(args[4])
@@ -29,7 +29,7 @@ main <- function(){
 
     ## obtain the region -----
     annotations <- NULL
-    if(file.exists(paste0(strPath,"/annotation.rds"))) annotations <- readRDS(paste0(strPath,"/annotation.rds"))
+    if(file.exists(paste0(strPath,"annotation.rds"))) annotations <- readRDS(paste0(strPath,"annotation.rds"))
     region <- customFindRegion(
         region = region,
         annotations = annotations,
@@ -37,16 +37,17 @@ main <- function(){
         extend.downstream = extend.downstream
     )
 
-    ## plot the bigwig -----
-    strBW <- list.files(strPath,"bw$",full.names=T)
-    strBW <- strBW[basename(strBW)%in%bwList]
+    ## plot the bigwig -----    
+    bwList <- bwList[bwList%in%list.files(strPath,"bw$")]
+    strBW <- paste0(strPath,bwList)
     AllPlots <- suppressWarnings(suppressMessages(customBigwigTrack(strBW,region,fontsize)))
     #h <- rep(1,length(AllPlots))
     h <- length(strBW)
     w <- 6
 
     ## plot gene expression ----
-    expPlot <- customExpressionPlot(strExp,strBW,expCutoff,fontsize)
+    strCluster <- paste0(strPath,"/bw.cluster")
+    expPlot <- customExpressionPlot(strExp,strCluster,bwList,expCutoff,fontsize)
     if(!is.null(expPlot)){
       w <- c(w,nlevels(expPlot$data$gene))
     }
@@ -148,20 +149,30 @@ customLookupGeneCoords <- function(annotations, gene) {
         return(gr)
     }
 }
-customExpressionPlot <- function(strExp,strBW,geneCutoff=-0.1,fontsize=9) {
+customExpressionPlot <- function(strExp,strCluster,bwList,geneCutoff=-0.1,fontsize=9) {
   if(!file.exists(strExp)) return(NULL)
   Exp <- read.csv(strExp,row.names=1,as.is=T)
-  if(sum(!Exp[,1]%in%basename(strBW))>0) return(NULL)
+  clusterInfo <- read.table(strCluster,row.names=1,header=T,as.is=T,sep="\t")[bwList,]
+  grp <- intersect(colnames(Exp),colnames(clusterInfo))
+  if(length(grp)==0) return(NULL)
+  features <- colnames(Exp)[!colnames(Exp)%in%grp][-1]
   # get data
-  data.plot <- t(Exp[,-1,drop=F])
-  obj.groups <- Exp[,1,drop=F]
-  features <- row.names(data.plot)
+  df <- NULL
+  for(oneBW in bwList){
+    selC <- rep(T,nrow(Exp))
+    for(oneG in grp){
+        if(nchar(clusterInfo[oneBW,oneG])>0){
+            selC <- selC & Exp[,oneG]==clusterInfo[oneBW,oneG]
+        }
+    }
+    if(sum(selC)==0) stop(paste("No cell for",oneBW))
+    oneD = setNames(melt(Exp[selC,features,drop=F],id.vars=NULL),c("gene","expression"))
+    oneD$group <- oneBW
+    df <- rbind(df,oneD)
+  }
+  df$group <- factor(df$group,levels=bwList)
   # set the color
-  levels.use <- basename(strBW)
-  colors_all <- setNames(gg_color_hue(length(levels.use)),levels.use)
-  # construct data frame
-  df <- setNames(melt(data.plot),c("gene","Cell","expression"))
-  df <- cbind(df,group=obj.groups[df$Cell,])
+  colors_all <- setNames(gg_color_hue(length(bwList)),bwList)
 
   p.list <- list()
   for (i in seq_along(along.with = features)) {
@@ -178,6 +189,7 @@ customExpressionPlot <- function(strExp,strBW,geneCutoff=-0.1,fontsize=9) {
       scale_y_discrete(position = "top") +
       scale_x_continuous(position = "bottom", limits = c(0, NA)) +
       geom_text(data=df.rate,aes(xpos,ypos,label=text,color=group),hjust="right",vjust=1.1, size=fontsize-7)+
+      scale_fill_manual(values = colors_all)+
       theme(
         axis.text.x.top = element_text(size=fontsize, face="bold", angle=0), # Gene names @ top
         axis.text.x.bottom = element_text(size=fontsize-1, angle=60, vjust=0.6),
@@ -186,9 +198,6 @@ customExpressionPlot <- function(strExp,strBW,geneCutoff=-0.1,fontsize=9) {
         strip.text.y = element_blank(),
         legend.position = "none"
       )
-    if (!is.null(x = levels.use)) {
-      p <- p + scale_fill_manual(values = colors_all)
-    }
     p.list[[i]] <- p
   }
   p <- patchwork::wrap_plots(p.list, ncol = length(x = p.list))
