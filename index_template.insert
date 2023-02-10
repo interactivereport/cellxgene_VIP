@@ -33,7 +33,7 @@
           minimize: 'remove',
           maximize: 'remove'
         },
-        headerTitle: function () {return '<strong>Visualization in Plugin</strong>'},
+        headerTitle: function () {return '<strong>paraCell_2</strong>'},
         contentAjax: {
             url: window.location.href.replace(/\\\/+$/,'')+'/static/interface.html',
             done: function (panel) {
