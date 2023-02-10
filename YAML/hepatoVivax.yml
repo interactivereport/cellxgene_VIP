@@ -1,0 +1,6 @@
+url: https://tritrypdb.org/tritrypdb/app/record/gene/
+url2: https://tritrypdb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=
+Description: Plasmodium Vivax - Hepatocye Host-Parasite Interactions
+Original_Paper: <a href="https://www.frontiersin.org/articles/10.3389/fcimb.2022.848693/full">"Single Cell Transcriptomes of In Vitro Bradyzoite Infected Cells Reveals Toxoplasma gondii Stage Dependent Host Cell Alterations."</a>
+Author(s): Tatsuki Sugi et al.
+table_hashtag: hepatoVivax

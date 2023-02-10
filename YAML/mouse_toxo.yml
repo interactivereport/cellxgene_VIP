@@ -1,0 +1,9 @@
+url: https://tritrypdb.org/tritrypdb/app/record/gene/
+url2: https://tritrypdb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=
+Description: Mouse - Toxoplasma Host-Parasite Interactions
+Original_Paper: <a href="https://www.nature.com">"TBA."</a>
+Author(s): TBA.
+table_hashtag: mouse_toxo
+host_prefix: H
+parasite_prefix: P
+
