@@ -1,5 +1,6 @@
 # What's new
 * Upgrade to cellxgene v 1.1.1. After pull, please run "config.sh"
+* Install new modules if needed, e.g., pip install anndata==0.8.0
 
 # Cellxgene VIP unleashes full power of interactive visualization and integrative analysis of scRNA-seq, spatial transcriptomics, and multiome data
 
