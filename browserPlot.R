@@ -152,7 +152,7 @@ customLookupGeneCoords <- function(annotations, gene) {
 customExpressionPlot <- function(strExp,strCluster,bwList,geneCutoff=-0.1,fontsize=9) {
   if(!file.exists(strExp)) return(NULL)
   Exp <- read.csv(strExp,row.names=1,as.is=T)
-  clusterInfo <- read.table(strCluster,row.names=1,header=T,as.is=T,sep="\t")[bwList,]
+  clusterInfo <- read.table(strCluster,row.names=1,header=T,as.is=T,sep="\t")[bwList,,drop=F]
   grp <- intersect(colnames(Exp),colnames(clusterInfo))
   if(length(grp)==0) return(NULL)
   features <- colnames(Exp)[!colnames(Exp)%in%grp][-1]
