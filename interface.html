@@ -6265,12 +6265,12 @@ function hpClusterMarker_Analysis(){
 
 if (isHP) {
 
-hpCM_annot = document.getElementById("hp_cm_annot")
-h_or_p = document.getElementById("hp_host_or_parasite")
+hpCM_annot = document.getElementById("hp_cm_annot").value
+h_or_p = document.getElementById("hp_host_or_parasite").value
 
 document.getElementById("hpSpin").style.visibility="visible";
 
-var D = {'method':hp_CM,
+var D = {'method':"hp_CM",
           'host-parasite':h_or_p,
           'annot':hpCM_annot};
 
