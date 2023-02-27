@@ -4495,7 +4495,7 @@ function DEGfind(){
         $('#DEGplotByGinfoSel').append('<option value="'+d+'">'+d+'</option>')
       });
       // raw DEG table
-      //window.DEGraw = resD[0];
+      window.DEGraw = resD[0]; //needs for the following plot!
       DEGplot('DEG');
       $("#DEGfinal").show();
       $("#DEGinteractiveBtn").prop('disabled', false);
@@ -5373,7 +5373,6 @@ function BROWupdateTrack(addID,rmID){
 }
 function BROWreset(){
   if($("#BROWtrackAll").is(':checked')){
-    console.log("checked!");
     var table = $('#BROWtable').DataTable();
     table.rows().every(function ( rowIdx, tableLoop, rowLoop ) {
       var data = this.data();
