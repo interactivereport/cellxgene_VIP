@@ -725,7 +725,7 @@
         <p>Select an Annotation:
         <select id="hp_cm_annot"></select></p>
         <p>Select Host or Parasite:
-        <select id="hp_host_or_parasite"><option value="host">Host</option><option value="parasite">Parasite</option></select></p>
+        <select id="hp_host_or_parasite"><option value="H-">Host</option><option value="P-">Parasite</option></select></p>
         <button class="hpCM" onclick="hpClusterMarker_Analysis()"><b>HP Cluster Markers</b></button>
         </p>
       </div>
@@ -6270,7 +6270,7 @@ h_or_p = document.getElementById("hp_host_or_parasite")
 
 document.getElementById("hpSpin").style.visibility="visible";
 
-var D = {'method':hp_clusterMarkers,
+var D = {'method':hp_CM,
           'host-parasite':h_or_p,
           'annot':hpCM_annot};
 

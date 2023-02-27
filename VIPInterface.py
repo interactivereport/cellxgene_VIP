@@ -314,7 +314,8 @@ def distributeTask(aTask):
     'hp_cc_host':hp_hostClus,
     'hp_cc':hp_ClusterCompare,
     'hp_viol':hpClusterViolins,
-    'get_hp':get_HostParasiteTable
+    'get_hp':get_HostParasiteTable,
+    'hp_CM':hp_ClusterMarkers
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -2127,3 +2128,24 @@ def get_HostParasiteTable(data):
   res = [names,HP]
 
   return json.dumps(res)
+
+def hp_ClusterMarkers(data):
+  
+  with app.get_data_adaptor() as data_adaptor:
+    copyData = data_adaptor.data.copy()
+
+  keepGenes = []
+  prefix = data['host-parasite']
+
+  for x in copyData.var_names:
+    if x.startswith(prefix):
+        keepGenes.append(x)
+
+  # Split Data ----------
+
+  keep = copyData[:,keepGenes]
+
+  # Run Cluster Marker Analysis
+
+  
+  
