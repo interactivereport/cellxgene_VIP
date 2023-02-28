@@ -1648,7 +1648,8 @@ def getBWinfo(data):
                 BWinfo["BWlink"]="links.rds"
             elif one=="bw.cluster":
                 BWinfo["BWcluster"]=pd.read_csv(strD+one,sep="\t",header=0) #"bw.cluster" .to_csv(index=False)
-    BWinfo["BWcluster"]=BWinfo["BWcluster"][BWinfo["BWcluster"]['Wig'].isin(BWinfo["BWfile"])].to_csv(index=False)
+        if len(BWinfo["BWcluster"])>0:
+            BWinfo["BWcluster"]=BWinfo["BWcluster"][BWinfo["BWcluster"]['Wig'].isin(BWinfo["BWfile"])].to_csv(index=False)
     return json.dumps(BWinfo)
 
 def plotBW(data):

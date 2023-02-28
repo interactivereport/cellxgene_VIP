@@ -2124,10 +2124,10 @@ function enableBrowser(){
     data:JSON.stringify({'method':"getBWinfo",'dataset': window.store.getState().config.displayNames.dataset+'.h5ad'}),
     contentType: 'application/json;charset=UTF-8',
     success: function(res){
-      browserinfo= JSON.parse(res);
-      if(browserinfo['BWfile'].length > 0){
+      var browserinfo= JSON.parse(res);
+      if(browserinfo['BWfile'].length > 0 && browserinfo['BWcluster'].length>0){
         //available track table
-        BWcluster=browserinfo['BWcluster'];
+        var BWcluster=browserinfo['BWcluster'];
         var tableD = d3.csvParse(BWcluster,function(data){
           return Object.values(data);
         });
