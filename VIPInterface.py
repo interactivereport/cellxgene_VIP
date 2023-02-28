@@ -2131,8 +2131,6 @@ def get_HostParasiteTable(data):
 
 def hp_ClusterMarkers(data):
 
-  ppr.pprint("Starting functions")
-
   annot = data['annot']
   prefix = data['host-parasite']
   
@@ -2141,45 +2139,36 @@ def hp_ClusterMarkers(data):
 
   keepGenes = []
   
-
   copyData.var_names = copyData.var["Host-Parasite"].values
 
   for x in copyData.var_names:
     if x.startswith(prefix):
         keepGenes.append(x)
 
-  ppr.pprint("created keepGenes")
-
   # Split Data ----------
 
   keep = copyData[:,keepGenes]
 
-  ppr.pprint("Subset Data, starting CM analysis")
-
   # Run Cluster Marker Analysis
-
-  #nval = int(data["n_value"])
-
-  #de_method = data["DEmethod"]
 
   # Generate Cluster Markers
 
-  sc.tl.rank_genes_groups(copyData, annot, use_raw=False)
+  sc.tl.rank_genes_groups(keep, annot, use_raw=False)
 
-  result = copyData.uns['rank_genes_groups']
+  result = keep.uns['rank_genes_groups']
   groups = result['names'].dtype.names
 
   # Extract top markers for each Cluster.
 
   genes = []
   for x in groups: # Get top marker genes for each Cluster.
-    y = pd.DataFrame(copyData.uns['rank_genes_groups']['names'][x]).head(5).values
+    y = pd.DataFrame(keep.uns['rank_genes_groups']['names'][x]).head(5).values
     for gene in y:
       genes.append(gene[0])
 
   pvals = []
   for x in groups: # Get p-value of each marker gene.
-    y = pd.DataFrame(copyData.uns['rank_genes_groups']['pvals_adj'][x]).head(5).values
+    y = pd.DataFrame(keep.uns['rank_genes_groups']['pvals_adj'][x]).head(5).values
     for pval in y:
       val = float(pval[0])
       final_val = round(val,5)
@@ -2187,7 +2176,7 @@ def hp_ClusterMarkers(data):
 
   lfcs = []
   for x in groups: # Get log-fold-change of each marker gene.
-    y = pd.DataFrame(copyData.uns['rank_genes_groups']['logfoldchanges'][x]).head(5).values
+    y = pd.DataFrame(keep.uns['rank_genes_groups']['logfoldchanges'][x]).head(5).values
     for lfc in y:
       val = float(lfc[0])
       final_val = round(val,2)

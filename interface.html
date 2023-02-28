@@ -715,25 +715,27 @@
         <h3>Run Host-Parasite Interaction analyses within VIP:</h3>
         <p>Host-Parasite Percent Concent Violin Plots:
         <button class="hpViol" onclick="hpAnalysis('hp_viol')"><b>Host-Parasite Violins</b></button>
+        <div id="hpSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
         <p id="hpViolins"></p>
         </p>
         <p>Host-Parasite Cluster Comparision:
         <button class="hpCC" onclick="hpAnalysis('hp_cc_host')"><b>Cluster by Host</b></button>
         <button class="hpCC" onclick="hpAnalysis('hp_cc_para')"><b>Cluster by Parasite</b></button>
         <button class="hpCC" onclick="hpAnalysis('hp_cc')"><b>Find Overlap</b></button></p>
+        <p id="hpNote" style="color:blue;"></p>
+        <p id="hostFig"></p>
+        <p id="parasiteFig"></p>
         <h3>Host-Parasite Cluster Marker Analysis:</h3>
         <p>Select an Annotation:
         <select id="hp_cm_annot"></select></p>
         <p>Select Host or Parasite:
         <select id="hp_host_or_parasite"><option value="H-">Host</option><option value="P-">Parasite</option></select></p>
         <button class="hpCM" onclick="hpClusterMarker_Analysis()"><b>HP Cluster Markers</b></button>
+        <p id="hpNote2" style="color:blue;"></p>
         </p>
       </div>
-      <div id="hpSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <table id="hp_clusterMarker_table" class="display"></table>
-      <p id="hpNote" style="color:blue;"></p>
-      <p id="hostFig"></p>
-      <p id="parasiteFig"></p>
+
     </div><!--HostParasite-->
 
     <div id="GD" class=tabcontent>
@@ -6280,9 +6282,12 @@ $.ajax({
   data:JSON.stringify(D),
   contentType: 'application/json;charset=UTF-8',//
   success: function(res){
+  
+  document.getElementById("hpSpin").style.visibility="hidden";
+  
     if(res.startsWith('ERROR')){
-      $("#pseudoNote").text(res);
-      document.getElementById("tradeSeqSpin").style.visibility="hidden";
+      $("#hpNote2").text(res);
+      document.getElementById("hpSpin").style.visibility="hidden";
       return;
     }
     
@@ -6294,7 +6299,7 @@ $.ajax({
       destroy: true,
       dom:'Blfrtip',
       lengthMenu:[[10,50,100,200],[10,50,100,200]],
-      order:[[1, 'desc']],
+      order:[[0, 'asc']],
       buttons:['csv'],
       data:tableInputs[0],
       columns:tableInputs[1]
@@ -6306,7 +6311,7 @@ $.ajax({
   }
 })
 }else{
-  $("#hpNote").text("No Host-Parasite Data available.");
+  $("#hpNote2").text("No Host-Parasite Data available.");
 }
 }
 
