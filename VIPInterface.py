@@ -314,7 +314,8 @@ def distributeTask(aTask):
     'hp_cc_host':hp_hostClus,
     'hp_cc':hp_ClusterCompare,
     'hp_viol':hpClusterViolins,
-    'get_hp':get_HostParasiteTable
+    'get_hp':get_HostParasiteTable,
+    'hp_CM':hp_ClusterMarkers
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -2127,3 +2128,71 @@ def get_HostParasiteTable(data):
   res = [names,HP]
 
   return json.dumps(res)
+
+def hp_ClusterMarkers(data):
+
+  annot = data['annot']
+  prefix = data['host-parasite']
+  
+  with app.get_data_adaptor() as data_adaptor:
+    copyData = data_adaptor.data.copy()
+
+  keepGenes = []
+  
+  copyData.var_names = copyData.var["Host-Parasite"].values
+
+  for x in copyData.var_names:
+    if x.startswith(prefix):
+        keepGenes.append(x)
+
+  # Split Data ----------
+
+  keep = copyData[:,keepGenes]
+
+  # Run Cluster Marker Analysis
+
+  # Generate Cluster Markers
+
+  sc.tl.rank_genes_groups(keep, annot, use_raw=False)
+
+  result = keep.uns['rank_genes_groups']
+  groups = result['names'].dtype.names
+
+  # Extract top markers for each Cluster.
+
+  genes = []
+  for x in groups: # Get top marker genes for each Cluster.
+    y = pd.DataFrame(keep.uns['rank_genes_groups']['names'][x]).head(5).values
+    for gene in y:
+      genes.append(gene[0])
+
+  pvals = []
+  for x in groups: # Get p-value of each marker gene.
+    y = pd.DataFrame(keep.uns['rank_genes_groups']['pvals_adj'][x]).head(5).values
+    for pval in y:
+      val = float(pval[0])
+      final_val = round(val,5)
+      pvals.append(final_val)
+
+  lfcs = []
+  for x in groups: # Get log-fold-change of each marker gene.
+    y = pd.DataFrame(keep.uns['rank_genes_groups']['logfoldchanges'][x]).head(5).values
+    for lfc in y:
+      val = float(lfc[0])
+      final_val = round(val,2)
+      lfcs.append(final_val)
+
+  clusters = []
+  for x in groups: # Create Cluster Label column
+    for i in range(5):
+      clusters.append(x)
+
+  d = {'Cluster':clusters,'Genes':genes,"LogFoldChange":lfcs,"pvalue_adjusted":pvals}
+
+  df = pd.DataFrame(data=d)
+
+  res = df.to_csv(index=False)
+
+  return json.dumps(res)
+  
+  

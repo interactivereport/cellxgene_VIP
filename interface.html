@@ -715,17 +715,27 @@
         <h3>Run Host-Parasite Interaction analyses within VIP:</h3>
         <p>Host-Parasite Percent Concent Violin Plots:
         <button class="hpViol" onclick="hpAnalysis('hp_viol')"><b>Host-Parasite Violins</b></button>
+        <div id="hpSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
         <p id="hpViolins"></p>
         </p>
         <p>Host-Parasite Cluster Comparision:
         <button class="hpCC" onclick="hpAnalysis('hp_cc_host')"><b>Cluster by Host</b></button>
         <button class="hpCC" onclick="hpAnalysis('hp_cc_para')"><b>Cluster by Parasite</b></button>
-        <button class="hpCC" onclick="hpAnalysis('hp_cc')"><b>Find Overlap</b></button>
+        <button class="hpCC" onclick="hpAnalysis('hp_cc')"><b>Find Overlap</b></button></p>
+        <p id="hpNote" style="color:blue;"></p>
+        <p id="hostFig"></p>
+        <p id="parasiteFig"></p>
+        <h3>Host-Parasite Cluster Marker Analysis:</h3>
+        <p>Select an Annotation:
+        <select id="hp_cm_annot"></select></p>
+        <p>Select Host or Parasite:
+        <select id="hp_host_or_parasite"><option value="H-">Host</option><option value="P-">Parasite</option></select></p>
+        <button class="hpCM" onclick="hpClusterMarker_Analysis()"><b>HP Cluster Markers</b></button>
+        <p id="hpNote2" style="color:blue;"></p>
+        </p>
       </div>
-      <div id="hpSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <p id="hpNote" style="color:blue;"></p>
-      <p id="hostFig"></p>
-      <p id="parasiteFig"></p>
+      <table id="hp_clusterMarker_table" class="display"></table>
+
     </div><!--HostParasite-->
 
     <div id="GD" class=tabcontent>
@@ -2245,6 +2255,7 @@ function init(){
     var CPVGrp2 = document.getElementById("CPV_ConditionKey");
     var pseudoAnnot = document.getElementById("pseudo_cell_annot");
     var pagaAnnot = document.getElementById("paga_cluster_key");
+    var hpAnnot = document.getElementById("hp_cm_annot");
 
     for(const one of grps){
       if (one.startsWith(">")) continue;
@@ -2264,6 +2275,7 @@ function init(){
       CPVGrp2.add(createOpt(one));
       pseudoAnnot.add(createOpt(one));
       pagaAnnot.add(createOpt(one));
+      hpAnnot.add(createOpt(one));
     }
     densS.add(createOpt('None'));
     densG.add(createOpt('None'));
@@ -6249,6 +6261,58 @@ $.ajax({
     console.log('error!');
   }
 })
+}
+
+function hpClusterMarker_Analysis(){
+
+if (isHP) {
+
+hpCM_annot = document.getElementById("hp_cm_annot").value
+h_or_p = document.getElementById("hp_host_or_parasite").value
+
+document.getElementById("hpSpin").style.visibility="visible";
+
+var D = {'method':"hp_CM",
+          'host-parasite':h_or_p,
+          'annot':hpCM_annot};
+
+$.ajax({
+  type:"POST",
+  url: VIPurl,
+  data:JSON.stringify(D),
+  contentType: 'application/json;charset=UTF-8',//
+  success: function(res){
+  
+  document.getElementById("hpSpin").style.visibility="hidden";
+  
+    if(res.startsWith('ERROR')){
+      $("#hpNote2").text(res);
+      document.getElementById("hpSpin").style.visibility="hidden";
+      return;
+    }
+    
+    resTable = res;
+
+    tableInputs = tablePrep(res);
+    
+    var table = $("#hp_clusterMarker_table").DataTable({
+      destroy: true,
+      dom:'Blfrtip',
+      lengthMenu:[[10,50,100,200],[10,50,100,200]],
+      order:[[0, 'asc']],
+      buttons:['csv'],
+      data:tableInputs[0],
+      columns:tableInputs[1]
+    });
+
+  },
+  error: function() {
+    console.log('error!');
+  }
+})
+}else{
+  $("#hpNote2").text("No Host-Parasite Data available.");
+}
 }
 
 function makeLink(gene){
