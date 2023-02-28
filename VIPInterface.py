@@ -127,7 +127,7 @@ def getObs(data):
     anno = []
     sel = list(set(selAnno)&set(dAnno))
     if len(sel)>0:
-      tmp = scD.data.obs.loc[selC,sel].astype('str')
+      tmp = scD.data.obs.iloc[selC,:].loc[:,sel].astype('str')
       tmp.index = cNames
       anno += [tmp]
     sel = list(set(selAnno)-set(dAnno))
@@ -770,7 +770,7 @@ def getGSEA(data):
   return json.dumps(sorted([os.path.basename(i).replace(".symbols.gmt","") for i in glob.glob(strGSEA+"*.symbols.gmt")]))
 
 def DEG(data):
-  adata = None;
+  adata = None
   genes = data['genes']
   data['genes'] = []
   comGrp = 'cellGrp'
