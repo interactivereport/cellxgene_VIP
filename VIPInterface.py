@@ -839,8 +839,8 @@ def DEG(data):
         raise ValueError('Unknown DE methods:'+data['DEmethod'])
     #res = de.test.two_sample(adata,comGrp,test=data['DEmethod'],noise_model=nm)
     deg = res.summary()
-    deg = deg.sort_values(by=['qval']).loc[:,['gene','log2fc','pval','qval']]
     deg['log2fc'] = -1 * deg['log2fc']
+  deg = deg.sort_values(by=['qval']).loc[:,['gene','log2fc','pval','qval']]
   #del adata
   ## plot in R
   #strF = ('/tmp/DEG%f.csv' % time.time())
