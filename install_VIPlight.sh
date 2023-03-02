@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # CLT will not be available for this installation
 # Please provide the destnation conda env path (--prefix)
-#appPATH="./VIPlight"
-appPATH="/mnt/depts/dept04/compbio/edge_condaEnv/VIPlight"
+appPATH="./VIPlight"
 
 set -e
 exePath=$(readlink -e $(dirname $0))
