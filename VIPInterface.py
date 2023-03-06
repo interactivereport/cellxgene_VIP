@@ -2121,11 +2121,11 @@ def get_HostParasiteTable(data):
   with app.get_data_adaptor() as data_adaptor:
     adata = data_adaptor.data.copy()
 
-  names = list(adata.var["features"].values)
+  hostGenes = adata.uns["host_genes"].tolist()
 
-  HP = list(adata.var["Host-Parasite"].values)
+  paraGenes = adata.uns["parasite_genes"].tolist()
 
-  res = [names,HP]
+  res = [hostGenes,paraGenes]
 
   return json.dumps(res)
 
