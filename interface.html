@@ -729,7 +729,17 @@
         <p>Select an Annotation:
         <select id="hp_cm_annot"></select></p>
         <p>Select Host or Parasite:
-        <select id="hp_host_or_parasite"><option value="H-">Host</option><option value="P-">Parasite</option></select></p>
+        <select id="hp_host_or_parasite"><option value="host_genes">Host</option><option value="parasite_genes">Parasite</option></select></p>
+        <p>Method:
+        <select id="hp_cm_method">
+          <option value="t-test">t-test</option>
+          <option value="wilcoxon">wilcoxon</option>
+          <option value="t-test_overestim_var">t-test_overestim_var</option>
+        </select>
+        </p>
+        <p>Genes per Group:
+        <input id="hp_cm_num" type="number" step="1" value="5" min="3"/>
+        </p>
         <button class="hpCM" onclick="hpClusterMarker_Analysis()"><b>HP Cluster Markers</b></button>
         <p id="hpNote2" style="color:blue;"></p>
         </p>
@@ -6190,6 +6200,10 @@ if (isHP) {
 
 document.getElementById("hpSpin").style.visibility="visible";
 
+$(".hpCC").prop("disabled",true);
+$(".hpViol").prop("disabled",true);
+$(".hpCM").prop("disabled",true);
+
 var D = {'method':hp_option,
           'h_prefix':hostPrefix,
           'p_prefix':parasitePrefix};
@@ -6200,6 +6214,10 @@ $.ajax({
   data:JSON.stringify(D),
   contentType: 'application/json;charset=UTF-8',//
   success: function(res){
+
+    $(".hpCC").prop("disabled",false);
+    $(".hpViol").prop("disabled",false);
+    $(".hpCM").prop("disabled",false);
 
     document.getElementById("hpSpin").style.visibility="hidden";
 
@@ -6213,12 +6231,18 @@ $.ajax({
 
     }else{
 
+      $(".hpViol").prop("disabled",false);
+      $(".hpCC").prop("disabled",false);
+      $(".hpCM").prop("disabled",false);
       $("#hpNote").text(res);
 
     }
 
   },
   error: function() {
+    $(".hpViol").prop("disabled",false);
+    $(".hpCC").prop("disabled",false);
+    $(".hpCM").prop("disabled",false);
     console.log('error!');
   }
 })
@@ -6257,14 +6281,26 @@ function hpClusterMarker_Analysis(){
 
 if (isHP) {
 
+$("#hpNote2").text("");
+
 hpCM_annot = document.getElementById("hp_cm_annot").value
 h_or_p = document.getElementById("hp_host_or_parasite").value
 
+cm_method = document.getElementById("hp_cm_method").value
+
+cm_num = document.getElementById("hp_cm_num").value
+
 document.getElementById("hpSpin").style.visibility="visible";
+
+$(".hpCM").prop("disabled",true);
+$(".hpViol").prop("disabled",true);
+$(".hpCC").prop("disabled",true);
 
 var D = {'method':"hp_CM",
           'host-parasite':h_or_p,
-          'annot':hpCM_annot};
+          'annot':hpCM_annot,
+          'hp_cm_method':cm_method,
+          'hp_cm_num':cm_num};
 
 $.ajax({
   type:"POST",
@@ -6274,6 +6310,10 @@ $.ajax({
   success: function(res){
   
   document.getElementById("hpSpin").style.visibility="hidden";
+  
+  $(".hpCM").prop("disabled",false);
+  $(".hpViol").prop("disabled",false);
+  $(".hpCC").prop("disabled",false);
   
     if(res.startsWith('ERROR')){
       $("#hpNote2").text(res);
@@ -6297,6 +6337,9 @@ $.ajax({
 
   },
   error: function() {
+    $(".hpCM").prop("disabled",false);
+    $(".hpViol").prop("disabled",false);
+    $(".hpCC").prop("disabled",false);
     console.log('error!');
   }
 })

@@ -2132,43 +2132,50 @@ def get_HostParasiteTable(data):
 def hp_ClusterMarkers(data):
 
   annot = data['annot']
-  prefix = data['host-parasite']
-  
+
+  choice = data['host-parasite']
+
+  cm_method = data['hp_cm_method']
+
+  cm_num = int(data['hp_cm_num'])
+
   with app.get_data_adaptor() as data_adaptor:
     copyData = data_adaptor.data.copy()
 
-  keepGenes = []
+  keepGenes = copyData.uns[choice]
   
-  copyData.var_names = copyData.var["Host-Parasite"].values
-
-  for x in copyData.var_names:
-    if x.startswith(prefix):
-        keepGenes.append(x)
+  copyData.var_names = copyData.var["features"].values
 
   # Split Data ----------
 
   keep = copyData[:,keepGenes]
-
+  
   # Run Cluster Marker Analysis
 
   # Generate Cluster Markers
 
-  sc.tl.rank_genes_groups(keep, annot, use_raw=False)
+  sc.tl.rank_genes_groups(keep, annot, use_raw=False, method=cm_method)
 
   result = keep.uns['rank_genes_groups']
   groups = result['names'].dtype.names
+
+  # Create Cluster Label column
+  clusters = []
+  for x in groups: 
+    for i in range(cm_num):
+      clusters.append(x)
 
   # Extract top markers for each Cluster.
 
   genes = []
   for x in groups: # Get top marker genes for each Cluster.
-    y = pd.DataFrame(keep.uns['rank_genes_groups']['names'][x]).head(5).values
+    y = pd.DataFrame(keep.uns['rank_genes_groups']['names'][x]).head(cm_num).values
     for gene in y:
       genes.append(gene[0])
 
   pvals = []
   for x in groups: # Get p-value of each marker gene.
-    y = pd.DataFrame(keep.uns['rank_genes_groups']['pvals_adj'][x]).head(5).values
+    y = pd.DataFrame(keep.uns['rank_genes_groups']['pvals_adj'][x]).head(cm_num).values
     for pval in y:
       val = float(pval[0])
       final_val = round(val,5)
@@ -2176,16 +2183,11 @@ def hp_ClusterMarkers(data):
 
   lfcs = []
   for x in groups: # Get log-fold-change of each marker gene.
-    y = pd.DataFrame(keep.uns['rank_genes_groups']['logfoldchanges'][x]).head(5).values
+    y = pd.DataFrame(keep.uns['rank_genes_groups']['logfoldchanges'][x]).head(cm_num).values
     for lfc in y:
       val = float(lfc[0])
       final_val = round(val,2)
       lfcs.append(final_val)
-
-  clusters = []
-  for x in groups: # Create Cluster Label column
-    for i in range(5):
-      clusters.append(x)
 
   d = {'Cluster':clusters,'Genes':genes,"LogFoldChange":lfcs,"pvalue_adjusted":pvals}
 
