@@ -1948,17 +1948,10 @@ def hp_paraClus(data):
     adata = data_adaptor.data
 
   copyData = adata
-  copyData.var_names = copyData.var["Host-Parasite"].values
+  copyData.var_names = copyData.var["features"].values
 
-  gene_list = copyData.var_names
-
-  parasiteGenes = []
-  parasite_prefix = data['p_prefix']
-
-  for x in gene_list:
-    if x.startswith(parasite_prefix):
-        parasiteGenes.append(x)
-
+  parasiteGenes = copyData.uns["parasite_genes"]
+ 
   # Split Data ----------
 
   parasite = copyData[:,parasiteGenes]
@@ -2000,14 +1993,9 @@ def hp_hostClus(data):
 
   copyData = adata
 
-  copyData.var_names = copyData.var["Host-Parasite"].values
+  copyData.var_names = copyData.var["features"].values
 
-  hostGenes = []
-  host_prefix = data['h_prefix']
-
-  for x in copyData.var_names:
-    if x.startswith(host_prefix):
-        hostGenes.append(x)
+  hostGenes = copyData.uns["host_genes"]
 
   # Split Data ----------
 
@@ -2048,7 +2036,7 @@ def hp_ClusterCompare(data):
   with app.get_data_adaptor() as data_adaptor:
     adata = data_adaptor.data.copy()
 
-  adata.var_names = adata.var["Host-Parasite"].values
+  adata.var_names = adata.var["features"].values
 
   paraTable = adata.obs['parasite_clusters']
   hostTable = adata.obs['host_clusters']
