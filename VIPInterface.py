@@ -1,4 +1,3 @@
-from copy import copy
 from turtle import color
 import requests
 import json
