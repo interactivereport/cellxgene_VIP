@@ -1449,7 +1449,7 @@ def CLI(data):
     with open(strScript,'w') as f:
      f.writelines(['---\noutput:\n  html_document:\n    code_folding: hide\n---\n\n```{r}\nstrPath <- "%s"\n```\n\n'%strPath])
      f.write(script)
-    #ppr.pprint(subprocess.run('which Rscript',capture_output=True,shell=True).stdout.decode('utf-8'))
+    ppr.pprint(subprocess.run('which Rscript',capture_output=True,shell=True).stdout.decode('utf-8'))
     res = subprocess.run('Rscript -e \'rmarkdown::render("%s", output_file="%s.html")\''%(strScript,strPath),capture_output=True,shell=True)
     if (os.path.exists('%s.html'%strPath)):
       with open('%s.html'%strPath,'r') as file:
@@ -1475,7 +1475,7 @@ def CLI(data):
     h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">') ## remove the second cell
     html = h+s+e
   if 'Error' in res.stderr.decode('utf-8'):
-     html = 'ERROR @server:\nstderr:\n' + res.stderr.decode('utf-8') + '\nstdout:\n' + res.stdout.decode('utf-8')
+     html = 'ERROR @server:\nstderr:\n' + re.sub(r"\x1b[^m]*m", "", res.stderr.decode('utf-8')) + '\nstdout:\n' + res.stdout.decode('utf-8')
   for f in glob.glob(strPath+"*"):
     try:
       os.remove(f)

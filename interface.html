@@ -5697,6 +5697,7 @@ from pyarrow import feather
 import pandas as pd
 X = adata.to_df()
 meta = pd.concat([adata.obs,adata.obsm.to_df()],axis=1)
+meta[meta.select_dtypes(['category']).columns] = meta.select_dtypes(['category']).apply(lambda x: x.astype('object'))
 feather.write_feather(X,strPath+'.feather')
 feather.write_feather(meta,strPath+".obs.feather")
 
@@ -5766,6 +5767,7 @@ strData = r.strPath + '.h5ad'
 adata=read_h5ad(strData)
 X = adata.to_df()
 meta = pd.concat([adata.obs,adata.obsm.to_df()],axis=1)
+meta[meta.select_dtypes(['category']).columns] = meta.select_dtypes(['category']).apply(lambda x: x.astype('object'))
 feather.write_feather(X,r.strPath+'.feather')
 feather.write_feather(meta,r.strPath+".obs.feather")
 ```
