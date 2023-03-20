@@ -1,5 +1,6 @@
 # What's new
 * Upgrade to cellxgene v 1.1.1. After pull, please run "config.sh"
+* Install new modules if needed, e.g., pip install anndata==0.8.0
 
 # Cellxgene VIP unleashes full power of interactive visualization and integrative analysis of scRNA-seq, spatial transcriptomics, and multiome data
 
@@ -64,7 +65,7 @@ R -q -e 'if(!require(devtools)) install.packages("devtools",repos = "http://cran
 R -q -e 'if(!require(Cairo)) devtools::install_version("Cairo",version="1.5-12",repos = "http://cran.us.r-project.org")'
 R -q -e 'if(!require(foreign)) devtools::install_version("foreign",version="0.8-76",repos = "http://cran.us.r-project.org")'
 R -q -e 'if(!require(ggpubr)) devtools::install_version("ggpubr",version="0.3.0",repos = "http://cran.us.r-project.org")'
-R -q -e 'if(!require(ggrastr)) devtools::install_version("ggrastr",version="0.1.9",repos = "http://cran.us.r-project.org")'
+R -q -e 'if(!require(ggrastr)) devtools::install_version("ggrastr",version="0.2.1",repos = "http://cran.us.r-project.org")'
 R -q -e 'if(!require(arrow)) devtools::install_version("arrow",version="2.0.0",repos = "http://cran.us.r-project.org")'
 R -q -e 'if(!require(Seurat)) devtools::install_version("Seurat",version="3.2.3",repos = "http://cran.us.r-project.org")'
 R -q -e 'if(!require(rmarkdown)) devtools::install_version("rmarkdown",version="2.5",repos = "http://cran.us.r-project.org")'

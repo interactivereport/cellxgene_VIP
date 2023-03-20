@@ -1463,11 +1463,21 @@
     </div><!--STACBAR -->
 
     <div id='BROW' class='tabcontent'>
-      <div id="BROWinput">
-        <h3>Jointly visualizing gene expression and DNA accessibility</h3>
+      <h3>Jointly visualizing gene expression and DNA accessibility</h3>
+      <div id="BROWinput">        
         <fieldset>
-          <div id="BROWinfo"></div>
+          <button onclick="hideShow($('#BROWtrackView'),$(this),'');">Hide</button>
+          <div id="BROWtrackView">
+            <input id="BROWtrackAll" type="checkbox" checked onclick="BROWreset();">
+            <strong>The following tracks are available:</strong>
+            <table id="BROWtable" class="display"></table>
+            <div id="BROWinfo"></div>
+          </div>
+
         </fieldset>
+        Selected browser tracks:
+        <small>Change the track orders by dragging items up or down, can also be removed by clicking <i class='fa fa-trash-o'></i></small>
+        <ul id="BROWdynList" class="sortable-list"></ul>
 
         Define track region by:
         <label><input type="radio" name="BROWinputRadio" value="coordinate" onclick="$('.BROWregion').hide();$('#BROWregionCoor').show();$('#BROWselGene').show();">Coordinate</label>
@@ -2114,15 +2124,27 @@ function enableBrowser(){
     data:JSON.stringify({'method':"getBWinfo",'dataset': window.store.getState().config.displayNames.dataset+'.h5ad'}),
     contentType: 'application/json;charset=UTF-8',
     success: function(res){
-      browserinfo= JSON.parse(res);
-      if(browserinfo['BWfile'].length > 0){
-        var html="<input type='checkbox' onclick='$(\".BROWbwSel\").prop(\"checked\",$(this).prop(\"checked\"))' checked><strong>The following tracks are available: </strong>";
-        $.each(browserinfo['BWfile'],function(i,v){
-          html += '<label><input class="BROWbwSel" type="checkbox" value="'+v+'" checked/>'+v+' </label>';
-        })
-        //for(one in browserinfo['BWfile']){
-        //  html += '<label><input class="BROWbw" type="checkbox" value="'+grps[i]+'" onclick="ABBRlist(\'ABBR\')"/> '+grps[i]+' ('+grpL[grps[i]].categories.length+')</label>';
-        //}
+      var browserinfo= JSON.parse(res);
+      if(browserinfo['BWfile'].length > 0 && browserinfo['BWcluster'].length>0){
+        //available track table
+        var BWcluster=browserinfo['BWcluster'];
+        var tableD = d3.csvParse(BWcluster,function(data){
+          return Object.values(data);
+        });
+        var tableTitle = [];
+        tableD.columns.forEach(function(d){tableTitle = tableTitle.concat({title:d})});
+        var table = $('#BROWtable').DataTable({
+          destroy: true,
+          lengthMenu:[[10,50,-1],[10,50,"All"]],
+          data:tableD,
+          columns:tableTitle
+        });
+        $('#BROWtable tbody').on('click',"tr",function(){
+          var data = table.row(this).data();
+          BROWupdateTrack(data[0],null);
+        });
+        BROWreset();
+        var html="";
         if(browserinfo['BWpeak'].length>4) html += "<br><br><strong>All peaks are defined</strong>";
         if(browserinfo['BWlink'].length>4) html += "<br><strong>Links between peaks and genes are avaiable</strong>";
         $("#BROWinfo").html(html.replaceAll('.bw',''));
@@ -4473,7 +4495,7 @@ function DEGfind(){
         $('#DEGplotByGinfoSel').append('<option value="'+d+'">'+d+'</option>')
       });
       // raw DEG table
-      window.DEGraw = resD[0];
+      window.DEGraw = resD[0]; //needs for the following plot!
       DEGplot('DEG');
       $("#DEGfinal").show();
       $("#DEGinteractiveBtn").prop('disabled', false);
@@ -5331,6 +5353,38 @@ function STACBARplot(){
   });
 
 }
+function BROWupdateTrack(addID,rmID){
+  var selElem = $("#BROWdynList").sortable('toArray');
+  if(addID){
+    if(!selElem.includes(addID)){
+      selElem=selElem.concat(addID);
+    }
+  }
+  if(rmID){
+    if(selElem.includes(rmID)){
+      selElem.splice(selElem.indexOf(rmID),1);
+    }
+  }
+  var htmlCheck = "";
+  for(const one of selElem){
+    htmlCheck += "<li id='"+one+"'><label>"+one.replace("li","")+"</label> <a onClick='BROWupdateTrack(null,\""+one+"\")' style='cursor: pointer; cursor: hand;'><i class='fa fa-trash-o'></i></a></li>";
+  }
+  $("#BROWdynList").html(htmlCheck);
+}
+function BROWreset(){
+  if($("#BROWtrackAll").is(':checked')){
+    var table = $('#BROWtable').DataTable();
+    table.rows().every(function ( rowIdx, tableLoop, rowLoop ) {
+      var data = this.data();
+      BROWupdateTrack(data[0],null);
+    });
+  }else{
+    console.log("UNchecked!");
+    $("#BROWdynList").html("");
+  }
+  
+
+}
 function BROWplot(){
   $('#BROWnote').text("");
   var region = "", exUP=0, exDN=0,genes=[];
@@ -5344,12 +5398,9 @@ function BROWplot(){
     $('#BROWnote').text("region is required");
     return;
   }
-  var selBW=[];
-  $.each($('.BROWbwSel:checkbox:checked'),function(i,v){
-    selBW.push(v.value);
-  })
+  var selBW = $("#BROWdynList").sortable('toArray');
   if(selBW.length<1){
-    $('#BROWnote').text("Please select at least one tracks!");
+    $('#BROWnote').text("Please select at least one track!");
     return;
   }
   var D = {'method':'plotBW',
