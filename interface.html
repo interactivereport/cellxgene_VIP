@@ -710,7 +710,12 @@
       <p id="gsFunctionNote"></p>
       <h3>Search by GO term:</h3>
         <p>
+        <select id="go_level">
+          <option value="go_components">Cellular Component</option>
+          <option value="go_functions">Molecular Function</option>
+          <option value="go_processes">Biological Process</option></select>
         <input type="text" id="gs_gene_goTerm"></p>
+        <p id="gsGO_FunctionNote"></p>
         <button class="goe_search" onclick="get_go_genes()"><b>Get GO Term Genes</b></button>
         <button class="goe_search" onclick="add_GO_GeneSet()"><b>Add as Gene-Set</b></button>
         <ul id="geneGO_Results"></ul>
@@ -6004,7 +6009,10 @@ error: function() {
 
 var geneNamesGS;
 var geneFunctionsGS;
-var gene_GO_terms;
+//var gene_GO_terms;
+var go_components;
+var go_functions;
+var go_processes;
 
 function get_names_and_functions(){
 
@@ -6023,7 +6031,11 @@ $.ajax({
 
     geneFunctionsGS = resLists[1];
 
-    gene_GO_terms = resLists[2];
+    go_components = resLists[2];
+
+    go_functions = resLists[3]
+
+    go_processes = resLists[4]
 
   },
   error: function() {
@@ -6038,6 +6050,8 @@ function get_go_genes(){
 
   var go_term = document.getElementById("gs_gene_goTerm").value;
 
+  var level = document.getElementById("go_level").value;
+
   results_list = document.getElementById("geneGO_Results");
 
   results_list.innerHTML = '';
@@ -6048,7 +6062,8 @@ function get_go_genes(){
   document.getElementById("geneSearchSpin").style.visibility="visible";
 
   var D = {'method':'get_go_genes',
-           'go':go_term
+           'go':go_term,
+           'go_level': level
           };
 
   $.ajax({
@@ -6109,7 +6124,9 @@ function addAutoComplete(searchbox,resultList,source){
   }else if(source == "functions"){
     datasource = geneFunctionsGS
   }else {
-    datasource = gene_GO_terms
+
+    go_level = document.getElementById("go_level").value
+    datasource = eval(go_level)
     
     go_list = document.getElementById("go_gene_Results");
     go_list.innerHTML = '';
@@ -6701,38 +6718,19 @@ function add_DEG_GeneSet(){
 
 function add_GO_GeneSet(){
 
-  console.log(go_genes);
-  console.log(go_term);
-
-
-  $("#ADDGsetError").text("");
+  $("#gsGO_FunctionNote").text("");
   var grpName = go_term.trim();
   
   var grpKeys = Object.keys(window.bioGeneGrp);
   if(grpKeys.includes(grpName)){
-    DE_Counter += 1;
-    grpName = grpName + "_" + DE_Counter;
+    $("#gsGO_FunctionNote").text("Geneset already added.");
+    return
   }
   
   var definedG = [];
   for(var i=0;i<grpKeys.length;i++){
     definedG = definedG.concat(window.bioGeneGrp[grpKeys[i]]);
   }
-
-  //var histogram_labels = document.querySelectorAll('[data-testclass="brushable-histogram-field-name"]');
-  
-
-  //var histogram_labels2 = Array.from(histogram_labels);
-  //deg_results = histogram_labels2.slice(0,10);
- 
-  //gene_names = [];
-  
-  //for(element of deg_results){
-    
-    //gene = element.textContent;
-    
-    //gene_names.push(gene);
-  //}
 
   gene_names = go_genes;
 
@@ -6770,7 +6768,6 @@ function add_GO_GeneSet(){
   ADDGref();
   gsDB_dropdown();
 
-  console.log("function complete!")
 }
 
 function geneset_to_database(){

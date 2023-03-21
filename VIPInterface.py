@@ -1939,20 +1939,26 @@ def getNamesAndFunctions(data):
 
   functions = list(adata.uns["function_lookup_table"].keys())
 
-  go_terms = list(adata.uns["go_components"].keys())
+  go_comps = list(adata.uns["go_components"].keys())
 
-  res = [names,functions,go_terms]
+  go_funcs = list(adata.uns["go_functions"].keys())
+
+  go_process = list(adata.uns["go_processes"].keys())
+
+  res = [names,functions,go_comps,go_funcs,go_process]
 
   return json.dumps(res)
 
 def go_genes(data):
     
   go_term = data['go']
+  
+  go_level = data['go_level']
 
   with app.get_data_adaptor() as data_adaptor: # Generate copy of currently loaded dataset.
     adata = data_adaptor.data.copy()
 
-  go_dict = adata.uns["go_components"]
+  go_dict = adata.uns[go_level]
 
   go_genes = list(go_dict[go_term])
 
