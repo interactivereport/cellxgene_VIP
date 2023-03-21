@@ -711,9 +711,11 @@
       <h3>Search by GO term:</h3>
       <p>
       <input type="text" id="gs_gene_goTerm"></p>
+      <button class="goe_search" onclick="get_go_genes()"><b>Get GO Term Genes</b></button>
+      <button class="goe_search" onclick="add_GO_GeneSet()"><b>Add as Gene-Set</b></button>
       <ul id="geneGO_Results"></ul>
+      <ul id="go_gene_Results"></ul>
     </div>
-    <button class="geneSearch" onclick="add_GO_GeneSet()"><b>Add as Gene-Set</b></button>
     </div><!--geneSearch-->
 
     <div id="HostParasite" class="tabcontent">
@@ -1800,6 +1802,7 @@
         <p id="pagaFig"></p>
       </div>
     </div><!--PAGA-->
+
 
   </div>
 </div>
@@ -5981,10 +5984,11 @@ success: function(res){
 
   // Return Result as a Checkbox
   data="<a href='"+url+geneName+"' target='_blank'>"+res+"</a>";
-  checkbox = "<input type='checkbox' id='"+geneName+"' name='gene_name_checkbox' value='"+data+"'>"
+
+  //checkbox = "<input type='checkbox' id='"+geneName+"' name='gene_name_checkbox' value='"+data+"'>"
  
 
-  document.getElementById(output).innerHTML = checkbox;
+  document.getElementById(output).innerHTML = data;
 
 },
 error: function() {
@@ -6029,6 +6033,58 @@ $.ajax({
 })
 }
 
+var go_genes;
+
+function get_go_genes(){
+
+  var go_term = document.getElementById("gs_gene_goTerm").value;
+
+  results_list = document.getElementById("geneGO_Results");
+
+  results_list.innerHTML = '';
+
+  go_list = document.getElementById("go_gene_Results");
+  go_list.innerHTML = '';
+
+  document.getElementById("geneSearchSpin").style.visibility="visible";
+
+  var D = {'method':'get_go_genes',
+           'go':go_term
+          };
+
+  $.ajax({
+    type:"POST",
+    url: VIPurl,
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',//
+    success: function(res){
+
+      document.getElementById("geneSearchSpin").style.visibility="hidden";
+
+      resLists = JSON.parse(res)
+
+      go_genes = resLists
+
+      for (i = 0; i < resLists.length; i ++){
+
+        gene = resLists[i].split(".")[0]
+
+        gene_hyperlink = makeLink(gene)
+
+        go_list.innerHTML += "<li>" + gene_hyperlink + "</li>"; //add all go term genes to the results list
+      
+      }
+
+    },
+    error: function() {
+
+      document.getElementById("geneSearchSpin").style.visibility="hidden";
+      console.log('error!');
+
+    }
+  })
+}
+
 //Add Autocomplete Functionality
 
 var geneNameAutoComplete = document.getElementById("gs_geneName")
@@ -6055,13 +6111,14 @@ function addAutoComplete(searchbox,resultList,source){
     datasource = geneFunctionsGS
   }else {
     datasource = gene_GO_terms
-  }
+    
+    go_list = document.getElementById("go_gene_Results");
+    go_list.innerHTML = '';
 
-  console.log(datasource)
+  }
 
   if (userInput.length > 2){
     results = getResults(userInput,datasource) //get all datasource elements matching the user input
-    console.log(results)
     resultList.style.display = "block"
     for (i = 0; i < results.length; i ++){
       resultList.innerHTML += "<li>" + results[i] + "</li>"; //add all matching elements to the results list
@@ -6073,6 +6130,8 @@ function addAutoComplete(searchbox,resultList,source){
 }
 }
 
+var go_term;
+
 //let users populate search box by clicking on an autocomplete option
 function addPopulateByClick(resultsList,searchbox){
 
@@ -6080,6 +6139,10 @@ function addPopulateByClick(resultsList,searchbox){
     const setValue = event.target.innerText;
     searchbox.value = setValue;
     this.innerHTML = "";
+
+    if(searchbox == gene_GO_AutoComplete){
+      go_term = setValue;
+    }
   };
 }
 
@@ -6638,8 +6701,13 @@ function add_DEG_GeneSet(){
 }
 
 function add_GO_GeneSet(){
+
+  console.log(go_genes);
+  console.log(go_term);
+
+
   $("#ADDGsetError").text("");
-  var grpName = "DE Genes".trim();
+  var grpName = go_term.trim();
   
   var grpKeys = Object.keys(window.bioGeneGrp);
   if(grpKeys.includes(grpName)){
@@ -6652,21 +6720,22 @@ function add_GO_GeneSet(){
     definedG = definedG.concat(window.bioGeneGrp[grpKeys[i]]);
   }
 
-  var histogram_labels = document.querySelectorAll('[data-testclass="brushable-histogram-field-name"]');
+  //var histogram_labels = document.querySelectorAll('[data-testclass="brushable-histogram-field-name"]');
   
 
-  var histogram_labels2 = Array.from(histogram_labels);
-  deg_results = histogram_labels2.slice(0,10);
+  //var histogram_labels2 = Array.from(histogram_labels);
+  //deg_results = histogram_labels2.slice(0,10);
  
-  gene_names = [];
+  //gene_names = [];
   
-  for(element of deg_results){
+  //for(element of deg_results){
     
-    gene = element.textContent;
+    //gene = element.textContent;
     
+    //gene_names.push(gene);
+  //}
 
-    gene_names.push(gene);
-  }
+  gene_names = go_genes;
 
   var gNames = gene_names;
   var notG = [],geneNames=[];
@@ -6701,6 +6770,8 @@ function add_GO_GeneSet(){
   window.biogen = geneNames;
   ADDGref();
   gsDB_dropdown();
+
+  console.log("function complete!")
 }
 
 function geneset_to_database(){

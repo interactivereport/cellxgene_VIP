@@ -315,7 +315,8 @@ def distributeTask(aTask):
     'hp_cc':hp_ClusterCompare,
     'hp_viol':hpClusterViolins,
     'get_hp':get_HostParasiteTable,
-    'hp_CM':hp_ClusterMarkers
+    'hp_CM':hp_ClusterMarkers,
+    'get_go_genes':go_genes
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1944,6 +1945,19 @@ def getNamesAndFunctions(data):
 
   return json.dumps(res)
 
+def go_genes(data):
+    
+  go_term = data['go']
+
+  with app.get_data_adaptor() as data_adaptor: # Generate copy of currently loaded dataset.
+    adata = data_adaptor.data.copy()
+
+  go_dict = adata.uns["go_components"]
+
+  go_genes = list(go_dict[go_term])
+
+  return json.dumps(go_genes)
+
 def hp_paraClus(data):
 
   with app.get_data_adaptor() as data_adaptor:
@@ -2187,4 +2201,4 @@ def hp_ClusterMarkers(data):
 
   return json.dumps(res)
   
-  
+
