@@ -5986,11 +5986,7 @@ success: function(res){
   geneName = res.replace("-","_");
   url = window.database_URL;
 
-  // Return Result as a Checkbox
   data="<a href='"+url+geneName+"' target='_blank'>"+res+"</a>";
-
-  //checkbox = "<input type='checkbox' id='"+geneName+"' name='gene_name_checkbox' value='"+data+"'>"
- 
 
   document.getElementById(output).innerHTML = data;
 
