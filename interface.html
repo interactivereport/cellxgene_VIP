@@ -715,7 +715,7 @@
           <option value="go_functions">Molecular Function</option>
           <option value="go_processes">Biological Process</option></select>
         <input type="text" id="gs_goTerm"></p>
-        <p id="gs_goNote"></p>
+        <p id="gs_goNote" style="color:red;"></p>
         <button class="goe_search" onclick="get_go_genes()"><b>Get GO Term Genes</b></button>
         <button class="goe_search" onclick="add_GO_GeneSet()"><b>Add as Gene-Set</b></button>
         <ul id="gs_go_Results"></ul>
@@ -6074,6 +6074,8 @@ var go_genes = new Array();
 
 function get_go_genes(){
 
+  if (include_goS== true){
+
   go_genes = []; // remove any existing pre-computed go_genes
 
   var go_term = document.getElementById("gs_goTerm").value;
@@ -6127,6 +6129,12 @@ function get_go_genes(){
 
     }
   })
+  }else{
+
+    $("#gs_goNote").text("No GO information available.");
+    return
+
+  }
 }
 
 //Add Autocomplete Functionality
@@ -6758,6 +6766,8 @@ function add_DEG_GeneSet(){
 
 function add_GO_GeneSet(){
 
+  if (include_goS == true){
+
   $("#gs_goNote").text("");
   var grpName = go_term.trim();
   
@@ -6807,6 +6817,13 @@ function add_GO_GeneSet(){
   window.biogen = geneNames;
   ADDGref();
   gsDB_dropdown();
+
+}else{
+  
+  $("#gs_goNote").text("No GO information available.");
+  return
+
+}
 
 }
 
