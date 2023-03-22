@@ -6044,9 +6044,11 @@ $.ajax({
 })
 }
 
-var go_genes;
+var go_genes = new Array();
 
 function get_go_genes(){
+
+  go_genes = []; // remove any existing pre-computed go_genes
 
   var go_term = document.getElementById("gs_gene_goTerm").value;
 
@@ -6077,15 +6079,17 @@ function get_go_genes(){
 
       resLists = JSON.parse(res)
 
-      go_genes = resLists
-
       for (i = 0; i < resLists.length; i ++){
 
         gene = resLists[i].split(".")[0]
 
+        goGene = gene.replace("_","-");
+
+        go_genes.push(goGene); // add new go_genes to list
+
         gene_hyperlink = makeLink(gene)
 
-        go_list.innerHTML += "<li>" + gene_hyperlink + "</li>"; //add all go term genes to the results list
+        go_list.innerHTML += "<li>" + gene_hyperlink + "</li>"; // add all go term genes to the results list
       
       }
 
