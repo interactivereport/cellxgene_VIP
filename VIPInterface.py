@@ -307,6 +307,7 @@ def distributeTask(aTask):
     'nameSearch':gene_search,
     'functionSearch': function_search,
     'get_names_and_functions':getNamesAndFunctions,
+    'get_go_terms':get_GO_info,
     'tradeSeq':tsTable,
     'tradeSeqPlotting':tradeSeqPlot,
     'PAGA':pagaAnalysis,
@@ -315,7 +316,8 @@ def distributeTask(aTask):
     'hp_cc':hp_ClusterCompare,
     'hp_viol':hpClusterViolins,
     'get_hp':get_HostParasiteTable,
-    'hp_CM':hp_ClusterMarkers
+    'hp_CM':hp_ClusterMarkers,
+    'get_go_genes':go_genes
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1942,6 +1944,42 @@ def getNamesAndFunctions(data):
 
   return json.dumps(res)
 
+def get_GO_info(data):
+
+  # Generate copy of currently loaded dataset.
+  
+  with app.get_data_adaptor() as data_adaptor: 
+    adata = data_adaptor.data.copy()
+
+  # Extract GO Information
+
+  go_comps = list(adata.uns["go_components"].keys())
+
+  go_funcs = list(adata.uns["go_functions"].keys())
+
+  go_process = list(adata.uns["go_processes"].keys())
+
+  # Send back to Server
+  
+  res = [go_comps,go_funcs,go_process]
+
+  return json.dumps(res)
+
+def go_genes(data):
+    
+  go_term = data['go']
+  
+  go_level = data['go_level']
+
+  with app.get_data_adaptor() as data_adaptor: # Generate copy of currently loaded dataset.
+    adata = data_adaptor.data.copy()
+
+  go_dict = adata.uns[go_level]
+
+  go_genes = list(go_dict[go_term])
+
+  return json.dumps(go_genes)
+
 def hp_paraClus(data):
 
   with app.get_data_adaptor() as data_adaptor:
@@ -2185,4 +2223,4 @@ def hp_ClusterMarkers(data):
 
   return json.dumps(res)
   
-  
+
