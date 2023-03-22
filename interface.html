@@ -6009,10 +6009,6 @@ error: function() {
 
 var geneNamesGS;
 var geneFunctionsGS;
-//var gene_GO_terms;
-var go_components;
-var go_functions;
-var go_processes;
 
 function get_names_and_functions(){
 
@@ -6036,6 +6032,36 @@ $.ajax({
     go_functions = resLists[3]
 
     go_processes = resLists[4]
+
+  },
+  error: function() {
+    console.log('error!');
+  }
+})
+}
+
+var go_components;
+var go_functions;
+var go_processes;
+
+function get_go_terms(){
+
+var D = {'method':'get_go_terms'};
+
+$.ajax({
+  type:"POST",
+  url: VIPurl,
+  data:JSON.stringify(D),
+  contentType: 'application/json;charset=UTF-8',//
+  success: function(res){
+
+    resLists = JSON.parse(res)
+
+    go_components = resLists[0];
+
+    go_functions = resLists[1]
+
+    go_processes = resLists[2]
 
   },
   error: function() {
@@ -6521,6 +6547,8 @@ $.ajax({
 
   includeGeneS = res['includeGeneSearch']
 
+  include_goS = res['include_goSearch']
+
   if (includeGeneS == true){ // YAML file toggle
       
     //get gene name and function information
@@ -6529,15 +6557,23 @@ $.ajax({
     //add autocomplete to gene name and gene function search boxes
     addAutoComplete(geneNameAutoComplete,nameResultsHTML,"names")
     addAutoComplete(geneFunctionAutoComplete,functionResultsHTML,"functions")
-    addAutoComplete(gene_GO_AutoComplete,goResultsHTML,"GO")
 
     //populate text box by clicking on autocomplete option
     addPopulateByClick(nameResultsHTML,geneNameAutoComplete)
     addPopulateByClick(functionResultsHTML,geneFunctionAutoComplete)
-    addPopulateByClick(goResultsHTML,gene_GO_AutoComplete)
 
   }
   
+  if (include_goS == true){ //YAML file toggle
+
+    //retrieve go info
+    get_go_terms()
+
+    //Add Autocomplete to GO Search Box
+    addAutoComplete(gene_GO_AutoComplete,goResultsHTML,"GO")
+    addPopulateByClick(goResultsHTML,gene_GO_AutoComplete)
+
+  }
   
   includeTradeSeq = res['includeTradeSeq']
 

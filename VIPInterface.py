@@ -307,6 +307,7 @@ def distributeTask(aTask):
     'nameSearch':gene_search,
     'functionSearch': function_search,
     'get_names_and_functions':getNamesAndFunctions,
+    'get_go_terms':get_GO_info,
     'tradeSeq':tsTable,
     'tradeSeqPlotting':tradeSeqPlot,
     'PAGA':pagaAnalysis,
@@ -1946,6 +1947,27 @@ def getNamesAndFunctions(data):
   go_process = list(adata.uns["go_processes"].keys())
 
   res = [names,functions,go_comps,go_funcs,go_process]
+
+  return json.dumps(res)
+
+def get_GO_info(data):
+
+  # Generate copy of currently loaded dataset.
+  
+  with app.get_data_adaptor() as data_adaptor: 
+    adata = data_adaptor.data.copy()
+
+  # Extract GO Information
+
+  go_comps = list(adata.uns["go_components"].keys())
+
+  go_funcs = list(adata.uns["go_functions"].keys())
+
+  go_process = list(adata.uns["go_processes"].keys())
+
+  # Send back to Server
+  
+  res = [go_comps,go_funcs,go_process]
 
   return json.dumps(res)
 
