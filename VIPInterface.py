@@ -1940,13 +1940,7 @@ def getNamesAndFunctions(data):
 
   functions = list(adata.uns["function_lookup_table"].keys())
 
-  go_comps = list(adata.uns["go_components"].keys())
-
-  go_funcs = list(adata.uns["go_functions"].keys())
-
-  go_process = list(adata.uns["go_processes"].keys())
-
-  res = [names,functions,go_comps,go_funcs,go_process]
+  res = [names,functions]
 
   return json.dumps(res)
 
