@@ -6852,12 +6852,10 @@ for(var i=0;i<grpKeys.length;i++){
 }
 
 items = document.getElementById("gs_geneList").getElementsByTagName("li");
-console.log(items);
 
 gene_names = new Array();
 
 for (var i = 0; i < items.length; ++i) {
-  console.log(items[i])
   geneN = items[i].innerText;
   gene_names.push(geneN)
 }
@@ -6880,12 +6878,6 @@ for(var i=0;i<gNames.length;i++){
   }else{
     notG.push(one);
   }
-}
-var eMsg= "";
-if(notG[0]=='nCount_RNA'){
-  eMsg +="Error - please run DEG analysis";
-  $("#ADDGsetError").text(eMsg);
-  return;
 }
 
 window.bioGeneGrp[grpName] = geneNames;
