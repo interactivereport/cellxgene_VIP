@@ -705,14 +705,8 @@
         <button class="geneSearch" onclick="geneSearch('nameSearch')"><b>Search</b></button>
         <button class="geneSearch" onclick="addToGeneList()"><b>Add to Gene-List</b></button>
         <p id="gsNameNote"></p>
-        <h3>Search by Function:</h3>
-        <p>
-        <input type="text" id="gs_geneFunction"></p>
-        <ul id="geneFunctionResults"></ul>
       </div>
-      <button class="geneSearch" onclick="geneSearch('functionSearch')"><b>Search</b></button>
       <div id="geneSearchSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <p id="gsFunctionNote"></p>
       <h3>Gene-List</h3>
       <p id="gs_geneList"></p>
       <button class="geneSearch" onclick="add_GS_GeneSet()"><b>Add as Gene-Set</b></button>
@@ -6144,8 +6138,8 @@ function get_go_genes(){
 var geneNameAutoComplete = document.getElementById("gs_geneName")
 var nameResultsHTML = document.getElementById("geneNameResults")
 
-var geneFunctionAutoComplete = document.getElementById("gs_geneFunction")
-var functionResultsHTML = document.getElementById("geneFunctionResults")
+//var geneFunctionAutoComplete = document.getElementById("gs_geneFunction")
+//var functionResultsHTML = document.getElementById("geneFunctionResults")
 
 var gene_GO_AutoComplete = document.getElementById("gs_goTerm")
 var goResultsHTML = document.getElementById("gs_go_Results")
@@ -6580,11 +6574,11 @@ $.ajax({
 
     //add autocomplete to gene name and gene function search boxes
     addAutoComplete(geneNameAutoComplete,nameResultsHTML,"names")
-    addAutoComplete(geneFunctionAutoComplete,functionResultsHTML,"functions")
+    //addAutoComplete(geneFunctionAutoComplete,functionResultsHTML,"functions")
 
     //populate text box by clicking on autocomplete option
     addPopulateByClick(nameResultsHTML,geneNameAutoComplete)
-    addPopulateByClick(functionResultsHTML,geneFunctionAutoComplete)
+    //addPopulateByClick(functionResultsHTML,geneFunctionAutoComplete)
 
   }
   
