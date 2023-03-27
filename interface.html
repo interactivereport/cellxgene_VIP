@@ -696,21 +696,22 @@
       <div id="gsInput">
         <h3>Search by Gene Name or Function:</h3>
         <p>
-        <select id="gs_level" onchange="addAutoComplete('geneNameAutoComplete,nameResultsHTML,names')">
+        <select id="gs_level" onchange="addAutoComplete('geneSearchAutoComplete,searchResultsHTML,names')">
           <option value="names">Name</option>
           <option value="functions">Function</option>
         </select>
-        <input type="text" id="gs_geneName"></p>
-        <ul id="geneNameResults"></ul>
+        <input type="text" id="gs_geneInput"></p>
+        <ul id="geneSearchResults"></ul>
         <button class="geneSearch" onclick="geneSearch('nameSearch')"><b>Search</b></button>
         <button class="geneSearch" onclick="addToGeneList()"><b>Add to Gene-List</b></button>
-        <p id="gsNameNote"></p>
+        <p id="gsResultNote"></p>
       </div>
       <div id="geneSearchSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <h3>Gene-List</h3>
       <input type="text" id="gs_geneList_title"><p>Gene-List Title</p>
       <p id="gs_geneList"></p>
       <p id="gs_geneList_Note"></p>
+      <button class="geneSearch" onclick="clear_GS_GeneSet()"><b>Clear Gene-List</b></button>
       <button class="geneSearch" onclick="add_GS_GeneSet()"><b>Add as Gene-Set</b></button>
       <h3>Search by GO term:</h3>
         <p>
@@ -5953,20 +5954,16 @@ function geneSearch(searchVal){
 
 searchVal = document.getElementById("gs_level").value;
 
-if(searchVal == "names" || searchVal == "functions"){
-  var input = document.getElementById("gs_geneName").value;
-  var output = "gsNameNote";
-}else if (searchVal == "functionSearch"){
-  var input = document.getElementById("gs_geneFunction").value;
-  var output = "gsFunctionNote";
-}
+var input = document.getElementById("gs_geneInput").value;
+var output = "gsResultNote";
+
 
 if (includeGeneS == true){
 
 document.getElementById("geneSearchSpin").style.visibility="visible";
 
 var D = {
-'method':"nameSearch",
+'method':"geneSearch",
 "option": searchVal,
 'searchInput':input
 };
@@ -6137,8 +6134,8 @@ function get_go_genes(){
 
 //Add Autocomplete Functionality
 
-var geneNameAutoComplete = document.getElementById("gs_geneName")
-var nameResultsHTML = document.getElementById("geneNameResults")
+var geneSearchAutoComplete = document.getElementById("gs_geneInput")
+var searchResultsHTML = document.getElementById("geneSearchResults")
 
 //var geneFunctionAutoComplete = document.getElementById("gs_geneFunction")
 //var functionResultsHTML = document.getElementById("geneFunctionResults")
@@ -6215,7 +6212,7 @@ function getResults(input,datasource) {
 
 function addToGeneList(){
 
-  gene = document.getElementById("gsNameNote").innerHTML;
+  gene = document.getElementById("gsResultNote").innerHTML;
 
   gene_list = document.getElementById("gs_geneList");
 
@@ -6573,10 +6570,10 @@ $.ajax({
     get_names_and_functions()
 
     //add autocomplete to gene name and gene function search boxes
-    addAutoComplete(geneNameAutoComplete,nameResultsHTML,"names")
+    addAutoComplete(geneSearchAutoComplete,searchResultsHTML,"names")
 
     //populate text box by clicking on autocomplete option
-    addPopulateByClick(nameResultsHTML,geneNameAutoComplete)
+    addPopulateByClick(searchResultsHTML,geneSearchAutoComplete)
 
   }
   
@@ -6845,7 +6842,7 @@ var grpName = gene_set_title.trim();
 
 var grpKeys = Object.keys(window.bioGeneGrp);
 if(grpKeys.includes(grpName)){
-  $("#gs_geneList_Note").text("GeneSet name taken.");
+  $("#gs_geneList_Note").text("There is already a gene-set with that name.");
   return
 }
 
@@ -6898,6 +6895,12 @@ geneNames = [...new Set(geneNames)];
 window.biogen = geneNames;
 ADDGref();
 gsDB_dropdown();
+
+}
+
+function clear_GS_GeneSet(){
+
+  $("#gs_geneList").empty();
 
 }
 
