@@ -699,6 +699,7 @@
         <input type="text" id="gs_geneName"></p>
         <ul id="geneNameResults"></ul>
         <button class="geneSearch" onclick="geneSearch('nameSearch')"><b>Search</b></button>
+        <button class="geneSearch" onclick="addToGeneList()"><b>Add to Gene-List</b></button>
         <p id="gsNameNote"></p>
         <h3>Search by Function:</h3>
         <p>
@@ -708,6 +709,9 @@
       <button class="geneSearch" onclick="geneSearch('functionSearch')"><b>Search</b></button>
       <div id="geneSearchSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <p id="gsFunctionNote"></p>
+      <h3>Gene-List</h3>
+      <p id="gs_geneList"></p>
+      <button class="geneSearch" onclick="add_GS_GeneSet()"><b>Add as Gene-Set</b></button>
       <h3>Search by GO term:</h3>
         <p>
         <select id="go_level">
@@ -6201,6 +6205,16 @@ function getResults(input,datasource) {
     }
   }
   return results;
+}
+
+function addToGeneList(){
+
+  gene = document.getElementById("gsNameNote").innerHTML;
+
+  gene_list = document.getElementById("gs_geneList");
+
+  gene_list.innerHTML += "<li>" + gene + "</li>";
+
 }
 
 function tsDropDownUpdate(){
