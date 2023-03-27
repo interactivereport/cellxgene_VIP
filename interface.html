@@ -5955,7 +5955,9 @@ function tablePrep(pandas_csv){ // converts pandas csv tables into a format easi
 
 function geneSearch(searchVal){
 
-if(searchVal == "nameSearch"){
+searchVal = document.getElementById("gs_level").value;
+
+if(searchVal == "names" || searchVal == "functions"){
   var input = document.getElementById("gs_geneName").value;
   var output = "gsNameNote";
 }else if (searchVal == "functionSearch"){
@@ -5968,7 +5970,8 @@ if (includeGeneS == true){
 document.getElementById("geneSearchSpin").style.visibility="visible";
 
 var D = {
-'method':searchVal,
+'method':"nameSearch",
+"option": searchVal,
 'searchInput':input
 };
 

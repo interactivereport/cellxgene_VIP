@@ -1901,10 +1901,17 @@ def gene_search(data):
 
   gene = data["searchInput"].upper()
 
+  opt = data["option"]
+
+  if opt == "names":
+    dict_opt = "id_lookup_table"
+  else:
+    dict_opt = "function_lookup_table"
+
   with app.get_data_adaptor() as data_adaptor: # Generate copy of currently loaded dataset.
     adata = data_adaptor.data.copy()
 
-  dict = adata.uns["id_lookup_table"]
+  dict = adata.uns[dict_opt]
 
   if gene.upper() in dict:
     id = dict[gene]
