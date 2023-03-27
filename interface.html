@@ -708,7 +708,9 @@
       </div>
       <div id="geneSearchSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <h3>Gene-List</h3>
+      <input type="text" id="gs_geneList_title"><p>Gene-List Title</p>
       <p id="gs_geneList"></p>
+      <p id="gs_geneList_Note"></p>
       <button class="geneSearch" onclick="add_GS_GeneSet()"><b>Add as Gene-Set</b></button>
       <h3>Search by GO term:</h3>
         <p>
@@ -6148,8 +6150,6 @@ var goResultsHTML = document.getElementById("gs_go_Results")
 
 function addAutoComplete(searchbox,resultList,source){
 
-  //source = document.getElementById("gs_level").value;
-
   if (includeGeneS == true){
   searchbox.oninput = function() {
   let results = []
@@ -6574,11 +6574,9 @@ $.ajax({
 
     //add autocomplete to gene name and gene function search boxes
     addAutoComplete(geneNameAutoComplete,nameResultsHTML,"names")
-    //addAutoComplete(geneFunctionAutoComplete,functionResultsHTML,"functions")
 
     //populate text box by clicking on autocomplete option
     addPopulateByClick(nameResultsHTML,geneNameAutoComplete)
-    //addPopulateByClick(functionResultsHTML,geneFunctionAutoComplete)
 
   }
   
@@ -6834,6 +6832,72 @@ function add_GO_GeneSet(){
   return
 
 }
+
+}
+
+function add_GS_GeneSet(){
+
+$("#gs_geneList_Note").text("");
+
+gene_set_title = document.getElementById("gs_geneList_title").value;
+
+var grpName = gene_set_title.trim();
+
+var grpKeys = Object.keys(window.bioGeneGrp);
+if(grpKeys.includes(grpName)){
+  $("#gs_geneList_Note").text("GeneSet name taken.");
+  return
+}
+
+var definedG = [];
+for(var i=0;i<grpKeys.length;i++){
+  definedG = definedG.concat(window.bioGeneGrp[grpKeys[i]]);
+}
+
+items = document.getElementById("gs_geneList").getElementsByTagName("li");
+console.log(items);
+
+gene_names = new Array();
+
+for (var i = 0; i < items.length; ++i) {
+  console.log(items[i])
+  geneN = items[i].innerText;
+  gene_names.push(geneN)
+}
+
+var gNames = gene_names;
+var notG = [],geneNames=[];
+var totalG = window.store.getState().annoMatrix._cache.var.__columns[0];
+var totalGlower = totalG.map(function(s){return s.toLowerCase();});
+for(var i=0;i<gNames.length;i++){
+  var one = gNames[i].trim();
+  var ix = totalGlower.indexOf(one.toLowerCase());
+  if(ix !== -1){
+    var oneG = totalG[ix];
+    if (one.length<1) continue;
+    if(!definedG.includes(oneG)){
+      geneNames.push(oneG);
+    }else{
+      notG.push(one);
+    }
+  }else{
+    notG.push(one);
+  }
+}
+var eMsg= "";
+if(notG[0]=='nCount_RNA'){
+  eMsg +="Error - please run DEG analysis";
+  $("#ADDGsetError").text(eMsg);
+  return;
+}
+
+window.bioGeneGrp[grpName] = geneNames;
+
+geneNames = geneNames.concat(window.biogen);
+geneNames = [...new Set(geneNames)];
+window.biogen = geneNames;
+ADDGref();
+gsDB_dropdown();
 
 }
 
