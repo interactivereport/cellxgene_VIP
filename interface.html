@@ -702,7 +702,7 @@
         </select>
         <input type="text" id="gs_geneInput"></p>
         <ul id="geneSearchResults"></ul>
-        <button class="geneSearch" onclick="geneSearch('nameSearch')"><b>Search</b></button>
+        <button class="geneSearch" onclick="geneSearch()"><b>Search</b></button>
         <button class="geneSearch" onclick="addToGeneList()"><b>Add to Gene-List</b></button>
         <p id="gsResultNote"></p>
       </div>
@@ -5950,7 +5950,7 @@ function tablePrep(pandas_csv){ // converts pandas csv tables into a format easi
 
 }
 
-function geneSearch(searchVal){
+function geneSearch(){
 
 searchVal = document.getElementById("gs_level").value;
 
