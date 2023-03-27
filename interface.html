@@ -694,8 +694,12 @@
 
     <div id="geneSearch" class="tabcontent">
       <div id="gsInput">
-        <h3>Search by Gene Name:</h3>
+        <h3>Search by Gene Name or Function:</h3>
         <p>
+        <select id="gs_level" onchange="addAutoComplete('geneNameAutoComplete,nameResultsHTML,names')">
+          <option value="names">Name</option>
+          <option value="functions">Function</option>
+        </select>
         <input type="text" id="gs_geneName"></p>
         <ul id="geneNameResults"></ul>
         <button class="geneSearch" onclick="geneSearch('nameSearch')"><b>Search</b></button>
@@ -6146,6 +6150,9 @@ var goResultsHTML = document.getElementById("gs_go_Results")
 //Define generic autocomplete behavior for textboxes
 
 function addAutoComplete(searchbox,resultList,source){
+
+  //source = document.getElementById("gs_level").value;
+
   if (includeGeneS == true){
   searchbox.oninput = function() {
   let results = []
@@ -6165,6 +6172,8 @@ function addAutoComplete(searchbox,resultList,source){
     go_list.innerHTML = '';
 
   }
+
+  source = document.getElementById("gs_level").value;
 
   if (userInput.length > 2){
     results = getResults(userInput,datasource) //get all datasource elements matching the user input
