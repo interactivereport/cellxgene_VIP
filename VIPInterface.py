@@ -1929,7 +1929,9 @@ def getNamesAndFunctions(data):
 
   functions = list(adata.uns["function_lookup_table"].keys())
 
-  res = [names,functions]
+  ids = list(adata.uns["id_lookup_table"].values())
+
+  res = [names,functions,ids]
 
   return json.dumps(res)
 
