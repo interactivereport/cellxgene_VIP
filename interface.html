@@ -702,7 +702,6 @@
         </select>
         <input type="text" id="gs_geneInput"></p>
         <ul id="geneSearchResults"></ul>
-        <button class="geneSearch" onclick="geneSearch()"><b>Search</b></button>
         <button class="geneSearch" onclick="addToGeneList()"><b>Add to Gene-List</b></button>
         <p id="gsResultNote"></p>
       </div>
@@ -5990,62 +5989,6 @@ $.ajax({
 })
 }
 
-function geneSearch(){
-
-searchVal = document.getElementById("gs_level").value;
-
-var input = document.getElementById("gs_geneInput").value;
-var output = "gsResultNote";
-
-if (includeGeneS == true){
-
-document.getElementById("geneSearchSpin").style.visibility="visible";
-
-var D = {
-'method':"geneSearch",
-"option": searchVal,
-'searchInput':input
-};
-
-$.ajax({
-type:"POST",
-url: VIPurl,
-data:JSON.stringify(D),
-contentType: 'application/json;charset=UTF-8',//
-success: function(res){
-
-  if(res.startsWith('ERROR')){
-    document.getElementById(output).style.color="red";
-    $('#'+output).text(res);
-    document.getElementById("geneSearchSpin").style.visibility="hidden";
-      return;
-    }
-  
-
-  document.getElementById("geneSearchSpin").style.visibility="hidden";
-  
-  document.getElementById(output).style.color="green";
-
-  geneName = res.replace("-","_");
-  url = window.database_URL;
-
-  data="<a href='"+url+geneName+"' target='_blank'>"+res+"</a>";
-
-  document.getElementById(output).innerHTML = data;
-
-},
-error: function() {
-  console.log('error!');
-}
-})
-}else{
-  
-  document.getElementById(output).style.color="red";
-  $('#'+output).text("Advanced Gene Search data not available.");
-
-}
-}
-
 var go_components;
 var go_functions;
 var go_processes;
@@ -6209,7 +6152,8 @@ if (source == "names"){
 for (i = 0; i < match_list.length; i ++){
 
   id = gs_dict[match_list[i]]
-  res = match_list[i] + " (" + id + ")"
+  id_hyperlink = makeLink(id)
+  res = match_list[i] + " (" + id_hyperlink + ")"
   res_checkbox = '<label><input class="gsCheckBox" type="checkbox" value="'+id+'" checked/>'+res+' </label>';
   final_results.push(res_checkbox)
 
@@ -6625,7 +6569,7 @@ $.ajax({
     addAutoComplete(geneSearchAutoComplete,searchResultsHTML,"names")
 
     //populate text box by clicking on autocomplete option
-    addPopulateByClick(searchResultsHTML,geneSearchAutoComplete)
+    //addPopulateByClick(searchResultsHTML,geneSearchAutoComplete)
 
   }
   
