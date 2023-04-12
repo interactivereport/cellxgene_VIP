@@ -25,6 +25,7 @@ if [ -n "$1" ]; then
   cp browserPlot.R $strPath/server/app/.
   cp complexHeatmap.R $strPath/server/app/.
   cp proteinatlas_protein_class.csv $strPath/server/app/.
+  cp complex_vlnplot_multiple.R $strPath/server/app/.
   if [ "$(uname -s)" = "Darwin" ]; then
     sed -i .bak "s|route(request.data,current_app.app_config, \"/tmp\")|route(request.data,current_app.app_config)|" "$strPath/server/app/app.py"
     sed -i .bak "s|MAX_LAYOUTS *= *[0-9]\+|MAX_LAYOUTS = 300|" "$strPath/server/common/constants.py"
