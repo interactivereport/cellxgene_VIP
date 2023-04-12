@@ -5977,10 +5977,8 @@ $.ajax({
    
     // Create Dictionaries 
     geneNamesGS.forEach((key,i) => gene_name_dict[key] = geneIDsGS[i]);
-    console.log(gene_name_dict)
 
     geneFunctionsGS.forEach((key,i) => gene_function_dict[key] = geneIDsGS[i]);
-    console.log(gene_function_dict)
 
   },
   error: function() {
@@ -6170,15 +6168,15 @@ function addToGeneList(){
 checkboxes = document.getElementsByClassName("gsCheckBox");
 selectedCboxes = Array.prototype.slice.call(checkboxes).filter(ch => ch.checked==true);
 
-console.log(selectedCboxes)
-
 gene_list = document.getElementById("gs_geneList");
 
 for (i = 0; i < selectedCboxes.length; i ++){
 
   checkedValue = selectedCboxes[i].value;
 
-  gene_list.innerHTML += "<li>" + checkedValue + "</li>";
+  listVal = makeLink(checkedValue)
+
+  gene_list.innerHTML += "<li>" + listVal + "</li>";
   
 
 }
@@ -6853,6 +6851,7 @@ gene_names = new Array();
 
 for (var i = 0; i < items.length; ++i) {
   geneN = items[i].innerText;
+  geneN = geneN.replace('_','-');
   gene_names.push(geneN)
 }
 
