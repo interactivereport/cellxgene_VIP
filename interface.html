@@ -702,7 +702,6 @@
         </select>
         <input type="text" id="gs_geneInput"></p>
         <ul id="geneSearchResults"></ul>
-        <button class="geneSearch" onclick="geneSearch()"><b>Search</b></button>
         <button class="geneSearch" onclick="addToGeneList()"><b>Add to Gene-List</b></button>
         <p id="gsResultNote"></p>
       </div>
@@ -5950,65 +5949,12 @@ function tablePrep(pandas_csv){ // converts pandas csv tables into a format easi
 
 }
 
-function geneSearch(){
-
-searchVal = document.getElementById("gs_level").value;
-
-var input = document.getElementById("gs_geneInput").value;
-var output = "gsResultNote";
-
-
-if (includeGeneS == true){
-
-document.getElementById("geneSearchSpin").style.visibility="visible";
-
-var D = {
-'method':"geneSearch",
-"option": searchVal,
-'searchInput':input
-};
-
-$.ajax({
-type:"POST",
-url: VIPurl,
-data:JSON.stringify(D),
-contentType: 'application/json;charset=UTF-8',//
-success: function(res){
-
-  if(res.startsWith('ERROR')){
-    document.getElementById(output).style.color="red";
-    $('#'+output).text(res);
-    document.getElementById("geneSearchSpin").style.visibility="hidden";
-      return;
-    }
-  
-
-  document.getElementById("geneSearchSpin").style.visibility="hidden";
-  
-  document.getElementById(output).style.color="green";
-
-  geneName = res.replace("-","_");
-  url = window.database_URL;
-
-  data="<a href='"+url+geneName+"' target='_blank'>"+res+"</a>";
-
-  document.getElementById(output).innerHTML = data;
-
-},
-error: function() {
-  console.log('error!');
-}
-})
-}else{
-  
-  document.getElementById(output).style.color="red";
-  $('#'+output).text("Advanced Gene Search data not available.");
-
-}
-}
+// Advanced Gene Search Tab Functions
 
 var geneNamesGS;
 var geneFunctionsGS;
+var gene_name_dict = {};
+var gene_function_dict = {};
 
 function get_names_and_functions(){
 
@@ -6027,6 +5973,12 @@ $.ajax({
 
     geneFunctionsGS = resLists[1];
 
+    geneIDsGS = resLists[2];
+   
+    // Create Dictionaries 
+    geneNamesGS.forEach((key,i) => gene_name_dict[key] = geneIDsGS[i]);
+
+    geneFunctionsGS.forEach((key,i) => gene_function_dict[key] = geneIDsGS[i]);
 
   },
   error: function() {
@@ -6054,9 +6006,9 @@ $.ajax({
 
     go_components = resLists[0];
 
-    go_functions = resLists[1]
+    go_functions = resLists[1];
 
-    go_processes = resLists[2]
+    go_processes = resLists[2];
 
   },
   error: function() {
@@ -6132,7 +6084,7 @@ function get_go_genes(){
   }
 }
 
-//Add Autocomplete Functionality
+//Autocomplete Functionality
 
 var geneSearchAutoComplete = document.getElementById("gs_geneInput")
 var searchResultsHTML = document.getElementById("geneSearchResults")
@@ -6164,19 +6116,71 @@ function addAutoComplete(searchbox,resultList,source){
 
   }
 
-  source = document.getElementById("gs_level").value;
+  if (source != "GO"){
+    source = document.getElementById("gs_level").value;
+  }
+  
 
   if (userInput.length > 2){
     results = getResults(userInput,datasource) //get all datasource elements matching the user input
+    newResults = gs_reformat(results, source)
     resultList.style.display = "block"
     for (i = 0; i < results.length; i ++){
-      resultList.innerHTML += "<li>" + results[i] + "</li>"; //add all matching elements to the results list
+      resultList.innerHTML += "<li>" + newResults[i] + "</li>"; //add all matching elements to the results list
     }
   }
 }
 }else{
   return
 }
+}
+
+function gs_reformat(match_list,source){
+
+final_results = new Array();
+
+if (source == "names"){
+  gs_dict = gene_name_dict
+}else if (source == "functions"){
+  gs_dict = gene_function_dict
+}else{ // if GO search bar
+  return match_list
+}
+
+for (i = 0; i < match_list.length; i ++){
+
+  id = gs_dict[match_list[i]]
+  id_hyperlink = makeLink(id)
+  res = match_list[i] + " (" + id_hyperlink + ")"
+  res_checkbox = '<label><input class="gsCheckBox" type="checkbox" value="'+id+'" checked/>'+res+' </label>';
+  final_results.push(res_checkbox)
+
+  }
+
+  return final_results
+
+}
+
+function addToGeneList(){
+
+//gene = document.getElementById("gsResultNote").innerHTML;
+
+checkboxes = document.getElementsByClassName("gsCheckBox");
+selectedCboxes = Array.prototype.slice.call(checkboxes).filter(ch => ch.checked==true);
+
+gene_list = document.getElementById("gs_geneList");
+
+for (i = 0; i < selectedCboxes.length; i ++){
+
+  checkedValue = selectedCboxes[i].value;
+
+  listVal = makeLink(checkedValue)
+
+  gene_list.innerHTML += "<li>" + listVal + "</li>";
+  
+
+}
+
 }
 
 var go_term;
@@ -6195,7 +6199,8 @@ function addPopulateByClick(resultsList,searchbox){
   };
 }
 
-//get all datasource items matching the user-input
+// get all datasource items matching the user-input
+// returns a list of gene names
 function getResults(input,datasource) { 
   const results = [];
   for (i = 0; i < datasource.length; i++) {
@@ -6207,15 +6212,7 @@ function getResults(input,datasource) {
   return results;
 }
 
-function addToGeneList(){
 
-  gene = document.getElementById("gsResultNote").innerHTML;
-
-  gene_list = document.getElementById("gs_geneList");
-
-  gene_list.innerHTML += "<li>" + gene + "</li>";
-
-}
 
 function tsDropDownUpdate(){
 
@@ -6566,11 +6563,8 @@ $.ajax({
     //get gene name and function information
     get_names_and_functions()
 
-    //add autocomplete to gene name and gene function search boxes
+    //add autocomplete to the gene-search box
     addAutoComplete(geneSearchAutoComplete,searchResultsHTML,"names")
-
-    //populate text box by clicking on autocomplete option
-    addPopulateByClick(searchResultsHTML,geneSearchAutoComplete)
 
   }
   
@@ -6854,6 +6848,7 @@ gene_names = new Array();
 
 for (var i = 0; i < items.length; ++i) {
   geneN = items[i].innerText;
+  geneN = geneN.replace('_','-');
   gene_names.push(geneN)
 }
 
