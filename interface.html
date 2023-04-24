@@ -701,13 +701,13 @@
           <option value="functions">Function</option>
         </select>
         <input type="text" id="gs_geneInput"></p>
-        <ul id="geneSearchResults"></ul>
+        <p id="geneSearchResults"></p>
         <button class="geneSearch" onclick="addToGeneList()"><b>Add to Gene-List</b></button>
         <p id="gsResultNote"></p>
       </div>
       <div id="geneSearchSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <h3>Gene-List</h3>
-      <input type="text" id="gs_geneList_title"><p>Gene-List Title</p>
+      <input type="text" id="gs_geneList_title" value="Custom Gene Set"><p>Gene-List Title</p>
       <p id="gs_geneList"></p>
       <p id="gs_geneList_Note"></p>
       <button class="geneSearch" onclick="clear_GS_GeneSet()"><b>Clear Gene-List</b></button>
@@ -720,10 +720,11 @@
           <option value="go_processes">Biological Process</option></select>
         <input type="text" id="gs_goTerm"></p>
         <p id="gs_goNote" style="color:red;"></p>
-        <button class="goe_search" onclick="get_go_genes()"><b>Get GO Term Genes</b></button>
-        <button class="goe_search" onclick="add_GO_GeneSet()"><b>Add as Gene-Set</b></button>
         <ul id="gs_go_Results"></ul>
         <ul id="gs_go_gene_Results"></ul>
+        <button class="goe_search" onclick="get_go_genes()"><b>Get GO Term Genes</b></button>
+        <button class="goe_search" onclick="add_GO_GeneSet()"><b>Add as Gene-Set</b></button>
+
     </div><!--geneSearch-->
 
     <div id="HostParasite" class="tabcontent">
@@ -6126,7 +6127,7 @@ function addAutoComplete(searchbox,resultList,source){
     newResults = gs_reformat(results, source)
     resultList.style.display = "block"
     for (i = 0; i < results.length; i ++){
-      resultList.innerHTML += "<li>" + newResults[i] + "</li>"; //add all matching elements to the results list
+      resultList.innerHTML += "<p>" + newResults[i] + "</p>"; //add all matching elements to the results list
     }
   }
 }
