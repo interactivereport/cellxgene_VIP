@@ -6128,7 +6128,13 @@ function addAutoComplete(searchbox,resultList,source){
     newResults = gs_reformat(results, source)
     resultList.style.display = "block"
     for (i = 0; i < results.length; i ++){
-      resultList.innerHTML += "<p>" + newResults[i] + "</p>"; //add all matching elements to the results list
+      
+      if (source != "GO"){
+        resultList.innerHTML += "<p>" + newResults[i] + "</p>"; //add all matching elements to the results section
+      }else{
+        resultList.innerHTML += "<li>" + newResults[i] + "</li>" //present GO results as a list
+      }
+      
     }
   }
 }
