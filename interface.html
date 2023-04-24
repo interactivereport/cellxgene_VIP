@@ -35,8 +35,8 @@
     <!-- for testing the VIP -->
     <script src="https://interactivereport.github.io/cellxgene_VIP/static/testVIP.js"></script>
     <!--  <script src="static/testVIP.js"></script>-->
-    <!-- For Fuzzy Search -->
-    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>>
+    <!-- For Fuzzy Search --> 
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
     <!--  end -->
     <style>
       .dropup,
@@ -6124,15 +6124,15 @@ function addAutoComplete(searchbox,resultList,source){
   }
   
   if (userInput.length >= 2){
-    results = getResults(userInput,datasource) //get all datasource elements matching the user input; fuzzy search vis Fuse
+    results = getResults(userInput,datasource) // get all datasource elements matching the user input; fuzzy search vis Fuse
     newResults = gs_reformat(results, source)
     resultList.style.display = "block"
     for (i = 0; i < results.length; i ++){
       
       if (source != "GO"){
-        resultList.innerHTML += "<p>" + newResults[i] + "</p>"; //add all matching elements to the results section
+        resultList.innerHTML += "<p>" + newResults[i] + "</p>"; // add all matching elements to the results section
       }else{
-        resultList.innerHTML += "<li>" + newResults[i] + "</li>" //present GO results as a list
+        resultList.innerHTML += "<li>" + newResults[i] + "</li>" // present GO results as a list
       }
       
     }
@@ -6160,7 +6160,7 @@ for (i = 0; i < match_list.length; i ++){
   id = gs_dict[match_list[i]]
   id_hyperlink = makeLink(id)
   res = match_list[i] + " (" + id_hyperlink + ")"
-  res_checkbox = '<label><input class="gsCheckBox" type="checkbox" value="'+id+'" checked/>'+res+' </label>';
+  res_checkbox = '<label><input class="gsCheckBox" type="checkbox" name="'+match_list[i]+'" value="'+id+'" checked/>'+res+' </label>';
   final_results.push(res_checkbox)
 
   }
@@ -6171,8 +6171,6 @@ for (i = 0; i < match_list.length; i ++){
 
 function addToGeneList(){
 
-//gene = document.getElementById("gsResultNote").innerHTML;
-
 checkboxes = document.getElementsByClassName("gsCheckBox");
 selectedCboxes = Array.prototype.slice.call(checkboxes).filter(ch => ch.checked==true);
 
@@ -6181,10 +6179,11 @@ gene_list = document.getElementById("gs_geneList");
 for (i = 0; i < selectedCboxes.length; i ++){
 
   checkedValue = selectedCboxes[i].value;
+  checkName = selectedCboxes[i].name;
 
   listVal = makeLink(checkedValue)
 
-  gene_list.innerHTML += "<li>" + listVal + "</li>";
+  gene_list.innerHTML += "<li>" + listVal + " ("+ checkName + ")" +"</li>";
   
 
 }
@@ -6868,6 +6867,7 @@ gene_names = new Array();
 
 for (var i = 0; i < items.length; ++i) {
   geneN = items[i].innerText;
+  geneN = geneN.split(" ")[0]
   geneN = geneN.replace('_','-');
   gene_names.push(geneN)
 }
