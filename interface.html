@@ -35,6 +35,8 @@
     <!-- for testing the VIP -->
     <script src="https://interactivereport.github.io/cellxgene_VIP/static/testVIP.js"></script>
     <!--  <script src="static/testVIP.js"></script>-->
+    <!-- For Fuzzy Search -->
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.js"></script>>
     <!--  end -->
     <style>
       .dropup,
@@ -6121,9 +6123,8 @@ function addAutoComplete(searchbox,resultList,source){
     source = document.getElementById("gs_level").value;
   }
   
-
-  if (userInput.length > 2){
-    results = getResults(userInput,datasource) //get all datasource elements matching the user input
+  if (userInput.length >= 2){
+    results = getResults(userInput,datasource) //get all datasource elements matching the user input; fuzzy search vis Fuse
     newResults = gs_reformat(results, source)
     resultList.style.display = "block"
     for (i = 0; i < results.length; i ++){
@@ -6203,13 +6204,23 @@ function addPopulateByClick(resultsList,searchbox){
 // get all datasource items matching the user-input
 // returns a list of gene names
 function getResults(input,datasource) { 
-  const results = [];
-  for (i = 0; i < datasource.length; i++) {
-    compareVal = datasource[i].toUpperCase();
-    if (input === compareVal.slice(0, input.length)) {
-      results.push(datasource[i]);
-    }
+
+  const fuse_options = {
+    minMatchCharLength: 2,
+    ignoreLocation: true,
+    threshold: 0
+
   }
+
+  const fuse = new Fuse(datasource, fuse_options)
+  const rez = fuse.search(input)
+
+  const results = [];
+
+  for (x of rez){
+    results.push(x["item"])
+  }
+
   return results;
 }
 
@@ -6511,6 +6522,8 @@ if (isHP == true){             // Host-Parasite Specific formatting
   return hyperlink
 
 }else{                        // Standard Gene Name reformatting
+
+  gene = gene.toString()
 
   geneName = gene.replace("-","_");
 
