@@ -36,7 +36,7 @@
     <script src="https://interactivereport.github.io/cellxgene_VIP/static/testVIP.js"></script>
     <!--  <script src="static/testVIP.js"></script>-->
     <!-- For Fuzzy Search -->
-    <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.js"></script>>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>>
     <!--  end -->
     <style>
       .dropup,
@@ -6208,7 +6208,7 @@ function getResults(input,datasource) {
   const fuse_options = {
     minMatchCharLength: 2,
     ignoreLocation: true,
-    threshold: 0
+    threshold: 0.1
 
   }
 
