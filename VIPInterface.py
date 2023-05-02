@@ -3,7 +3,7 @@ import requests
 import json
 import traceback
 import sqlite3
-import server.app.decode_fbs as decode_fbs
+#import server.app.decode_fbs as decode_fbs
 import scanpy as sc
 import anndata as ad
 import pandas as pd
@@ -22,6 +22,7 @@ import yaml
 from yaml.loader import SafeLoader
 import base64
 import math
+import scipy
 from io import BytesIO
 import sys
 import time
@@ -33,13 +34,16 @@ import rpy2.robjects as ro
 from rpy2.robjects.conversion import localconverter
 import anndata2ri
 import random
+import gc #,psutil
+import errno
+from pathlib import Path
 
 strExePath = os.path.dirname(os.path.abspath(__file__))
 
 import pprint
-ppr = pprint.PrettyPrinter(depth=6)
+ppr = pprint.PrettyPrinter(depth=6,width=500)
 
-import server.compute.diffexp_generic as diffDefault
+import server.common.compute.diffexp_generic as diffDefault
 import pickle
 from pyarrow import feather
 
@@ -55,23 +59,33 @@ def getLock(lock):
     while not lock.acquire():
         time.sleep(1.0)
 def freeLock(lock):
-    lock.release()
+  lock.release()
 
 def route(data,appConfig):
-  #ppr.pprint("current working dir:%s"%os.getcwd())
   data = initialization(data,appConfig)
+  #ppr.pprint(appConfig.server_config.single_dataset__datapath)
   #ppr.pprint(data)
   try:
     getLock(jobLock)
+    setTimeStamp(data)
     taskRes = distributeTask(data["method"])(data)
     freeLock(jobLock)
+    gc.collect()
+    #ppr.pprint("memory usage: rss (%dM) and vms (%dM)"%(int(psutil.Process().memory_info().rss / 1024 **2),
+    #                                                    int(psutil.Process().memory_info().vms / 1024 **2)))
     return taskRes
   except Exception as e:
     freeLock(jobLock)
-    return 'ERROR @server: '+traceback.format_exc() # 'ERROR @server: {}, {}'.format(type(e),str(e))
-  #return distributeTask(data["method"])(data)
+    return 'ERROR @server: '+traceback.format_exc()
 
 import server.app.app as app
+class getAdapter(object):
+    def __init__(self, adapter):
+        self.adapter = adapter
+    def __enter__(self):
+        return self.adapter
+    def __exit__(self):
+        return
 
 def initialization(data,appConfig):
   # obtain the server host information
@@ -81,22 +95,28 @@ def initialization(data,appConfig):
   data.update(VIPenv)
 
   # updatting the hosting data information
-  if appConfig.is_multi_dataset():
-    data["url_dataroot"]=appConfig.server_config.multi_dataset__dataroot['d']['base_url']
-    data['h5ad']=os.path.join(appConfig.server_config.multi_dataset__dataroot['d']['dataroot'], data["dataset"])
-  else:
-    data["url_dataroot"]=None
-    data["dataset"]=None
-    data['h5ad']=appConfig.server_config.single_dataset__datapath
-
+  # v1.1.1 no multi datasets option
+  # if appConfig.is_multi_dataset():
+  #  data["url_dataroot"]=appConfig.server_config.multi_dataset__dataroot['d']['base_url']
+  #  data['h5ad']=os.path.join(appConfig.server_config.multi_dataset__dataroot['d']['dataroot'], data["dataset"])
+  # else:
+  #  data["url_dataroot"]=None
+  #  data["dataset"]=None
+  #  data['h5ad']=appConfig.server_config.single_dataset__datapath
+  data["url_dataroot"]=None
+  data["dataset"]=None
+  data['h5ad']=appConfig.server_config.single_dataset__datapath
   # setting the plotting options
   if 'figOpt' in data.keys():
     setFigureOpt(data['figOpt'])
 
   # get the var (gene) and obv index
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-    data['obs_index'] = scD.get_schema()["annotations"]["obs"]["index"]
-    data['var_index'] = scD.get_schema()["annotations"]["var"]["index"]
+  #ppr.pprint(dir(appConfig.server_config.data_adaptor))
+  #with app.get_data_adaptor() as scD:
+  data['data_adapter'] = appConfig.server_config.data_adaptor
+  scD=appConfig.server_config.data_adaptor
+  data['obs_index'] = scD.get_schema()["annotations"]["obs"]["index"]
+  data['var_index'] = scD.get_schema()["annotations"]["var"]["index"]
   return data
 
 def setFigureOpt(opt):
@@ -107,13 +127,15 @@ def getObs(data):
   selC = list(data['cells'].values())
   cNames = ["cell%d" %i for i in selC]
   ## obtain the category annotation
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  scD=data['data_adapter']
+  if scD is not None:
     selAnno = [data['obs_index']]+data['grp']
     dAnno = list(scD.get_obs_keys())
     anno = []
     sel = list(set(selAnno)&set(dAnno))
     if len(sel)>0:
-      tmp = scD.data.obs.loc[selC,sel].astype('str')
+      tmp = scD.data.obs.iloc[selC,:].loc[:,sel].astype('str')
       tmp.index = cNames
       anno += [tmp]
     sel = list(set(selAnno)-set(dAnno))
@@ -137,7 +159,9 @@ def getObsNum(data):
   cNames = ["cell%d" %i for i in selC]
   ## obtain the category annotation
   obs = pd.DataFrame()
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  scD=data['data_adapter']
+  if scD is not None:
     selAnno = data['grpNum']
     dAnno = list(scD.get_obs_keys())
     sel = list(set(selAnno)&set(dAnno))
@@ -148,7 +172,9 @@ def getObsNum(data):
 
 def getVar(data):
   ## obtain the gene annotation
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  scD=data['data_adapter']
+  if scD is not None:
     gInfo = scD.data.var
   gInfo.index = list(gInfo[data['var_index']])
   gInfo = gInfo.drop([data['var_index']],axis=1)
@@ -183,7 +209,9 @@ def createData(data):
   fSparse = False
   X = []
   if 'genes' in data.keys():
-    with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+    #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+    scD=data['data_adapter']
+    if scD is not None:
       if not type(scD.data.X) is np.ndarray:
         #ppr.pprint("loop 1 ...")
         fSparse = True
@@ -215,7 +243,9 @@ def createData(data):
       layout = [layout]
     if len(layout)>0:
       for one in layout:
-        with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+        #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+        scD=data['data_adapter']
+        if scD is not None:
           embed['X_%s'%one] = pd.DataFrame(scD.data.obsm['X_%s'%one][selC][:,[0,1]],columns=['%s1'%one,'%s2'%one],index=cNames)
   #ppr.pprint("finished layout ...")
   ## obtain the category annotation
@@ -271,6 +301,7 @@ def distributeTask(aTask):
     'SGV':SGV,
     'SGVcompare':SGVcompare,
     'PGV':PGV,
+    'PGVcompare':PGVcompare,
     'VIOdata':VIOdata,
     'HEATplot':pHeatmap,
     'HEATdata':HeatData,
@@ -296,7 +327,7 @@ def distributeTask(aTask):
     'testVIPready':testVIPready,
     'Description':getDesp_2,
     'GSEAgs':getGSEA,
-	'SPATIAL':SPATIAL,
+    'SPATIAL':SPATIAL,
     'saveTest':saveTest,
     'getBWinfo':getBWinfo,
     'plotBW':plotBW,
@@ -316,7 +347,9 @@ def distributeTask(aTask):
     'hp_viol':hpClusterViolins,
     'get_hp':get_HostParasiteTable,
     'hp_CM':hp_ClusterMarkers,
-    'get_go_genes':go_genes
+    'get_go_genes':go_genes,
+    'GSP':GSP,
+    'plotBW':plotBW
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -346,7 +379,9 @@ def Msg(msg):
   return iostreamFig(fig)
 
 def SPATIAL(data):
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  scD=data['data_adapter']
+  if scD is not None:
     #ppr.pprint(vars(scD.data.uns["spatial"]))
     spatial=scD.data.uns["spatial"]
     if (data['embedding'] == "get_spatial_list"):
@@ -407,7 +442,9 @@ def SPATIAL(data):
   return json.dumps([returnD, imgD])
 
 def MINX(data):
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  scD=data['data_adapter']
+  if scD is not None:
     minV = min(scD.data.X[0])
   return '%.1f'%minV
 
@@ -535,6 +572,31 @@ def PGV(data):
                                 var_group_positions=data['grpLoc'],var_group_labels=data['grpID'])
   return iostreamFig(fig)
 
+def PGVcompare(data):
+  adata = createData(data)
+  #adata = geneFiltering(adata,data['cutoff'],1)
+  sc.pp.filter_cells(adata,min_counts=float(data['cutoff']))
+  if len(adata)==0:
+    raise ValueError('No cells in the condition!')
+  strF = ('%s/PGVcompare%f.csv' % (data["CLItmp"],time.time()))
+  X=pd.concat([adata.to_df(),adata.obs[data['grp']]],axis=1,sort=False).to_csv(strF,index_label="cellID")
+
+  # plot in R
+  strCMD = " ".join(["Rscript",strExePath+'/complex_vlnplot_multiple.R',strF,','.join(data['genes']),data['grp'][0],data['grp'][1],str(data['width']),str(data['height']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
+  res = subprocess.run(strCMD,shell=True,capture_output=True)
+  img = res.stdout.decode('utf-8')
+  os.remove(strF)
+  if 'Error' in res.stderr.decode('utf-8'):
+    raise SyntaxError("in R: "+res.stderr.decode('utf-8'))
+  return img
+
+def silentRM(strF):
+  try:
+    os.remove(strF)
+  except OSError as e:
+    if e.errno != errno.ENOENT:
+      raise
+
 def pHeatmap(data):
   # figure width is depends on the number of categories was choose to show
   # and the character length of each category term
@@ -546,93 +608,147 @@ def pHeatmap(data):
   #sT = time.time()
 
   adata = createData(data)
+  if len(data['grpNum'])>0:
+    adata.obs = pd.concat([adata.obs,getObsNum(data)],axis=1)
   data['grp'] += data['addGrp']
   #Xdata = pd.concat([adata.to_df(),adata.obs], axis=1, sort=False).to_csv()
   #ppr.pprint('HEAT data reading cost %f seconds' % (time.time()-sT) )
   #sT = time.time()
-  exprOrder = True
-  if data['order']!="Expression":
-    exprOrder = False;
-    adata = adata[adata.obs.sort_values(data['order']).index,]
-    #s = adata.obs[data['order']]
-    #ix = sorted(range(len(s)), key=lambda k: s[k])
-    #adata = adata[ix,]
-  colCounter = 0
-  colName =['Set1','Set3']
-  grpCol = list()
-  grpLegend = list()
-  grpWd = list()
-  grpLen = list()
+
+
   h = 8
-  w = len(data['genes'])/3+0.3
-  for gID in data['grp']:
+  w = len(data['genes'])/3+0.3 + 2
+  heatCol=data['color']
+  Zscore=None
+  heatCenter=None
+  colTitle="Expression"
+
+  if data['plotMethod']=='sns':
+    exprOrder = True
+    if data['order'][0]!="Expression":
+      exprOrder = False;
+      adata = adata[adata.obs.sort_values(data['order']).index,]
+      #s = adata.obs[data['order']]
+      #ix = sorted(range(len(s)), key=lambda k: s[k])
+      #adata = adata[ix,]
+    colCounter = 0
+    colName =['Set1','Set3']
+    grpCol = list()
+    grpLegend = list()
+    grpWd = list()
+    grpLen = list()
+    for gID in data['grp']:
       grp = adata.obs[gID]
       Ugrp = grp.unique()
       if len(Ugrp)<10:
-          lut = dict(zip(Ugrp,sns.color_palette(colName[colCounter%2],len(Ugrp)).as_hex()))
-          colCounter += 1
+        lut = dict(zip(Ugrp,sns.color_palette(colName[colCounter%2],len(Ugrp)).as_hex()))
+        colCounter += 1
       elif len(Ugrp)<20:
-          lut = dict(zip(Ugrp,sns.color_palette(n_colors=len(Ugrp)).as_hex()))
+        lut = dict(zip(Ugrp,sns.color_palette(n_colors=len(Ugrp)).as_hex()))
       else:
-          lut = dict(zip(Ugrp,sns.color_palette("husl",len(Ugrp)).as_hex()))
+        lut = dict(zip(Ugrp,sns.color_palette("husl",len(Ugrp)).as_hex()))
       grpCol.append(grp.map(lut))
       grpLegend.append([mpatches.Patch(color=v,label=k) for k,v in lut.items()])
       grpWd.append(max([len(x) for x in Ugrp]))#0.02*fW*max([len(x) for x in Ugrp])
       grpLen.append(len(Ugrp)+2)
+    if data['norm']=='zscore':
+      Zscore=1
+      #heatCol="vlag"
+      heatCenter=0
+      colTitle="Z-score"
+    #ppr.pprint('HEAT data preparing cost %f seconds' % (time.time()-sT) )
+    #sT = time.time()
 
-  w += 2
-  Zscore=None
-  heatCol=data['color']
-  heatCenter=None
-  colTitle="Expression"
-  if data['norm']=='zscore':
-    Zscore=1
-    #heatCol="vlag"
-    heatCenter=0
-    colTitle="Z-score"
-  #ppr.pprint('HEAT data preparing cost %f seconds' % (time.time()-sT) )
-  #sT = time.time()
-
-  try:
-    g = sns.clustermap(adata.to_df(),
-                     method="ward",row_cluster=exprOrder,z_score=Zscore,cmap=heatCol,center=heatCenter,
-                     row_colors=pd.concat(grpCol,axis=1).astype('str'),yticklabels=False,xticklabels=True,
-                     figsize=(w,h),colors_ratio=0.05,
-                     cbar_pos=(.3, .95, .55, .02),
-                     cbar_kws={"orientation": "horizontal","label": colTitle,"shrink": 0.5})
-  except Exception as e:
-    return 'ERROR: Z score calculation failed for 0 standard diviation. '+traceback.format_exc() # 'ERROR @server: {}, {}'.format(type(e),str(e))
+    try:
+      g = sns.clustermap(adata.to_df(),
+                       method="ward",row_cluster=exprOrder,z_score=Zscore,cmap=heatCol,center=heatCenter,
+                       row_colors=pd.concat(grpCol,axis=1).astype('str'),yticklabels=False,xticklabels=True,
+                       figsize=(w,h),colors_ratio=0.05,
+                       cbar_pos=(.3, .95, .55, .02),
+                       cbar_kws={"orientation": "horizontal","label": colTitle,"shrink": 0.5})
+    except Exception as e:
+      return 'ERROR: Z score calculation failed for 0 standard diviation. '+traceback.format_exc() # 'ERROR @server: {}, {}'.format(type(e),str(e))
 
 
-  #ppr.pprint('HEAT plotting cost %f seconds' % (time.time()-sT) )
-  #sT = time.time()
-  g.ax_col_dendrogram.set_visible(False)
-  #g.ax_row_dendrogram.set_visible(False)
-  plt.setp(g.ax_heatmap.xaxis.get_majorticklabels(), rotation=90)
-  grpW = [1.02]
-  grpH = [1.2]
-  cumulaN = 0
-  cumulaMax = 0
-  characterW=1/40 # a character is 1/40 of heatmap width
-  characterH=1/40 # a character is 1/40 of heatmap height
-  for i in sorted(range(len(grpLen)),key=lambda k:grpLen[k]):#range(5):#
+    #ppr.pprint('HEAT plotting cost %f seconds' % (time.time()-sT) )
+    #sT = time.time()
+    g.ax_col_dendrogram.set_visible(False)
+    #g.ax_row_dendrogram.set_visible(False)
+    plt.setp(g.ax_heatmap.xaxis.get_majorticklabels(), rotation=90)
+    grpW = [1.02]
+    grpH = [1.2]
+    cumulaN = 0
+    cumulaMax = 0
+    characterW=1/40 # a character is 1/40 of heatmap width
+    characterH=1/40 # a character is 1/40 of heatmap height
+    for i in sorted(range(len(grpLen)),key=lambda k:grpLen[k]):#range(5):#
       cumulaN += grpLen[i]
       if cumulaN>(10+1/characterH):
-        grpW.append(grpW[-1]+cumulaMax)
-        grpH = [1.2]
-        cumulaN =0
-        cumulaMax=0
+          grpW.append(grpW[-1]+cumulaMax)
+          grpH = [1.2]
+          cumulaN =0
+          cumulaMax=0
       leg = g.ax_heatmap.legend(handles=grpLegend[i],frameon=True,title=data['grp'][i],loc="upper left",
                                 bbox_to_anchor=(grpW[-1],grpH[-1]),fontsize=5)#grpW[i],0.5,0.3
       #leg = g.ax_heatmap.legend(handles=grpLegend[0],frameon=True,title=data['grp'][0],loc="upper left",
       #                          bbox_to_anchor=(1.02,1-i*0.25),fontsize=5)#grpW[i],0.5,0.
       cumulaMax = max([cumulaMax,grpWd[i]*characterW])
       grpH.append(grpH[-1]-grpLen[i]*characterH)
-
       leg.get_title().set_fontsize(6)#min(grpSize)+2
       g.ax_heatmap.add_artist(leg)
-  #ppr.pprint('HEAT post plotting cost %f seconds' % (time.time()-sT) )
-  return iostreamFig(g)#json.dumps([iostreamFig(g),Xdata])#)#
+    #ppr.pprint('HEAT post plotting cost %f seconds' % (time.time()-sT) )
+    return iostreamFig(g)#json.dumps([iostreamFig(g),Xdata])#)#
+  elif data['plotMethod']=='cHeatmap':
+    characterW=1/40
+    grpW = list()
+    grpN = list()
+    for gID in data['grp']:
+      grp = adata.obs[gID]
+      Ugrp = grp.unique()
+      grpN.append(1+len(Ugrp))
+      grpW.append(max([len(x) for x in Ugrp]))
+    legendCol = math.ceil(sum(grpN)/40)
+    w=w+characterW*sum(sorted(grpW,reverse=True)[0:legendCol])
+    strF = ('%s/HEAT%f.csv' % (data["CLItmp"],time.time()))
+    D = adata.to_df()
+    if data['norm']=='zscore':
+      for one in D.columns:
+        D[one] = (D[one]-D[one].mean())/D[one].std()
+      colTitle="Z-score"
+    D = pd.concat([D,adata.obs],axis=1,sort=False)
+    D.to_csv(strF,index=False)
+
+    if len(data['gAnno'])>0:
+      gAnno = pd.DataFrame(data['gAnno'])
+      gAnno.to_csv(strF.replace("HEAT","HEATgene"),index=False)
+    elif data['gAnnoDef']:
+      gAnno = pd.read_csv("%s/proteinatlas_protein_class.csv"%strExePath,index_col=0,header=0)
+      gNames = {i:i.upper() for i in data['genes']}
+      gAnno = gAnno.loc[list(set(gNames.values()) & set(gAnno.index)),:].iloc[:,1:]
+      for one in [i for i in gNames.values() if i not in gAnno.index]:
+        gAnno.loc[one,:] = np.nan
+      gAnno = gAnno.loc[gNames.values(),:]
+      gAnno.index=gNames.keys()
+      gAnno.fillna("N",inplace=True)
+      gAnno.to_csv(strF.replace("HEAT","HEATgene"))
+      #ppr.pprint(gAnno)
+    ## plot in R
+    cmd = "%s/complexHeatmap.R %s %s %s %s %s %s %s %s %s %s %s %s %s %s '%s'"%(strExePath,strF,','.join(data['genes']),colTitle,','.join(data['order']),str(data['width']),str(data['height']),heatCol,
+      str(data['legendRow']),str(data['fontadj']),
+      data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['swapAxes']),data['figOpt']['vectorFriendly'],data['Rlib'])
+
+    #ppp = pprint.PrettyPrinter(depth=6,width=300)
+    #ppp.pprint(cmd)
+    #return SyntaxError("in R: ")
+    res = subprocess.run(cmd,check=True,shell=True,capture_output=True)#
+    img = res.stdout.decode('utf-8')
+    os.remove(strF)
+    #silentRM(strF.replace("HEAT","HEATgene"))
+    if 'Error' in res.stderr.decode('utf-8'):
+      raise SyntaxError("in R: "+res.stderr.decode('utf-8'))
+    return img
+  else:
+    raise ValueError('Unknown heatmap plotting method (%s)!'%data['plotMethod'])
 
 def HeatData(data):
   adata = createData(data)
@@ -685,7 +801,7 @@ def getGSEA(data):
   return json.dumps(sorted([os.path.basename(i).replace(".symbols.gmt","") for i in glob.glob(strGSEA+"*.symbols.gmt")]))
 
 def DEG(data):
-  adata = None;
+  adata = None
   genes = data['genes']
   data['genes'] = []
   comGrp = 'cellGrp'
@@ -727,10 +843,14 @@ def DEG(data):
   if data['DEmethod']=='default':
     if sum(mask[0]==True)<10 or sum(mask[1]==True)<10:
       raise ValueError('Less than 10 cells in a group!')
-    with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
-      res = diffDefault.diffexp_ttest(scD,mask[0].to_numpy(),mask[1].to_numpy(),scD.data.shape[1])# shape[cells as rows, genes as columns]
+    #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+    scD=data['data_adapter']
+    if scD is not None:
+      #res = diffDefault.diffexp_ttest(scD,mask[0].to_numpy(),mask[1].to_numpy(),scD.data.shape[1])# shape[cells as rows, genes as columns]
+      res = scD.compute_diffexp_ttest(mask[0].to_numpy(),mask[1].to_numpy(),scD.data.shape[1]-1,0.01)
       gNames = list(scD.data.var[data['var_index']])
-    deg = pd.DataFrame(res,columns=['gID','log2fc','pval','qval'])
+    deg = pd.DataFrame(res['positive']+res['negative'],columns=['gID','log2fc','pval','qval'])
+    deg = deg.drop_duplicates(ignore_index=True)
     gName = pd.Series([gNames[i] for i in deg['gID']],name='gene')
     deg = pd.concat([deg,gName],axis=1).loc[:,['gene','log2fc','pval','qval']]
   else:
@@ -750,14 +870,15 @@ def DEG(data):
         raise ValueError('Unknown DE methods:'+data['DEmethod'])
     #res = de.test.two_sample(adata,comGrp,test=data['DEmethod'],noise_model=nm)
     deg = res.summary()
-    deg = deg.sort_values(by=['qval']).loc[:,['gene','log2fc','pval','qval']]
     deg['log2fc'] = -1 * deg['log2fc']
+  deg = deg.sort_values(by=['qval']).loc[:,['gene','log2fc','pval','qval']]
+  #del adata
   ## plot in R
   #strF = ('/tmp/DEG%f.csv' % time.time())
   strF = ('%s/DEG%f.csv' % (data["CLItmp"],time.time()))
   deg.to_csv(strF,index=False)
   #ppr.pprint([strExePath+'/volcano.R',strF,'"%s"'%';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]])
-  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],str(data['sigFDR']),str(data['sigFC']),data['Rlib']],capture_output=True)#
+  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(data['genes']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],str(data['sigFDR']),str(data['sigFC']),str(data['labelSize']),str(data['dotSize']),str(data['ymin']),str(data['ymax']),data['figOpt']['vectorFriendly'],data['Rlib']],capture_output=True)#
   if 'Error' in res.stderr.decode('utf-8'):
     raise SyntaxError("in volcano.R: "+res.stderr.decode('utf-8'))
   img = res.stdout.decode('utf-8')
@@ -800,6 +921,91 @@ def DEG(data):
   #ppr.pprint(GSEAtable)
   #ppr.pprint(GSEAtable.sort_values('pval'))
   return json.dumps([deg.to_csv(index=False),img,GSEAtable.to_csv(index=False),GSEAimg])#json.dumps([deg.values.tolist(),img])
+
+def specificity_score(adata=None, ctype_col:str=None, ctypes:list=None, ctype_sets:list=None, glist:list=None):
+  if not (adata and ctype_col):
+    raise ValueError('No adata or No ctype_col_name provided!')
+  
+  if not (ctypes and ctype_sets):
+    ctypes = adata.obs[ctype_col].unique().tolist()
+    ctype_dict = {_: set([_]) for _ in ctypes}
+  else:
+    if len(ctypes)!=len(ctype_sets):
+      raise ValueError("Please check your cell type partition!")
+    if len(ctypes)>1:
+      sumset = ctype_sets[0]
+      for nextset in ctype_sets[1:]:
+        if sumset.intersection(nextset):
+          raise ValueError("Self-defined cell type partitions have overlap!!")
+        else:
+          sumset = sumset.union(nextset)    
+    ctype_dict = {ctypes[i]: ctype_sets[i] for i in range(len(ctypes))}
+    
+  if glist and len(glist):
+    adata = adata[:, adata.var_names.isin(set(glist))]
+    if adata.shape[-1]==0:
+      raise ValueError("No gene found! Pls check your gene list!")
+    
+  adata_dict = {ctype:adata[adata.obs[ctype_col].isin(ctype_dict[ctype])] for ctype in ctypes}
+  mean_exp_dict = {ctype: np.squeeze(np.asarray(adata_dict[ctype].X.sum(axis=0))) / adata_dict[ctype].n_obs for ctype in ctypes}
+  df = pd.DataFrame(data=mean_exp_dict, index=adata_dict[ctypes[0]].var_names)
+  df['all'] = df.sum(axis=1)
+  for col in df.columns:
+    df[col] = df[col]/df['all']
+    
+  # assign nan for genes not found
+  # gene in glist order
+  if glist and len(glist): df = df.reindex(glist)   
+  return df
+def restoreX(d):
+  if d.max()<50:
+    d1 = np.exp(d)
+    d2 = np.exp2(d)
+    if abs(d1-d1.round()).sum()<abs(d2-d2.round()).sum():
+      d = d1
+      ppr.pprint("...exp is taken")
+    else:
+      d = d2
+      ppr.pprint("...exp2 is taken")
+    if d.min()>0.1 and (d==d.min()).sum()>100:
+      d = d-d.min()
+      ppr.pprint("...min value %f is taken"%d.min())
+  return(d)
+def GSP(data):
+  data['figOpt']['scale']='No'
+  D = createData(data)
+  if scipy.sparse.issparse(D.X):
+    D.X.data = restoreX(D.X.data)
+  else:
+    D.X = restoreX(D.X)
+  grp = data['grp'][0]
+  X = specificity_score(adata=D,ctype_col=grp)
+  if 'all' in X.columns:
+    Xshow=X.drop('all',axis=1)
+  else:
+    Xshow = X
+  # plot depends on the gene number
+  if X.shape[0]==1:
+    XT = Xshow.T
+    gene = XT.columns[0]
+    XT[grp] = XT.index
+    fig = plt.figure()
+    #ax = XT.plot.bar(x=grp,y=gene)
+    ax = sns.barplot(data=XT,x=grp,y=gene)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=90)#rotation=45, horizontalalignment='right'
+    img = iostreamFig(fig)
+  elif X.shape[0]<20:
+    fig = plt.figure(figsize=[0.8*Xshow.shape[1],0.5*Xshow.shape[0]+0.1*max([len(x) for x in Xshow.columns])])
+    ax = sns.heatmap(Xshow,annot=True,fmt=".1f",cmap=sns.cubehelix_palette(as_cmap=True))
+    img = iostreamFig(fig)
+  else:
+    g = sns.clustermap(
+      Xshow.sample(min(1000,X.shape[0])),
+      method="ward",col_cluster=False,
+      yticklabels=False,xticklabels=True)
+    img = iostreamFig(g)
+  X.insert(0,"gene",X.index)
+  return json.dumps([X.to_csv(index=False),img])
 
 def DOT(data):
   #ppr.pprint("DOT, starting ...")
@@ -1055,6 +1261,7 @@ def DENS(data):
   #ppr.pprint("plotting total cost: %f seconds" % (time.time()-sT))
   return iostreamFig(fig)
 
+
 def SANK(data):
   updateGene(data)
   if len(data['genes'])==0:
@@ -1273,7 +1480,7 @@ def CLI(data):
     with open(strScript,'w') as f:
      f.writelines(['---\noutput:\n  html_document:\n    code_folding: hide\n---\n\n```{r}\nstrPath <- "%s"\n```\n\n'%strPath])
      f.write(script)
-    #ppr.pprint(subprocess.run('which Rscript',capture_output=True,shell=True).stdout.decode('utf-8'))
+    ppr.pprint(subprocess.run('which Rscript',capture_output=True,shell=True).stdout.decode('utf-8'))
     res = subprocess.run('Rscript -e \'rmarkdown::render("%s", output_file="%s.html")\''%(strScript,strPath),capture_output=True,shell=True)
     if (os.path.exists('%s.html'%strPath)):
       with open('%s.html'%strPath,'r') as file:
@@ -1299,7 +1506,7 @@ def CLI(data):
     h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">') ## remove the second cell
     html = h+s+e
   if 'Error' in res.stderr.decode('utf-8'):
-     html = 'ERROR @server:\nstderr:\n' + res.stderr.decode('utf-8') + '\nstdout:\n' + res.stdout.decode('utf-8')
+     html = 'ERROR @server:\nstderr:\n' + re.sub(r"\x1b[^m]*m", "", res.stderr.decode('utf-8')) + '\nstdout:\n' + res.stdout.decode('utf-8')
   for f in glob.glob(strPath+"*"):
     try:
       os.remove(f)
@@ -1318,6 +1525,10 @@ def getDesp(data):
       txt = "%s<br>%s"%(txt,line)
   ppr.pprint(txt)
   return txt
+
+def setTimeStamp(data):
+  strF = re.sub("h5ad$","timestamp",data["h5ad"])
+  Path(strF).touch()
 
 def getPreDEGname(data):
   strF = re.sub("h5ad$","db",data["h5ad"])
@@ -1343,8 +1554,8 @@ def getPreDEGvolcano(data):
   ## plot in R
   strF = ('%s/DEG%f.csv' % (data["CLItmp"],time.time()))
   deg.to_csv(strF,index=False)
-  #ppr.pprint([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]])
-  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(data['genes']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],str(data['sigFDR']),str(data['sigFC']),data['Rlib']],capture_output=True)#
+  #ppr.pprint([strExePath+'/volcano.R',strF,';'.join(data['genes']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],str(data['sigFDR']),str(data['sigFC']),str(data['labelSize']),str(data['dotSize']),str(data['ymin']),str(data['ymax']),data['Rlib']])
+  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(data['genes']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],str(data['sigFDR']),str(data['sigFC']),str(data['labelSize']),str(data['dotSize']),str(data['ymin']),str(data['ymax']),data['figOpt']['vectorFriendly'],data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
   os.remove(strF)
   if 'Error' in res.stderr.decode('utf-8'):
@@ -1423,7 +1634,9 @@ except Exception as e:
 def mergeMeta(data):
   selC = list(data['cells'].values())
   ## obtain the category annotation
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  scD=data['data_adapter']
+  if scD is not None:
     if not 'cellN' in scD.data.obs:
       raise ValueError('This is not a metacell data!')
     obs = scD.data.obs.loc[selC,[data['obs_index'],'cellN']]
@@ -1442,7 +1655,9 @@ def mergeMeta(data):
   return data['METAurl']+"/d/"+os.path.basename(strOut)+"/"
 
 def isMeta(data):
-  with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  #with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+  scD=data['data_adapter']
+  if scD is not None:
     if not 'cellN' in scD.data.obs:
       return "FALSE"
   strPath = re.sub(".h5ad$","",data["h5ad"])
@@ -1455,7 +1670,7 @@ def getBWinfo(data):
     strD = re.sub(".h5ad$","/",data["h5ad"])
     if os.path.isdir(strD):
         for one in os.listdir(strD):
-            if not re.search("bw$",one)==None:
+            if one.endswith("bw"):#not re.search("bw$",one)==None:
                 BWinfo["BWfile"].append(one)
             elif one=="annotation.rds":
                 BWinfo["BWannotation"]="annotation.rds"
@@ -1464,7 +1679,9 @@ def getBWinfo(data):
             elif one=="links.rds":
                 BWinfo["BWlink"]="links.rds"
             elif one=="bw.cluster":
-                BWinfo["BWcluster"]="bw.cluster"
+                BWinfo["BWcluster"]=pd.read_csv(strD+one,sep="\t",header=0) #"bw.cluster" .to_csv(index=False)
+        if len(BWinfo["BWcluster"])>0:
+            BWinfo["BWcluster"]=BWinfo["BWcluster"][BWinfo["BWcluster"]['Wig'].isin(BWinfo["BWfile"])].to_csv(index=False)
     return json.dumps(BWinfo)
 
 def plotBW(data):
@@ -1472,32 +1689,29 @@ def plotBW(data):
     strCSV = ('%s/BW%f.csv' % (data["CLItmp"],time.time()))
     ## select all cells
     strType = strD + 'bw.cluster'
-    data['bw']=['%s.bw'%one for one in data['bw']]
-    grpFlag = False
     if os.path.isfile(strType) and len(data['genes'])>0:
-        with open(strType,"r") as f:
-            grp = f.readline().strip()
-        with app.get_data_adaptor(url_dataroot=data['url_dataroot'],dataset=data['dataset']) as scD:
+        clusterInfo = pd.read_csv(strType,sep="\t",header=0,index_col=0)
+        clusterInfo = clusterInfo.loc[data['bw'],:]
+        grp = []
+        scD=data['data_adapter']
+        if scD is not None:
           dAnno = list(scD.get_obs_keys())
-          if grp in dAnno:
-              grpFlag = True
-        if grpFlag:
-            data['grp'] = [grp]
+          grp = [i for i in clusterInfo.columns if i in dAnno]
+        if len(grp)>0:
+            data['grp'] = grp
             adata = createData(data)
-            if len(adata)==0:
-                grpFlag = False
-            else:
-                cluster = pd.read_csv(strType,sep="\t",header=None,index_col=1,skiprows=1)#delimiter="\n",
-                cluster = cluster[cluster[0].isin(data['bw'])]
-                adata = adata[adata.obs[grp].isin(list(cluster.index)),:]
-                obsCluster = pd.DataFrame(list(cluster.loc[adata.obs[grp],:][0]),index=adata.obs.index,columns=[grp])
-                pd.concat([obsCluster,adata.to_df()], axis=1, sort=False).to_csv(strCSV)
+            if len(adata)>0:
+                selC=adata.obs[grp[0]].isin(list(clusterInfo[grp[0]]))
+                for oneG in grp:
+                    selC = selC | adata.obs[oneG].isin(list(clusterInfo[oneG]))
+                adata = adata[selC,:]
+                pd.concat([adata.obs,adata.to_df()], axis=1, sort=False).to_csv(strCSV)
     ## plot in R
-    #strCMD = ' '.join([strExePath+'/browserPlot.R',strD,data['region'],str(data['exUP']),str(data['exDN']),strCSV,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
+    #strCMD = ' '.join([strExePath+'/browserPlot.R',strD,data['region'],','.join(data['bw']),str(data['exUP']),str(data['exDN']),strCSV,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
     #ppr.pprint(strCMD)
     res = subprocess.run([strExePath+'/browserPlot.R',strD,data['region'],','.join(data['bw']),str(data['exUP']),str(data['exDN']),strCSV,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
     img = res.stdout.decode('utf-8')
-    if grpFlag:
+    if len(adata)>0:
         os.remove(strCSV)
     if 'Error' in res.stderr.decode('utf-8'):
         raise SyntaxError("in R: "+res.stderr.decode('utf-8'))
