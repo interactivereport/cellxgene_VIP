@@ -1,0 +1,17 @@
+[Unit]
+Description=main
+After=systemd-user-sessions.service
+
+[Service]
+User=cellxgene
+WorkingDirectory=/home/cellxgene
+Environment=CELLXGENE_LOCATION=/home/cellxgene/mambaforge/envs/paraCell/bin/cellxgene
+Environment=CELLXGENE_DATA=/share/cellxgene/main
+Environment=GATEWAY_PORT=5005
+Environment=GATEWAY_ENABLE_ANNOTATIONS=0
+Environment=R_HOME=/home/cellxgene/mambaforge/envs/paraCell/lib/R
+ExecStart=/home/cellxgene/mambaforge/envs/paraCell/bin/cellxgene-gateway
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
