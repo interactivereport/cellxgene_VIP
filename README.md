@@ -26,7 +26,7 @@ whole or sliced single cell dataset.
 
 # Installation instruction
 
-## 1. Install anaconda if not available on server (https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html)
+## 1. Install miniconda if not available on server (https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html)
 ``` bash
 bash ~/Downloads/Miniconda3-latest-Linux-x86_64.sh
 conda install mamba -n base -c conda-forge
