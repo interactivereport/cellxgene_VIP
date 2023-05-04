@@ -26,9 +26,10 @@ whole or sliced single cell dataset.
 
 # Installation instruction
 
-## 1. Install anaconda if not available on server (https://docs.anaconda.com/anaconda/install/linux/)
+## 1. Install anaconda if not available on server (https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html)
 ``` bash
-bash ~/Downloads/Anaconda3-2020.02-Linux-x86_64.sh
+bash ~/Downloads/Miniconda3-latest-Linux-x86_64.sh
+conda install mamba -n base -c conda-forge
 ```
 
 ## 2. Create and enable conda environment
@@ -36,13 +37,15 @@ bash ~/Downloads/Anaconda3-2020.02-Linux-x86_64.sh
 git clone https://github.com/iii-cell-atlas/cellxgene_VIP.git
 cd cellxgene_VIP
 
-source <path to Anaconda3>/etc/profile.d/conda.sh (Default: /opt/anaconda3/etc/profile.d/conda.sh)
+source <path to Miniconda3>/etc/profile.d/conda.sh 
 conda config --set channel_priority flexible
-conda env create -n <env name, such as: VIP> -f VIP.yml (system-wide R) or VIP_conda_R.yml (local R under conda, no root privilege needed)
+mamba env create -n <env name, such as: paraCell> -f paraCell_conda_R.yml (local R under conda, no root privilege needed)
 
-For Mac User, conda env create -n <env name, such as: VIP> -f VIP.macOS.yml
+For Mac User, conda env create -n <env name, such as: paraCell> -f paraCell.macOS.yml
 
-conda activate <env name, such as: VIP>
+mamba env update -f r_dependencies.yml --name paraCell
+
+conda activate <env name, such as: paraCell>
 or
 source activate <env name>
 ```
@@ -51,41 +54,7 @@ source activate <env name>
 ./config.sh
 For Mac User, ./config.macOS.sh
 ```
-## 4. Install R packages
-```bash
-export LIBARROW_MINIMAL=false
-#  ensure that the right instance of R is used. e.g. system-wide: /bin/R or /usr/bin/R ; local R under conda: ~/.conda/envs/VIP_conda_R/bin/R
-which R
-
-R -q -e 'if(!require(devtools)) install.packages("devtools",repos = "http://cran.us.r-project.org")'
-R -q -e 'if(!require(Cairo)) devtools::install_version("Cairo",version="1.5-12",repos = "https://cran.us.r-project.org")'
-R -q -e 'if(!require(foreign)) devtools::install_version("foreign",version="0.8-76",repos = "https://cran.us.r-project.org")'
-R -q -e 'if(!require(ggpubr)) devtools::install_version("ggpubr",version="0.3.0",repos = "https://cran.us.r-project.org")'
-R -q -e 'if(!require(ggrastr)) devtools::install_version("ggrastr",version="0.1.9",repos = "https://cran.us.r-project.org")'
-R -q -e 'if(!require(arrow)) devtools::install_version("arrow",version="2.0.0",repos = "https://cran.us.r-project.org")'
-R -q -e 'if(!require(Seurat)) devtools::install_version("Seurat",version="3.2.3",repos = "https://cran.us.r-project.org")'
-R -q -e 'if(!require(rmarkdown)) devtools::install_version("rmarkdown",version="2.5",repos = "https://cran.us.r-project.org")'
-R -q -e 'if(!require(tidyverse)) devtools::install_version("tidyverse",version="1.3.0",repos = "https://cran.us.r-project.org")'
-R -q -e 'if(!require(viridis)) devtools::install_version("viridis",version="0.5.1",repos = "https://cran.us.r-project.org")'
-R -q -e 'if(!require(hexbin)) devtools::install_version("hexbin",version="1.28.2",repos = "https://cran.us.r-project.org")'
-R -q -e 'if(!require(ggforce)) devtools::install_version("ggforce",version="0.3.3",repos = "https://cran.us.r-project.org")'
-R -q -e 'if(!require(RcppRoll)) devtools::install_version("RcppRoll",version="0.3.0",repos = "https://cran.r-project.org")'
-R -q -e 'if(!require(fastmatch)) devtools::install_version("fastmatch",version="1.1-3",repos = "https://cran.r-project.org")'
-R -q -e 'if(!require(BiocManager)) devtools::install_version("BiocManager",version="1.30.10",repos = "https://cran.us.r-project.org")'
-R -q -e 'if(!require(fgsea)) BiocManager::install("fgsea")'
-R -q -e 'if(!require(rtracklayer)) BiocManager::install("rtracklayer")'
-
-
-# These should be already installed as dependencies of above packages
-R -q -e 'if(!require(dbplyr)) devtools::install_version("dbplyr",version="1.0.2",repos = "https://cran.us.r-project.org")'
-R -q -e 'if(!require(RColorBrewer)) devtools::install_version("RColorBrewer",version="1.1-2",repos = "https://cran.us.r-project.org")'
-R -q -e 'if(!require(glue)) devtools::install_version("glue",version="1.4.2",repos = "https://cran.us.r-project.org")'
-R -q -e 'if(!require(gridExtra)) devtools::install_version("gridExtra",version="2.3",repos = "https://cran.us.r-project.org")'
-R -q -e 'if(!require(ggrepel)) devtools::install_version("ggrepel",version="0.8.2",repos = "https://cran.us.r-project.org")'
-R -q -e 'if(!require(MASS)) devtools::install_version("MASS",version="7.3-51.6",repos = "https://cran.us.r-project.org")'
-R -q -e 'if(!require(data.table)) devtools::install_version("data.table",version="1.13.0",repos = "https://cran.us.r-project.org")'
-```
-## 5. Run cellxgene by specifiying a h5ad file storing scRNA-seq data along with a host and a port, use "ps" to find used ports to spare, see https://chanzuckerberg.github.io/cellxgene/posts/launch for details.
+## 4. Run cellxgene by specifiying a h5ad file storing scRNA-seq data along with a host and a port, use "ps" to find used ports to spare, see https://chanzuckerberg.github.io/cellxgene/posts/launch for details.
 ```bash
 ps -ef | grep cellxgene
 Rscript -e 'reticulate::py_config()'
@@ -93,7 +62,7 @@ Rscript -e 'reticulate::py_config()'
 export RETICULATE_PYTHON=`which python`
 cellxgene launch --host <xxx> --port <xxx> --disable-annotations --verbose <h5ad file>
 ```
-## 6. From web browser (Chrome is preferred, Version 87.0.4280.88 or 87.0.4280.141 is used), access http(s)://host:port
+## 5. From web browser (Chrome is preferred, Version 87.0.4280.88 or 87.0.4280.141 is used), access http(s)://host:port
 
 You should be able to see this in Console of Chrome Developer Tools if everything is right.
 ![VIP_ready](https://user-images.githubusercontent.com/29576524/92059839-46482d00-ed60-11ea-8890-8e1b513a1656.png)
