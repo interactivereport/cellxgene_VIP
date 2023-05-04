@@ -36,7 +36,8 @@ git clone https://github.com/chanzuckerberg/cellxgene.git
 cd cellxgene
 #git checkout bedbc87ed6178cd00a586feac3e99d4912d1c74e # v 0.16.7  # 735eb11eb78b5e6c35ba84438970d0ce369604e1 (v0.15.0)
 #git checkout bdfd9fe0a5462a0c139675fe10356765d2bbd95b # v 0.16.8
-git checkout f48d06fb9043771d7370ee9ac0dc9de8ae6ad888 # v1.1.1
+#git checkout f48d06fb9043771d7370ee9ac0dc9de8ae6ad888 # v1.1.1
+git checkout ffcf6eb5d842972f2562c359cc2276a0fbbe77d5 # v1.1.2
 #sed -i 's|anndata>=0.7.0|anndata>=0.7.4|' 'server/requirements.txt'
 #sed -i 's|scanpy==1.4.6|scanpy==1.6.1|' 'server/requirements.txt'
 cd ..
