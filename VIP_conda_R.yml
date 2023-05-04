@@ -140,6 +140,7 @@ dependencies:
     - boto3==1.14.39
     - botocore==1.17.44
     - brotli==1.0.9
+    - cellxgene-gateway
     - chardet==4.0.0
     - click==7.1.2
     - cycler==0.10.0
@@ -152,7 +153,7 @@ dependencies:
     - flask==1.1.2
     - flask-compress==1.8.0
     - flask-cors==3.0.10
-    - flask-restful==0.3.8
+    - flask-restful==0.3.9
     - flask-server-timing==0.1.2
     - flask-talisman==0.7.0
     - flatbuffers==1.12
@@ -174,11 +175,12 @@ dependencies:
     - legacy-api-wrap==1.2
     - llvmlite==0.35.0
     - markdown-it-py==0.5.8
+    - markupsafe==2.0.1
     - matplotlib==3.3.4
     - mistune==0.8.4
     - natsort==7.1.1
     - nbclient==0.5.2
-    - nbconvert==5.6.1
+    - nbconvert
     - nbformat==5.1.2
     - nest-asyncio==1.5.1
     - networkx==2.5
