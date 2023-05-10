@@ -1585,6 +1585,8 @@ def cellpopview(data):
 
     plot_dataframe = pd.DataFrame(data)
 
+    ppr.pprint(plot_dataframe)
+
     # Interactive Graph Plotting.
 
     plot_title = condition_1 + " vs. " + condition_2
@@ -2001,17 +2003,21 @@ def hp_paraClus(data):
 
   adata.obs['parasite_clusters'] = parasite.obs["parasite_clusters"].values
 
-  fig1 = sc.pl.umap(parasite, color = ["parasite_clusters"], title = "Parasite Clusters")
+  sc.pl.umap(parasite, color = ["parasite_clusters"], title = "Parasite Clusters")
 
-  fig1 = plt.gcf()
+  umap_table = pd.DataFrame(parasite.obsm['X_umap'], columns = ['xdim','ydim'])
 
-  finalfig = iostreamFig(fig1)
+  # Interactive Graph Plotting.
+
+  parasite_plot = px.scatter(umap_table, x = "xdim", y = "ydim")
+
+  div = plotIO.to_html(parasite_plot)
 
   html = "parasiteFig"
 
   note = ""
 
-  resList = [note, html, finalfig]
+  resList = [note, html, div] 
 
   return json.dumps(resList)
 
@@ -2046,17 +2052,21 @@ def hp_hostClus(data):
 
   adata.obs['host_clusters'] = host.obs["host_clusters"].values
 
-  fig1 = sc.pl.umap(host, color = ["host_clusters"], title = "Host Clusters")
+  sc.pl.umap(host, color = ["host_clusters"], title = "Host Clusters")
 
-  fig1 = plt.gcf()
+  umap_table = pd.DataFrame(host.obsm['X_umap'], columns = ['xdim','ydim'])
 
-  finalfig = iostreamFig(fig1)
+  # Interactive Graph Plotting.
 
+  host_plot = px.scatter(umap_table, x = "xdim", y = "ydim")
+
+  div = plotIO.to_html(host_plot)
+    
   html = "hostFig"
 
   note = ""
 
-  resList = [note, html, finalfig]
+  resList = [note, html, div]
 
   return json.dumps(resList)
 

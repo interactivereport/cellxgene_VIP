@@ -738,8 +738,8 @@
         <p id="hpViolins"></p>
         </p>
         <p>Host-Parasite Cluster Comparision:
-        <button class="hpCC" onclick="hpAnalysis('hp_cc_host')"><b>Cluster by Host</b></button>
-        <button class="hpCC" onclick="hpAnalysis('hp_cc_para')"><b>Cluster by Parasite</b></button>
+        <button class="hpCC" onclick="hpAnalysis('hp_cc_host','hostFig')"><b>Cluster by Host</b></button>
+        <button class="hpCC" onclick="hpAnalysis('hp_cc_para','parasiteFig')"><b>Cluster by Parasite</b></button>
         <button class="hpCC" onclick="hpAnalysis('hp_cc')"><b>Find Overlap</b></button></p>
         <p id="hpNote" style="color:blue;"></p>
         <p id="hostFig"></p>
@@ -5636,6 +5636,9 @@ function CellPopPlot(){
       $(".CPVTablebt").prop("disabled",false);
       document.getElementById("CPVspin").style.visibility="hidden";
       $("#CPVnote").text('');
+
+      console.log(res);
+      console.log(typeof(res))
       
       $('#CPVfig').html(res);
 
@@ -6350,7 +6353,7 @@ error: function() {
 })
 }
 
-function hpAnalysis(hp_option){
+function hpAnalysis(hp_option,figOpt){
 
 if (isHP) {
 
@@ -6383,8 +6386,14 @@ $.ajax({
 
     $("#hpNote").text(resD[0]);
 
-    showImg(resD[1],resD[2]);
+    console.log(resD[1])
+    console.log(resD[2])
+    console.log(typeof(resD[2]))
 
+    figOpt_JQ = "#"+figOpt
+    $(figOpt_JQ).html(resD[2]);
+
+  
     }else{
 
       $(".hpViol").prop("disabled",false);
