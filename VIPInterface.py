@@ -15,6 +15,7 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 import matplotlib.patches as mpatches
 from matplotlib import rcParams
+from matplotlib import cm, colors
 import plotly.graph_objects as go
 import plotly.io as plotIO
 import plotly.express as px
@@ -2009,7 +2010,21 @@ def hp_paraClus(data):
 
   # Interactive Graph Plotting.
 
-  parasite_plot = px.scatter(umap_table, x = "xdim", y = "ydim")
+  color_palette = list(map(colors.to_hex, cm.tab20.colors))
+  color = parasite.obs['parasite_clusters'].astype('category')
+
+  parasite_plot = px.scatter(umap_table, x = "xdim", y = "ydim", color=color, color_discrete_sequence=color_palette)
+
+  parasite_plot.update_layout(
+      legend=dict(
+      orientation='h',
+      y=0,
+      x=0,
+      xanchor='auto',
+      yanchor='top'
+      ),
+      legend_title_text='Parasite_Clusters'
+    )
 
   div = plotIO.to_html(parasite_plot)
 
@@ -2057,8 +2072,28 @@ def hp_hostClus(data):
   umap_table = pd.DataFrame(host.obsm['X_umap'], columns = ['xdim','ydim'])
 
   # Interactive Graph Plotting.
+  
+  color_palette = list(map(colors.to_hex, cm.tab20.colors))
+  color = host.obs['host_clusters'].astype('category')
 
-  host_plot = px.scatter(umap_table, x = "xdim", y = "ydim")
+  ppr.pprint("colors made!")
+
+  host_plot = px.scatter(umap_table, x = "xdim", y = "ydim",color=color,color_discrete_sequence=color_palette)
+
+  ppr.pprint("plot made!")
+
+  host_plot.update_layout(
+      legend=dict(
+      orientation='h',
+      y=0,
+      x=0,
+      xanchor='auto',
+      yanchor='top'
+      ),
+      legend_title_text='Host_Clusters'
+    )
+
+  ppr.pprint("plot updated!")
 
   div = plotIO.to_html(host_plot)
     
