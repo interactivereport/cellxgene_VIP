@@ -317,7 +317,8 @@ def distributeTask(aTask):
     'hp_viol':hpClusterViolins,
     'get_hp':get_HostParasiteTable,
     'hp_CM':hp_ClusterMarkers,
-    'get_go_genes':go_genes
+    'get_go_genes':go_genes,
+    'updateUMAP':hp_paraClus #updateUMAP
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1988,6 +1989,11 @@ def hp_paraClus(data):
 
   parasite = copyData[:,parasiteGenes]
 
+  if 'selection' in data: #update UMAP
+    
+    points = data['selection']
+    parasite = parasite[points]
+
   sc.pp.highly_variable_genes(parasite)
 
   parasite = parasite[:, parasite.var.highly_variable]
@@ -1998,13 +2004,7 @@ def hp_paraClus(data):
 
   sc.tl.umap(parasite)
 
-  sc.tl.leiden(parasite, key_added = "parasite_clusters")
-
-  adata.obs['parasite_clusters'] = parasite.obs["parasite_clusters"]
-
-  adata.obs['parasite_clusters'] = parasite.obs["parasite_clusters"].values
-
-  sc.pl.umap(parasite, color = ["parasite_clusters"], title = "Parasite Clusters")
+  sc.tl.leiden(parasite, key_added = "parasite_clusters", resolution = 0.5)
 
   umap_table = pd.DataFrame(parasite.obsm['X_umap'], columns = ['xdim','ydim'])
 
@@ -2012,7 +2012,7 @@ def hp_paraClus(data):
 
   color_palette = list(map(colors.to_hex, cm.tab20.colors))
   color = parasite.obs['parasite_clusters'].astype('category')
-
+    
   parasite_plot = px.scatter(umap_table, x = "xdim", y = "ydim", color=color, color_discrete_sequence=color_palette)
 
   parasite_plot.update_layout(
@@ -2041,6 +2041,8 @@ def hp_hostClus(data):
   with app.get_data_adaptor() as data_adaptor:
     adata = data_adaptor.data
 
+  adata.obs_names = adata.obs["index"]
+
   copyData = adata
 
   copyData.var_names = copyData.var["features"].values
@@ -2061,26 +2063,20 @@ def hp_hostClus(data):
 
   sc.tl.umap(host)
 
-  sc.tl.leiden(host, key_added = "host_clusters")
+  sc.tl.leiden(host, key_added = "host_clusters", resolution=0.5)
 
   adata.obs['host_clusters'] = host.obs["host_clusters"]
 
   adata.obs['host_clusters'] = host.obs["host_clusters"].values
 
-  sc.pl.umap(host, color = ["host_clusters"], title = "Host Clusters")
-
-  umap_table = pd.DataFrame(host.obsm['X_umap'], columns = ['xdim','ydim'])
+  better_table = pd.DataFrame(host.obsm["X_umap"], columns = ['xdim','ydim'], index=host.obs_names)
 
   # Interactive Graph Plotting.
   
   color_palette = list(map(colors.to_hex, cm.tab20.colors))
   color = host.obs['host_clusters'].astype('category')
 
-  ppr.pprint("colors made!")
-
-  host_plot = px.scatter(umap_table, x = "xdim", y = "ydim",color=color,color_discrete_sequence=color_palette)
-
-  ppr.pprint("plot made!")
+  host_plot = px.scatter(better_table, x = "xdim", y = "ydim",color=color,color_discrete_sequence=color_palette, hover_data=[better_table.index])
 
   host_plot.update_layout(
       legend=dict(
@@ -2092,8 +2088,6 @@ def hp_hostClus(data):
       ),
       legend_title_text='Host_Clusters'
     )
-
-  ppr.pprint("plot updated!")
 
   div = plotIO.to_html(host_plot)
     
@@ -2259,4 +2253,20 @@ def hp_ClusterMarkers(data):
 
   return json.dumps(res)
   
+def updateUMAP(data):
 
+  points = data['selection']
+
+  with app.get_data_adaptor() as data_adaptor:
+    adata = data_adaptor.data
+
+  copyData = adata
+  copyData.var_names = copyData.var["features"].values
+
+  parasiteGenes = copyData.uns["parasite_genes"]
+ 
+  # Split Data ----------
+
+ 
+
+  

@@ -6393,6 +6393,31 @@ $.ajax({
     figOpt_JQ = "#"+figOpt
     $(figOpt_JQ).html(resD[2]);
 
+    let graphDiv = document.getElementById("hostFig").children[1].children[2];
+    console.log(graphDiv);
+    graphDiv.on('plotly_selected', function(eventData) {
+      let x = [];
+      let y = [];
+      
+      
+    console.log(eventData.points)
+    console.log(typeof(eventData.points))
+    //update_UMAP(eventData)
+
+    selected_cell_ids = new Array();
+
+    for (let i = 0; i < eventData.points.length; i++) { //iterate over every point
+      id = eventData.points[i].customdata[0] //get all cell ids
+      selected_cell_ids.push(id) 
+    }
+
+    console.log(selected_cell_ids)
+
+    update_UMAP(selected_cell_ids)
+    
+    
+    })
+
   
     }else{
 
@@ -6418,6 +6443,42 @@ $.ajax({
   $("#hpNote").text("No Host-Parasite Data available.");
 }
 }
+
+function update_UMAP(cell_ids){
+
+  var D = {'method': 'updateUMAP',
+  'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+  'selection': cell_ids
+  };
+
+  document.getElementById("hpSpin").style.visibility="visible";
+
+  $.ajax({
+    type: "POST",
+    url: VIPurl,
+    data: JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',
+    dataType: 'html',
+    success: function(res){
+      
+      console.log("updating plot", res);
+
+      resD = JSON.parse(res);
+
+      $('#parasiteFig').html(resD[2]);
+      document.getElementById("hpSpin").style.visibility="hidden";
+    },
+    error:function(request,status,error){
+    console.log('error: ', request,status,error);
+      $("#hpNote").text('Plotting Error!');
+      document.getElementById("hpSpin").style.visibility="hidden";
+    }
+  })
+  return
+
+}
+
+//}
 
 var host_genes;
 var parasite_genes;
