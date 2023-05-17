@@ -318,7 +318,8 @@ def distributeTask(aTask):
     'get_hp':get_HostParasiteTable,
     'hp_CM':hp_ClusterMarkers,
     'get_go_genes':go_genes,
-    'updateUMAP':hp_paraClus #updateUMAP
+    'update_parasite_umap':hp_paraClus,
+    'update_host_umap':hp_hostClus  
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1980,6 +1981,8 @@ def hp_paraClus(data):
   with app.get_data_adaptor() as data_adaptor:
     adata = data_adaptor.data
 
+  adata.obs_names = adata.obs["index"]
+
   copyData = adata
   copyData.var_names = copyData.var["features"].values
 
@@ -2006,14 +2009,16 @@ def hp_paraClus(data):
 
   sc.tl.leiden(parasite, key_added = "parasite_clusters", resolution = 0.5)
 
-  umap_table = pd.DataFrame(parasite.obsm['X_umap'], columns = ['xdim','ydim'])
+  better_table = pd.DataFrame(parasite.obsm["X_umap"], columns = ['xdim','ydim'], index=parasite.obs_names)
+
+  #umap_table = pd.DataFrame(parasite.obsm['X_umap'], columns = ['xdim','ydim'])
 
   # Interactive Graph Plotting.
 
   color_palette = list(map(colors.to_hex, cm.tab20.colors))
   color = parasite.obs['parasite_clusters'].astype('category')
     
-  parasite_plot = px.scatter(umap_table, x = "xdim", y = "ydim", color=color, color_discrete_sequence=color_palette)
+  parasite_plot = px.scatter(better_table, x = "xdim", y = "ydim", color=color, color_discrete_sequence=color_palette, hover_data=[better_table.index])
 
   parasite_plot.update_layout(
       legend=dict(
@@ -2053,6 +2058,11 @@ def hp_hostClus(data):
 
   host = copyData[:,hostGenes]
 
+  if 'selection' in data: 
+    
+    points = data['selection']
+    host = host[points]
+
   sc.pp.highly_variable_genes(host)
 
   host = host[:, host.var.highly_variable]
@@ -2065,9 +2075,9 @@ def hp_hostClus(data):
 
   sc.tl.leiden(host, key_added = "host_clusters", resolution=0.5)
 
-  adata.obs['host_clusters'] = host.obs["host_clusters"]
+  #adata.obs['host_clusters'] = host.obs["host_clusters"]
 
-  adata.obs['host_clusters'] = host.obs["host_clusters"].values
+  #adata.obs['host_clusters'] = host.obs["host_clusters"].values
 
   better_table = pd.DataFrame(host.obsm["X_umap"], columns = ['xdim','ydim'], index=host.obs_names)
 

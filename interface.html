@@ -6386,34 +6386,26 @@ $.ajax({
 
     $("#hpNote").text(resD[0]);
 
-    console.log(resD[1])
-    console.log(resD[2])
-    console.log(typeof(resD[2]))
-
     figOpt_JQ = "#"+figOpt
     $(figOpt_JQ).html(resD[2]);
 
-    let graphDiv = document.getElementById("hostFig").children[1].children[2];
+    let graphDiv = document.getElementById(figOpt).children[1].children[2];
     console.log(graphDiv);
     graphDiv.on('plotly_selected', function(eventData) {
       let x = [];
       let y = [];
       
-      
-    console.log(eventData.points)
-    console.log(typeof(eventData.points))
-    //update_UMAP(eventData)
-
     selected_cell_ids = new Array();
 
     for (let i = 0; i < eventData.points.length; i++) { //iterate over every point
+      console.log("inside points loop")
       id = eventData.points[i].customdata[0] //get all cell ids
       selected_cell_ids.push(id) 
     }
 
     console.log(selected_cell_ids)
 
-    update_UMAP(selected_cell_ids)
+    update_UMAP(selected_cell_ids, figOpt)
     
     
     })
@@ -6444,9 +6436,19 @@ $.ajax({
 }
 }
 
-function update_UMAP(cell_ids){
+function update_UMAP(cell_ids, figOpt){
 
-  var D = {'method': 'updateUMAP',
+  if (figOpt == "hostFig"){
+
+    be_func = "update_parasite_umap"
+
+  }else{
+
+    be_func = "update_host_umap"
+
+  }
+
+  var D = {'method': be_func,
   'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
   'selection': cell_ids
   };
