@@ -6390,24 +6390,17 @@ $.ajax({
     $(figOpt_JQ).html(resD[2]);
 
     let graphDiv = document.getElementById(figOpt).children[1].children[2];
-    console.log(graphDiv);
     graphDiv.on('plotly_selected', function(eventData) {
-      let x = [];
-      let y = [];
       
     selected_cell_ids = new Array();
 
     for (let i = 0; i < eventData.points.length; i++) { //iterate over every point
-      console.log("inside points loop")
       id = eventData.points[i].customdata[0] //get all cell ids
       selected_cell_ids.push(id) 
     }
 
-    console.log(selected_cell_ids)
-
     update_UMAP(selected_cell_ids, figOpt)
-    
-    
+        
     })
 
   
@@ -6442,9 +6435,13 @@ function update_UMAP(cell_ids, figOpt){
 
     be_func = "update_parasite_umap"
 
+    updatedUMAP = "#parasiteFig"
+
   }else{
 
     be_func = "update_host_umap"
+
+    updatedUMAP = "#hostFig"
 
   }
 
@@ -6467,7 +6464,7 @@ function update_UMAP(cell_ids, figOpt){
 
       resD = JSON.parse(res);
 
-      $('#parasiteFig').html(resD[2]);
+      $(updatedUMAP).html(resD[2]);
       document.getElementById("hpSpin").style.visibility="hidden";
     },
     error:function(request,status,error){
