@@ -530,6 +530,19 @@
         text-align: center;
         background-color: #CCCCCC;
       }
+
+      .column1 {
+        float: left;
+        width:50%;
+        padding:10px;
+      }
+
+      .column2 {
+        float: right;
+        width:50%;
+        padding:10px;
+      }
+
     </style>
   </head>
 <body>
@@ -542,6 +555,7 @@
       <button class="tablinks" onclick="selFun(event, 'TIA');defaultTopSel('TIA','pseudo_tab');getAllCells()">Trajectory Inference</button>
       <button class="tablinks" onclick="selFun(event, 'TradeSeq');getAllCells();tradeSeq_setup()">TradeSeq</button>
       <button class="tablinks" onclick="selFun(event, 'HostParasite');getAllCells()">Host-Parasite Interactions</button>
+      <button class="tablinks" onclick="selFun(event, 'SPATIALSELECT')">Spatial Selection</button>
       <button class="tablinks" onclick="selFun(event, 'SGV');defaultTopSel('SGV','SGVsingle')">Violin</button>
       <button class="tablinks" onclick="selFun(event, 'PGV')">Stacked Violin</button>
       <button class="tablinks" onclick="selFun(event, 'HEAT')">Heatmap</button>
@@ -738,13 +752,17 @@
         <p id="hpViolins"></p>
         </p>
         <p>Host-Parasite Cluster Comparision:
-        <button class="hpCC" onclick="hpAnalysis('hp_cc_host','hostFig')"><b>Cluster by Host</b></button>
-        <button class="hpCC" onclick="hpAnalysis('hp_cc_para','parasiteFig')"><b>Cluster by Parasite</b></button>
         <button class="hpCC" onclick="hpAnalysis('hp_cc')"><b>Find Overlap</b></button></p>
-        <button class="hpCC" onclick="saveCells()"><b>Save Selected Cells</b></button></p>
+        <button class="hpCC" onclick="export_HPCells()"><b>Save Selected Cells</b></button></p>
         <p id="hpNote" style="color:blue;"></p>
+        <div class="column1">
+        <button class="hpCC" onclick="hpAnalysis('hp_cc_host','hostFig')"><b>Cluster by Host</b></button>
         <p id="hostFig"></p>
+        </div>
+        <div class="column2">
+        <button class="hpCC" onclick="hpAnalysis('hp_cc_para','parasiteFig')"><b>Cluster by Parasite</b></button>
         <p id="parasiteFig"></p>
+        </div>
         <h3>Host-Parasite Cluster Marker Analysis:</h3>
         <p>Select an Annotation:
         <select id="hp_cm_annot"></select></p>
@@ -767,6 +785,33 @@
       <table id="hp_clusterMarker_table" class="display"></table>
 
     </div><!--HostParasite-->
+
+    <div id="SPATIALSELECT" class="tabcontent">
+      <div class="column1">
+        <div id="spatialUMAP">
+          <h3>Plot spatial UMAP and make spot selection:</h3>
+          <button class="spatialLassoPlotbt" onclick="spatialLassoSelection()"><b>Plot and Select</b></button>
+        </div>
+        <p id="spatialPlotfig"></p>
+
+        <div id="cellChatInteractionTableSpatial">
+          <h3> Table view of interaction:</h3>
+          <p>Select Condition Annotation:
+          <select id="CCI_ConditionKey_1Spatial" onclick="CellIntList('CCI_ConditionKey_1Spatial', ['CCI_Condition_1Spatial'])"></select></p>
+          <p>Select Condition:
+          <select id="CCI_Condition_1Spatial"></select></p>
+          <button class="cellChatTablebtSpatial" onclick="cellChatInteractionTable('SPATIALSELECT')"><b>Show Table</b></button>
+          <table id="CellChatTableSpatial" class="display"></table>
+        </div>
+      </div>
+      <div class="column2">
+        <div id="singlecellUMAP">
+          <h3>Plot single cell UMAP and make cell type selection:</h3>
+          <button class="singleCellLassoPlotbt" onclick="singleCellLassoSelection()"><b>Plot and Select</b></button>
+        </div>
+        <p id="singleCellPlotfig"></p>
+    </div>
+    </div><!--SPATIALSELECT-->
 
     <div id="GD" class=tabcontent>
       <div id="GDinput">
@@ -6479,11 +6524,9 @@ function update_UMAP(cell_ids, figOpt){
 
 }
 
-function saveCells(){
+function export_HPCells(){ // extract cells lasso-selected on one of the HP UMAPs to the rest of paraCell
 
-  console.log("started function!")
-
-  console.log(selected_cell_ids)
+  console.log(window.store.getState())
 
   window.store.getState().differential['celllist1'] = selected_cell_ids
 
