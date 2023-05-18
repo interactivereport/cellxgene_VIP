@@ -1979,11 +1979,8 @@ def go_genes(data):
 def hp_paraClus(data):
 
   with app.get_data_adaptor() as data_adaptor:
-    adata = data_adaptor.data
+    copyData = data_adaptor.data.copy()
 
-  adata.obs_names = adata.obs["index"]
-
-  copyData = adata
   copyData.var_names = copyData.var["features"].values
 
   parasiteGenes = copyData.uns["parasite_genes"]
@@ -2010,8 +2007,6 @@ def hp_paraClus(data):
   sc.tl.leiden(parasite, key_added = "parasite_clusters", resolution = 0.5)
 
   better_table = pd.DataFrame(parasite.obsm["X_umap"], columns = ['xdim','ydim'], index=parasite.obs_names)
-
-  #umap_table = pd.DataFrame(parasite.obsm['X_umap'], columns = ['xdim','ydim'])
 
   # Interactive Graph Plotting.
 
@@ -2044,11 +2039,7 @@ def hp_paraClus(data):
 def hp_hostClus(data):
  
   with app.get_data_adaptor() as data_adaptor:
-    adata = data_adaptor.data
-
-  adata.obs_names = adata.obs["index"]
-
-  copyData = adata
+    copyData = data_adaptor.data.copy()
 
   copyData.var_names = copyData.var["features"].values
 

@@ -741,6 +741,7 @@
         <button class="hpCC" onclick="hpAnalysis('hp_cc_host','hostFig')"><b>Cluster by Host</b></button>
         <button class="hpCC" onclick="hpAnalysis('hp_cc_para','parasiteFig')"><b>Cluster by Parasite</b></button>
         <button class="hpCC" onclick="hpAnalysis('hp_cc')"><b>Find Overlap</b></button></p>
+        <button class="hpCC" onclick="saveCells()"><b>Save Selected Cells</b></button></p>
         <p id="hpNote" style="color:blue;"></p>
         <p id="hostFig"></p>
         <p id="parasiteFig"></p>
@@ -2032,6 +2033,7 @@ function getCells(eID,sep=false){
       delete cells[one];
     }
   }
+  console.log(cells)
   return cells;
 }
 
@@ -6353,6 +6355,8 @@ error: function() {
 })
 }
 
+var selected_cell_ids = new Array();
+
 function hpAnalysis(hp_option,figOpt){
 
 if (isHP) {
@@ -6392,8 +6396,6 @@ $.ajax({
     let graphDiv = document.getElementById(figOpt).children[1].children[2];
     graphDiv.on('plotly_selected', function(eventData) {
       
-    selected_cell_ids = new Array();
-
     for (let i = 0; i < eventData.points.length; i++) { //iterate over every point
       id = eventData.points[i].customdata[0] //get all cell ids
       selected_cell_ids.push(id) 
@@ -6474,6 +6476,17 @@ function update_UMAP(cell_ids, figOpt){
     }
   })
   return
+
+}
+
+function saveCells(){
+
+  console.log("started function!")
+
+  console.log(selected_cell_ids)
+
+  window.store.getState().differential['celllist1'] = selected_cell_ids
+
 
 }
 
@@ -6776,6 +6789,7 @@ function searchDB(csv,direc,threshold){
 
 function getAllCells(){
   AllCells = Int32Array.from({length:window.store.getState().annoMatrix.nObs},(v,k)=>k);
+  console.log(AllCells)
 }
 
 var AllCells; 
