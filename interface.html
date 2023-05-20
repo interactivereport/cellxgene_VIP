@@ -746,21 +746,22 @@
     <div id="HostParasite" class="tabcontent">
       <div id="hpInput">
         <h3>Run Host-Parasite Interaction analyses within paraCell:</h3>
+        <p>In selection 1 (<span class="cellN1" style="color:red;" style="visibility: hidden;">0</span>) cells</p>
+        <p id="hp_exported_cells"></p>
         <p>Host-Parasite Percent Concent Violin Plots:
-        <button class="hpViol" onclick="hpAnalysis('hp_viol')"><b>Host-Parasite Violins</b></button>
+        <button class="hpViol" onclick="hpViolins()"><b>Host-Parasite Violins</b></button>
         <div id="hpSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
         <p id="hpViolins"></p>
         </p>
-        <p>Host-Parasite Cluster Comparision:
-        <button class="hpCC" onclick="hpAnalysis('hp_cc')"><b>Find Overlap</b></button></p>
-        <button class="hpCC" onclick="export_HPCells()"><b>Save Selected Cells</b></button></p>
+        <p>Host-Parasite UMAPs:
+        <button class="hpCC" onclick="hp_umap('hostFig')"><b>Cluster by Host</b></button>
+        <button class="hpCC" onclick="hp_umap('parasiteFig')"><b>Cluster by Parasite</b></button>
+        <button class="hpCC" onclick="export_HPCells()"><b>Save Selected Cells</b></button>
         <p id="hpNote" style="color:blue;"></p>
         <div class="column1">
-        <button class="hpCC" onclick="hpAnalysis('hp_cc_host','hostFig')"><b>Cluster by Host</b></button>
         <p id="hostFig"></p>
         </div>
         <div class="column2">
-        <button class="hpCC" onclick="hpAnalysis('hp_cc_para','parasiteFig')"><b>Cluster by Parasite</b></button>
         <p id="parasiteFig"></p>
         </div>
         <h3>Host-Parasite Cluster Marker Analysis:</h3>
@@ -6400,23 +6401,64 @@ error: function() {
 })
 }
 
-var selected_cell_ids = new Array();
+function hpViolins(){
 
-function hpAnalysis(hp_option,figOpt){
+  if (isHP) {
 
-if (isHP) {
+  document.getElementById("hpSpin").style.visibility="visible";
 
-document.getElementById("hpSpin").style.visibility="visible";
+  $(".hpCC").prop("disabled",true);
+  $(".hpViol").prop("disabled",true);
+  $(".hpCM").prop("disabled",true);
 
-$(".hpCC").prop("disabled",true);
-$(".hpViol").prop("disabled",true);
-$(".hpCM").prop("disabled",true);
-
-var D = {'method':hp_option,
+  var D = {'method':'hp_viol',
           'h_prefix':hostPrefix,
           'p_prefix':parasitePrefix};
 
 $.ajax({
+type:"POST",
+url: VIPurl,
+data:JSON.stringify(D),
+contentType: 'application/json;charset=UTF-8',//
+success: function(res){
+
+  document.getElementById("hpSpin").style.visibility="hidden";
+  
+  $(".hpCC").prop("disabled",false);
+  $(".hpViol").prop("disabled",false);
+  $(".hpCM").prop("disabled",false);
+
+  resD = JSON.parse(res);
+
+  $("#hpNote").text(resD[0]);
+
+  showImg(resD[1],resD[2]);
+
+},
+error: function() {
+  console.log('error!');
+}
+})
+
+}else{
+  $("#hpNote").text("No Host-Parasite Data available.");
+}
+
+}
+
+var selected_cell_ids = new Array();
+
+function hp_umap(figOpt){
+
+  document.getElementById("hpSpin").style.visibility="visible";
+
+  $(".hpCC").prop("disabled",true);
+  $(".hpViol").prop("disabled",true);
+  $(".hpCM").prop("disabled",true);
+
+  var D = {'method':figOpt};
+
+  $.ajax({
   type:"POST",
   url: VIPurl,
   data:JSON.stringify(D),
@@ -6429,11 +6471,12 @@ $.ajax({
 
     document.getElementById("hpSpin").style.visibility="hidden";
 
-    if(hp_option!='hp_cc'){
-
     resD = JSON.parse(res);
 
     $("#hpNote").text(resD[0]);
+
+    //figOpt_header_element = "#"+figOpt+ "_header"
+    //$(figOpt_JQ).html(resD[2]);
 
     figOpt_JQ = "#"+figOpt
     $(figOpt_JQ).html(resD[2]);
@@ -6447,19 +6490,10 @@ $.ajax({
     }
 
     update_UMAP(selected_cell_ids, figOpt)
+
+    selected_cell_ids = [] // clear point selection array for next selection
         
     })
-
-  
-    }else{
-
-      $(".hpViol").prop("disabled",false);
-      $(".hpCC").prop("disabled",false);
-      $(".hpCM").prop("disabled",false);
-      $("#hpNote").text(res);
-
-    }
-
   },
   error: function() {
     $(".hpViol").prop("disabled",false);
@@ -6467,16 +6501,18 @@ $.ajax({
     $(".hpCM").prop("disabled",false);
 
     document.getElementById("hpSpin").style.visibility="hidden";
-
     console.log('error!');
   }
 })
-}else{
-  $("#hpNote").text("No Host-Parasite Data available.");
-}
+
 }
 
+
 function update_UMAP(cell_ids, figOpt){
+
+  console.log("updating!")
+
+  console.log(cell_ids.length)
 
   if (figOpt == "hostFig"){
 
@@ -6513,6 +6549,7 @@ function update_UMAP(cell_ids, figOpt){
 
       $(updatedUMAP).html(resD[2]);
       document.getElementById("hpSpin").style.visibility="hidden";
+
     },
     error:function(request,status,error){
     console.log('error: ', request,status,error);
@@ -6525,8 +6562,6 @@ function update_UMAP(cell_ids, figOpt){
 }
 
 function export_HPCells(){ // extract cells lasso-selected on one of the HP UMAPs to the rest of paraCell
-
-  console.log(window.store.getState())
 
   window.store.getState().differential['celllist1'] = selected_cell_ids
 

@@ -311,8 +311,8 @@ def distributeTask(aTask):
     'tradeSeq':tsTable,
     'tradeSeqPlotting':tradeSeqPlot,
     'PAGA':pagaAnalysis,
-    'hp_cc_para':hp_paraClus,
-    'hp_cc_host':hp_hostClus,
+    'parasiteFig':hp_paraClus,
+    'hostFig':hp_hostClus,
     'hp_cc':hp_ClusterCompare,
     'hp_viol':hpClusterViolins,
     'get_hp':get_HostParasiteTable,
@@ -1981,6 +1981,8 @@ def hp_paraClus(data):
   with app.get_data_adaptor() as data_adaptor:
     copyData = data_adaptor.data.copy()
 
+  #copyData.obs_names = copyData.obs["index"]
+
   copyData.var_names = copyData.var["features"].values
 
   parasiteGenes = copyData.uns["parasite_genes"]
@@ -2040,6 +2042,8 @@ def hp_hostClus(data):
  
   with app.get_data_adaptor() as data_adaptor:
     copyData = data_adaptor.data.copy()
+
+  #copyData.obs_names = copyData.obs["index"]
 
   copyData.var_names = copyData.var["features"].values
 
