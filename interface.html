@@ -746,7 +746,6 @@
     <div id="HostParasite" class="tabcontent">
       <div id="hpInput">
         <h3>Run Host-Parasite Interaction analyses within paraCell:</h3>
-        <p>In selection 1 (<span class="cellN1" style="color:red;" style="visibility: hidden;">0</span>) cells</p>
         <p id="hp_exported_cells"></p>
         <p>Host-Parasite Percent Concent Violin Plots:
         <button class="hpViol" onclick="hpViolins()"><b>Host-Parasite Violins</b></button>
@@ -6475,8 +6474,7 @@ function hp_umap(figOpt){
 
     $("#hpNote").text(resD[0]);
 
-    //figOpt_header_element = "#"+figOpt+ "_header"
-    //$(figOpt_JQ).html(resD[2]);
+    selected_cell_ids = [] // clear any previously selected points
 
     figOpt_JQ = "#"+figOpt
     $(figOpt_JQ).html(resD[2]);
@@ -6490,8 +6488,6 @@ function hp_umap(figOpt){
     }
 
     update_UMAP(selected_cell_ids, figOpt)
-
-    selected_cell_ids = [] // clear point selection array for next selection
         
     })
   },
@@ -6562,6 +6558,10 @@ function update_UMAP(cell_ids, figOpt){
 }
 
 function export_HPCells(){ // extract cells lasso-selected on one of the HP UMAPs to the rest of paraCell
+
+  num_cells = selected_cell_ids.length;
+
+  document.getElementById("hp_exported_cells").innerHTML = "<p style='color:blue;'>"+num_cells+" cells saved.</p>"
 
   window.store.getState().differential['celllist1'] = selected_cell_ids
 
