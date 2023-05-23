@@ -773,7 +773,7 @@
         <button class="hpCC" onclick="hp_umap('parasiteFig')"><b>Cluster by Parasite</b></button>
         <button class="hpCC" onclick="export_HPCells()"><b>Save Selected Cells</b></button>
       </div>
-        <p id="hpNote" style="color:blue;"></p>
+        <p id="hpGraphsNote" style="color:blue;"></p>
         <div class="hp_column_wrapper">
           <div class="column1">
             <p id="hostFig"></p>
@@ -785,7 +785,9 @@
       </div><!--HostParasite Graphs-->
 
       <div id = "HostParasiteT" class="HPAcontent">
+        <div>
         <h3>Host-Parasite Cluster Marker Analysis:</h3>
+        <div id="hpSpin2" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
         <p>Select an Annotation:
           <select id="hp_cm_annot"></select>
         </p>
@@ -803,8 +805,9 @@
           <input id="hp_cm_num" type="number" step="1" value="5" min="3"/>
         </p>
         <button class="hpCM" onclick="hpClusterMarker_Analysis()"><b>HP Cluster Markers</b></button>
-        <p id="hpNote2" style="color:blue;"></p>
+        <p id="hpTableNote" style="color:blue;"></p>
         </p>
+        </div>
         <table id="hp_clusterMarker_table" class="display"></table>
       </div><!--HostParasite Cluster Marker Analysis-->
 
@@ -6426,7 +6429,7 @@ success: function(res){
 
   resD = JSON.parse(res);
 
-  $("#hpNote").text(resD[0]);
+  $("#hpGraphsNote").text(resD[0]);
 
   showImg(resD[1],resD[2]);
 
@@ -6437,7 +6440,7 @@ error: function() {
 })
 
 }else{
-  $("#hpNote").text("No Host-Parasite Data available.");
+  $("#hpGraphsNote").text("No Host-Parasite Data available.");
 }
 
 }
@@ -6467,14 +6470,14 @@ function hp_umap(figOpt){
 
     document.getElementById("hpSpin").style.visibility="hidden";
 
-    resD = JSON.parse(res);
+    //resD = JSON.parse(res);
 
-    $("#hpNote").text(resD[0]);
+    //$("#hpGraphsNote").text(resD[0]);
 
     selected_cell_ids = [] // clear any previously selected points
 
     figOpt_JQ = "#"+figOpt
-    $(figOpt_JQ).html(resD[2]);
+    $(figOpt_JQ).html(res);
 
     let graphDiv = document.getElementById(figOpt).children[1].children[2];
     graphDiv.on('plotly_selected', function(eventData) {
@@ -6538,9 +6541,9 @@ function update_UMAP(cell_ids, figOpt){
       
       console.log("updating plot", res);
 
-      resD = JSON.parse(res);
+      //resD = JSON.parse(res);
 
-      $(updatedUMAP).html(resD[2]);
+      $(updatedUMAP).html(res);
       document.getElementById("hpSpin").style.visibility="hidden";
 
     },
@@ -6597,7 +6600,7 @@ function hpClusterMarker_Analysis(){
 
 if (isHP) {
 
-$("#hpNote2").text("");
+$("#hpTableNote").text("");
 
 hpCM_annot = document.getElementById("hp_cm_annot").value
 h_or_p = document.getElementById("hp_host_or_parasite").value
@@ -6606,7 +6609,7 @@ cm_method = document.getElementById("hp_cm_method").value
 
 cm_num = document.getElementById("hp_cm_num").value
 
-document.getElementById("hpSpin").style.visibility="visible";
+document.getElementById("hpSpin2").style.visibility="visible";
 
 $(".hpCM").prop("disabled",true);
 $(".hpViol").prop("disabled",true);
@@ -6625,14 +6628,14 @@ $.ajax({
   contentType: 'application/json;charset=UTF-8',//
   success: function(res){
   
-  document.getElementById("hpSpin").style.visibility="hidden";
+  document.getElementById("hpSpin2").style.visibility="hidden";
   
   $(".hpCM").prop("disabled",false);
   $(".hpViol").prop("disabled",false);
   $(".hpCC").prop("disabled",false);
   
     if(res.startsWith('ERROR')){
-      $("#hpNote2").text(res);
+      $("#hpTableNote").text(res);
       document.getElementById("hpSpin").style.visibility="hidden";
       return;
     }
@@ -6663,7 +6666,7 @@ $.ajax({
   }
 })
 }else{
-  $("#hpNote2").text("No Host-Parasite Data available.");
+  $("#hpTableNote").text("No Host-Parasite Data available.");
 }
 }
 

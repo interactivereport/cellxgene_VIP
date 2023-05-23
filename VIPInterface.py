@@ -1981,8 +1981,6 @@ def hp_paraClus(data):
   with app.get_data_adaptor() as data_adaptor:
     copyData = data_adaptor.data.copy()
 
-  #copyData.obs_names = copyData.obs["index"]
-
   copyData.var_names = copyData.var["features"].values
 
   parasiteGenes = copyData.uns["parasite_genes"]
@@ -2006,44 +2004,36 @@ def hp_paraClus(data):
 
   sc.tl.umap(parasite)
 
-  sc.tl.leiden(parasite, key_added = "parasite_clusters", resolution = 0.5)
+  sc.tl.leiden(parasite, key_added = "parasite_clusters", resolution = 0.2)
 
-  better_table = pd.DataFrame(parasite.obsm["X_umap"], columns = ['xdim','ydim'], index=parasite.obs_names)
+  umap_table = pd.DataFrame(parasite.obsm["X_umap"], columns = ['xdim','ydim'], index=parasite.obs_names)
 
   # Interactive Graph Plotting.
 
   color_palette = list(map(colors.to_hex, cm.tab20.colors))
   color = parasite.obs['parasite_clusters'].astype('category')
     
-  parasite_plot = px.scatter(better_table, x = "xdim", y = "ydim", color=color, color_discrete_sequence=color_palette, hover_data=[better_table.index])
+  parasite_plot = px.scatter(umap_table, x = "xdim", y = "ydim", color=color, color_discrete_sequence=color_palette, hover_data=[umap_table.index])
 
   parasite_plot.update_layout(
       legend=dict(
       orientation='h',
-      y=0,
+      y=-0.15,
       x=0,
       xanchor='auto',
       yanchor='top'
       ),
-      legend_title_text='Parasite_Clusters'
+      legend_title_text='Parasite Clusters'
     )
 
-  div = plotIO.to_html(parasite_plot)
+  fig = plotIO.to_html(parasite_plot)
 
-  html = "parasiteFig"
-
-  note = ""
-
-  resList = [note, html, div] 
-
-  return json.dumps(resList)
+  return fig
 
 def hp_hostClus(data):
  
   with app.get_data_adaptor() as data_adaptor:
     copyData = data_adaptor.data.copy()
-
-  #copyData.obs_names = copyData.obs["index"]
 
   copyData.var_names = copyData.var["features"].values
 
@@ -2068,41 +2058,31 @@ def hp_hostClus(data):
 
   sc.tl.umap(host)
 
-  sc.tl.leiden(host, key_added = "host_clusters", resolution=0.5)
+  sc.tl.leiden(host, key_added = "host_clusters", resolution=0.2)
 
-  #adata.obs['host_clusters'] = host.obs["host_clusters"]
-
-  #adata.obs['host_clusters'] = host.obs["host_clusters"].values
-
-  better_table = pd.DataFrame(host.obsm["X_umap"], columns = ['xdim','ydim'], index=host.obs_names)
+  umap_table = pd.DataFrame(host.obsm["X_umap"], columns = ['xdim','ydim'], index=host.obs_names)
 
   # Interactive Graph Plotting.
   
   color_palette = list(map(colors.to_hex, cm.tab20.colors))
   color = host.obs['host_clusters'].astype('category')
 
-  host_plot = px.scatter(better_table, x = "xdim", y = "ydim",color=color,color_discrete_sequence=color_palette, hover_data=[better_table.index])
+  host_plot = px.scatter(umap_table, x = "xdim", y = "ydim",color=color,color_discrete_sequence=color_palette, hover_data=[umap_table.index])
 
   host_plot.update_layout(
       legend=dict(
       orientation='h',
-      y=0,
+      y=-0.20,
       x=0,
       xanchor='auto',
       yanchor='top'
       ),
-      legend_title_text='Host_Clusters'
+      legend_title_text='Host Clusters'
     )
 
-  div = plotIO.to_html(host_plot)
+  fig = plotIO.to_html(host_plot)
     
-  html = "hostFig"
-
-  note = ""
-
-  resList = [note, html, div]
-
-  return json.dumps(resList)
+  return fig
 
 def hp_ClusterCompare(data):
   
