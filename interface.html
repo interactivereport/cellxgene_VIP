@@ -531,6 +531,10 @@
         background-color: #CCCCCC;
       }
 
+      .hp_column_wrapper {
+        position: relative
+      }
+
       .column1 {
         float: left;
         width:50%;
@@ -541,6 +545,12 @@
         float: right;
         width:50%;
         padding:10px;
+      }
+
+      .hp_table {
+        position: relative;
+        width:100%
+
       }
 
     </style>
@@ -554,7 +564,7 @@
       <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells()">Cell Population View</button>
       <button class="tablinks" onclick="selFun(event, 'TIA');defaultTopSel('TIA','pseudo_tab');getAllCells()">Trajectory Inference</button>
       <button class="tablinks" onclick="selFun(event, 'TradeSeq');getAllCells();tradeSeq_setup()">TradeSeq</button>
-      <button class="tablinks" onclick="selFun(event, 'HostParasite');getAllCells()">Host-Parasite Interactions</button>
+      <button class="tablinks" onclick="selFun(event, 'HPA');defaultTopSel('HPA','HPA_graphs');getAllCells();">Host-Parasite Interactions</button>
       <button class="tablinks" onclick="selFun(event, 'SPATIALSELECT')">Spatial Selection</button>
       <button class="tablinks" onclick="selFun(event, 'SGV');defaultTopSel('SGV','SGVsingle')">Violin</button>
       <button class="tablinks" onclick="selFun(event, 'PGV')">Stacked Violin</button>
@@ -743,7 +753,13 @@
 
     </div><!--geneSearch-->
 
-    <div id="HostParasite" class="tabcontent">
+    <div id="HPA" class="tabcontent">
+      <div class="topTab">
+        <button id="HPA_graphs" class="HPAlinks" onclick="selTop(event, 'HostParasiteG','HPA')">Host-Parasite Visualizations</button>
+        <button id="HPA_table" class="HPAlinks" onclick="selTop(event, 'HostParasiteT','HPA')">Host-Parasite Cluster Marker Analysis</button>
+      </div>
+
+    <div id="HostParasiteG" class="HPAcontent">
       <div id="hpInput">
         <h3>Run Host-Parasite Interaction analyses within paraCell:</h3>
         <p id="hp_exported_cells"></p>
@@ -756,62 +772,43 @@
         <button class="hpCC" onclick="hp_umap('hostFig')"><b>Cluster by Host</b></button>
         <button class="hpCC" onclick="hp_umap('parasiteFig')"><b>Cluster by Parasite</b></button>
         <button class="hpCC" onclick="export_HPCells()"><b>Save Selected Cells</b></button>
+      </div>
         <p id="hpNote" style="color:blue;"></p>
-        <div class="column1">
-        <p id="hostFig"></p>
-        </div>
-        <div class="column2">
-        <p id="parasiteFig"></p>
-        </div>
+        <div class="hp_column_wrapper">
+          <div class="column1">
+            <p id="hostFig"></p>
+          </div>
+          <div class="column2">
+            <p id="parasiteFig"></p>
+          </div>
+        </div> 
+      </div><!--HostParasite Graphs-->
+
+      <div id = "HostParasiteT" class="HPAcontent">
         <h3>Host-Parasite Cluster Marker Analysis:</h3>
         <p>Select an Annotation:
-        <select id="hp_cm_annot"></select></p>
+          <select id="hp_cm_annot"></select>
+        </p>
         <p>Select Host or Parasite:
-        <select id="hp_host_or_parasite"><option value="host_genes">Host</option><option value="parasite_genes">Parasite</option></select></p>
+          <select id="hp_host_or_parasite"><option value="host_genes">Host</option><option value="parasite_genes">Parasite</option></select>
+        </p>
         <p>Method:
-        <select id="hp_cm_method">
-          <option value="t-test">t-test</option>
-          <option value="wilcoxon">wilcoxon</option>
-          <option value="t-test_overestim_var">t-test_overestim_var</option>
-        </select>
+          <select id="hp_cm_method">
+            <option value="t-test">t-test</option>
+            <option value="wilcoxon">wilcoxon</option>
+            <option value="t-test_overestim_var">t-test_overestim_var</option>
+          </select>
         </p>
         <p>Genes per Group:
-        <input id="hp_cm_num" type="number" step="1" value="5" min="3"/>
+          <input id="hp_cm_num" type="number" step="1" value="5" min="3"/>
         </p>
         <button class="hpCM" onclick="hpClusterMarker_Analysis()"><b>HP Cluster Markers</b></button>
         <p id="hpNote2" style="color:blue;"></p>
         </p>
-      </div>
-      <table id="hp_clusterMarker_table" class="display"></table>
+        <table id="hp_clusterMarker_table" class="display"></table>
+      </div><!--HostParasite Cluster Marker Analysis-->
 
     </div><!--HostParasite-->
-
-    <div id="SPATIALSELECT" class="tabcontent">
-      <div class="column1">
-        <div id="spatialUMAP">
-          <h3>Plot spatial UMAP and make spot selection:</h3>
-          <button class="spatialLassoPlotbt" onclick="spatialLassoSelection()"><b>Plot and Select</b></button>
-        </div>
-        <p id="spatialPlotfig"></p>
-
-        <div id="cellChatInteractionTableSpatial">
-          <h3> Table view of interaction:</h3>
-          <p>Select Condition Annotation:
-          <select id="CCI_ConditionKey_1Spatial" onclick="CellIntList('CCI_ConditionKey_1Spatial', ['CCI_Condition_1Spatial'])"></select></p>
-          <p>Select Condition:
-          <select id="CCI_Condition_1Spatial"></select></p>
-          <button class="cellChatTablebtSpatial" onclick="cellChatInteractionTable('SPATIALSELECT')"><b>Show Table</b></button>
-          <table id="CellChatTableSpatial" class="display"></table>
-        </div>
-      </div>
-      <div class="column2">
-        <div id="singlecellUMAP">
-          <h3>Plot single cell UMAP and make cell type selection:</h3>
-          <button class="singleCellLassoPlotbt" onclick="singleCellLassoSelection()"><b>Plot and Select</b></button>
-        </div>
-        <p id="singleCellPlotfig"></p>
-    </div>
-    </div><!--SPATIALSELECT-->
 
     <div id="GD" class=tabcontent>
       <div id="GDinput">
