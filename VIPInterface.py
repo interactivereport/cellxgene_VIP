@@ -1587,8 +1587,6 @@ def cellpopview(data):
 
     plot_dataframe = pd.DataFrame(data)
 
-    ppr.pprint(plot_dataframe)
-
     # Interactive Graph Plotting.
 
     plot_title = condition_1 + " vs. " + condition_2

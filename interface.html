@@ -767,14 +767,12 @@
         <button class="hpCC" onclick="export_HPCells()"><b>Save Selected Cells</b></button>
       </div>
         <p id="hpGraphsNote" style="color:blue;"></p>
-        <div class="hp_column_wrapper">
           <div class="column1">
             <p id="hostFig"></p>
           </div>
           <div class="column2">
             <p id="parasiteFig"></p>
           </div>
-        </div> 
       </div><!--HostParasite Graphs-->
 
       <div id = "HostParasiteT" class="HPAcontent">
@@ -2071,7 +2069,6 @@ function getCells(eID,sep=false){
       delete cells[one];
     }
   }
-  console.log(cells)
   return cells;
 }
 
@@ -5675,11 +5672,7 @@ function CellPopPlot(){
       $(".CPVbt").prop("disabled",false);
       $(".CPVTablebt").prop("disabled",false);
       document.getElementById("CPVspin").style.visibility="hidden";
-      $("#CPVnote").text('');
-
-      console.log(res);
-      console.log(typeof(res))
-      
+      $("#CPVnote").text('');      
       $('#CPVfig').html(res);
 
     },
@@ -6882,7 +6875,6 @@ function searchDB(csv,direc,threshold){
 
 function getAllCells(){
   AllCells = Int32Array.from({length:window.store.getState().annoMatrix.nObs},(v,k)=>k);
-  console.log(AllCells)
 }
 
 var AllCells; 
