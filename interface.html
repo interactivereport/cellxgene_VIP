@@ -547,12 +547,6 @@
         padding:10px;
       }
 
-      .hp_table {
-        position: relative;
-        width:100%
-
-      }
-
     </style>
   </head>
 <body>
@@ -565,7 +559,6 @@
       <button class="tablinks" onclick="selFun(event, 'TIA');defaultTopSel('TIA','pseudo_tab');getAllCells()">Trajectory Inference</button>
       <button class="tablinks" onclick="selFun(event, 'TradeSeq');getAllCells();tradeSeq_setup()">TradeSeq</button>
       <button class="tablinks" onclick="selFun(event, 'HPA');defaultTopSel('HPA','HPA_graphs');getAllCells();">Host-Parasite Interactions</button>
-      <button class="tablinks" onclick="selFun(event, 'SPATIALSELECT')">Spatial Selection</button>
       <button class="tablinks" onclick="selFun(event, 'SGV');defaultTopSel('SGV','SGVsingle')">Violin</button>
       <button class="tablinks" onclick="selFun(event, 'PGV')">Stacked Violin</button>
       <button class="tablinks" onclick="selFun(event, 'HEAT')">Heatmap</button>
@@ -6451,6 +6444,7 @@ function hp_umap(figOpt){
 
   document.getElementById("hpSpin").style.visibility="visible";
 
+  //deactivate buttons in hp tab
   $(".hpCC").prop("disabled",true);
   $(".hpViol").prop("disabled",true);
   $(".hpCM").prop("disabled",true);
@@ -6464,27 +6458,24 @@ function hp_umap(figOpt){
   contentType: 'application/json;charset=UTF-8',//
   success: function(res){
 
+    //reactivate buttons
     $(".hpCC").prop("disabled",false);
     $(".hpViol").prop("disabled",false);
     $(".hpCM").prop("disabled",false);
 
     document.getElementById("hpSpin").style.visibility="hidden";
 
-    //resD = JSON.parse(res);
-
-    //$("#hpGraphsNote").text(resD[0]);
-
-    selected_cell_ids = [] // clear any previously selected points
-
     figOpt_JQ = "#"+figOpt
     $(figOpt_JQ).html(res);
 
     let graphDiv = document.getElementById(figOpt).children[1].children[2];
     graphDiv.on('plotly_selected', function(eventData) {
-      
+
+    selected_cell_ids = [] // clear any previously selected points
+
     for (let i = 0; i < eventData.points.length; i++) { //iterate over every point
       id = eventData.points[i].customdata[0] //get all cell ids
-      selected_cell_ids.push(id) 
+      selected_cell_ids.push(id) //store in array for later use
     }
 
     update_UMAP(selected_cell_ids, figOpt)
@@ -6506,25 +6497,28 @@ function hp_umap(figOpt){
 
 function update_UMAP(cell_ids, figOpt){
 
-  console.log("updating!")
-
-  console.log(cell_ids.length)
+  //deactivate buttons in hp tab
+  $(".hpCC").prop("disabled",true);
+  $(".hpViol").prop("disabled",true);
+  $(".hpCM").prop("disabled",true);
 
   if (figOpt == "hostFig"){
 
-    be_func = "update_parasite_umap"
+    update_func = "update_parasite_umap"
 
     updatedUMAP = "#parasiteFig"
+    newFigOpt = "parasiteFig"
 
   }else{
 
-    be_func = "update_host_umap"
+    update_func = "update_host_umap"
 
     updatedUMAP = "#hostFig"
+    newFigOpt = "hostFig"
 
   }
 
-  var D = {'method': be_func,
+  var D = {'method': update_func,
   'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
   'selection': cell_ids
   };
@@ -6538,19 +6532,40 @@ function update_UMAP(cell_ids, figOpt){
     contentType: 'application/json;charset=UTF-8',
     dataType: 'html',
     success: function(res){
+
+      //reactivate buttons
+      $(".hpViol").prop("disabled",false);
+      $(".hpCC").prop("disabled",false);
+      $(".hpCM").prop("disabled",false);
       
-      console.log("updating plot", res);
-
-      //resD = JSON.parse(res);
-
       $(updatedUMAP).html(res);
       document.getElementById("hpSpin").style.visibility="hidden";
+
+      let graphDiv = document.getElementById(newFigOpt).children[1].children[2];
+      graphDiv.on('plotly_selected', function(eventData) {
+
+        selected_cell_ids = [] // clear any previously selected points
+
+        for (let i = 0; i < eventData.points.length; i++) { //iterate over every point
+          id = eventData.points[i].customdata[0] //get all cell ids
+          selected_cell_ids.push(id) 
+        }
+
+    
+      update_UMAP(selected_cell_ids, newFigOpt)
+        
+    })
 
     },
     error:function(request,status,error){
     console.log('error: ', request,status,error);
       $("#hpNote").text('Plotting Error!');
       document.getElementById("hpSpin").style.visibility="hidden";
+      
+      $(".hpViol").prop("disabled",false);
+      $(".hpCC").prop("disabled",false);
+      $(".hpCM").prop("disabled",false);
+
     }
   })
   return
@@ -6561,7 +6576,7 @@ function export_HPCells(){ // extract cells lasso-selected on one of the HP UMAP
 
   num_cells = selected_cell_ids.length;
 
-  document.getElementById("hp_exported_cells").innerHTML = "<p style='color:blue;'>"+num_cells+" cells saved.</p>"
+  document.getElementById("hp_exported_cells").innerHTML = "<p style='color:blue;'>"+num_cells+" cells saved as 'Selection 1'.</p>"
 
   window.store.getState().differential['celllist1'] = selected_cell_ids
 

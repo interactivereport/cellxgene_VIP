@@ -313,7 +313,6 @@ def distributeTask(aTask):
     'PAGA':pagaAnalysis,
     'parasiteFig':hp_paraClus,
     'hostFig':hp_hostClus,
-    'hp_cc':hp_ClusterCompare,
     'hp_viol':hpClusterViolins,
     'get_hp':get_HostParasiteTable,
     'hp_CM':hp_ClusterMarkers,
@@ -2084,57 +2083,6 @@ def hp_hostClus(data):
     
   return fig
 
-def hp_ClusterCompare(data):
-  
-  with app.get_data_adaptor() as data_adaptor:
-    adata = data_adaptor.data.copy()
-
-  adata.var_names = adata.var["features"].values
-
-  paraTable = adata.obs['parasite_clusters']
-  hostTable = adata.obs['host_clusters']
-
-  paraD = {}
-  hostD = {}
-
-  for x in adata.obs['parasite_clusters'].cat.categories: # iterate over every category
-    for y in range(0,len(paraTable)): # and every cell
-      v = paraTable[y]
-      if v == x:
-        cell_label = paraTable.index[y]
-        if x not in paraD:
-          paraD[x] = [cell_label]
-        else:
-          paraD[x].append(cell_label)
-
-  for x in adata.obs['host_clusters'].cat.categories: # iterate over every category
-    for y in range(0,len(hostTable)): # and every cell
-      v = hostTable[y]
-      if v == x:
-        cell_label = hostTable.index[y]
-        if x not in hostD:
-          hostD[x] = [cell_label]
-        else:
-          hostD[x].append(cell_label)
-
-  matches = {}
-
-  for x in paraD:
-    for y in hostD:
-      c_k = str(x) + "_" + str(y)
-      p = set(paraD[x])
-      h = set(hostD[y])
-      counts = len(p.intersection(h))
-      matches[c_k] = counts
-
-  most_overlaps = max(matches,key=matches.get)
-
-  templist = most_overlaps.split("_")
-
-  restext = "Host Cluster " + templist[0] + " and Parasite Cluster " + templist[1] + " show the most overlap."
-
-  return restext
-
 def hpClusterViolins(data):
 
   with app.get_data_adaptor() as data_adaptor:
@@ -2238,19 +2186,6 @@ def hp_ClusterMarkers(data):
 
   return json.dumps(res)
   
-def updateUMAP(data):
-
-  points = data['selection']
-
-  with app.get_data_adaptor() as data_adaptor:
-    adata = data_adaptor.data
-
-  copyData = adata
-  copyData.var_names = copyData.var["features"].values
-
-  parasiteGenes = copyData.uns["parasite_genes"]
- 
-  # Split Data ----------
 
  
 
