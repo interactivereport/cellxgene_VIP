@@ -15,6 +15,7 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 import matplotlib.patches as mpatches
 from matplotlib import rcParams
+from matplotlib import cm, colors
 import plotly.graph_objects as go
 import plotly.io as plotIO
 import plotly.express as px
@@ -310,13 +311,14 @@ def distributeTask(aTask):
     'tradeSeq':tsTable,
     'tradeSeqPlotting':tradeSeqPlot,
     'PAGA':pagaAnalysis,
-    'hp_cc_para':hp_paraClus,
-    'hp_cc_host':hp_hostClus,
-    'hp_cc':hp_ClusterCompare,
+    'parasiteFig':hp_paraClus,
+    'hostFig':hp_hostClus,
     'hp_viol':hpClusterViolins,
     'get_hp':get_HostParasiteTable,
     'hp_CM':hp_ClusterMarkers,
-    'get_go_genes':go_genes
+    'get_go_genes':go_genes,
+    'update_parasite_umap':hp_paraClus,
+    'update_host_umap':hp_hostClus  
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1974,9 +1976,8 @@ def go_genes(data):
 def hp_paraClus(data):
 
   with app.get_data_adaptor() as data_adaptor:
-    adata = data_adaptor.data
+    copyData = data_adaptor.data.copy()
 
-  copyData = adata
   copyData.var_names = copyData.var["features"].values
 
   parasiteGenes = copyData.uns["parasite_genes"]
@@ -1984,6 +1985,11 @@ def hp_paraClus(data):
   # Split Data ----------
 
   parasite = copyData[:,parasiteGenes]
+
+  if 'selection' in data: #update UMAP
+    
+    points = data['selection']
+    parasite = parasite[points]
 
   sc.pp.highly_variable_genes(parasite)
 
@@ -1995,32 +2001,36 @@ def hp_paraClus(data):
 
   sc.tl.umap(parasite)
 
-  sc.tl.leiden(parasite, key_added = "parasite_clusters")
+  sc.tl.leiden(parasite, key_added = "parasite_clusters", resolution = 0.2)
 
-  adata.obs['parasite_clusters'] = parasite.obs["parasite_clusters"]
+  umap_table = pd.DataFrame(parasite.obsm["X_umap"], columns = ['xdim','ydim'], index=parasite.obs_names)
 
-  adata.obs['parasite_clusters'] = parasite.obs["parasite_clusters"].values
+  # Interactive Graph Plotting.
 
-  fig1 = sc.pl.umap(parasite, color = ["parasite_clusters"], title = "Parasite Clusters")
+  color_palette = list(map(colors.to_hex, cm.tab20.colors))
+  color = parasite.obs['parasite_clusters'].astype('category')
+    
+  parasite_plot = px.scatter(umap_table, x = "xdim", y = "ydim", color=color, color_discrete_sequence=color_palette, hover_data=[umap_table.index])
 
-  fig1 = plt.gcf()
+  parasite_plot.update_layout(
+      legend=dict(
+      orientation='h',
+      y=-0.15,
+      x=0,
+      xanchor='auto',
+      yanchor='top'
+      ),
+      legend_title_text='Parasite Clusters'
+    )
 
-  finalfig = iostreamFig(fig1)
+  fig = plotIO.to_html(parasite_plot)
 
-  html = "parasiteFig"
-
-  note = ""
-
-  resList = [note, html, finalfig]
-
-  return json.dumps(resList)
+  return fig
 
 def hp_hostClus(data):
  
   with app.get_data_adaptor() as data_adaptor:
-    adata = data_adaptor.data
-
-  copyData = adata
+    copyData = data_adaptor.data.copy()
 
   copyData.var_names = copyData.var["features"].values
 
@@ -2029,6 +2039,11 @@ def hp_hostClus(data):
   # Split Data ----------
 
   host = copyData[:,hostGenes]
+
+  if 'selection' in data: 
+    
+    points = data['selection']
+    host = host[points]
 
   sc.pp.highly_variable_genes(host)
 
@@ -2040,76 +2055,31 @@ def hp_hostClus(data):
 
   sc.tl.umap(host)
 
-  sc.tl.leiden(host, key_added = "host_clusters")
+  sc.tl.leiden(host, key_added = "host_clusters", resolution=0.2)
 
-  adata.obs['host_clusters'] = host.obs["host_clusters"]
+  umap_table = pd.DataFrame(host.obsm["X_umap"], columns = ['xdim','ydim'], index=host.obs_names)
 
-  adata.obs['host_clusters'] = host.obs["host_clusters"].values
-
-  fig1 = sc.pl.umap(host, color = ["host_clusters"], title = "Host Clusters")
-
-  fig1 = plt.gcf()
-
-  finalfig = iostreamFig(fig1)
-
-  html = "hostFig"
-
-  note = ""
-
-  resList = [note, html, finalfig]
-
-  return json.dumps(resList)
-
-def hp_ClusterCompare(data):
+  # Interactive Graph Plotting.
   
-  with app.get_data_adaptor() as data_adaptor:
-    adata = data_adaptor.data.copy()
+  color_palette = list(map(colors.to_hex, cm.tab20.colors))
+  color = host.obs['host_clusters'].astype('category')
 
-  adata.var_names = adata.var["features"].values
+  host_plot = px.scatter(umap_table, x = "xdim", y = "ydim",color=color,color_discrete_sequence=color_palette, hover_data=[umap_table.index])
 
-  paraTable = adata.obs['parasite_clusters']
-  hostTable = adata.obs['host_clusters']
+  host_plot.update_layout(
+      legend=dict(
+      orientation='h',
+      y=-0.20,
+      x=0,
+      xanchor='auto',
+      yanchor='top'
+      ),
+      legend_title_text='Host Clusters'
+    )
 
-  paraD = {}
-  hostD = {}
-
-  for x in adata.obs['parasite_clusters'].cat.categories: # iterate over every category
-    for y in range(0,len(paraTable)): # and every cell
-      v = paraTable[y]
-      if v == x:
-        cell_label = paraTable.index[y]
-        if x not in paraD:
-          paraD[x] = [cell_label]
-        else:
-          paraD[x].append(cell_label)
-
-  for x in adata.obs['host_clusters'].cat.categories: # iterate over every category
-    for y in range(0,len(hostTable)): # and every cell
-      v = hostTable[y]
-      if v == x:
-        cell_label = hostTable.index[y]
-        if x not in hostD:
-          hostD[x] = [cell_label]
-        else:
-          hostD[x].append(cell_label)
-
-  matches = {}
-
-  for x in paraD:
-    for y in hostD:
-      c_k = str(x) + "_" + str(y)
-      p = set(paraD[x])
-      h = set(hostD[y])
-      counts = len(p.intersection(h))
-      matches[c_k] = counts
-
-  most_overlaps = max(matches,key=matches.get)
-
-  templist = most_overlaps.split("_")
-
-  restext = "Host Cluster " + templist[0] + " and Parasite Cluster " + templist[1] + " show the most overlap."
-
-  return restext
+  fig = plotIO.to_html(host_plot)
+    
+  return fig
 
 def hpClusterViolins(data):
 
@@ -2215,3 +2185,6 @@ def hp_ClusterMarkers(data):
   return json.dumps(res)
   
 
+ 
+
+  

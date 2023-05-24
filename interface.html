@@ -530,6 +530,19 @@
         text-align: center;
         background-color: #CCCCCC;
       }
+
+      .column1 {
+        float: left;
+        width:50%;
+        padding:10px;
+      }
+
+      .column2 {
+        float: right;
+        width:50%;
+        padding:10px;
+      }
+
     </style>
   </head>
 <body>
@@ -541,7 +554,7 @@
       <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells()">Cell Population View</button>
       <button class="tablinks" onclick="selFun(event, 'TIA');defaultTopSel('TIA','pseudo_tab');getAllCells()">Trajectory Inference</button>
       <button class="tablinks" onclick="selFun(event, 'TradeSeq');getAllCells();tradeSeq_setup()">TradeSeq</button>
-      <button class="tablinks" onclick="selFun(event, 'HostParasite');getAllCells()">Host-Parasite Interactions</button>
+      <button class="tablinks" onclick="selFun(event, 'HPA');defaultTopSel('HPA','HPA_graphs');getAllCells();">Host-Parasite Interactions</button>
       <button class="tablinks" onclick="selFun(event, 'SGV');defaultTopSel('SGV','SGVsingle')">Violin</button>
       <button class="tablinks" onclick="selFun(event, 'PGV')">Stacked Violin</button>
       <button class="tablinks" onclick="selFun(event, 'HEAT')">Heatmap</button>
@@ -729,41 +742,61 @@
 
     </div><!--geneSearch-->
 
-    <div id="HostParasite" class="tabcontent">
+    <div id="HPA" class="tabcontent">
+      <div class="topTab">
+        <button id="HPA_graphs" class="HPAlinks" onclick="selTop(event, 'HostParasiteG','HPA')">Host-Parasite Visualizations</button>
+        <button id="HPA_table" class="HPAlinks" onclick="selTop(event, 'HostParasiteT','HPA')">Host-Parasite Cluster Marker Analysis</button>
+      </div>
+
+    <div id="HostParasiteG" class="HPAcontent">
       <div id="hpInput">
         <h3>Run Host-Parasite Interaction analyses within paraCell:</h3>
+        <p id="hp_exported_cells"></p>
         <p>Host-Parasite Percent Concent Violin Plots:
-        <button class="hpViol" onclick="hpAnalysis('hp_viol')"><b>Host-Parasite Violins</b></button>
+        <button class="hpViol" onclick="hpViolins()"><b>Host-Parasite Violins</b></button>
         <div id="hpSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
         <p id="hpViolins"></p>
         </p>
-        <p>Host-Parasite Cluster Comparision:
-        <button class="hpCC" onclick="hpAnalysis('hp_cc_host')"><b>Cluster by Host</b></button>
-        <button class="hpCC" onclick="hpAnalysis('hp_cc_para')"><b>Cluster by Parasite</b></button>
-        <button class="hpCC" onclick="hpAnalysis('hp_cc')"><b>Find Overlap</b></button></p>
-        <p id="hpNote" style="color:blue;"></p>
-        <p id="hostFig"></p>
-        <p id="parasiteFig"></p>
+        <p>Host-Parasite UMAPs:
+        <button class="hpCC" onclick="hp_umap('hostFig')"><b>Cluster by Host</b></button>
+        <button class="hpCC" onclick="hp_umap('parasiteFig')"><b>Cluster by Parasite</b></button>
+        <button class="hpCC" onclick="export_HPCells()"><b>Save Selected Cells</b></button>
+      </div>
+        <p id="hpGraphsNote" style="color:blue;"></p>
+          <div class="column1">
+            <p id="hostFig"></p>
+          </div>
+          <div class="column2">
+            <p id="parasiteFig"></p>
+          </div>
+      </div><!--HostParasite Graphs-->
+
+      <div id = "HostParasiteT" class="HPAcontent">
+        <div>
         <h3>Host-Parasite Cluster Marker Analysis:</h3>
+        <div id="hpSpin2" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
         <p>Select an Annotation:
-        <select id="hp_cm_annot"></select></p>
+          <select id="hp_cm_annot"></select>
+        </p>
         <p>Select Host or Parasite:
-        <select id="hp_host_or_parasite"><option value="host_genes">Host</option><option value="parasite_genes">Parasite</option></select></p>
+          <select id="hp_host_or_parasite"><option value="host_genes">Host</option><option value="parasite_genes">Parasite</option></select>
+        </p>
         <p>Method:
-        <select id="hp_cm_method">
-          <option value="t-test">t-test</option>
-          <option value="wilcoxon">wilcoxon</option>
-          <option value="t-test_overestim_var">t-test_overestim_var</option>
-        </select>
+          <select id="hp_cm_method">
+            <option value="t-test">t-test</option>
+            <option value="wilcoxon">wilcoxon</option>
+            <option value="t-test_overestim_var">t-test_overestim_var</option>
+          </select>
         </p>
         <p>Genes per Group:
-        <input id="hp_cm_num" type="number" step="1" value="5" min="3"/>
+          <input id="hp_cm_num" type="number" step="1" value="5" min="3"/>
         </p>
         <button class="hpCM" onclick="hpClusterMarker_Analysis()"><b>HP Cluster Markers</b></button>
-        <p id="hpNote2" style="color:blue;"></p>
+        <p id="hpTableNote" style="color:blue;"></p>
         </p>
-      </div>
-      <table id="hp_clusterMarker_table" class="display"></table>
+        </div>
+        <table id="hp_clusterMarker_table" class="display"></table>
+      </div><!--HostParasite Cluster Marker Analysis-->
 
     </div><!--HostParasite-->
 
@@ -5635,8 +5668,7 @@ function CellPopPlot(){
       $(".CPVbt").prop("disabled",false);
       $(".CPVTablebt").prop("disabled",false);
       document.getElementById("CPVspin").style.visibility="hidden";
-      $("#CPVnote").text('');
-      
+      $("#CPVnote").text('');      
       $('#CPVfig').html(res);
 
     },
@@ -6350,50 +6382,94 @@ error: function() {
 })
 }
 
-function hpAnalysis(hp_option){
+function hpViolins(){
 
-if (isHP) {
+  if (isHP) {
 
-document.getElementById("hpSpin").style.visibility="visible";
+  document.getElementById("hpSpin").style.visibility="visible";
 
-$(".hpCC").prop("disabled",true);
-$(".hpViol").prop("disabled",true);
-$(".hpCM").prop("disabled",true);
+  $(".hpCC").prop("disabled",true);
+  $(".hpViol").prop("disabled",true);
+  $(".hpCM").prop("disabled",true);
 
-var D = {'method':hp_option,
+  var D = {'method':'hp_viol',
           'h_prefix':hostPrefix,
           'p_prefix':parasitePrefix};
 
 $.ajax({
+type:"POST",
+url: VIPurl,
+data:JSON.stringify(D),
+contentType: 'application/json;charset=UTF-8',//
+success: function(res){
+
+  document.getElementById("hpSpin").style.visibility="hidden";
+  
+  $(".hpCC").prop("disabled",false);
+  $(".hpViol").prop("disabled",false);
+  $(".hpCM").prop("disabled",false);
+
+  resD = JSON.parse(res);
+
+  $("#hpGraphsNote").text(resD[0]);
+
+  showImg(resD[1],resD[2]);
+
+},
+error: function() {
+  console.log('error!');
+}
+})
+
+}else{
+  $("#hpGraphsNote").text("No Host-Parasite Data available.");
+}
+
+}
+
+var selected_cell_ids = new Array();
+
+function hp_umap(figOpt){
+
+  document.getElementById("hpSpin").style.visibility="visible";
+
+  //deactivate buttons in hp tab
+  $(".hpCC").prop("disabled",true);
+  $(".hpViol").prop("disabled",true);
+  $(".hpCM").prop("disabled",true);
+
+  var D = {'method':figOpt};
+
+  $.ajax({
   type:"POST",
   url: VIPurl,
   data:JSON.stringify(D),
   contentType: 'application/json;charset=UTF-8',//
   success: function(res){
 
+    //reactivate buttons
     $(".hpCC").prop("disabled",false);
     $(".hpViol").prop("disabled",false);
     $(".hpCM").prop("disabled",false);
 
     document.getElementById("hpSpin").style.visibility="hidden";
 
-    if(hp_option!='hp_cc'){
+    figOpt_JQ = "#"+figOpt
+    $(figOpt_JQ).html(res);
 
-    resD = JSON.parse(res);
+    let graphDiv = document.getElementById(figOpt).children[1].children[2];
+    graphDiv.on('plotly_selected', function(eventData) {
 
-    $("#hpNote").text(resD[0]);
+    selected_cell_ids = [] // clear any previously selected points
 
-    showImg(resD[1],resD[2]);
-
-    }else{
-
-      $(".hpViol").prop("disabled",false);
-      $(".hpCC").prop("disabled",false);
-      $(".hpCM").prop("disabled",false);
-      $("#hpNote").text(res);
-
+    for (let i = 0; i < eventData.points.length; i++) { //iterate over every point
+      id = eventData.points[i].customdata[0] //get all cell ids
+      selected_cell_ids.push(id) //store in array for later use
     }
 
+    update_UMAP(selected_cell_ids, figOpt)
+        
+    })
   },
   error: function() {
     $(".hpViol").prop("disabled",false);
@@ -6401,14 +6477,102 @@ $.ajax({
     $(".hpCM").prop("disabled",false);
 
     document.getElementById("hpSpin").style.visibility="hidden";
-
     console.log('error!');
   }
 })
-}else{
-  $("#hpNote").text("No Host-Parasite Data available.");
+
 }
+
+
+function update_UMAP(cell_ids, figOpt){
+
+  //deactivate buttons in hp tab
+  $(".hpCC").prop("disabled",true);
+  $(".hpViol").prop("disabled",true);
+  $(".hpCM").prop("disabled",true);
+
+  if (figOpt == "hostFig"){
+
+    update_func = "update_parasite_umap"
+
+    updatedUMAP = "#parasiteFig"
+    newFigOpt = "parasiteFig"
+
+  }else{
+
+    update_func = "update_host_umap"
+
+    updatedUMAP = "#hostFig"
+    newFigOpt = "hostFig"
+
+  }
+
+  var D = {'method': update_func,
+  'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+  'selection': cell_ids
+  };
+
+  document.getElementById("hpSpin").style.visibility="visible";
+
+  $.ajax({
+    type: "POST",
+    url: VIPurl,
+    data: JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',
+    dataType: 'html',
+    success: function(res){
+
+      //reactivate buttons
+      $(".hpViol").prop("disabled",false);
+      $(".hpCC").prop("disabled",false);
+      $(".hpCM").prop("disabled",false);
+      
+      $(updatedUMAP).html(res);
+      document.getElementById("hpSpin").style.visibility="hidden";
+
+      let graphDiv = document.getElementById(newFigOpt).children[1].children[2];
+      graphDiv.on('plotly_selected', function(eventData) {
+
+        selected_cell_ids = [] // clear any previously selected points
+
+        for (let i = 0; i < eventData.points.length; i++) { //iterate over every point
+          id = eventData.points[i].customdata[0] //get all cell ids
+          selected_cell_ids.push(id) 
+        }
+
+    
+      update_UMAP(selected_cell_ids, newFigOpt)
+        
+    })
+
+    },
+    error:function(request,status,error){
+    console.log('error: ', request,status,error);
+      $("#hpNote").text('Plotting Error!');
+      document.getElementById("hpSpin").style.visibility="hidden";
+      
+      $(".hpViol").prop("disabled",false);
+      $(".hpCC").prop("disabled",false);
+      $(".hpCM").prop("disabled",false);
+
+    }
+  })
+  return
+
 }
+
+function export_HPCells(){ // extract cells lasso-selected on one of the HP UMAPs to the rest of paraCell
+
+  num_cells = selected_cell_ids.length;
+
+  document.getElementById("hp_exported_cells").innerHTML = "<p style='color:blue;'>"+num_cells+" cells saved as 'Selection 1'.</p>"
+
+  window.store.getState().differential['celllist1'] = selected_cell_ids
+
+
+}
+
+//}
 
 var host_genes;
 var parasite_genes;
@@ -6440,7 +6604,7 @@ function hpClusterMarker_Analysis(){
 
 if (isHP) {
 
-$("#hpNote2").text("");
+$("#hpTableNote").text("");
 
 hpCM_annot = document.getElementById("hp_cm_annot").value
 h_or_p = document.getElementById("hp_host_or_parasite").value
@@ -6449,7 +6613,7 @@ cm_method = document.getElementById("hp_cm_method").value
 
 cm_num = document.getElementById("hp_cm_num").value
 
-document.getElementById("hpSpin").style.visibility="visible";
+document.getElementById("hpSpin2").style.visibility="visible";
 
 $(".hpCM").prop("disabled",true);
 $(".hpViol").prop("disabled",true);
@@ -6468,14 +6632,14 @@ $.ajax({
   contentType: 'application/json;charset=UTF-8',//
   success: function(res){
   
-  document.getElementById("hpSpin").style.visibility="hidden";
+  document.getElementById("hpSpin2").style.visibility="hidden";
   
   $(".hpCM").prop("disabled",false);
   $(".hpViol").prop("disabled",false);
   $(".hpCC").prop("disabled",false);
   
     if(res.startsWith('ERROR')){
-      $("#hpNote2").text(res);
+      $("#hpTableNote").text(res);
       document.getElementById("hpSpin").style.visibility="hidden";
       return;
     }
@@ -6506,7 +6670,7 @@ $.ajax({
   }
 })
 }else{
-  $("#hpNote2").text("No Host-Parasite Data available.");
+  $("#hpTableNote").text("No Host-Parasite Data available.");
 }
 }
 
