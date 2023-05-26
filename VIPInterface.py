@@ -1960,13 +1960,13 @@ def tsTable(data):
 
 def tradeSeqPlot(data):
 
-  ppr.pprint("function start!")
+  
   
   #Read in Data
   
   adata = data['data_adapter'].data.copy()
 
-  ppr.pprint("here!")
+  
   
   #with app.get_data_adaptor() as data_adaptor:
     #adata = data_adaptor.data.copy()
@@ -1975,21 +1975,21 @@ def tradeSeqPlot(data):
 
   adata.X = adata.X.todense()
 
-  ppr.pprint("adata to dense done")
+  
 
   # Source function file
   r = ro.r
-  ppr.pprint("is this it?!")
+  
   r['source'](strExePath+'/tsPlot.R')
   #r['source']('/home/cxg-adm/anaconda3/envs/VIP/lib/python3.8/site-packages/server/app/tsPlot.R')
   
-  ppr.pprint("sourced!")
+  
   
   #Convert anndata to SCE within embedded R global environment
   with localconverter(anndata2ri.converter):
       ro.globalenv['some_data'] = adata
 
-  ppr.pprint("here 1!")
+  
 
   #read in plotting parameters
 
@@ -2001,7 +2001,7 @@ def tradeSeqPlot(data):
 
   Xcolumns = Xcolumns.tolist()
 
-  ppr.pprint("here 2!")
+  
 
   #send plotting parameters to 
 
@@ -2022,7 +2022,7 @@ def tradeSeqPlot(data):
 
   ro.globalenv["strPath"] = strExePath
 
-  ppr.pprint("here 3!")
+  
 
   res = ro.r('''
 
