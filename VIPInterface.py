@@ -1960,13 +1960,10 @@ def tsTable(data):
 
 def tradeSeqPlot(data):
 
-  
-  
+
   #Read in Data
   
   adata = data['data_adapter'].data.copy()
-
-  
   
   #with app.get_data_adaptor() as data_adaptor:
     #adata = data_adaptor.data.copy()
@@ -1975,21 +1972,15 @@ def tradeSeqPlot(data):
 
   adata.X = adata.X.todense()
 
-  
-
   # Source function file
   r = ro.r
   
   r['source'](strExePath+'/tsPlot.R')
   #r['source']('/home/cxg-adm/anaconda3/envs/VIP/lib/python3.8/site-packages/server/app/tsPlot.R')
   
-  
-  
   #Convert anndata to SCE within embedded R global environment
   with localconverter(anndata2ri.converter):
       ro.globalenv['some_data'] = adata
-
-  
 
   #read in plotting parameters
 
@@ -2000,8 +1991,6 @@ def tradeSeqPlot(data):
   Xcolumns = adata.uns["tradeSeq_Xcols"]
 
   Xcolumns = Xcolumns.tolist()
-
-  
 
   #send plotting parameters to 
 
@@ -2021,8 +2010,6 @@ def tradeSeqPlot(data):
   ro.globalenv['s_id'] = session_id
 
   ro.globalenv["strPath"] = strExePath
-
-  
 
   res = ro.r('''
 
