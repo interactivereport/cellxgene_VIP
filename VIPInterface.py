@@ -2327,8 +2327,11 @@ def hp_ClusterCompare(data):
 
 def hpClusterViolins(data):
 
-  with app.get_data_adaptor() as data_adaptor:
-    adata = data_adaptor.data.copy()
+  adata = data['data_adapter'].data.copy()
+  #ppr.pprint(adata.data)
+
+  #with app.get_data_adaptor() as data_adaptor:
+    #adata = data_adaptor.data.copy()
 
   #iterate over every cluster
 
