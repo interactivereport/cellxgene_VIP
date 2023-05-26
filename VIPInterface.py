@@ -1749,7 +1749,9 @@ def saveTest(data):
 
 def cellpopview(data):
     
-    adata = createData(data)
+    #adata = createData(data)
+
+    adata = data['data_adapter'].data.copy()
 
     # Subset Data by cluster.
     cluster_key = data['ClusterKey']
@@ -1884,8 +1886,10 @@ def pseudoPlot(data):
 
   # Get copy of AnnData Object
 
-  with app.get_data_adaptor() as data_adaptor:
-    aData = data_adaptor.data.copy()
+  aData = data['data_adapter'].data.copy()
+  
+  #with app.get_data_adaptor() as data_adaptor:
+    #aData = data_adaptor.data.copy()
 
   # Plot Graph
   
@@ -1955,19 +1959,37 @@ def tsTable(data):
   return json.dumps(res)
 
 def tradeSeqPlot(data):
+
+  ppr.pprint("function start!")
   
   #Read in Data
   
-  with app.get_data_adaptor() as data_adaptor:
-    adata = data_adaptor.data.copy()
+  adata = data['data_adapter'].data.copy()
+
+  ppr.pprint("here!")
+  
+  #with app.get_data_adaptor() as data_adaptor:
+    #adata = data_adaptor.data.copy()
   
   #Convert sparse matrix to dense in order to avoid conversion error
 
   adata.X = adata.X.todense()
 
+  ppr.pprint("adata to dense done")
+
+  # Source function file
+  r = ro.r
+  ppr.pprint("is this it?!")
+  r['source'](strExePath+'/tsPlot.R')
+  #r['source']('/home/cxg-adm/anaconda3/envs/VIP/lib/python3.8/site-packages/server/app/tsPlot.R')
+  
+  ppr.pprint("sourced!")
+  
   #Convert anndata to SCE within embedded R global environment
   with localconverter(anndata2ri.converter):
       ro.globalenv['some_data'] = adata
+
+  ppr.pprint("here 1!")
 
   #read in plotting parameters
 
@@ -1979,17 +2001,14 @@ def tradeSeqPlot(data):
 
   Xcolumns = Xcolumns.tolist()
 
+  ppr.pprint("here 2!")
+
   #send plotting parameters to 
 
   ro.globalenv['gene1'] = gene
   ro.globalenv['combos'] = combinations
   ro.globalenv['Xcols'] = Xcolumns
 
-  # Source function file
-  r = ro.r
-  #r['source'](strExePath+'/tsPlot.R')
-  r['source']('/home/cxg-adm/anaconda3/envs/VIP/lib/python3.8/site-packages/server/app/tsPlot.R')
-  
   # Generate SessionID
 
   valList = []
@@ -2002,6 +2021,8 @@ def tradeSeqPlot(data):
   ro.globalenv['s_id'] = session_id
 
   ro.globalenv["strPath"] = strExePath
+
+  ppr.pprint("here 3!")
 
   res = ro.r('''
 
@@ -2121,8 +2142,10 @@ def gene_search(data):
   else:
     dict_opt = "function_lookup_table"
 
-  with app.get_data_adaptor() as data_adaptor: # Generate copy of currently loaded dataset.
-    adata = data_adaptor.data.copy()
+  adata = data['data_adapter'].data.copy()
+  
+  #with app.get_data_adaptor() as data_adaptor: # Generate copy of currently loaded dataset.
+    #adata = data_adaptor.data.copy()
 
   dict = adata.uns[dict_opt]
 
@@ -2136,8 +2159,10 @@ def gene_search(data):
 
 def getNamesAndFunctions(data):
 
-  with app.get_data_adaptor() as data_adaptor: # Generate copy of currently loaded dataset.
-    adata = data_adaptor.data.copy()
+  adata = data['data_adapter'].data.copy()
+  
+  #with app.get_data_adaptor() as data_adaptor: # Generate copy of currently loaded dataset.
+    #adata = data_adaptor.data.copy()
 
   names = list(adata.uns["id_lookup_table"].keys())
 
@@ -2153,8 +2178,10 @@ def get_GO_info(data):
 
   # Generate copy of currently loaded dataset.
   
-  with app.get_data_adaptor() as data_adaptor: 
-    adata = data_adaptor.data.copy()
+  adata = data['data_adapter'].data.copy()
+
+  #with app.get_data_adaptor() as data_adaptor: 
+    #adata = data_adaptor.data.copy()
 
   # Extract GO Information
 
@@ -2176,8 +2203,10 @@ def go_genes(data):
   
   go_level = data['go_level']
 
-  with app.get_data_adaptor() as data_adaptor: # Generate copy of currently loaded dataset.
-    adata = data_adaptor.data.copy()
+  adata = data['data_adapter'].data.copy()
+  
+  #with app.get_data_adaptor() as data_adaptor: # Generate copy of currently loaded dataset.
+    #adata = data_adaptor.data.copy()
 
   go_dict = adata.uns[go_level]
 
@@ -2187,8 +2216,10 @@ def go_genes(data):
 
 def hp_paraClus(data):
 
-  with app.get_data_adaptor() as data_adaptor:
-    adata = data_adaptor.data
+  adata = data['data_adapter'].data.copy()
+  
+  #with app.get_data_adaptor() as data_adaptor:
+    #adata = data_adaptor.data
 
   copyData = adata
   copyData.var_names = copyData.var["features"].values
@@ -2231,8 +2262,10 @@ def hp_paraClus(data):
 
 def hp_hostClus(data):
  
-  with app.get_data_adaptor() as data_adaptor:
-    adata = data_adaptor.data
+  adata = data['data_adapter'].data.copy()
+
+  #with app.get_data_adaptor() as data_adaptor:
+    #adata = data_adaptor.data
 
   copyData = adata
 
@@ -2275,9 +2308,11 @@ def hp_hostClus(data):
   return json.dumps(resList)
 
 def hp_ClusterCompare(data):
+
+  adata = data['data_adapter'].data.copy()
   
-  with app.get_data_adaptor() as data_adaptor:
-    adata = data_adaptor.data.copy()
+  #with app.get_data_adaptor() as data_adaptor:
+    #adata = data_adaptor.data.copy()
 
   adata.var_names = adata.var["features"].values
 
@@ -2352,8 +2387,10 @@ def hpClusterViolins(data):
 
 def get_HostParasiteTable(data):
 
-  with app.get_data_adaptor() as data_adaptor:
-    adata = data_adaptor.data.copy()
+  adata = data['data_adapter'].data.copy()
+
+  #with app.get_data_adaptor() as data_adaptor:
+    #adata = data_adaptor.data.copy()
 
   hostGenes = adata.uns["host_genes"].tolist()
 
@@ -2373,8 +2410,10 @@ def hp_ClusterMarkers(data):
 
   cm_num = int(data['hp_cm_num'])
 
-  with app.get_data_adaptor() as data_adaptor:
-    copyData = data_adaptor.data.copy()
+  copyData = data['data_adapter'].data.copy()
+
+  #with app.get_data_adaptor() as data_adaptor:
+    #copyData = data_adaptor.data.copy()
 
   keepGenes = copyData.uns[choice]
   
