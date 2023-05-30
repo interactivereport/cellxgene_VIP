@@ -536,7 +536,7 @@
 <div class="splitter">
   <div id="panel-left">
     <div class="tab">
-      <button class="tablinks" onclick="selFun(event, 'ADDG')"><b>Add Genes</b></button>
+      <button class="tablinks" onclick="selFun(event, 'ADDG');populate_geneset_dropdown()"><b>Add Genes</b></button>
       <button class="tablinks" onclick="selFun(event, 'geneSearch');getAllCells()">Advanced Gene Search</button>
       <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells()">Cell Population View</button>
       <button class="tablinks" onclick="selFun(event, 'TIA');defaultTopSel('TIA','pseudo_tab');getAllCells()">Trajectory Inference</button>
@@ -605,8 +605,6 @@
 
     <div id="ADDG" class="tabcontent">
       <h3>Add genes of interest for plotting <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-add-genes-gene-sets" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
-      <select id="cxg_genesets_dropdown" onclick = "tsDropDownUpdate()"></select></p>
-      <p><button onclick="add_DEG_GeneSet()"><b>Add Gene Set</b></button> Export GeneSets from cellxgene to paraCell.</p>
       <p>Please input a list of genes separated by comma, semicolon, space or tab:</p>
       <p><textarea id="ADDGinput" rows="5" cols="70"></textarea></p>
       <p><button onclick="ADDGadd()"><b>Add</b></button></p>
@@ -615,6 +613,10 @@
 
       <h3>User-defined gene sets:</h3>
       <p id="ADDGsets"></p>
+
+      <h4>Export GeneSets from cellxgene to paraCell.</h4>
+      <p><select id="cxg_genesets_dropdown" onclick = "populate_geneset_dropdown()"></select></p>
+      <p><button onclick="add_DEG_GeneSet()"><b>Add Gene Set</b></button></p>
 
       <h3>Add gene sets of interest manually</h3>
       <p>Gene set name: <input id="Geneset_Name0" type="text" size=10/>
@@ -2480,19 +2482,6 @@ function init(){
   for(x of finalFeatureCats){
     varCats.add(createOpt(x));
   }
-
-  // Populate GeneSet Dropdown Menu -------------------------------------------------
-
-  var genesets = window.store.getState().genesets.genesets; // Map object containing every geneset currently available in the data
-
-  gs_keys = genesets.keys() // title of every available geneset
-
-  var gs_drop = document.getElementById("cxg_genesets_dropdown");
-
-  for(gs of gs_keys){
-    gs_drop.add(createOpt(gs))
-  }
-
  
     //--------------------------------------------------------------------------
     //add layout to EMBED, DUAL, and CLI checkbox
@@ -3511,6 +3500,22 @@ function tradeSeq_setup(){
     drop.add(createOpt("All"));
     drop.add(createOpt("None"));
   }
+}
+
+function populate_geneset_dropdown(){
+
+  var genesets = window.store.getState().genesets.genesets; // Map object containing every geneset currently available in the data
+
+  gs_keys = genesets.keys() // title of every available geneset
+
+  $("#cxg_genesets_dropdown").empty(); // clear any existing options 
+
+  var gs_drop = document.getElementById("cxg_genesets_dropdown");
+
+  for(gs of gs_keys){ // add all currently existing genesets as dropdown options
+    gs_drop.add(createOpt(gs))
+  }
+
 }
 
 // process annotation
@@ -7195,9 +7200,9 @@ function add_DEG_GeneSet(){
   var grpName = geneset.trim();
   
   var grpKeys = Object.keys(window.bioGeneGrp); // check existing gene set names
-  if(grpKeys.includes(grpName)){
-    DE_Counter += 1;
-    grpName = grpName + "_" + DE_Counter;
+  if(grpKeys.includes(grpName)){ // if geneset with that name already exists, add a counter value (_X) to the name
+    Counter += 1;
+    grpName = grpName + "_" + Counter;
   }
   
   var definedG = [];
@@ -7216,30 +7221,6 @@ function add_DEG_GeneSet(){
   for(gene of gs_genes){
     gene_names.push(gene)
   }
-
-  console.log(gene_names)
- 
-  //genesets = window.store.getState().genesets.genesets;
-
-  //console.log(genesets);
-  //console.log(typeof(genesets));
-  //console.log(genesets.size);
-  //gs_keys = genesets.keys()
-  //console.log(gs_keys)
-
-  //for(k of gs_keys){
-    //console.log(genesets.get(k).genes.keys()) //extract the gene ids in every genesetr
-  //}
-  
-  
-  
-  //for(element of deg_results){
-    
-    //gene = element.textContent;
-    
-
-    //gene_names.push(gene);
-  //}
 
   var gNames = gene_names;
   var notG = [],geneNames=[];
