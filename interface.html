@@ -615,7 +615,7 @@
       <p id="ADDGsets"></p>
 
       <h4>Export GeneSets from cellxgene to paraCell.</h4>
-      <p><select id="cxg_genesets_dropdown" onclick = "populate_geneset_dropdown()"></select></p>
+      <p><select id="cxg_genesets_dropdown"></select></p>
       <p><button onclick="add_DEG_GeneSet()"><b>Add Gene Set</b></button></p>
 
       <h3>Add gene sets of interest manually</h3>
@@ -7235,17 +7235,12 @@ function add_DEG_GeneSet(){
       if(!definedG.includes(oneG)){
         geneNames.push(oneG);
       }else{
+        geneNames.push(oneG)
         notG.push(one);
       }
     }else{
       notG.push(one);
     }
-  }
-  var eMsg= "";
-  if(notG[0]=='nCount_RNA'){
-    eMsg +="Error - please run DEG analysis";
-    $("#ADDGsetError").text(eMsg);
-    return;
   }
  
   window.bioGeneGrp[grpName] = geneNames;
