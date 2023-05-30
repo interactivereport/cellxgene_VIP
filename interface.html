@@ -605,7 +605,8 @@
 
     <div id="ADDG" class="tabcontent">
       <h3>Add genes of interest for plotting <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-add-genes-gene-sets" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
-      <p><button onclick="add_DEG_GeneSet()"><b>Add DE Genes</b></button> Add top ten genes identified via cellxgene differential expression analysis as Set.</p>
+      <select id="cxg_genesets_dropdown" onclick = "tsDropDownUpdate()"></select></p>
+      <p><button onclick="add_DEG_GeneSet()"><b>Add Gene Set</b></button> Export GeneSets from cellxgene to paraCell.</p>
       <p>Please input a list of genes separated by comma, semicolon, space or tab:</p>
       <p><textarea id="ADDGinput" rows="5" cols="70"></textarea></p>
       <p><button onclick="ADDGadd()"><b>Add</b></button></p>
@@ -2479,6 +2480,19 @@ function init(){
   for(x of finalFeatureCats){
     varCats.add(createOpt(x));
   }
+
+  // Populate GeneSet Dropdown Menu -------------------------------------------------
+
+  var genesets = window.store.getState().genesets.genesets; // Map object containing every geneset currently available in the data
+
+  gs_keys = genesets.keys() // title of every available geneset
+
+  var gs_drop = document.getElementById("cxg_genesets_dropdown");
+
+  for(gs of gs_keys){
+    gs_drop.add(createOpt(gs))
+  }
+
  
     //--------------------------------------------------------------------------
     //add layout to EMBED, DUAL, and CLI checkbox
@@ -7174,10 +7188,13 @@ var AllCells;
 var DE_Counter = 0;
 
 function add_DEG_GeneSet(){
+
+  geneset = document.getElementById("cxg_genesets_dropdown").value;
+
   $("#ADDGsetError").text("");
-  var grpName = "DE Genes".trim();
+  var grpName = geneset.trim();
   
-  var grpKeys = Object.keys(window.bioGeneGrp);
+  var grpKeys = Object.keys(window.bioGeneGrp); // check existing gene set names
   if(grpKeys.includes(grpName)){
     DE_Counter += 1;
     grpName = grpName + "_" + DE_Counter;
@@ -7188,21 +7205,41 @@ function add_DEG_GeneSet(){
     definedG = definedG.concat(window.bioGeneGrp[grpKeys[i]]);
   }
 
-  var histogram_labels = document.querySelectorAll('[data-testclass="brushable-histogram-field-name"]');
-  
 
-  var histogram_labels2 = Array.from(histogram_labels);
-  deg_results = histogram_labels2.slice(0,10);
- 
+  all_genesets = window.store.getState().genesets.genesets;
+
+  gs_genes = all_genesets.get(geneset).genes.keys()
+  console.log(gs_genes)
+
   gene_names = [];
+
+  for(gene of gs_genes){
+    gene_names.push(gene)
+  }
+
+  console.log(gene_names)
+ 
+  //genesets = window.store.getState().genesets.genesets;
+
+  //console.log(genesets);
+  //console.log(typeof(genesets));
+  //console.log(genesets.size);
+  //gs_keys = genesets.keys()
+  //console.log(gs_keys)
+
+  //for(k of gs_keys){
+    //console.log(genesets.get(k).genes.keys()) //extract the gene ids in every genesetr
+  //}
   
-  for(element of deg_results){
+  
+  
+  //for(element of deg_results){
     
-    gene = element.textContent;
+    //gene = element.textContent;
     
 
-    gene_names.push(gene);
-  }
+    //gene_names.push(gene);
+  //}
 
   var gNames = gene_names;
   var notG = [],geneNames=[];
