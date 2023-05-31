@@ -616,7 +616,7 @@
 
       <h4>Export GeneSets from cellxgene to paraCell.</h4>
       <p><select id="cxg_genesets_dropdown"></select></p>
-      <p><button onclick="add_DEG_GeneSet()"><b>Add Gene Set</b></button></p>
+      <p><button onclick="add_CXG_GeneSet()"><b>Add Gene Set</b></button></p>
 
       <h3>Add gene sets of interest manually</h3>
       <p>Gene set name: <input id="Geneset_Name0" type="text" size=10/>
@@ -7192,7 +7192,7 @@ var AllCells;
 
 var DE_Counter = 0;
 
-function add_DEG_GeneSet(){
+function add_CXG_GeneSet(){
 
   geneset = document.getElementById("cxg_genesets_dropdown").value;
 
@@ -7205,16 +7205,9 @@ function add_DEG_GeneSet(){
     grpName = grpName + "_" + Counter;
   }
   
-  var definedG = [];
-  for(var i=0;i<grpKeys.length;i++){
-    definedG = definedG.concat(window.bioGeneGrp[grpKeys[i]]);
-  }
+  all_genesets = window.store.getState().genesets.genesets; // retrieve all existing genesets
 
-
-  all_genesets = window.store.getState().genesets.genesets;
-
-  gs_genes = all_genesets.get(geneset).genes.keys()
-  console.log(gs_genes)
+  gs_genes = all_genesets.get(geneset).genes.keys() // extract genes associated with chosen geneset
 
   gene_names = [];
 
@@ -7224,20 +7217,18 @@ function add_DEG_GeneSet(){
 
   var gNames = gene_names;
   var notG = [],geneNames=[];
-  var totalG = window.store.getState().annoMatrix._cache.var.__columns[0];
-  var totalGlower = totalG.map(function(s){return s.toLowerCase();});
+  var totalG = window.store.getState().annoMatrix._cache.var.__columns[0]; //complete list of every gene in the data
+  var totalGlower = totalG.map(function(s){return s.toLowerCase();}); // same list, but lower-case
+  
   for(var i=0;i<gNames.length;i++){
     var one = gNames[i].trim();
     var ix = totalGlower.indexOf(one.toLowerCase());
+
     if(ix !== -1){
+
       var oneG = totalG[ix];
-      if (one.length<1) continue;
-      if(!definedG.includes(oneG)){
-        geneNames.push(oneG);
-      }else{
-        geneNames.push(oneG)
-        notG.push(one);
-      }
+      geneNames.push(oneG)
+
     }else{
       notG.push(one);
     }
