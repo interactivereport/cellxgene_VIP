@@ -764,6 +764,10 @@
         <button class="hpCC" onclick="hp_umap('hostFig')"><b>Cluster by Host</b></button>
         <button class="hpCC" onclick="hp_umap('parasiteFig')"><b>Cluster by Parasite</b></button>
         <button class="hpCC" onclick="export_HPCells()"><b>Save Selected Cells</b></button>
+        <p>Host-Parasite UMAP Update Option: 
+        <select id="hp_update_opt">
+          <option value="recluster">Recluster</option>
+          <option value="highlight_cells">Highlight Selected Cells</option></select></p>
       </div>
         <p id="hpGraphsNote" style="color:blue;"></p>
           <div class="column1">
@@ -6909,12 +6913,16 @@ function hp_umap(figOpt){
 
   document.getElementById("hpSpin").style.visibility="visible";
 
+  update_option = document.getElementById("hp_update_opt").value;
+
+
   //deactivate buttons in hp tab
   $(".hpCC").prop("disabled",true);
   $(".hpViol").prop("disabled",true);
   $(".hpCM").prop("disabled",true);
 
-  var D = {'method':figOpt};
+  var D = {'method':figOpt,
+           'update_option':update_option};
 
   $.ajax({
   type:"POST",
@@ -6962,6 +6970,8 @@ function hp_umap(figOpt){
 
 function update_UMAP(cell_ids, figOpt){
 
+  update_option = document.getElementById("hp_update_opt").value;
+
   //deactivate buttons in hp tab
   $(".hpCC").prop("disabled",true);
   $(".hpViol").prop("disabled",true);
@@ -6985,7 +6995,8 @@ function update_UMAP(cell_ids, figOpt){
 
   var D = {'method': update_func,
   'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
-  'selection': cell_ids
+  'selection': cell_ids,
+  'update_option':update_option
   };
 
   document.getElementById("hpSpin").style.visibility="visible";

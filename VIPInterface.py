@@ -2215,7 +2215,9 @@ def hp_paraClus(data):
 
   parasite = copyData[:,parasiteGenes]
 
-  if 'selection' in data: #update UMAP
+  updateOpt = data['update_option']
+
+  if 'selection' in data and updateOpt == "recluster": #update UMAP
     
     points = data['selection']
     parasite = parasite[points]
@@ -2252,6 +2254,16 @@ def hp_paraClus(data):
       legend_title_text='Parasite Clusters'
     )
 
+  if updateOpt == 'highlight_cells':
+
+    points = data["selection"]
+
+    new_table = umap_table.loc[points]
+
+    parasite_plot.add_traces(
+      px.scatter(new_table, x = 'xdim', y = "ydim").update_traces(marker_size=20, marker_color="yellow").data
+    )
+
   fig = plotIO.to_html(parasite_plot)
 
   return fig
@@ -2268,7 +2280,9 @@ def hp_hostClus(data):
 
   host = copyData[:,hostGenes]
 
-  if 'selection' in data: 
+  updateOpt = data['update_option']
+
+  if 'selection' in data and updateOpt == "recluster": #update UMAP
     
     points = data['selection']
     host = host[points]
@@ -2303,6 +2317,16 @@ def hp_hostClus(data):
       yanchor='top'
       ),
       legend_title_text='Host Clusters'
+    )
+
+  if'selection' in data and updateOpt == 'highlight_cells':
+
+    points = data["selection"]
+
+    new_table = umap_table.loc[points]
+
+    host_plot.add_traces(
+      px.scatter(new_table, x = 'xdim', y = "ydim").update_traces(marker_size=20, marker_color="yellow").data
     )
 
   fig = plotIO.to_html(host_plot)
