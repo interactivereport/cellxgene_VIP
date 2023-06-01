@@ -10,6 +10,7 @@ Environment=CELLXGENE_DATA=/share/cellxgene/main
 Environment=GATEWAY_PORT=5005
 Environment=GATEWAY_ENABLE_ANNOTATIONS=0
 Environment=R_HOME=/home/cellxgene/mambaforge/envs/paraCell/lib/R
+Environment=CELLXGENE_ARGS=--disable-gene-sets-save
 ExecStart=/home/cellxgene/mambaforge/envs/paraCell/bin/cellxgene-gateway
 Restart=always
 
