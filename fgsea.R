@@ -30,12 +30,14 @@ mtable <- mtable[mtable$logFC!=0,]
 gRank <- sort(setNames(mtable$logFC,mtable$gene_name))
 GS <- gmtPathways(strGMT)
 
-suppressMessages(suppressWarnings(fgseaRes <- fgsea(GS,gRank,nperm=1e5,minSize=gsMin,maxSize=gsMax)))
-fwrite(fgseaRes,file=strCSV)
-if(sum(upN+dnN)==0){
-  message("")
+fgseaRes <- NULL
+fgseaRes <- tryCatch(suppressMessages(suppressWarnings(fgsea(GS,gRank,nperm=1e5,minSize=gsMin,maxSize=gsMax))),error=function(e){return(NULL)})
+if(!is.null(fgseaRes)) fwrite(fgseaRes,file=strCSV)#gsub("csv$","fgse.csv",strCSV)
+if(sum(upN+dnN)==0 || is.null(fgseaRes) || nrow(fgseaRes)==0){
+  cat("")
   q()
 }
+
 if(collapseF){
   collapsedPathways <- collapsePathways(fgseaRes[order(pval)][padj<padjCut],GS,gRank)
   fgseaRes <- fgseaRes[pathway %in% collapsedPathways$mainPathways]
@@ -43,7 +45,7 @@ if(collapseF){
 topPathways <- c(fgseaRes[ES>0][head(order(pval),n=upN), pathway],
                  rev(fgseaRes[ES<0][head(order(pval), n=dnN), pathway]))
 if(length(topPathways)==0){
-  message("")
+  cat("")
   q()
 }
 pathwayW <- max(nchar(topPathways))/4.5
