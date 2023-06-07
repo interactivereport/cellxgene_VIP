@@ -37,6 +37,8 @@
     <!--  <script src="static/testVIP.js"></script>-->
     <!-- For Fuzzy Search --> 
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
+    <!-- For Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.20.0.min.js" charset="utf-8"></script>
     <!--  end -->
     <style>
       .dropup,
@@ -764,6 +766,7 @@
         <button class="hpCC" onclick="hp_umap('hostFig')"><b>Cluster by Host</b></button>
         <button class="hpCC" onclick="hp_umap('parasiteFig')"><b>Cluster by Parasite</b></button>
         <button class="hpCC" onclick="export_HPCells()"><b>Save Selected Cells</b></button>
+        <button class="hpCC" onclick="hp_plotly_test()"><b>test host umap (plotly.js)</b></button>
         <p>Host-Parasite UMAP Update Option: 
         <select id="hp_update_opt">
           <option value="recluster">Recluster</option>
@@ -7047,6 +7050,74 @@ function update_UMAP(cell_ids, figOpt){
   return
 
 }
+
+
+function hp_plotly_test(){
+
+if (isHP) {
+
+document.getElementById("hpSpin").style.visibility="visible";
+
+$(".hpCC").prop("disabled",true);
+$(".hpViol").prop("disabled",true);
+$(".hpCM").prop("disabled",true);
+
+update_option = document.getElementById("hp_update_opt").value;
+
+var D = {'method':"update_host_umap",
+        'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+        'test':true,
+        'update_option':update_option};
+
+$.ajax({
+type:"POST",
+url: VIPurl,
+data:JSON.stringify(D),
+contentType: 'application/json;charset=UTF-8',//
+success: function(res){
+
+document.getElementById("hpSpin").style.visibility="hidden";
+
+$(".hpCC").prop("disabled",false);
+$(".hpViol").prop("disabled",false);
+$(".hpCM").prop("disabled",false);
+
+//console.log(res);
+
+res_obj = JSON.parse(res) // convert JSON Text into JavaScript Object
+
+xdims = res_obj.xdim
+ydims = res_obj.ydim
+
+xs = Object.values(xdims) // extract all x values
+ys = Object.values(ydims) // extract all y values
+
+var trace1 = {
+
+  x: xs,
+  y:ys,
+  mode:"markers",
+  type:"scatter"
+
+};
+
+finalFig = document.getElementById('hostFig');
+
+Plotly.newPlot(finalFig,[trace1])
+
+
+},
+error: function() {
+console.log('error!');
+}
+})
+
+}else{
+$("#hpGraphsNote").text("No Host-Parasite Data available.");
+}
+
+}
+
 
 function export_HPCells(){ // extract cells lasso-selected on one of the HP UMAPs to the rest of paraCell
 
