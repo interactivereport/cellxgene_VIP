@@ -6912,6 +6912,9 @@ error: function() {
 
 var selected_cell_ids = new Array();
 
+var host_json;
+var parasite_json;
+
 function hp_umap(figOpt){
 
   document.getElementById("hpSpin").style.visibility="visible";
@@ -6941,28 +6944,37 @@ function hp_umap(figOpt){
 
     document.getElementById("hpSpin").style.visibility="hidden";
 
-    figOpt_JQ = "#"+figOpt
-    $(figOpt_JQ).html(res);
+    figure = JSON.parse(res); // convert JSON Text into JavaScript Object
 
-    let graphDiv = document.getElementById(figOpt).children[1].children[2];
-    let gdt = document.getElementById(figOpt);
-    
-    console.log("main umap graph divs")
-    console.log(gdt);
-    console.log(graphDiv);
-
-    graphDiv.on('plotly_selected', function(eventData) {
-
-    selected_cell_ids = [] // clear any previously selected points
-
-    for (let i = 0; i < eventData.points.length; i++) { //iterate over every point
-      id = eventData.points[i].customdata[0] //get all cell ids
-      selected_cell_ids.push(id) //store in array for later use
+    if (figOpt == "hostFig"){
+      host_json = figure;
+    }else{
+      parasite_json = figure;
     }
 
-    update_UMAP(selected_cell_ids, figOpt)
+    Plotly.newPlot(figOpt,figure.data, figure.layout);
+
+    let graphDiv = document.getElementById(figOpt) 
+    
+    graphDiv.on('plotly_selected', function(eventData) {
+
+      selected_cell_ids = [] // clear any previously selected points
+
+      for (let i = 0; i < eventData.points.length; i++) { //iterate over every point
+        id = eventData.points[i].customdata[0] //get all cell ids
+        selected_cell_ids.push(Number(id)) //store in array for later use
+      }
+
+      update_option = document.getElementById("hp_update_opt").value;
+      console.log(update_option)
+
+      if (update_option=="Recluster"){
+        update_UMAP(selected_cell_ids, figOpt)
+      }else{
+        highlight_cells(selected_cell_ids, figOpt,figure)
+      }
         
-    })
+      })
   },
   error: function() {
     $(".hpViol").prop("disabled",false);
@@ -6990,14 +7002,12 @@ function update_UMAP(cell_ids, figOpt){
 
     update_func = "update_parasite_umap"
 
-    updatedUMAP = "#parasiteFig"
     newFigOpt = "parasiteFig"
 
   }else{
 
     update_func = "update_host_umap"
 
-    updatedUMAP = "#hostFig"
     newFigOpt = "hostFig"
 
   }
@@ -7023,21 +7033,34 @@ function update_UMAP(cell_ids, figOpt){
       $(".hpCC").prop("disabled",false);
       $(".hpCM").prop("disabled",false);
       
-      $(updatedUMAP).html(res);
+      figure = JSON.parse(res); // convert JSON Text into JavaScript Object
+
+      Plotly.newPlot(newFigOpt,figure.data, figure.layout);
+
       document.getElementById("hpSpin").style.visibility="hidden";
 
-      let graphDiv = document.getElementById(newFigOpt).children[1].children[2];
+      let graphDiv = document.getElementById(newFigOpt)//.children[1].children[2];
       graphDiv.on('plotly_selected', function(eventData) {
 
         selected_cell_ids = [] // clear any previously selected points
 
         for (let i = 0; i < eventData.points.length; i++) { //iterate over every point
           id = eventData.points[i].customdata[0] //get all cell ids
-          selected_cell_ids.push(id) 
+          selected_cell_ids.push(Number(id)) 
         }
 
-    
-      update_UMAP(selected_cell_ids, newFigOpt)
+      update_option = document.getElementById("hp_update_opt").value;
+      console.log(update_option)
+      console.log(typeof(update_option))
+
+      if (update_option === "recluster"){
+        console.log("option 1!")
+        update_UMAP(selected_cell_ids, figOpt)
+      }else{
+        console.log("option 2")
+        console.log(update_option)
+        highlight_cells(selected_cell_ids, figOpt,figure)
+      }
         
     })
 
@@ -7057,79 +7080,29 @@ function update_UMAP(cell_ids, figOpt){
 
 }
 
-var test_fig;
 
-var test_cell_ids;
-
-function hp_plotly_test(){
-
-if (isHP) {
-
-document.getElementById("hpSpin").style.visibility="visible";
-
-$(".hpCC").prop("disabled",true);
-$(".hpViol").prop("disabled",true);
-$(".hpCM").prop("disabled",true);
-
-update_option = document.getElementById("hp_update_opt").value;
-
-var D = {'method':"update_host_umap",
-        'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
-        'test':true,
-        'update_option':update_option};
-
-$.ajax({
-type:"POST",
-url: VIPurl,
-data:JSON.stringify(D),
-contentType: 'application/json;charset=UTF-8',//
-success: function(res){
-
-document.getElementById("hpSpin").style.visibility="hidden";
-
-$(".hpCC").prop("disabled",false);
-$(".hpViol").prop("disabled",false);
-$(".hpCM").prop("disabled",false);
-
-figure = JSON.parse(res); // convert JSON Text into JavaScript Object
-
-test_fig = figure;
-
-Plotly.newPlot('hostFig', figure.data, figure.layout); // create Graph
-
-let graphDivtest = document.getElementById('hostFig')
-
-let graphDiv = document.getElementById('hostFig') // add Lasso Select Event Listener
-      graphDiv.on('plotly_selected', function(eventData) {
-     
-        test_cell_ids = [] // clear any previously selected points
-
-        for (let i = 0; i < eventData.points.length; i++) { //iterate over every point
-          id = eventData.points[i].customdata[0] //get all cell ids
-          test_cell_ids.push(Number(id)) 
-        }
-
-        hp_test_update(test_cell_ids)
-        
-    })
-
-},
-error: function() {
-console.log('error!');
-}
-})
-
-}else{
-$("#hpGraphsNote").text("No Host-Parasite Data available.");
-}
-
-}
-
-function hp_test_update(test_cell_ids){
+function highlight_cells(selected_cells,source_graph,source_json){
 
   document.getElementById("hpSpin").style.visibility="visible";
 
-  console.log(test_fig)
+  //deactivate buttons in hp tab
+  $(".hpCC").prop("disabled",true);
+  $(".hpViol").prop("disabled",true);
+  $(".hpCM").prop("disabled",true);
+
+  if (source_graph == "hostFig"){
+
+    target_graph = "parasiteFig"
+
+    target_json = parasite_json;
+
+  }else{
+
+    target_graph = "hostFig"
+
+    target_json = host_json;
+
+  }
 
   save_x = new Array()
   save_y = new Array ()
@@ -7139,7 +7112,7 @@ function hp_test_update(test_cell_ids){
   other_y = new Array()
   other_cells = new Array()
 
-  for (trace of test_fig.data){
+  for (trace of target_json.data){
 
     traceCells = trace.customdata
 
@@ -7149,7 +7122,7 @@ function hp_test_update(test_cell_ids){
       x = trace.x[i]
       y = trace.y[i]
       
-      if (test_cell_ids.includes(cell_id)){
+      if (selected_cells.includes(cell_id)){
 
         save_x.push(x)
         
@@ -7173,6 +7146,9 @@ function hp_test_update(test_cell_ids){
 
   }
 
+  console.log(selected_cells.length)
+  console.log(save_x.length)
+
 
   var selected_cells = {
 
@@ -7194,7 +7170,7 @@ function hp_test_update(test_cell_ids){
 
   var data = [selected_cells, non_selected_cells]
 
-  Plotly.newPlot('hostFig', data, test_fig.layout);
+  Plotly.newPlot(target_graph, data, target_json.layout);
 
   document.getElementById("hpSpin").style.visibility="hidden";
 

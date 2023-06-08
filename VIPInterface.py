@@ -2264,7 +2264,7 @@ def hp_paraClus(data):
       px.scatter(new_table, x = 'xdim', y = "ydim").update_traces(marker_size=20, marker_color="black").data
     )
 
-  fig = plotIO.to_html(parasite_plot)
+  fig = plotIO.to_json(parasite_plot)
 
   return fig
 
@@ -2333,11 +2333,8 @@ def hp_hostClus(data):
       px.scatter(new_table, x = 'xdim', y = "ydim").update_traces(marker_size=20, marker_color="yellow").data
     )
 
-  if 'test' in data:
-    fig = plotIO.to_json(host_plot)
-  else:
-    fig = plotIO.to_html(host_plot)
-  
+  fig = plotIO.to_json(host_plot)
+
   return fig
 
 def hpClusterViolins(data):
