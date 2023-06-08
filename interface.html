@@ -6945,6 +6945,12 @@ function hp_umap(figOpt){
     $(figOpt_JQ).html(res);
 
     let graphDiv = document.getElementById(figOpt).children[1].children[2];
+    let gdt = document.getElementById(figOpt);
+    
+    console.log("main umap graph divs")
+    console.log(gdt);
+    console.log(graphDiv);
+
     graphDiv.on('plotly_selected', function(eventData) {
 
     selected_cell_ids = [] // clear any previously selected points
@@ -7051,6 +7057,9 @@ function update_UMAP(cell_ids, figOpt){
 
 }
 
+var test_fig;
+
+var test_cell_ids;
 
 function hp_plotly_test(){
 
@@ -7082,29 +7091,27 @@ $(".hpCC").prop("disabled",false);
 $(".hpViol").prop("disabled",false);
 $(".hpCM").prop("disabled",false);
 
-//console.log(res);
+figure = JSON.parse(res); // convert JSON Text into JavaScript Object
 
-res_obj = JSON.parse(res) // convert JSON Text into JavaScript Object
+test_fig = figure;
 
-xdims = res_obj.xdim
-ydims = res_obj.ydim
+Plotly.newPlot('hostFig', figure.data, figure.layout); // create Graph
 
-xs = Object.values(xdims) // extract all x values
-ys = Object.values(ydims) // extract all y values
+let graphDivtest = document.getElementById('hostFig')
 
-var trace1 = {
+let graphDiv = document.getElementById('hostFig') // add Lasso Select Event Listener
+      graphDiv.on('plotly_selected', function(eventData) {
+     
+        test_cell_ids = [] // clear any previously selected points
 
-  x: xs,
-  y:ys,
-  mode:"markers",
-  type:"scatter"
+        for (let i = 0; i < eventData.points.length; i++) { //iterate over every point
+          id = eventData.points[i].customdata[0] //get all cell ids
+          test_cell_ids.push(Number(id)) 
+        }
 
-};
-
-finalFig = document.getElementById('hostFig');
-
-Plotly.newPlot(finalFig,[trace1])
-
+        hp_test_update(test_cell_ids)
+        
+    })
 
 },
 error: function() {
@@ -7115,6 +7122,82 @@ console.log('error!');
 }else{
 $("#hpGraphsNote").text("No Host-Parasite Data available.");
 }
+
+}
+
+function hp_test_update(test_cell_ids){
+
+  document.getElementById("hpSpin").style.visibility="visible";
+
+  console.log(test_fig)
+
+  save_x = new Array()
+  save_y = new Array ()
+  save_cells = new Array()
+
+  other_x = new Array()
+  other_y = new Array()
+  other_cells = new Array()
+
+  for (trace of test_fig.data){
+
+    traceCells = trace.customdata
+
+    for (let i = 0; i < traceCells.length; i++){
+
+      cell_id = Number(traceCells[i][0])
+      x = trace.x[i]
+      y = trace.y[i]
+      
+      if (test_cell_ids.includes(cell_id)){
+
+        save_x.push(x)
+        
+        save_y.push(y)
+
+        save_cells.push(cell_id)
+
+      }else {
+
+        other_x.push(x)
+        
+        other_y.push(y)
+
+        other_cells.push(cell_id)
+
+
+      }
+
+    }
+
+
+  }
+
+
+  var selected_cells = {
+
+  x: save_x,
+  y:save_y,
+  mode:"markers",
+  type:"scatter"
+
+  };
+
+  var non_selected_cells = {
+
+  x: other_x,
+  y: other_y,
+  mode:"markers",
+  type:"scatter"
+
+  };
+
+  var data = [selected_cells, non_selected_cells]
+
+  Plotly.newPlot('hostFig', data, test_fig.layout);
+
+  document.getElementById("hpSpin").style.visibility="hidden";
+
 
 }
 

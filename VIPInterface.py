@@ -2306,9 +2306,9 @@ def hp_hostClus(data):
   color_palette = list(map(colors.to_hex, cm.tab20.colors))
   color = host.obs['host_clusters'].astype('category')
 
-  if 'test' in data:
-    js_table = umap_table.to_json(orient = "columns")
-    return js_table
+  #if 'test' in data:
+    #js_table = umap_table.to_json(orient = "columns")
+    #return js_table
 
   host_plot = px.scatter(umap_table, x = "xdim", y = "ydim",color=color,color_discrete_sequence=color_palette, hover_data=[umap_table.index])
 
@@ -2333,8 +2333,11 @@ def hp_hostClus(data):
       px.scatter(new_table, x = 'xdim', y = "ydim").update_traces(marker_size=20, marker_color="yellow").data
     )
 
-  fig = plotIO.to_html(host_plot)
-    
+  if 'test' in data:
+    fig = plotIO.to_json(host_plot)
+  else:
+    fig = plotIO.to_html(host_plot)
+  
   return fig
 
 def hpClusterViolins(data):
