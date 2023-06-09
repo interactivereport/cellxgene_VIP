@@ -6968,9 +6968,12 @@ function hp_umap(figOpt){
       update_option = document.getElementById("hp_update_opt").value;
       console.log(update_option)
 
-      if (update_option=="Recluster"){
+      if (update_option === "recluster"){
+        console.log("option 1!")
         update_UMAP(selected_cell_ids, figOpt)
       }else{
+        console.log("option 2")
+        console.log(update_option)
         highlight_cells(selected_cell_ids, figOpt,figure)
       }
         
@@ -7171,6 +7174,12 @@ function highlight_cells(selected_cells,source_graph,source_json){
   var data = [selected_cells, non_selected_cells]
 
   Plotly.newPlot(target_graph, data, target_json.layout);
+
+  var graphDiv = document.getElementById(target_graph)
+
+  console.log(graphDiv)
+  console.log(graphDiv.data)
+  console.log(graphDiv.layout)
 
   document.getElementById("hpSpin").style.visibility="hidden";
 
