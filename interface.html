@@ -6915,7 +6915,7 @@ var selected_cell_ids = new Array();
 var host_json;
 var parasite_json;
 
-function hp_umap(figOpt){
+function hp_umap(figOpt, selected_cells = 0){
 
   document.getElementById("hpSpin").style.visibility="visible";
 
@@ -6928,7 +6928,7 @@ function hp_umap(figOpt){
   $(".hpCM").prop("disabled",true);
 
   var D = {'method':figOpt,
-           'update_option':update_option};
+          'selection':selected_cells};
 
   $.ajax({
   type:"POST",
@@ -6975,93 +6975,25 @@ let graphDiv = document.getElementById(figOpt)
 
       selected_cell_ids = [] // clear any previously selected points
 
-      for (let i = 0; i < eventData.points.length; i++) { //iterate over every point
-        id = eventData.points[i].customdata[0] //get all cell ids
+      for (let i = 0; i < eventData.points.length; i++) { // iterate over every point
+        id = eventData.points[i].customdata[0] // get all cell ids
         selected_cell_ids.push(Number(id)) 
       }
 
     update_option = document.getElementById("hp_update_opt").value; 
 
-    if (update_option === "recluster"){
-      update_UMAP(selected_cell_ids, figOpt)
+    if (update_option == "recluster" && figOpt == "hostFig"){
+      hp_umap("parasiteFig",selected_cell_ids)
+    }else if (update_option == "recluster" && figOpt == "parasiteFig"){
+      hp_umap("hostFig",selected_cell_ids)
     }else{
       highlight_cells(selected_cell_ids, figOpt,figure)
     }
-      
+    
+        
   })
 
 }
-
-
-function update_UMAP(cell_ids, figOpt){
-
-  update_option = document.getElementById("hp_update_opt").value;
-
-  //deactivate buttons in hp tab
-  $(".hpCC").prop("disabled",true);
-  $(".hpViol").prop("disabled",true);
-  $(".hpCM").prop("disabled",true);
-
-  if (figOpt == "hostFig"){
-
-    update_func = "update_parasite_umap"
-
-    newFigOpt = "parasiteFig"
-
-  }else{
-
-    update_func = "update_host_umap"
-
-    newFigOpt = "hostFig"
-
-  }
-
-  var D = {'method': update_func,
-  'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
-  'selection': cell_ids,
-  'update_option':update_option
-  };
-
-  document.getElementById("hpSpin").style.visibility="visible";
-
-  $.ajax({
-    type: "POST",
-    url: VIPurl,
-    data: JSON.stringify(D),
-    contentType: 'application/json;charset=UTF-8',
-    dataType: 'html',
-    success: function(res){
-
-      //reactivate buttons
-      $(".hpViol").prop("disabled",false);
-      $(".hpCC").prop("disabled",false);
-      $(".hpCM").prop("disabled",false);
-      
-      figure = JSON.parse(res); // convert JSON Text into JavaScript Object
-
-      Plotly.newPlot(newFigOpt,figure.data, figure.layout);
-
-      hp_lasso_update(newFigOpt)
-
-      document.getElementById("hpSpin").style.visibility="hidden";
-
-  
-    },
-    error:function(request,status,error){
-    console.log('error: ', request,status,error);
-      $("#hpNote").text('Plotting Error!');
-      document.getElementById("hpSpin").style.visibility="hidden";
-      
-      $(".hpViol").prop("disabled",false);
-      $(".hpCC").prop("disabled",false);
-      $(".hpCM").prop("disabled",false);
-
-    }
-  })
-  return
-
-}
-
 
 function highlight_cells(selected_cells,source_graph,source_json){
 
@@ -7124,9 +7056,6 @@ function highlight_cells(selected_cells,source_graph,source_json){
     }
   }
 
-  console.log(selected_cells.length)
-  console.log(save_x.length)
-
   var selected_cells = {
 
   x: save_x,
@@ -7142,7 +7071,7 @@ function highlight_cells(selected_cells,source_graph,source_json){
   y: other_y,
   mode:"markers",
   type:"scatter",
-  size: 3
+  opacity: 0.5
 
   };
 
@@ -7150,6 +7079,7 @@ function highlight_cells(selected_cells,source_graph,source_json){
 
   Plotly.newPlot(target_graph, data, target_json.layout);
 
+  hp_lasso_update(target_graph)
 
   //reactivate buttons
   $(".hpCC").prop("disabled",false);
@@ -7165,7 +7095,7 @@ function export_HPCells(){ // extract cells lasso-selected on one of the HP UMAP
 
   num_cells = selected_cell_ids.length;
 
-  document.getElementById("hp_exported_cells").innerHTML = "<p style='color:blue;'>"+num_cells+" cells saved as 'Selection 1'.</p>"
+  document.getElementById("hp_exported_cells").innerHTML = "<p style='color:blue;'>"+num_cells+" cells saved as 'HP Selection'.</p>"
 
   window.store.getState().differential['celllist1'] = selected_cell_ids
 

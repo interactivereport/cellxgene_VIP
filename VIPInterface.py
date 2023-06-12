@@ -2215,11 +2215,9 @@ def hp_paraClus(data):
 
   parasite = copyData[:,parasiteGenes]
 
-  updateOpt = data['update_option']
+  points = data['selection']
 
-  if 'selection' in data and updateOpt == "recluster": #update UMAP
-    
-    points = data['selection']
+  if points != 0: #update UMAP
     parasite = parasite[points]
 
   sc.pp.highly_variable_genes(parasite)
@@ -2254,16 +2252,6 @@ def hp_paraClus(data):
       legend_title_text='Parasite Clusters'
     )
 
-  if updateOpt == 'highlight_cells':
-
-    points = data["selection"]
-
-    new_table = umap_table.loc[points]
-
-    parasite_plot.add_traces(
-      px.scatter(new_table, x = 'xdim', y = "ydim").update_traces(marker_size=20, marker_color="black").data
-    )
-
   fig = plotIO.to_json(parasite_plot)
 
   return fig
@@ -2280,11 +2268,9 @@ def hp_hostClus(data):
 
   host = copyData[:,hostGenes]
 
-  updateOpt = data['update_option']
-
-  if 'selection' in data and updateOpt == "recluster": #update UMAP
-    
-    points = data['selection']
+  points = data["selection"]
+  
+  if points != 0: #update UMAP
     host = host[points]
 
   sc.pp.highly_variable_genes(host)
@@ -2306,10 +2292,6 @@ def hp_hostClus(data):
   color_palette = list(map(colors.to_hex, cm.tab20.colors))
   color = host.obs['host_clusters'].astype('category')
 
-  #if 'test' in data:
-    #js_table = umap_table.to_json(orient = "columns")
-    #return js_table
-
   host_plot = px.scatter(umap_table, x = "xdim", y = "ydim",color=color,color_discrete_sequence=color_palette, hover_data=[umap_table.index])
 
   host_plot.update_layout(
@@ -2323,16 +2305,6 @@ def hp_hostClus(data):
       legend_title_text='Host Clusters'
     )
 
-  if'selection' in data and updateOpt == 'highlight_cells':
-
-    points = data["selection"]
-
-    new_table = umap_table.loc[points]
-
-    host_plot.add_traces(
-      px.scatter(new_table, x = 'xdim', y = "ydim").update_traces(marker_size=20, marker_color="yellow").data
-    )
-
   fig = plotIO.to_json(host_plot)
 
   return fig
@@ -2340,12 +2312,6 @@ def hp_hostClus(data):
 def hpClusterViolins(data):
 
   adata = data['data_adapter'].data.copy()
-  #ppr.pprint(adata.data)
-
-  #with app.get_data_adaptor() as data_adaptor:
-    #adata = data_adaptor.data.copy()
-
-  #iterate over every cluster
 
   fig = sc.pl.violin(adata, ['percent_parasite', 'percent_host'],
              jitter=0.4, multi_panel=True, groupby="seurat_clusters")
