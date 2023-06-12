@@ -6954,30 +6954,8 @@ function hp_umap(figOpt){
 
     Plotly.newPlot(figOpt,figure.data, figure.layout);
 
-    let graphDiv = document.getElementById(figOpt) 
-    
-    graphDiv.on('plotly_selected', function(eventData) {
-
-      selected_cell_ids = [] // clear any previously selected points
-
-      for (let i = 0; i < eventData.points.length; i++) { //iterate over every point
-        id = eventData.points[i].customdata[0] //get all cell ids
-        selected_cell_ids.push(Number(id)) //store in array for later use
-      }
-
-      update_option = document.getElementById("hp_update_opt").value;
-      console.log(update_option)
-
-      if (update_option === "recluster"){
-        console.log("option 1!")
-        update_UMAP(selected_cell_ids, figOpt)
-      }else{
-        console.log("option 2")
-        console.log(update_option)
-        highlight_cells(selected_cell_ids, figOpt,figure)
-      }
+    hp_lasso_update(figOpt)
         
-      })
   },
   error: function() {
     $(".hpViol").prop("disabled",false);
@@ -6988,6 +6966,29 @@ function hp_umap(figOpt){
     console.log('error!');
   }
 })
+}
+
+function hp_lasso_update(figOpt){ // add lasso event listener to HP Plotly Graph
+
+let graphDiv = document.getElementById(figOpt) 
+    graphDiv.on('plotly_selected', function(eventData) {
+
+      selected_cell_ids = [] // clear any previously selected points
+
+      for (let i = 0; i < eventData.points.length; i++) { //iterate over every point
+        id = eventData.points[i].customdata[0] //get all cell ids
+        selected_cell_ids.push(Number(id)) 
+      }
+
+    update_option = document.getElementById("hp_update_opt").value; 
+
+    if (update_option === "recluster"){
+      update_UMAP(selected_cell_ids, figOpt)
+    }else{
+      highlight_cells(selected_cell_ids, figOpt,figure)
+    }
+      
+  })
 
 }
 
@@ -7040,33 +7041,11 @@ function update_UMAP(cell_ids, figOpt){
 
       Plotly.newPlot(newFigOpt,figure.data, figure.layout);
 
+      hp_lasso_update(newFigOpt)
+
       document.getElementById("hpSpin").style.visibility="hidden";
 
-      let graphDiv = document.getElementById(newFigOpt)//.children[1].children[2];
-      graphDiv.on('plotly_selected', function(eventData) {
-
-        selected_cell_ids = [] // clear any previously selected points
-
-        for (let i = 0; i < eventData.points.length; i++) { //iterate over every point
-          id = eventData.points[i].customdata[0] //get all cell ids
-          selected_cell_ids.push(Number(id)) 
-        }
-
-      update_option = document.getElementById("hp_update_opt").value;
-      console.log(update_option)
-      console.log(typeof(update_option))
-
-      if (update_option === "recluster"){
-        console.log("option 1!")
-        update_UMAP(selected_cell_ids, figOpt)
-      }else{
-        console.log("option 2")
-        console.log(update_option)
-        highlight_cells(selected_cell_ids, figOpt,figure)
-      }
-        
-    })
-
+  
     },
     error:function(request,status,error){
     console.log('error: ', request,status,error);
@@ -7141,17 +7120,12 @@ function highlight_cells(selected_cells,source_graph,source_json){
 
         other_cells.push(cell_id)
 
-
       }
-
     }
-
-
   }
 
   console.log(selected_cells.length)
   console.log(save_x.length)
-
 
   var selected_cells = {
 
@@ -7167,7 +7141,8 @@ function highlight_cells(selected_cells,source_graph,source_json){
   x: other_x,
   y: other_y,
   mode:"markers",
-  type:"scatter"
+  type:"scatter",
+  size: 3
 
   };
 
@@ -7175,14 +7150,13 @@ function highlight_cells(selected_cells,source_graph,source_json){
 
   Plotly.newPlot(target_graph, data, target_json.layout);
 
-  var graphDiv = document.getElementById(target_graph)
 
-  console.log(graphDiv)
-  console.log(graphDiv.data)
-  console.log(graphDiv.layout)
+  //reactivate buttons
+  $(".hpCC").prop("disabled",false);
+  $(".hpViol").prop("disabled",false);
+  $(".hpCM").prop("disabled",false);
 
   document.getElementById("hpSpin").style.visibility="hidden";
-
 
 }
 
