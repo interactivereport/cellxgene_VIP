@@ -6997,8 +6997,6 @@ let graphDiv = document.getElementById(figOpt)
 
 function highlight_cells(selected_cells,source_graph,source_json){
 
-  document.getElementById("hpSpin").style.visibility="visible";
-
   //deactivate buttons in hp tab
   $(".hpCC").prop("disabled",true);
   $(".hpViol").prop("disabled",true);
@@ -7018,80 +7016,93 @@ function highlight_cells(selected_cells,source_graph,source_json){
 
   }
 
-  save_x = new Array()
-  save_y = new Array ()
-  save_cells = new Array()
+  if(target_json){
 
-  other_x = new Array()
-  other_y = new Array()
-  other_cells = new Array()
+    document.getElementById("hpSpin").style.visibility="visible";
+  
+    $("#hpGraphsNote").text("");
 
-  for (trace of target_json.data){
+    save_x = new Array()
+    save_y = new Array ()
+    save_cells = new Array()
 
-    traceCells = trace.customdata
+    other_x = new Array()
+    other_y = new Array()
+    other_cells = new Array()
 
-    for (let i = 0; i < traceCells.length; i++){
+    for (trace of target_json.data){
 
-      cell_id = Number(traceCells[i][0])
-      x = trace.x[i]
-      y = trace.y[i]
+      traceCells = trace.customdata
+
+      for (let i = 0; i < traceCells.length; i++){
+
+        cell_id = Number(traceCells[i][0])
+        x = trace.x[i]
+        y = trace.y[i]
       
-      if (selected_cells.includes(cell_id)){
+        if (selected_cells.includes(cell_id)){
 
-        save_x.push(x)
+          save_x.push(x)
         
-        save_y.push(y)
+          save_y.push(y)
 
-        save_cells.push([cell_id.toString()])
+          save_cells.push([cell_id.toString()])
 
-      }else {
+        }else {
 
-        other_x.push(x)
+          other_x.push(x)
         
-        other_y.push(y)
+          other_y.push(y)
 
-        other_cells.push([cell_id.toString()])
+          other_cells.push([cell_id.toString()])
 
+        }
       }
     }
-  }
 
 
-  var selected_cells = {
+    var selected_cells = {
 
-  x: save_x,
-  y:save_y,
-  customdata: save_cells,
-  name: "Selected Cells",
-  mode:"markers",
-  type:"scatter"
+    x: save_x,
+    y:save_y,
+    customdata: save_cells,
+    name: "Selected Cells",
+    mode:"markers",
+    type:"scatter"
 
-  };
+    };
 
-  var non_selected_cells = {
+    var non_selected_cells = {
 
-  x: other_x,
-  y: other_y,
-  customdata: other_cells,
-  name: "Other Cells",
-  mode:"markers",
-  type:"scatter",
-  opacity: 0.5
+    x: other_x,
+    y: other_y,
+    customdata: other_cells,
+    name: "Other Cells",
+    mode:"markers",
+    type:"scatter",
+    opacity: 0.5
 
-  };
+    };
 
-  var data = [non_selected_cells, selected_cells]
+    var data = [non_selected_cells, selected_cells]
 
-  Plotly.newPlot(target_graph, data, target_json.layout);
+    Plotly.newPlot(target_graph, data, target_json.layout);
 
-  hp_lasso_update(target_graph)
+    hp_lasso_update(target_graph)
 
-  //reactivate buttons
-  $(".hpCC").prop("disabled",false);
-  $(".hpViol").prop("disabled",false);
-  $(".hpCM").prop("disabled",false);
+    //reactivate buttons
+    $(".hpCC").prop("disabled",false);
+    $(".hpViol").prop("disabled",false);
+    $(".hpCM").prop("disabled",false);
 
-  document.getElementById("hpSpin").style.visibility="hidden";
+    document.getElementById("hpSpin").style.visibility="hidden";
+
+}else{
+
+  $("#hpGraphsNote").text("Opposing UMAP needed.");
+  return
+  
+}
 
 }
 
