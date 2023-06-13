@@ -6971,13 +6971,14 @@ function hp_lasso_update(figOpt){ // add lasso event listener to HP Plotly Graph
 
 let graphDiv = document.getElementById(figOpt) 
     graphDiv.on('plotly_selected', function(eventData) {
-
+      
       selected_cell_ids = [] // clear any previously selected points
 
       for (let i = 0; i < eventData.points.length; i++) { // iterate over every point
         id = eventData.points[i].customdata[0] // get all cell ids
         selected_cell_ids.push(Number(id)) 
       }
+
 
     update_option = document.getElementById("hp_update_opt").value; 
 
@@ -7041,7 +7042,7 @@ function highlight_cells(selected_cells,source_graph,source_json){
         
         save_y.push(y)
 
-        save_cells.push(cell_id)
+        save_cells.push([cell_id.toString()])
 
       }else {
 
@@ -7049,16 +7050,18 @@ function highlight_cells(selected_cells,source_graph,source_json){
         
         other_y.push(y)
 
-        other_cells.push(cell_id)
+        other_cells.push([cell_id.toString()])
 
       }
     }
   }
 
+
   var selected_cells = {
 
   x: save_x,
   y:save_y,
+  customdata: save_cells,
   name: "Selected Cells",
   mode:"markers",
   type:"scatter"
@@ -7069,6 +7072,7 @@ function highlight_cells(selected_cells,source_graph,source_json){
 
   x: other_x,
   y: other_y,
+  customdata: other_cells,
   name: "Other Cells",
   mode:"markers",
   type:"scatter",
