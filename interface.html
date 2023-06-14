@@ -37,6 +37,8 @@
     <!--  <script src="static/testVIP.js"></script>-->
     <!-- For Fuzzy Search --> 
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
+    <!-- For Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.20.0.min.js" charset="utf-8"></script>
     <!--  end -->
     <style>
       .dropup,
@@ -764,6 +766,10 @@
         <button class="hpCC" onclick="hp_umap('hostFig')"><b>Cluster by Host</b></button>
         <button class="hpCC" onclick="hp_umap('parasiteFig')"><b>Cluster by Parasite</b></button>
         <button class="hpCC" onclick="export_HPCells()"><b>Save Selected Cells</b></button>
+        <p>Host-Parasite UMAP Update Option: 
+        <select id="hp_update_opt">
+          <option value="highlight_cells">Highlight Selected Cells</option>
+          <option value="recluster">Recluster</option></select></p>
       </div>
         <p id="hpGraphsNote" style="color:blue;"></p>
           <div class="column1">
@@ -6905,16 +6911,23 @@ error: function() {
 
 var selected_cell_ids = new Array();
 
-function hp_umap(figOpt){
+var host_json;
+var parasite_json;
+
+function hp_umap(figOpt, selected_cells = 0){
 
   document.getElementById("hpSpin").style.visibility="visible";
+
+  update_option = document.getElementById("hp_update_opt").value;
+
 
   //deactivate buttons in hp tab
   $(".hpCC").prop("disabled",true);
   $(".hpViol").prop("disabled",true);
   $(".hpCM").prop("disabled",true);
 
-  var D = {'method':figOpt};
+  var D = {'method':figOpt,
+          'selection':selected_cells};
 
   $.ajax({
   type:"POST",
@@ -6930,22 +6943,18 @@ function hp_umap(figOpt){
 
     document.getElementById("hpSpin").style.visibility="hidden";
 
-    figOpt_JQ = "#"+figOpt
-    $(figOpt_JQ).html(res);
+    figure = JSON.parse(res); // convert JSON Text into JavaScript Object
 
-    let graphDiv = document.getElementById(figOpt).children[1].children[2];
-    graphDiv.on('plotly_selected', function(eventData) {
-
-    selected_cell_ids = [] // clear any previously selected points
-
-    for (let i = 0; i < eventData.points.length; i++) { //iterate over every point
-      id = eventData.points[i].customdata[0] //get all cell ids
-      selected_cell_ids.push(id) //store in array for later use
+    if (figOpt == "hostFig"){
+      host_json = figure;
+    }else{
+      parasite_json = figure;
     }
 
-    update_UMAP(selected_cell_ids, figOpt)
+    Plotly.newPlot(figOpt,figure.data, figure.layout);
+
+    hp_lasso_update(figOpt)
         
-    })
   },
   error: function() {
     $(".hpViol").prop("disabled",false);
@@ -6956,92 +6965,153 @@ function hp_umap(figOpt){
     console.log('error!');
   }
 })
+}
+
+function hp_lasso_update(figOpt){ // add lasso event listener to HP Plotly Graph
+
+let graphDiv = document.getElementById(figOpt) 
+    graphDiv.on('plotly_selected', function(eventData) {
+      
+      selected_cell_ids = [] // clear any previously selected points
+
+      for (let i = 0; i < eventData.points.length; i++) { // iterate over every point
+        id = eventData.points[i].customdata[0] // get all cell ids
+        selected_cell_ids.push(Number(id)) 
+      }
+
+
+    update_option = document.getElementById("hp_update_opt").value; 
+
+    if (update_option == "recluster" && figOpt == "hostFig"){
+      hp_umap("parasiteFig",selected_cell_ids)
+    }else if (update_option == "recluster" && figOpt == "parasiteFig"){
+      hp_umap("hostFig",selected_cell_ids)
+    }else{
+      highlight_cells(selected_cell_ids, figOpt,figure)
+    }
+    
+        
+  })
 
 }
 
-
-function update_UMAP(cell_ids, figOpt){
+function highlight_cells(selected_cells,source_graph,source_json){
 
   //deactivate buttons in hp tab
   $(".hpCC").prop("disabled",true);
   $(".hpViol").prop("disabled",true);
   $(".hpCM").prop("disabled",true);
 
-  if (figOpt == "hostFig"){
+  if (source_graph == "hostFig"){
 
-    update_func = "update_parasite_umap"
+    target_graph = "parasiteFig"
 
-    updatedUMAP = "#parasiteFig"
-    newFigOpt = "parasiteFig"
+    target_json = parasite_json;
 
   }else{
 
-    update_func = "update_host_umap"
+    target_graph = "hostFig"
 
-    updatedUMAP = "#hostFig"
-    newFigOpt = "hostFig"
+    target_json = host_json;
 
   }
 
-  var D = {'method': update_func,
-  'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
-  'selection': cell_ids
-  };
+  if(target_json){
 
-  document.getElementById("hpSpin").style.visibility="visible";
+    document.getElementById("hpSpin").style.visibility="visible";
+  
+    $("#hpGraphsNote").text("");
 
-  $.ajax({
-    type: "POST",
-    url: VIPurl,
-    data: JSON.stringify(D),
-    contentType: 'application/json;charset=UTF-8',
-    dataType: 'html',
-    success: function(res){
+    save_x = new Array()
+    save_y = new Array ()
+    save_cells = new Array()
 
-      //reactivate buttons
-      $(".hpViol").prop("disabled",false);
-      $(".hpCC").prop("disabled",false);
-      $(".hpCM").prop("disabled",false);
+    other_x = new Array()
+    other_y = new Array()
+    other_cells = new Array()
+
+    for (trace of target_json.data){
+
+      traceCells = trace.customdata
+
+      for (let i = 0; i < traceCells.length; i++){
+
+        cell_id = Number(traceCells[i][0])
+        x = trace.x[i]
+        y = trace.y[i]
       
-      $(updatedUMAP).html(res);
-      document.getElementById("hpSpin").style.visibility="hidden";
+        if (selected_cells.includes(cell_id)){
 
-      let graphDiv = document.getElementById(newFigOpt).children[1].children[2];
-      graphDiv.on('plotly_selected', function(eventData) {
-
-        selected_cell_ids = [] // clear any previously selected points
-
-        for (let i = 0; i < eventData.points.length; i++) { //iterate over every point
-          id = eventData.points[i].customdata[0] //get all cell ids
-          selected_cell_ids.push(id) 
-        }
-
-    
-      update_UMAP(selected_cell_ids, newFigOpt)
+          save_x.push(x)
         
-    })
+          save_y.push(y)
 
-    },
-    error:function(request,status,error){
-    console.log('error: ', request,status,error);
-      $("#hpNote").text('Plotting Error!');
-      document.getElementById("hpSpin").style.visibility="hidden";
-      
-      $(".hpViol").prop("disabled",false);
-      $(".hpCC").prop("disabled",false);
-      $(".hpCM").prop("disabled",false);
+          save_cells.push([cell_id.toString()])
 
+        }else {
+
+          other_x.push(x)
+        
+          other_y.push(y)
+
+          other_cells.push([cell_id.toString()])
+
+        }
+      }
     }
-  })
+
+
+    var selected_cells = {
+
+    x: save_x,
+    y:save_y,
+    customdata: save_cells,
+    name: "Selected Cells",
+    mode:"markers",
+    type:"scatter"
+
+    };
+
+    var non_selected_cells = {
+
+    x: other_x,
+    y: other_y,
+    customdata: other_cells,
+    name: "Other Cells",
+    mode:"markers",
+    type:"scatter",
+    opacity: 0.5
+
+    };
+
+    var data = [non_selected_cells, selected_cells]
+
+    Plotly.newPlot(target_graph, data, target_json.layout);
+
+    hp_lasso_update(target_graph)
+
+    //reactivate buttons
+    $(".hpCC").prop("disabled",false);
+    $(".hpViol").prop("disabled",false);
+    $(".hpCM").prop("disabled",false);
+
+    document.getElementById("hpSpin").style.visibility="hidden";
+
+}else{
+
+  $("#hpGraphsNote").text("Opposing UMAP needed.");
   return
+  
+}
 
 }
+
 
 function export_HPCells(){ // extract cells lasso-selected on one of the HP UMAPs to the rest of paraCell
 
   num_cells = selected_cell_ids.length;
 
-  document.getElementById("hp_exported_cells").innerHTML = "<p style='color:blue;'>"+num_cells+" cells saved as 'Selection 1'.</p>"
+  document.getElementById("hp_exported_cells").innerHTML = "<p style='color:blue;'>"+num_cells+" cells saved as 'HP Selection'.</p>"
 
   window.store.getState().differential['celllist1'] = selected_cell_ids
 

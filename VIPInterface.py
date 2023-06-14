@@ -2215,9 +2215,9 @@ def hp_paraClus(data):
 
   parasite = copyData[:,parasiteGenes]
 
-  if 'selection' in data: #update UMAP
-    
-    points = data['selection']
+  points = data['selection']
+
+  if points != 0: #update UMAP
     parasite = parasite[points]
 
   sc.pp.highly_variable_genes(parasite)
@@ -2252,7 +2252,7 @@ def hp_paraClus(data):
       legend_title_text='Parasite Clusters'
     )
 
-  fig = plotIO.to_html(parasite_plot)
+  fig = plotIO.to_json(parasite_plot)
 
   return fig
 
@@ -2268,9 +2268,9 @@ def hp_hostClus(data):
 
   host = copyData[:,hostGenes]
 
-  if 'selection' in data: 
-    
-    points = data['selection']
+  points = data["selection"]
+  
+  if points != 0: #update UMAP
     host = host[points]
 
   sc.pp.highly_variable_genes(host)
@@ -2283,7 +2283,7 @@ def hp_hostClus(data):
 
   sc.tl.umap(host)
 
-  sc.tl.leiden(host, key_added = "host_clusters", resolution=0.2)
+  sc.tl.leiden(host, key_added = "host_clusters", resolution=0.05)
 
   umap_table = pd.DataFrame(host.obsm["X_umap"], columns = ['xdim','ydim'], index=host.obs_names)
 
@@ -2305,19 +2305,13 @@ def hp_hostClus(data):
       legend_title_text='Host Clusters'
     )
 
-  fig = plotIO.to_html(host_plot)
-    
+  fig = plotIO.to_json(host_plot)
+
   return fig
 
 def hpClusterViolins(data):
 
   adata = data['data_adapter'].data.copy()
-  #ppr.pprint(adata.data)
-
-  #with app.get_data_adaptor() as data_adaptor:
-    #adata = data_adaptor.data.copy()
-
-  #iterate over every cluster
 
   fig = sc.pl.violin(adata, ['percent_parasite', 'percent_host'],
              jitter=0.4, multi_panel=True, groupby="seurat_clusters")
