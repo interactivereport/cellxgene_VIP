@@ -2283,7 +2283,7 @@ def hp_hostClus(data):
 
   sc.tl.umap(host)
 
-  sc.tl.leiden(host, key_added = "host_clusters", resolution=0.2)
+  sc.tl.leiden(host, key_added = "host_clusters", resolution=0.05)
 
   umap_table = pd.DataFrame(host.obsm["X_umap"], columns = ['xdim','ydim'], index=host.obs_names)
 
