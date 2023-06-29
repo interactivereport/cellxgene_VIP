@@ -663,14 +663,31 @@
     </div><!--ADDG-->
 
     <div id="paraCell_Help" class="tabcontent">
-      <div id="HELP_Text">
-        <h3>Welcome to paraCell!</h3>
+      <h3>Welcome to paraCell!</h3>
+        <p>paraCell is an interactive tool for the analysis and visualization of scRNA-seq data, based on <a href="https://github.com/interactivereport/cellxgene_VIP" target="_blank">cellxgene_VIP</a>.</p>
+      <div id="help_text_1">
+        <h4>The basics of paraCell</h4>
+        <p>paraCell adds connections between base cellxgene, VIP and external databases.</p>
+        <p>Gene Sets created in cellxgene can be imported into paraCell via the "Add Genes" tab.</p>
+        <p>"Add Genes" also enables users to search external resources (such as the NCBI gene database) using existing gene-sets.</p>
       </div>
+      <div id="help_text_2">
+        <h4>paraCell Tabs</h4>
+        <p>paraCell adds five new options to VIP.</p>
+        <ul>
+          <li>Advanced Gene Search</li>
+          <li>Cell Population View</li>
+          <li>Trajectory Inference</li>
+          <li>TradeSeq</li>
+          <li>Host-Parasite Interactions</li>
+        </ul>
+      </div>
+      <p>Further information on the functionality of each tab can be found at the <a href="https://github.com/iii-cell-atlas/cellxgene_VIP/wiki" target="_blank">paraCell wiki</a>.</p>
     </div><!--paraCell_HELP-->
 
     <div id="CellPopView" class="tabcontent">
       <div id="CellPopInput">
-        <h3>For a given cell population, compare gene expression between two conditions:</h3>
+        <h3>For a given cell population, compare gene expression between two conditions <a href="https://github.com/iii-cell-atlas/cellxgene_VIP/wiki/2.-Cell-Population-View" target="_blank"><i class="fa fa-question-circle" style="color:purple;font-size:20px"></i></a></h3>
         <p>Select Cell Population Annotation:
         <select id="CPV_ClusterKey" onclick="CellPopList('CPV_ClusterKey',['CPV_Cluster'])"></select></p>
         <p>Select a Cell Population:
@@ -700,7 +717,7 @@
     </div><!--CellPopView-->
 
     <div id="TradeSeq" class="tabcontent">
-      <h3>Display TradeSeq Analysis results within paraCell:</h3>
+      <h3>Display TradeSeq Analysis results within paraCell <a href="https://github.com/iii-cell-atlas/cellxgene_VIP/wiki/4.-tradeSeq" target="_blank"><i class="fa fa-question-circle" style="color:purple;font-size:20px"></i></a></h3>
       <p id="tradeSeq_SetUpNote" style="color:green;"></p>
       <h4>Table Options:</h4>
       <p id = "pts_to">Lineage:
@@ -720,8 +737,9 @@
     </div><!--TradeSeq-->
 
     <div id="geneSearch" class="tabcontent">
+      <h3>Advanced Search Options <a href="https://github.com/iii-cell-atlas/cellxgene_VIP/wiki/1.-Advanced-Gene-Search" target="_blank"><i class="fa fa-question-circle" style="color:purple;font-size:20px"></i></a></h3>
       <div id="gsInput">
-        <h3>Search by Gene Name or Function:</h3>
+        <h4>Search by Gene Name or Function:</h4>
         <p>
         <select id="gs_level" onchange="addAutoComplete('geneSearchAutoComplete,searchResultsHTML,names')">
           <option value="names">Name</option>
@@ -733,13 +751,13 @@
         <p id="gsResultNote"></p>
       </div>
       <div id="geneSearchSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-      <h3>Gene-List</h3>
+      <h4>Gene-List</h4>
       <input type="text" id="gs_geneList_title" value="Custom Gene Set"><p>Gene-List Title</p>
       <p id="gs_geneList"></p>
       <p id="gs_geneList_Note"></p>
       <button class="geneSearch" onclick="clear_GS_GeneSet()"><b>Clear Gene-List</b></button>
       <button class="geneSearch" onclick="add_GS_GeneSet()"><b>Add as Gene-Set</b></button>
-      <h3>Search by GO term:</h3>
+      <h4>Search by GO term:</h4>
         <p>
         <select id="go_level">
           <option value="go_components">Cellular Component</option>
@@ -751,7 +769,6 @@
         <ul id="gs_go_gene_Results"></ul>
         <button class="goe_search" onclick="get_go_genes()"><b>Get GO Term Genes</b></button>
         <button class="goe_search" onclick="add_GO_GeneSet()"><b>Add as Gene-Set</b></button>
-
     </div><!--geneSearch-->
 
     <div id="HPA" class="tabcontent">
@@ -762,7 +779,7 @@
 
     <div id="HostParasiteG" class="HPAcontent">
       <div id="hpInput">
-        <h3>Run Host-Parasite Interaction analyses within paraCell:</h3>
+        <h3>Run Host-Parasite Interaction analyses within paraCell <a href="https://github.com/iii-cell-atlas/cellxgene_VIP/wiki/5.-Host-Parasite-Interactions" target="_blank"><i class="fa fa-question-circle" style="color:purple;font-size:20px"></i></a></h3>
         <p id="hp_exported_cells"></p>
         <p>Host-Parasite Percent Concent Violin Plots:
         <button class="hpViol" onclick="hpViolins()"><b>Host-Parasite Violins</b></button>
@@ -1939,7 +1956,7 @@
   
     <div id="Pseudo" class="TIAcontent">
       <div id="PseudotimeInput">
-        <h3>Display Trajectory Inference results within paraCell:</h3>
+        <h3>Display Trajectory Inference results within paraCell <a href="https://github.com/iii-cell-atlas/cellxgene_VIP/wiki/4.-tradeSeq" target="_blank"><i class="fa fa-question-circle" style="color:purple;font-size:20px"></i></a></h3>
         <p>Colour by:
         <select id="pseudo_cell_annot"></select></p>
       </div>
@@ -1951,7 +1968,7 @@
 
     <div id="PAGA" class="TIAcontent">
       <div id="pagaInput">
-        <h3>Run PAGA Trajectory Inference within paraCell:</h3>
+        <h3>Run PAGA Trajectory Inference within paraCell <a href="https://github.com/iii-cell-atlas/cellxgene_VIP/wiki/4.-tradeSeq" target="_blank"><i class="fa fa-question-circle" style="color:purple;font-size:20px"></i></a></h3>
         <h4>PAGA Options:</h4>
         <p>Select an Embedding:
         <select id="pagaEmbed"></select></p>
