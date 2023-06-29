@@ -551,6 +551,7 @@
 <div class="splitter">
   <div id="panel-left">
     <div class="tab">
+      <button class="tablinks" onclick="selFun(event, 'paraCell_Help')"><b>Help</b></button>
       <button class="tablinks" onclick="selFun(event, 'ADDG');populate_geneset_dropdown()"><b>Add Genes</b></button>
       <button class="tablinks" onclick="selFun(event, 'geneSearch');getAllCells()">Advanced Gene Search</button>
       <button class="tablinks" onclick="selFun(event, 'CellPopView');getAllCells()">Cell Population View</button>
@@ -660,6 +661,12 @@
         <p></p>
  
     </div><!--ADDG-->
+
+    <div id="paraCell_Help" class="tabcontent">
+      <div id="HELP_Text">
+        <h3>Welcome to paraCell!</h3>
+      </div>
+    </div><!--paraCell_HELP-->
 
     <div id="CellPopView" class="tabcontent">
       <div id="CellPopInput">
