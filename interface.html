@@ -2704,7 +2704,7 @@ function init(){
             console.log("VIP ("+VIPurl+") is ready on server side.");
 
             //Parse YAML file
-            yamlPARSE();
+            setup_paraCell();
 
             //Add Description
             console.log("Checking description ...");
@@ -6334,7 +6334,7 @@ function pseudoPlot(){
 
   grp.push(annot);
 
-  if (includePseudo == true){ // YAML file lever
+  if (includePseudo == "true"){ // YAML file lever
 
   document.getElementById("pseudoSpin").style.visibility="visible";
 
@@ -6377,7 +6377,7 @@ function pseudoPlot(){
 
 function tsTable(){
 
-  if (includeTradeSeq){ //YAML file lever
+  if (includeTradeSeq == "true"){ //YAML file lever
  
   var tradeS_option = document.getElementById("ts_to").value;
   
@@ -7289,9 +7289,9 @@ var host_URL;
 var hostPrefix;
 var parasitePrefix;
 
-function yamlPARSE(){
+function setup_paraCell(){
 
-var D = {'method':'ymlPARSE',
+var D = {'method':'setup_para',
 "Dataset": window.store.getState().config.displayNames.dataset};
 
 $.ajax({
@@ -7301,6 +7301,8 @@ $.ajax({
   contentType: 'application/json;charset=UTF-8',//
   success: function(res){
 
+  res = JSON.parse(res)
+    
   database_URL = res['url'];
 
   databaseSearch_URL = res['url2'];
@@ -7311,7 +7313,7 @@ $.ajax({
 
   include_goS = res['include_goSearch']
 
-  if (includeGeneS == true){ // YAML file toggle
+  if (includeGeneS == "true"){ // YAML file toggle
       
     //get gene name and function information
     get_names_and_functions()
@@ -7321,7 +7323,7 @@ $.ajax({
 
   }
   
-  if (include_goS == true){ //YAML file toggle
+  if (include_goS == "true"){ //YAML file toggle
 
     //retrieve go info
     get_go_terms()
@@ -7340,7 +7342,7 @@ $.ajax({
 
   isHP = res["isHP"]
 
-  if (isHP == true){ // YAML file toggle
+  if (isHP == "true"){ // YAML file toggle
 
     hostPrefix = res['host_prefix']
     parasitePrefix = res['parasite_prefix']

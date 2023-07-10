@@ -335,7 +335,7 @@ def distributeTask(aTask):
     'GSP':GSP,
     'CPV':cellpopview,
     'CPVTable':cpvtable,
-    'ymlPARSE':parseYAML,
+    'setup_para':paraCell_setup,
     'pseudo':pseudoPlot,
     'geneSearch':gene_search,
     'get_names_and_functions':getNamesAndFunctions,
@@ -1865,30 +1865,23 @@ def cpvtable(data):
   return json.dumps(deg)
 
 
-def parseYAML(data):
-
-  dataset = data["Dataset"]
-
-  ymlAddress = strExePath + "/YAML/" + dataset + ".yml"
-
-  with open(ymlAddress) as f:
-    data = yaml.load(f, Loader=SafeLoader)
+def paraCell_setup(data):
   
-  return data
+  adata = data['data_adapter'].data.copy()
+
+  data = adata.uns["paraCell_setup"]
+
+  return json.dumps(data)
 
 def pseudoPlot(data):
   
-  # Read YAML File
+  aData = data['data_adapter'].data.copy()
 
-  yml = parseYAML(data)
+  para_dict = aData.uns["paraCell_setup"]
 
   # Extract Embedding Key
 
-  embed = yml['pseudoEmbed']
-
-  # Get copy of AnnData Object
-
-  aData = data['data_adapter'].data.copy()
+  embed = para_dict['pseudoEmbed']
   
   #with app.get_data_adaptor() as data_adaptor:
     #aData = data_adaptor.data.copy()
