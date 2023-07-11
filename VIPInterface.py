@@ -1869,9 +1869,9 @@ def paraCell_setup(data):
   
   adata = data['data_adapter'].data.copy()
 
-  data = adata.uns["paraCell_setup"]
+  dict = adata.uns["paraCell_setup"]
 
-  return json.dumps(data)
+  return json.dumps(dict)
 
 def pseudoPlot(data):
   
