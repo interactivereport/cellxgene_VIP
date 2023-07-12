@@ -2211,7 +2211,7 @@ function createOpt(val){
 }
 function addDescription(){
 
-  if (includeDesc == true){ //YAML file lever 
+  if (includeDesc == "true"){ //YAML file lever 
   $.ajax({
         type: "POST",
         url: VIPurl,
@@ -6890,7 +6890,7 @@ error: function() {
 
 function hpViolins(){
 
-  if (isHP) {
+  if (isHP == "true") {
 
   document.getElementById("hpSpin").style.visibility="visible";
 
@@ -7172,7 +7172,7 @@ $.ajax({
 
 function hpClusterMarker_Analysis(){
 
-if (isHP) {
+if (isHP == "true") {
 
 $("#hpTableNote").text("");
 
@@ -7246,7 +7246,7 @@ $.ajax({
 
 function makeLink(gene){
 
-if (isHP == true){             // Host-Parasite Specific formatting
+if (isHP == "true"){             // Host-Parasite Specific formatting
 
   if (host_genes.includes(gene)){
     url = window.host_URL;

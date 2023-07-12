@@ -2094,22 +2094,24 @@ def pagaAnalysis(data):
 
 def getDesp_2(data):
 
-  yml = parseYAML(data)
+  adata = data['data_adapter'].data.copy()
 
-  desc = yml["Description"]
+  dict = adata.uns["paraCell_setup"]
 
-  paper = yml["Original_Paper"]
+  desc = dict["Description"]
 
-  aut = yml["Author(s)"]
+  paper = dict["Original_Paper"]
 
-  hashtag = yml['table_hashtag']
+  aut = dict["Author(s)"]
+
+  hashtag = dict['table_hashtag']
 
   url = "http://cellatlas.mvls.gla.ac.uk/data/table.html" + "#" + hashtag
 
   full_url = "<a href="+url+">Available Data Sets</a>"
   
   txt = "<br>"+"<b>"+"Data Source:"+"</b>"+"<br>"+desc+"<br>"+paper+"<br>"+"<b>"+"Authors: "+"</b>"+aut+"<br>"+full_url
-  
+
   return txt
 
 
