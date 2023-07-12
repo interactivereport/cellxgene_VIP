@@ -2211,7 +2211,7 @@ function createOpt(val){
 }
 function addDescription(){
 
-  if (includeDesc == "true"){ //YAML file lever 
+  if (includeDesc == "true"){ // feature toggle
   $.ajax({
         type: "POST",
         url: VIPurl,
@@ -2251,7 +2251,7 @@ function addDescription(){
           console.log(request.status+': cannot get description ...');
         }
       });
-    }else{ //YAML file lever
+    }else{ // feature toggle
       return
     }
 }
@@ -2703,7 +2703,7 @@ function init(){
             VIPurl = this.url;
             console.log("VIP ("+VIPurl+") is ready on server side.");
 
-            //Parse YAML file
+            //setup paraCell functionality
             setup_paraCell();
 
             //Add Description
@@ -6334,7 +6334,7 @@ function pseudoPlot(){
 
   grp.push(annot);
 
-  if (includePseudo == "true"){ // YAML file lever
+  if (includePseudo == "true"){ // feature toggle
 
   document.getElementById("pseudoSpin").style.visibility="visible";
 
@@ -6369,7 +6369,7 @@ function pseudoPlot(){
     console.log('error!');
   }
 })
-}else{  // YAML file lever
+}else{  // feature toggle
   $("#pseudoNote").text("No Pseudotime Data available.");
   return; 
 }
@@ -6377,7 +6377,7 @@ function pseudoPlot(){
 
 function tsTable(){
 
-  if (includeTradeSeq == "true"){ //YAML file lever
+  if (includeTradeSeq == "true"){ // feature toggle
  
   var tradeS_option = document.getElementById("ts_to").value;
   
@@ -6450,7 +6450,7 @@ function tsTable(){
     console.log('error!');
   }
 })
-}else{ // YAML file lever
+}else{ // feature toggle
   $("#tradeSeqNote").text('No TradeSeq Data available.')
   return
 }
@@ -6562,7 +6562,7 @@ var go_genes = new Array();
 
 function get_go_genes(){
 
-  if (include_goS== true){
+  if (include_goS== "true"){
 
   go_genes = []; // remove any existing pre-computed go_genes
 
@@ -6637,7 +6637,7 @@ var goResultsHTML = document.getElementById("gs_go_Results")
 
 function addAutoComplete(searchbox,resultList,source){
 
-  if (includeGeneS == true){
+  if (includeGeneS == "true"){
   searchbox.oninput = function() {
   let results = []
   let userInput = this.value.toUpperCase(); //get current contents of text box
@@ -7315,8 +7315,8 @@ $.ajax({
 
   include_goS = res['include_goSearch']
 
-  if (includeGeneS == "true"){ // YAML file toggle
-      
+  if (includeGeneS == "true"){ // feature toggle
+    
     //get gene name and function information
     get_names_and_functions()
 
@@ -7325,7 +7325,7 @@ $.ajax({
 
   }
   
-  if (include_goS == "true"){ //YAML file toggle
+  if (include_goS == "true"){ // feature toggle
 
     //retrieve go info
     get_go_terms()
@@ -7344,7 +7344,7 @@ $.ajax({
 
   isHP = res["isHP"]
 
-  if (isHP == "true"){ // YAML file toggle
+  if (isHP == "true"){ // feature toggle
 
     hostPrefix = res['host_prefix']
     parasitePrefix = res['parasite_prefix']
@@ -7504,7 +7504,7 @@ function add_CXG_GeneSet(){
 
 function add_GO_GeneSet(){
 
-  if (include_goS == true){
+  if (include_goS == "true"){
 
   $("#gs_goNote").text("");
   var grpName = go_term.trim();
