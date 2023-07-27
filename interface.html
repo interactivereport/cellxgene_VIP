@@ -2704,11 +2704,12 @@ function init(){
             console.log("VIP ("+VIPurl+") is ready on server side.");
 
             //setup paraCell functionality
+            console.log("Setting up atlas ...")
             setup_paraCell();
 
             //Add Description
-            console.log("Checking description ...");
-            addDescription();
+            //console.log("Checking description ...");
+            //addDescription();
 
             //get GSEA Information
             console.log("Loading GSEA ...");
@@ -7303,17 +7304,59 @@ $.ajax({
 
   res = JSON.parse(res)
 
-  console.log(res)
-    
+  //Set Up layout
+  if ("Initial Embedding" in res){
+    window.store.dispatch({type: "set layout choice", layoutChoice: res["Initial Embedding"]});
+  }
+
+  if ("Initial Coloring" in res){
+    window.store.dispatch({type: "color by categorical metadata", colorAccessor: res["Initial Coloring"]});
+  }
+
+  if ("Initial Session" in res){
+    $("#LOADurl").val(res["Initial Session"])
+
+  }
+
+  window.store.dispatch({type: "show centroid labels for category", showLabels: true});
+
+  //Add Description
+
+  includeDesc = res['includeDescription'];
+
+  if (includeDesc == "true"){ 
+
+    desc = res["Description"];
+  
+    paper = res["Original_Paper"];
+
+    aut = res["Author(s)"];
+
+    hashtag = res['table_hashtag'];
+
+    url = "http://cellatlas.mvls.gla.ac.uk/data/table.html" + "#" + hashtag
+
+    full_url = "<a href="+url+">Available Data Sets</a>"
+
+    txt = "<br>"+"<b>"+"Data Source:"+"</b>"+"<br>"+desc+"<br>"+paper+"<br>"+"<b>"+"Authors: "+"</b>"+aut+"<br>"+full_url
+
+    var appendDIV = $("[data-testclass='category']").parent();
+
+    appendDIV.append("<div id='dataDescription' style='overflow-wrap: break-word;word-wrap: break-word;'>"+txt+"</div>");
+
+  }
+  
   database_URL = res['url'];
 
   databaseSearch_URL = res['url2'];
 
-  tsAnnot = res['tsAnnot']
+  tsAnnot = res['tsAnnot'];
 
-  includeGeneS = res['includeGeneSearch']
+  //Set up Advanced Gene Search
 
-  include_goS = res['include_goSearch']
+  includeGeneS = res['includeGeneSearch'];
+
+  include_goS = res['include_goSearch'];
 
   if (includeGeneS == "true"){ // feature toggle
     
@@ -7336,49 +7379,22 @@ $.ajax({
 
   }
   
-  includeTradeSeq = res['includeTradeSeq']
+  includeTradeSeq = res['includeTradeSeq'];
 
-  includePseudo = res['includePseudo']
+  includePseudo = res['includePseudo'];
 
-  includeDesc = res['includeDescription']
-
-  if (includeDesc == "true"){ 
-
-    desc = res["Description"]
-    
-    paper = res["Original_Paper"]
-
-    aut = res["Author(s)"]
-
-    hashtag = res['table_hashtag']
-
-    url = "http://cellatlas.mvls.gla.ac.uk/data/table.html" + "#" + hashtag
-
-    full_url = "<a href="+url+">Available Data Sets</a>"
-  
-    txt = "<br>"+"<b>"+"Data Source:"+"</b>"+"<br>"+desc+"<br>"+paper+"<br>"+"<b>"+"Authors: "+"</b>"+aut+"<br>"+full_url
-
-    var appendDIV = $("[data-testclass='category']").parent();
-  
-    appendDIV.append("<div id='dataDescription' style='overflow-wrap: break-word;word-wrap: break-word;'>"+txt+"</div>");
-
-  }
-
-  isHP = res["isHP"]
+  isHP = res["isHP"];
 
   if (isHP == "true"){ // feature toggle
 
-    hostPrefix = res['host_prefix']
-    parasitePrefix = res['parasite_prefix']
-    host_URL = res["hosturl"]
+    hostPrefix = res['host_prefix'];
+    parasitePrefix = res['parasite_prefix'];
+    host_URL = res["hosturl"];
 
     get_HP()
 
   }
 
-  //Add Description
-  //addDescription();
-  
   },
   error: function() {
     console.log('error!');
