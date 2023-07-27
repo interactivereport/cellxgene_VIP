@@ -7342,6 +7342,28 @@ $.ajax({
 
   includeDesc = res['includeDescription']
 
+  if (includeDesc == "true"){ 
+
+    desc = res["Description"]
+    
+    paper = res["Original_Paper"]
+
+    aut = res["Author(s)"]
+
+    hashtag = res['table_hashtag']
+
+    url = "http://cellatlas.mvls.gla.ac.uk/data/table.html" + "#" + hashtag
+
+    full_url = "<a href="+url+">Available Data Sets</a>"
+  
+    txt = "<br>"+"<b>"+"Data Source:"+"</b>"+"<br>"+desc+"<br>"+paper+"<br>"+"<b>"+"Authors: "+"</b>"+aut+"<br>"+full_url
+
+    var appendDIV = $("[data-testclass='category']").parent();
+  
+    appendDIV.append("<div id='dataDescription' style='overflow-wrap: break-word;word-wrap: break-word;'>"+txt+"</div>");
+
+  }
+
   isHP = res["isHP"]
 
   if (isHP == "true"){ // feature toggle
@@ -7355,7 +7377,7 @@ $.ajax({
   }
 
   //Add Description
-  addDescription();
+  //addDescription();
   
   },
   error: function() {

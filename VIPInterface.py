@@ -2394,7 +2394,7 @@ def hp_ClusterMarkers(data):
 
   lfcs = []
   for x in groups: # Get log-fold-change of each marker gene.
-    y = pd.DataFrame(keep.uns['rank_genes_groups']['logfoldchanges'][x]).head(cm_num).values
+    y = pd.DataFrame(keep.uns['rank_genes_groups']['loggetDesp_2foldchanges'][x]).head(cm_num).values
     for lfc in y:
       val = float(lfc[0])
       final_val = round(val,2)
