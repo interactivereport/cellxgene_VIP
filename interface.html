@@ -670,6 +670,22 @@
         <p>paraCell adds connections between base cellxgene, VIP and external databases.</p>
         <p>Gene Sets created in cellxgene can be imported into paraCell via the "Add Genes" tab.</p>
         <p>"Add Genes" also enables users to search external resources (such as the NCBI gene database) using existing gene-sets.</p>
+        <p>Select an external Database here:
+          <select id="database_dropdown" onchange="setExternalDatabase()">
+            <option value="NCBI" url1="https://www.ncbi.nlm.nih.gov/gene/?term=">NCBI</option>
+            <option url1="https://plasmodb.org/plasmo/app/record/gene/" url2="https://plasmodb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=">PlasmoDB</option>
+            <option url1="https://tritrypdb.org/tritrypdb/app/record/gene/" url2="https://tritrypdb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=">TriTypDB</option>
+            <option url1="https://hostdb.org/hostdb/app/record/gene/" url2="https://hostdb.org/hostdb/app/search/transcript/GeneByLocusTag">HostDB</option>
+            <option url1="https://fungidb.org/fungidb/app/record/gene/" url2="https://fungidb.org/fungidb/app/search/transcript/GeneByLocusTag">FungiDB</option>
+            <option url1="https://toxodb.org/toxo/app/record/gene/" url2="https://toxodb.org/toxo/app/search/transcript/GeneByLocusTag">ToxoDB</option>
+            <option url1="https://trichdb.org/trichdb/app/record/gene/" url2="https://trichdb.org/trichdb/app/search/transcript/GeneByLocusTag">TrichDB</option>
+            <option url1="https://cryptodb.org/cryptodb/app/record/gene/" url2="https://cryptodb.org/cryptodb/app/search/transcript/GeneByLocusTag">CryptoDB</option>
+            <option url1="https://piroplasmadb.org/piro/app/record/gene/" url2="https://piroplasmadb.org/piro/app/search/transcript/GeneByLocusTag">PiroplasmaDB</option>
+            <option url1="https://giardiadb.org/giardiadb/app/record/gene/" url2="https://giardiadb.org/giardiadb/app/search/transcript/GeneByLocusTag">GiardiaDB</option>
+            <option url1="https://microsporidiadb.org/micro/app/record/gene/" url2="https://microsporidiadb.org/micro/app/search/transcript/GeneByLocusTag">MicrosporidiaDB</option>
+            <option url1="https://vectorbase.org/vectorbase/app/record/gene/" url2="https://vectorbase.org/vectorbase/app">VectorBase</option>
+          </select>
+        </p>
       </div>
       <div id="help_text_2">
         <h4>paraCell Tabs</h4>
@@ -7278,6 +7294,28 @@ if (isHP == "true"){             // Host-Parasite Specific formatting
 
 var database_URL;
 var databaseSearch_URL;
+
+function setExternalDatabase(){
+
+  var database = document.getElementById("database_dropdown");
+  db_name = database.value;
+
+  if (db_name == "NCBI"){
+
+    databaseURL = database.getAttribute("url1");
+
+    databaseSearchURL = database.getAttribute("url1");
+
+  }else{
+
+    databaseURL = database.getAttribute("url1");
+
+    databaseSearchURL = database.getAttribute("url2");
+
+  }
+  
+}
+
 var includeGeneS;
 var includePseudo;
 var includeDesc;
@@ -7345,6 +7383,13 @@ $.ajax({
     appendDIV.append("<div id='dataDescription' style='overflow-wrap: break-word;word-wrap: break-word;'>"+txt+"</div>");
 
   }
+
+  //set up External Database
+
+  if ("Database" in res){
+    setExternalDatabase(res["Database"])
+  }
+
   
   database_URL = res['url'];
 
