@@ -670,22 +670,6 @@
         <p>paraCell adds connections between base cellxgene, VIP and external databases.</p>
         <p>Gene Sets created in cellxgene can be imported into paraCell via the "Add Genes" tab.</p>
         <p>"Add Genes" also enables users to search external resources (such as the NCBI gene database) using existing gene-sets.</p>
-        <p>Select an external Database here:
-          <select id="database_dropdown" onchange="setExternalDatabase()">
-            <option value="NCBI" url1="https://www.ncbi.nlm.nih.gov/gene/?term=">NCBI</option>
-            <option url1="https://plasmodb.org/plasmo/app/record/gene/" url2="https://plasmodb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=">PlasmoDB</option>
-            <option url1="https://tritrypdb.org/tritrypdb/app/record/gene/" url2="https://tritrypdb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=">TriTypDB</option>
-            <option url1="https://hostdb.org/hostdb/app/record/gene/" url2="https://hostdb.org/hostdb/app/search/transcript/GeneByLocusTag">HostDB</option>
-            <option url1="https://fungidb.org/fungidb/app/record/gene/" url2="https://fungidb.org/fungidb/app/search/transcript/GeneByLocusTag">FungiDB</option>
-            <option url1="https://toxodb.org/toxo/app/record/gene/" url2="https://toxodb.org/toxo/app/search/transcript/GeneByLocusTag">ToxoDB</option>
-            <option url1="https://trichdb.org/trichdb/app/record/gene/" url2="https://trichdb.org/trichdb/app/search/transcript/GeneByLocusTag">TrichDB</option>
-            <option url1="https://cryptodb.org/cryptodb/app/record/gene/" url2="https://cryptodb.org/cryptodb/app/search/transcript/GeneByLocusTag">CryptoDB</option>
-            <option url1="https://piroplasmadb.org/piro/app/record/gene/" url2="https://piroplasmadb.org/piro/app/search/transcript/GeneByLocusTag">PiroplasmaDB</option>
-            <option url1="https://giardiadb.org/giardiadb/app/record/gene/" url2="https://giardiadb.org/giardiadb/app/search/transcript/GeneByLocusTag">GiardiaDB</option>
-            <option url1="https://microsporidiadb.org/micro/app/record/gene/" url2="https://microsporidiadb.org/micro/app/search/transcript/GeneByLocusTag">MicrosporidiaDB</option>
-            <option url1="https://vectorbase.org/vectorbase/app/record/gene/" url2="https://vectorbase.org/vectorbase/app">VectorBase</option>
-          </select>
-        </p>
       </div>
       <div id="help_text_2">
         <h4>paraCell Tabs</h4>
@@ -7295,25 +7279,104 @@ if (isHP == "true"){             // Host-Parasite Specific formatting
 var database_URL;
 var databaseSearch_URL;
 
-function setExternalDatabase(){
+//External Database Object
+const ext_databases = {
 
-  var database = document.getElementById("database_dropdown");
-  db_name = database.value;
+  NCBI:"https://www.ncbi.nlm.nih.gov/gene/?term=",
+  VeupathSearch:"https://veupathdb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=",
+  Plasmodium:"https://plasmodb.org/plasmo/app/record/gene/",
+  Tritryp:"https://tritrypdb.org/tritrypdb/app/record/gene/",
+  Host:"https://hostdb.org/hostdb/app/record/gene/",
+  Fungi:"https://fungidb.org/fungidb/app/record/gene/",
+  Toxoplasma:"https://toxodb.org/toxo/app/record/gene/",
+  Trich:"https://trichdb.org/trichdb/app/record/gene/",
+  Crypto:"https://cryptodb.org/cryptodb/app/record/gene/",
+  Piroplasma:"https://piroplasmadb.org/piro/app/record/gene/",
+  Giardia:"https://giardiadb.org/giardiadb/app/record/gene/",
+  Micro:"https://microsporidiadb.org/micro/app/record/gene/",
+  Vector:"https://vectorbase.org/vectorbase/app/record/gene/"
 
-  if (db_name == "NCBI"){
+};
 
-    databaseURL = database.getAttribute("url1");
 
-    databaseSearchURL = database.getAttribute("url1");
+function setExternalDatabase(opt){
 
-  }else{
+  if (opt == null){
 
-    databaseURL = database.getAttribute("url1");
+    database_URL = ext_databases.NCBI
+    databaseSearch_URL = ext_databases.NCBI
+    
+  }else {
 
-    databaseSearchURL = database.getAttribute("url2");
+    databaseSearch_URL = ext_databases.VeupathSearch
+
+  }
+
+  if (opt == "plasmoDB"){
+
+    database_URL = ext_databases.Plasmodium
+    
+  }
+
+  if (opt == "tritrypDB"){
+
+    database_URL = ext_databases.Tritryp
+
+  }
+
+  if (opt == "hostDB"){
+
+    database_URL = ext_databases.Host
+
+  }
+
+  if (opt == "fungiDB"){
+
+    database_URL = ext_databases.Fungi
+  }
+
+  if (opt == "toxoDB"){
+
+    database_URL = ext_databases.Toxoplasma
+
+  }
+
+  if (opt == "trichDB"){
+
+    database_URL = ext_databases.Trich
+
+  }
+
+  if (opt == "cryptoDB"){
+
+    database_URL = ext_databases.Crypto
+
+  }
+
+  if (opt == "piroplasmaDB"){
+
+    database_URL = ext_databases.Piroplasma
+
+  }
+
+  if (opt == "giardiaDB"){
+
+    database_URL = ext_databases.Giardia
+
+  }
+
+  if (opt == "microDB"){
+
+    database_URL = ext_databases.Micro
 
   }
   
+  if (opt == "vectorDB"){
+
+    database_URL = ext_databases.Vector
+
+  }
+
 }
 
 var includeGeneS;
@@ -7391,9 +7454,9 @@ $.ajax({
   }
 
   
-  database_URL = res['url'];
+  //database_URL = res['url'];
 
-  databaseSearch_URL = res['url2'];
+  //databaseSearch_URL = res['url2'];
 
   tsAnnot = res['tsAnnot'];
 
@@ -7510,6 +7573,8 @@ function searchDB(csv,direc,threshold){
 
   
   url = window.databaseSearch_URL;
+
+  //url = "https://veupathdb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList="
 
   for (element of preppedGenes) {
 
