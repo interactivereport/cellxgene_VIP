@@ -7301,7 +7301,7 @@ const ext_databases = {
 
 function setExternalDatabase(opt){
 
-  if (opt == null){
+  if (opt == "NCBI"){
 
     database_URL = ext_databases.NCBI
     databaseSearch_URL = ext_databases.NCBI
@@ -7451,6 +7451,8 @@ $.ajax({
 
   if ("Database" in res){
     setExternalDatabase(res["Database"])
+  }else{
+    setExternalDatabase("NCBI")
   }
 
   tsAnnot = res['tsAnnot'];
