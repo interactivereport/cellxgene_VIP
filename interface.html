@@ -746,23 +746,25 @@
           <option value="functions">Function</option>
         </select>
         <input type="text" id="gs_geneInput"></p>
-        <p id="geneSearchResults"></p>
         <button class="geneSearch" onclick="addToGeneList()"><b>Add to Gene-List</b></button>
+        <button class="geneSearch" onclick="select_or_clear_ags('select')"><b>Select All</b></button>
+        <button class="geneSearch" onclick="select_or_clear_ags('clear')"><b>Clear Selection</b></button>
+        <p id="geneSearchResults"></p>
         <p id="gsResultNote"></p>
       </div>
       <div id="geneSearchSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <h4>Gene-List</h4>
       <input type="text" id="gs_geneList_title" value="Custom Gene Set"><p>Gene-List Title</p>
       <p id="gs_geneList"></p>
-      <p id="gs_geneList_Note"></p>
+      <p id="gs_geneList_Note" style="color:blue"></p>
       <button class="geneSearch" onclick="clear_GS_GeneSet()"><b>Clear Gene-List</b></button>
       <button class="geneSearch" onclick="add_GS_GeneSet()"><b>Add as Gene-Set</b></button>
       <h4>Search by GO term:</h4>
         <p>
         <select id="go_level">
-          <option value="go_components">Cellular Component</option>
+          <option value="go_processes">Biological Process</option>
           <option value="go_functions">Molecular Function</option>
-          <option value="go_processes">Biological Process</option></select>
+          <option value="go_components">Cellular Component</option></select>
         <input type="text" id="gs_goTerm"></p>
         <p id="gs_goNote" style="color:red;"></p>
         <ul id="gs_go_Results"></ul>
@@ -6699,7 +6701,7 @@ for (i = 0; i < match_list.length; i ++){
   id = gs_dict[match_list[i]]
   id_hyperlink = makeLink(id)
   res = match_list[i] + " (" + id_hyperlink + ")"
-  res_checkbox = '<label><input class="gsCheckBox" type="checkbox" name="'+match_list[i]+'" value="'+id+'" checked/>'+res+' </label>';
+  res_checkbox = '<label><input class="gsCheckBox" type="checkbox" name="'+match_list[i]+'" value="'+id+'"/>'+res+' </label>';
   final_results.push(res_checkbox)
 
   }
@@ -6726,6 +6728,27 @@ for (i = 0; i < selectedCboxes.length; i ++){
   
 
 }
+
+}
+
+function select_or_clear_ags(opt){
+
+  checkboxes = document.getElementsByClassName("gsCheckBox");
+
+  if (opt == "select"){
+    
+    $(".gsCheckBox").each(function(){
+      this.checked = true;
+    })
+
+  }else{
+
+    $(".gsCheckBox").each(function(){
+      this.checked = false;
+    })
+
+  }
+
 
 }
 
@@ -7766,11 +7789,15 @@ window.biogen = geneNames;
 ADDGref();
 gsDB_dropdown();
 
+$("#gs_geneList_Note").text("Gene-Set added!");
+
 }
 
 function clear_GS_GeneSet(){
 
   $("#gs_geneList").empty();
+
+  $("#gs_geneList_Note").text("");
 
 }
 
