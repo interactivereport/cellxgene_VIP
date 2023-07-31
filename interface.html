@@ -7278,6 +7278,107 @@ if (isHP == "true"){             // Host-Parasite Specific formatting
 
 var database_URL;
 var databaseSearch_URL;
+
+//External Database Object
+const ext_databases = {
+
+  NCBI:"https://www.ncbi.nlm.nih.gov/gene/?term=",
+  VeupathSearch:"https://veupathdb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=",
+  Plasmodium:"https://plasmodb.org/plasmo/app/record/gene/",
+  Tritryp:"https://tritrypdb.org/tritrypdb/app/record/gene/",
+  Host:"https://hostdb.org/hostdb/app/record/gene/",
+  Fungi:"https://fungidb.org/fungidb/app/record/gene/",
+  Toxoplasma:"https://toxodb.org/toxo/app/record/gene/",
+  Trich:"https://trichdb.org/trichdb/app/record/gene/",
+  Crypto:"https://cryptodb.org/cryptodb/app/record/gene/",
+  Piroplasma:"https://piroplasmadb.org/piro/app/record/gene/",
+  Giardia:"https://giardiadb.org/giardiadb/app/record/gene/",
+  Micro:"https://microsporidiadb.org/micro/app/record/gene/",
+  Vector:"https://vectorbase.org/vectorbase/app/record/gene/"
+
+};
+
+
+function setExternalDatabase(opt){
+
+  if (opt == "NCBI"){
+
+    database_URL = ext_databases.NCBI
+    databaseSearch_URL = ext_databases.NCBI
+    
+  }else {
+
+    databaseSearch_URL = ext_databases.VeupathSearch
+
+  }
+
+  if (opt == "plasmoDB"){
+
+    database_URL = ext_databases.Plasmodium
+    
+  }
+
+  if (opt == "tritrypDB"){
+
+    database_URL = ext_databases.Tritryp
+
+  }
+
+  if (opt == "hostDB"){
+
+    database_URL = ext_databases.Host
+
+  }
+
+  if (opt == "fungiDB"){
+
+    database_URL = ext_databases.Fungi
+  }
+
+  if (opt == "toxoDB"){
+
+    database_URL = ext_databases.Toxoplasma
+
+  }
+
+  if (opt == "trichDB"){
+
+    database_URL = ext_databases.Trich
+
+  }
+
+  if (opt == "cryptoDB"){
+
+    database_URL = ext_databases.Crypto
+
+  }
+
+  if (opt == "piroplasmaDB"){
+
+    database_URL = ext_databases.Piroplasma
+
+  }
+
+  if (opt == "giardiaDB"){
+
+    database_URL = ext_databases.Giardia
+
+  }
+
+  if (opt == "microDB"){
+
+    database_URL = ext_databases.Micro
+
+  }
+  
+  if (opt == "vectorDB"){
+
+    database_URL = ext_databases.Vector
+
+  }
+
+}
+
 var includeGeneS;
 var includePseudo;
 var includeDesc;
@@ -7345,10 +7446,14 @@ $.ajax({
     appendDIV.append("<div id='dataDescription' style='overflow-wrap: break-word;word-wrap: break-word;'>"+txt+"</div>");
 
   }
-  
-  database_URL = res['url'];
 
-  databaseSearch_URL = res['url2'];
+  //set up External Database
+
+  if ("Database" in res){
+    setExternalDatabase(res["Database"])
+  }else{
+    setExternalDatabase("NCBI")
+  }
 
   tsAnnot = res['tsAnnot'];
 
