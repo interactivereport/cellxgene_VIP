@@ -756,7 +756,7 @@
       <h4>Gene-List</h4>
       <input type="text" id="gs_geneList_title" value="Custom Gene Set"><p>Gene-List Title</p>
       <p id="gs_geneList"></p>
-      <p id="gs_geneList_Note"></p>
+      <p id="gs_geneList_Note" style="color:blue"></p>
       <button class="geneSearch" onclick="clear_GS_GeneSet()"><b>Clear Gene-List</b></button>
       <button class="geneSearch" onclick="add_GS_GeneSet()"><b>Add as Gene-Set</b></button>
       <h4>Search by GO term:</h4>
@@ -7789,11 +7789,15 @@ window.biogen = geneNames;
 ADDGref();
 gsDB_dropdown();
 
+$("#gs_geneList_Note").text("Gene-Set added!");
+
 }
 
 function clear_GS_GeneSet(){
 
   $("#gs_geneList").empty();
+
+  $("#gs_geneList_Note").text("");
 
 }
 
