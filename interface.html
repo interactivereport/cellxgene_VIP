@@ -746,8 +746,10 @@
           <option value="functions">Function</option>
         </select>
         <input type="text" id="gs_geneInput"></p>
-        <p id="geneSearchResults"></p>
         <button class="geneSearch" onclick="addToGeneList()"><b>Add to Gene-List</b></button>
+        <button class="geneSearch" onclick="select_or_clear_ags('select')"><b>Select All</b></button>
+        <button class="geneSearch" onclick="select_or_clear_ags('clear')"><b>Clear Selection</b></button>
+        <p id="geneSearchResults"></p>
         <p id="gsResultNote"></p>
       </div>
       <div id="geneSearchSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
@@ -6699,7 +6701,7 @@ for (i = 0; i < match_list.length; i ++){
   id = gs_dict[match_list[i]]
   id_hyperlink = makeLink(id)
   res = match_list[i] + " (" + id_hyperlink + ")"
-  res_checkbox = '<label><input class="gsCheckBox" type="checkbox" name="'+match_list[i]+'" value="'+id+'" checked/>'+res+' </label>';
+  res_checkbox = '<label><input class="gsCheckBox" type="checkbox" name="'+match_list[i]+'" value="'+id+'"/>'+res+' </label>';
   final_results.push(res_checkbox)
 
   }
@@ -6726,6 +6728,21 @@ for (i = 0; i < selectedCboxes.length; i ++){
   
 
 }
+
+}
+
+function select_or_clear_ags(opt){
+
+  if (opt == "select"){
+    
+    $(".gsCheckBox").attr("checked", "true");
+
+  }else{
+
+    $(".gsCheckBox").removeAttr("checked");
+
+  }
+
 
 }
 
