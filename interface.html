@@ -733,7 +733,7 @@
       <p id="tradeSeqNote" style="color:red;"></p>
       <p></p>
       <table id="tradeSeqdatatable" class="display"></table>
-      <p id="tradeSeqFig"></p>
+      <p id="tradeSeqfig"></p>
     </div><!--TradeSeq-->
 
     <div id="geneSearch" class="tabcontent">
@@ -6425,13 +6425,19 @@ function tsTable(){
       dom:'Blfrtip',
       lengthMenu:[[10,50,100,200],[10,50,100,200]],
       order:[[1, 'desc']],
-      buttons:['csv', {
-          text:'TradeSeqPlot',
-          action: function(e, dt, node, config) {
-            tsPlot(tsPlotGene)
-            return;
-          }
-        }],
+      buttons:['csv',{
+        text:"Save",
+        action: function(e, dt, node, config){
+          saveImg("tradeSeqimg")
+        }
+      }, 
+      {
+        text:'TradeSeqPlot',
+        action: function(e, dt, node, config) {
+          tsPlot(tsPlotGene)
+          return;
+        }
+      }],
       data:tableInputs[0],
       columns:tableInputs[1]
     });
@@ -6863,7 +6869,7 @@ success: function(res){
 
   document.getElementById("tradeSeqSpin").style.visibility="hidden";
 
-  showImg('tradeSeqFig',res)
+  showImg('tradeSeqfig',res)
   
 },
 error: function() {
