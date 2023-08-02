@@ -7328,14 +7328,14 @@ const ext_databases = {
 };
 
 
-function setExternalDatabase(opt){
+function setExternalDatabase(opt, hp = false){
 
   if (opt == "NCBI"){
 
     database_URL = ext_databases.NCBI
     databaseSearch_URL = ext_databases.NCBI
     
-  }else {
+  }else{
 
     databaseSearch_URL = ext_databases.VeupathSearch
 
@@ -7523,7 +7523,7 @@ $.ajax({
 
     hostPrefix = res['host_prefix'];
     parasitePrefix = res['parasite_prefix'];
-    host_URL = res["hosturl"];
+    host_URL = ext_databases.NCBI;
 
     get_HP()
 
