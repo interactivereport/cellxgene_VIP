@@ -7314,95 +7314,114 @@ const ext_databases = {
   NCBI:"https://www.ncbi.nlm.nih.gov/gene/?term=",
   VeupathSearch:"https://veupathdb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=",
   Plasmodium:"https://plasmodb.org/plasmo/app/record/gene/",
+  PlasmoSearch:"https://plasmodb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=",
   Tritryp:"https://tritrypdb.org/tritrypdb/app/record/gene/",
+  TritrypSearch:"https://tritrypdb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList="
   Host:"https://hostdb.org/hostdb/app/record/gene/",
+  HostSearch:"https://hostdb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList="
   Fungi:"https://fungidb.org/fungidb/app/record/gene/",
+  FungiSearch:"https://fungidb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList="
   Toxoplasma:"https://toxodb.org/toxo/app/record/gene/",
+  ToxoSearch:"https://toxodb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=",
   Trich:"https://trichdb.org/trichdb/app/record/gene/",
+  TrichSearch:"https://trichdb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=",
   Crypto:"https://cryptodb.org/cryptodb/app/record/gene/",
+  CryptoSearch:"https://cryptodb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=",
   Piroplasma:"https://piroplasmadb.org/piro/app/record/gene/",
+  PiroSearch:"https://piroplasmadb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=",
   Giardia:"https://giardiadb.org/giardiadb/app/record/gene/",
+  GiardiaSearch:"https://giardiadb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=",
   Micro:"https://microsporidiadb.org/micro/app/record/gene/",
-  Vector:"https://vectorbase.org/vectorbase/app/record/gene/"
+  MicroSearch: "https://microdb.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=",
+  Vector:"https://vectorbase.org/vectorbase/app/record/gene/",
+  VectorSearch: "https://vectorbase.org/a/app/search/transcript/GeneByLocusTag?param.ds_gene_ids.idList=",
 
 };
 
 
-function setExternalDatabase(opt, hp = false){
+function setExternalDatabase(opt){
 
   if (opt == "NCBI"){
 
     database_URL = ext_databases.NCBI
     databaseSearch_URL = ext_databases.NCBI
     
-  }else{
-
-    databaseSearch_URL = ext_databases.VeupathSearch
-
   }
 
   if (opt == "plasmoDB"){
 
     database_URL = ext_databases.Plasmodium
+    databaseSearch_URL = ext_databases.PlasmoSearch
+
     
   }
 
   if (opt == "tritrypDB"){
 
     database_URL = ext_databases.Tritryp
+    databaseSearch_URL = ext_databases.TritrypSearch
 
   }
 
   if (opt == "hostDB"){
 
     database_URL = ext_databases.Host
+    databaseSearch_URL = ext_databases.HostSearch
 
   }
 
   if (opt == "fungiDB"){
 
     database_URL = ext_databases.Fungi
+    databaseSearch_URL = ext_databases.FungiSearch
   }
 
   if (opt == "toxoDB"){
 
     database_URL = ext_databases.Toxoplasma
+    databaseSearch_URL = ext_databases.ToxoSearch
 
   }
 
   if (opt == "trichDB"){
 
     database_URL = ext_databases.Trich
+    databaseSearch_URL = ext_databases.TrichSearch
 
   }
 
   if (opt == "cryptoDB"){
 
     database_URL = ext_databases.Crypto
+    databaseSearch_URL = ext_databases.CryptoSearch
 
   }
 
   if (opt == "piroplasmaDB"){
 
     database_URL = ext_databases.Piroplasma
+    databaseSearch_URL = ext_databases.PiroSearch
 
   }
 
   if (opt == "giardiaDB"){
 
     database_URL = ext_databases.Giardia
+    databaseSearch_URL = ext_databases.GiardiaSearch
 
   }
 
   if (opt == "microDB"){
 
     database_URL = ext_databases.Micro
+    databaseSearch_URL = ext_databases.MicroSearch
 
   }
   
   if (opt == "vectorDB"){
 
     database_URL = ext_databases.Vector
+    databaseSearch_URL = ext_databases.VectorSearch
 
   }
 
