@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # CLT will not be available for this installation
 # Please provide the destnation conda env path (--prefix)
-appPATH="./VIPlight"
+appPATH="/home/zouyang/.conda/envs/VIP"
 
 set -e
 exePath=$(readlink -e $(dirname $0))
 echo $exePath
-exit 0
+
 condaPath=$(which conda)
 if [[ ${#condaPath} -lt 3 ]]; then
     echo "Missing conda"
@@ -20,10 +20,12 @@ source $condaPath/etc/profile.d/conda.sh
 
 ## create conda env
 conda env remove -p $appPATH
-conda create -y python=3.8.15 mamba=0.15.3 git=2.39.1 jq=1.6 nodejs=13.13.0 -c conda-forge -p $appPATH
+conda create -y python=3.8.15 mamba=0.15.3 git=2.39.1 jq=1.6 nodejs=18.12.1 -c conda-forge -p $appPATH #nodejs=13.13.0
 source $condaPath/etc/profile.d/conda.sh
 conda activate $appPATH
 which python
+
+pip install --force-reinstall flask==2.2.3 flask-cors==3.0.10 flask-restful==0.3.9 flask-talisman==1.0.0 werkzeug==2.2.3 anndata==0.8.0 h5py==3.8.0 pandas==1.5.3 numpy==1.22.0
 
 ## config the env with cellxgene
 rm -fr cellxgene

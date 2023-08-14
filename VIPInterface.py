@@ -311,6 +311,7 @@ def distributeTask(aTask):
     'preDEGname':getPreDEGname,
     'preDEGvolcano':getPreDEGvolcano,
     'preDEGmulti':getPreDEGbubble,
+    'preDEGfgsea':getPreDEGfgsea,
     'mergeMeta': mergeMeta,
     'isMeta': isMeta,
     'testVIPready':testVIPready,
@@ -1577,6 +1578,40 @@ def getPreDEGbubble(data):
 
   #RASGEF1B SLC26A3 UNC5C AHI1 CD9
   return img
+
+def getPreDEGfgsea(data):
+  strF = re.sub("h5ad$","db",data["h5ad"])
+  comGrp = data["compSel"].split("::")
+  conn = sqlite3.connect(strF)
+  df = pd.read_sql_query("select gene,log2fc,pval,qval from DEG where contrast=? and tags=?;", conn,params=comGrp)
+  conn.close()
+  deg = df.sort_values(by=['qval'])
+  data["comGrp"] = comGrp[0].split(".vs.")
+  
+  strF = ('%s/DEG%f.csv' % (data["CLItmp"],time.time()))
+  deg.to_csv(strF,index=False)
+  GSEAimg=""
+  GSEAtable=pd.DataFrame()
+  res = subprocess.run([strExePath+'/fgsea.R',
+                        strF,
+                        '%s/gsea/%s.symbols.gmt'%(strExePath,data['gs']),
+                        str(data['gsMin']),
+                        str(data['gsMax']),
+                        str(data['padj']),
+                        data['up'],
+                        data['dn'],
+                        str(data['collapse']),
+                        data['figOpt']['img'],
+                        str(data['figOpt']['fontsize']),
+                        str(data['figOpt']['dpi']),
+                        data['Rlib']],capture_output=True)#
+  if 'Error' in res.stderr.decode('utf-8'):
+    raise SyntaxError("in fgsea.R: "+res.stderr.decode('utf-8'))
+  GSEAimg = res.stdout.decode('utf-8')
+  GSEAtable = pd.read_csv(strF)
+  GSEAtable['leadingEdge'] = GSEAtable['leadingEdge'].apply(lambda x:'|'.join(x.split('|')[:10]))
+  os.remove(strF)
+  return json.dumps([GSEAtable.to_csv(index=False),GSEAimg])
 
 def getEnv():
   config = {'CLItmp':'/tmp','Rpath':'','Rlib':'','METAtmp':'/tmp','METAurl':'','METAmax':1e4}

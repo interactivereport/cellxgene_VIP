@@ -6,13 +6,15 @@ channels:
   - defaults
   - bioconda
 dependencies:
+  - nodejs=18.12.1
+  - mamba=0.15.3
+  - numba=0.56.4
   - scanpy=1.9.1
   - anndata=0.8.0
-  - h5py=3.8.0
+  - pandas=1.5.3
   - matplotlib=3.6.2
   - seaborn=0.12.1
   - plotly=5.11.0
-  - pip=23.0.1
   - pyarrow=10.0.1
   - r-base=4.2.2
   - r-ggplot2=3.4.0
@@ -33,11 +35,13 @@ dependencies:
   - r-ggrastr=1.0.1
   - r-viridis=0.6.2
   - r-biocmanager
-  - bioconductor-rtracklayer=1.58.0 # if the older bioconductor version is not available, install manually using other mirror site chooseBioCmirror()
+  - bioconductor-rtracklayer=1.58.0=r42h171f361_1 # if the older bioconductor version is not available, install manually using other mirror site chooseBioCmirror()
+  - bioconductor-genomicranges=1.50.0=r42hc0cfd56_0
+  - bioconductor-genomeinfodb=1.34.8=r42hdfd78af_0
   - bioconductor-s4vectors=0.36.0=r42hc0cfd56_0
   - bioconductor-iranges=2.32.0=r42hc0cfd56_0
-  - bioconductor-complexheatmap=2.14.0
-  - bioconductor-fgsea=1.24.0
+  - bioconductor-complexheatmap=2.14.0=r42hdfd78af_0
+  - bioconductor-fgsea=1.24.0=r42hc247a5b_0
   - pip=23.0.1
   - pip:
     - diffxpy==0.7.4

@@ -569,7 +569,7 @@
   <div id="separator" ></div>
   <div id="panel-right" >
     <div id="ABBR" class="tabcontent"> <!-- Abbreviation -->
-      <h3>Create a combinatorial annotation <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-comb.-abbr." target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+      <h3>Create a combinatorial annotation <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-comb.-abbr." target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
       <p>First, check below categorical annotations to be combined. Second, select items in each annotation. Then, click <button onclick="ABBRcombineNew()">Combine</button>. The max combinatorial number <input type="number" id="ABBRcomBmax" min=2 value="200"></p>
       <p id="ABBRcomBgrp"></p>
       <p id="ABBRcomBnote"></p>
@@ -597,7 +597,7 @@
     </div><!--ABBR-->
 
     <div id="ADDG" class="tabcontent">
-      <h3>Add genes of interest for plotting <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-add-genes-gene-sets" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+      <h3>Add genes of interest for plotting <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-add-genes-gene-sets" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
       <p>Please input a list of genes separated by comma, semicolon, space or tab:</p>
       <p><textarea id="ADDGinput" rows="5" cols="70"></textarea></p>
       <p><button onclick="ADDGadd()"><b>Add</b></button></p>
@@ -631,7 +631,7 @@
 
     <div id="GD" class=tabcontent>
       <div id="GDinput">
-        <h3>Genes detected in cell selections <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-gene-detected" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+        <h3>Genes detected in cell selections <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-gene-detected" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
         <p>In selection 1 (<span class="cellN1" style="color:red;">0</span>) cells and selection 2 (<span class="cellN2" style="color:red;">0</span>) cells</p>
         <p>Expression cutoff:
         <input id="GDcutoff" type="number" step="0.1" value="1"/></p>
@@ -649,7 +649,7 @@
 
     <div id="MARK" class="tabcontent">
       <div id="MARKinput">
-        <h3>Marker genes of annotation categories from selected cells <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-marker-genes" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+        <h3>Marker genes of annotation categories from selected cells <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-marker-genes" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
         <p>Choose cell selection(s):
           <label><input class="MARKcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="MARKcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
@@ -687,7 +687,7 @@
       </div>
 
       <div id="SGVsingleV" class="SGVcontent">
-        <h3>Violin plot of a gene from selected cells <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-violin-plot" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+        <h3>Violin plot of a gene from selected cells <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-violin-plot" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
         <div id="SGVinput">
           <p>Choose cell selection(s):
             <label><input class="SGVcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
@@ -710,7 +710,7 @@
       </div> <!-- SGVsingleV -->
 
       <div id="SGVcompareV" class="SGVcontent">
-        <h3>Plot sub-grouped violin <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+        <h3>Plot sub-grouped violin <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
         <div id="SGVcompareinput">
           <p>Choose cell selection(s):
             <label><input class="SGVcomparecell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
@@ -737,7 +737,7 @@
       </div> <!-- SGVcompareV -->
 
       <div id="PGV" class="SGVcontent">
-        <h3>Stacked violin plot of genes from selected cells <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-stacked-violin" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+        <h3>Stacked violin plot of genes from selected cells <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-stacked-violin" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
         <div id="PGVinput">
           <p>Choose cell selection(s):
             <label><input class="PGVcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
@@ -838,7 +838,7 @@
 
     <div id="HEAT" class="tabcontent">
       <div id="HEATinput">
-        <h3>Heatmap of selected cells and genes <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-heatmap" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+        <h3>Heatmap of selected cells and genes <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-heatmap" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
         <p>Choose cell selection(s):
           <label><input class="HEATcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="HEATcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
@@ -963,7 +963,7 @@
 
     <div id="DOT" class="tabcontent">
       <div id="DOTinput">
-        <h3>Dot plot shows per group, the fraction of cells expressing a gene (dot size) and the mean expression of the gene in those cell (color scale) <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-dot-plot" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+        <h3>Dot plot shows per group, the fraction of cells expressing a gene (dot size) and the mean expression of the gene in those cell (color scale) <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-dot-plot" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
         <p>Choose cell selection(s):
           <label><input class="DOTcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="DOTcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
@@ -1036,7 +1036,7 @@
 
     <div id="EMBED" class="tabcontent">
       <div id="EMBEDinput">
-        <h3>Embedding plots of selected genes and/or annotations <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-umaptsne" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+        <h3>Embedding plots of selected genes and/or annotations <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-umaptsne" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
         <p>Choose cell selection(s):
           <label><input class="EMBEDcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="EMBEDcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
@@ -1071,7 +1071,7 @@
 
     <div  id="TRAK" class="tabcontent">
       <div id="TRAKinput">
-        <h3>Track plot represents the gene expression by height <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-track-plot" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+        <h3>Track plot represents the gene expression by height <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-track-plot" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
         <p>Choose cell selection(s):
           <label><input class="TRAKcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="TRAKcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
@@ -1105,7 +1105,7 @@
 
     <div  id="DENS" class="tabcontent">
       <div id="DENSinput">
-        <h3>Density plots of selected genes <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-density-plot" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+        <h3>Density plots of selected genes <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-density-plot" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
         <p>Choose cell selection(s):
           <label><input class="DENScell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="DENScell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
@@ -1131,7 +1131,7 @@
 
     <div  id="DENS2D" class="tabcontent">
       <div id="DENS2Dinput">
-        <h3>Density Scatter plot shows the expression relationship of two genes. The color of each hexagon denotes the number of cells in it. <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-2d-density-plot" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+        <h3>Density Scatter plot shows the expression relationship of two genes. The color of each hexagon denotes the number of cells in it. <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-2d-density-plot" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
         <p>Choose cell selection(s):
           <label><input class="DENS2Dcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="DENS2Dcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
@@ -1154,7 +1154,7 @@
 
     <div  id="DUAL" class="tabcontent">
       <div id="DUALinput">
-        <h3>Embedding plot of two genes from selected cells <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-dual-genes" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+        <h3>Embedding plot of two genes from selected cells <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-dual-genes" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
         <p>Choose cell selection(s):
           <label><input class="DUALcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="DUALcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
@@ -1179,7 +1179,7 @@
 
     <div  id="SANK" class="tabcontent">
       <div id="SANKinput">
-        <h3>Interactive sankey diagram of annotations and/or genes from selected cells <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-sankey-diagram" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+        <h3>Interactive sankey diagram of annotations and/or genes from selected cells <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-sankey-diagram" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
         <p>Choose cell selection(s):
           <label><input class="SANKcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="SANKcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
@@ -1216,7 +1216,7 @@
 
       <div id="DEGtop1" class="DEGtopcontent">
         <div id="DEGinput">
-          <h3>Find differentially expressed genes <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-deg-differential-expressed-genes" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+          <h3>Find differentially expressed genes <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-deg-differential-expressed-genes" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
           <p>Selection 1 (<span class="cellN1" style="color:red;">0</span>) cells and selection 2 (<span class="cellN2" style="color:red;">0</span>) cells</p>
           <p>Differentially expressed genes will be detected between the two cell gorups defined above, unless two categories of the 'Custom_combine' annotation are selected,
           which enables DE analysis between those two:</p>
@@ -1328,6 +1328,7 @@
       <div class="topTab">
         <button id="DEGlinksPlot" class="DEGlinks" onclick="selTop(event, 'preDEGvolcano','DEG')">Plot DEG</button>
         <button id="DEGlinksMulti" class="DEGlinks" onclick="selTop(event, 'preDEGmulti','DEG')">Multi DEG</button>
+        <button class="DEGlinks" onclick="selTop(event, 'preDEGfgsea','DEG')">GSEA</button>
       </div>
 
       <div id="preDEGvolcano" class="DEGcontent">
@@ -1429,12 +1430,39 @@
           <p id="preDEGmultifig"></p>
         </div>
       </div><!--preDEGmulti-->
+      
+      <div id="preDEGfgsea" class="DEGcontent"> <!--preDEG fgsea-->
+        <h3>Gene Set Enrichment Analysis <span style="font-size:10px">by <a href="https://bioconductor.org/packages/release/bioc/html/fgsea.html" target="_blank">fgsea</a></span></h3>
+        <div id='preDEGfgseainput'>
+          <select id="preDEGfgseaTab"></select>
+          <br>Please select the gene sets: <select id="preDEGfgseaGS" style="width:150px;"></select>
+          <a href="http://www.gsea-msigdb.org/gsea/msigdb/collections.jsp" target="_blank">Gene set definitions and more.</a>
+          <br>The gene sets with minimal size: <input id="preDEGfgseaMinSize" type="number" step="1" value="15" min="1" />
+          and maximal size: <input id="preDEGfgseaMaxSize" type="number" step="1" value="500" min="1"/>
+          <br>The significant padj cutoff in the plot: <input id="preDEGfgseaPadjCutoff" type="number" step="0.001" value="0.05" min="0" max="1"/>
+          <br>Plot the significant top (ranked by pval) up: <select id="preDEGfgseaUpN">
+          <option value='0'>0</option><option value='5'>5</option><option value='10' selected>10</option><option value='50'>50</option></select>
+          and down: <select id="preDEGfgseaDnN">
+          <option value='0'>0</option><option value='5'>5</option><option value='10' selected>10</option><option value='50'>50</option></select>
+          <br>Collapse similar gene sets in the plot: <label class="switch"><input type="checkbox" id="preDEGfgseaCollapse" checked><span class="slider"></span></label>
+        </div>
+        <button class="preDEGfgseabt" onclick="preDEGfgseaFind()"><b>Find</b> </button>
+        <button class="preDEGfgseabt" onclick="hideShow($('#preDEGfgseainput'),$(this));">Hide Input</button>
+        <div id="preDEGfgseaspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+        <pre id="preDEGfgseanote" style="color:red;"></pre>
+        <table id="preDEGfgseaTable" class="display"></table>
+        <button onclick="ZoomIn('preDEGfgsearesize')">Zoom In</button>
+        <button onclick="ZoomOut('preDEGfgseaAresize')">Zoom Out</button>
+        <div id="preDEGfgsearesize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6">
+          <p id="preDEGfgseafig"></p>
+        </div>
+      </div>
 
     </div><!--preDEGpanel -->
 
     <div id='STACBAR' class='tabcontent'>
       <div id="STACBARinput">
-        <h3>Interactive stacked barplot of cell distribution of selected cells over two annotations and/or genes <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-stacked-barplot" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+        <h3>Interactive stacked barplot of cell distribution of selected cells over two annotations and/or genes <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-stacked-barplot" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
         <p>Choose cell selection(s):
           <label><input class="STACBARcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
           <label><input class="STACBARcell" type="checkbox" value="celllist2" checked/>Selection 2 (<span class="cellN2" style="color:red">0</span>)</label>
@@ -1446,7 +1474,7 @@
         </div>
         <p>Annotations:</p><p id="STACBARgrp"></p>
         <p>Color by <select id="STACBARcol"></select></p>
-		  <p>Figure width: <input id="STACBARwidth" type="number" step="50" value="800"/> , height: <input id="STACBARheight" type="number" step="40" value="480"/></p>
+		    <p>Figure width: <input id="STACBARwidth" type="number" step="50" value="800"/> , height: <input id="STACBARheight" type="number" step="40" value="480"/></p>
         <p>x-Axis font size: <input id="STACBARxfontsize" type="number" step="2" value="16"/> ,
         label rotate: <input id="STACBARxlabelrotate" type="number" step="5" value="-60"/> ,
 		     label shift: <input id="STACBARxlabelshift" type="number" step="2" value="-24"/></p>
@@ -1515,7 +1543,7 @@
     </div>
 
     <div id="IMG" class="tabcontent">
-      <h3>Global setting for VIP <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-figure-option" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+      <h3>Global setting for VIP <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-figure-option" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
       <p>Select cells cumulatively:
         <input type="radio" name="IMGcumuRd" value="Yes" onclick="IMGcellSel()">Yes
         <input type="radio" name="IMGcumuRd" value="No" onclick="IMGcellSel()" checked>No
@@ -1642,7 +1670,7 @@
     </div><!--SPATIAL-->
 
     <div id="BRUSH" class="tabcontent">
-      <h3>Brushed ranges <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-other-functions" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+      <h3>Brushed ranges <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-other-functions" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
       <div id="BRUSHset"></div>
     </div><!--BRUSH-->
 
@@ -1651,7 +1679,7 @@
     </div><!--SYNC-->
 
     <div id="CLI" class="tabcontent">
-      <h3>CLI to operate on data directly <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-command-line-interface" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></a></i></h3>
+      <h3>CLI to operate on data directly <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-command-line-interface" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
       <div id="CLIinput">
         <p>Choose cell selection(s):
           <label><input class="CLIcell" type="checkbox" value="celllist1" checked/>Selection 1 (<span class="cellN1" style="color:red">0</span>)</label>
@@ -2018,6 +2046,7 @@ function getGSEA(){
           resD = JSON.parse(res);
           for(const one of resD){
             $('#GSEAgs').append(createOpt(one));
+            $('#preDEGfgseaGS').append(createOpt(one));
           }
         },
         error: function(request,status,error){
@@ -2039,6 +2068,7 @@ function enablePreDEG(){
           var htmlCheck="", tb=[];
           for(const one of resD){
             $('#preDEGvolcanoTab').append(createOpt(one));
+            $('#preDEGfgseaTab').append(createOpt(one));
             //htmlCheck += '<label id="preDEGmulticompCK'+one+'"><input class="preDEGmultigrps" type="checkbox" value="'+one+'" onchange="preDEGmultiorderUpdate()"/> '+one+' </label>';//
           }//preDEGmulticomp
           $.each(resD,function(i,v){
@@ -4703,6 +4733,68 @@ function preDEGmultiplot(eID){
     }
   });
 
+}
+function preDEGfgseaFind(){
+  var D = {'method':'preDEGfgsea',
+           'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+           'compSel':$("#preDEGfgseaTab").val(),
+           'gs':$('#preDEGfgseaGS').val(),
+           'gsMin':$('#preDEGfgseaMinSize').val(),
+           'gsMax':$('#preDEGfgseaMaxSize').val(),
+           'padj':$('#preDEGfgseaPadjCutoff').val(),
+           'up':$('#preDEGfgseaUpN').val(),
+           'dn':$('#preDEGfgseaDnN').val(),
+           'collapse':$('#preDEGfgseaCollapse').prop('checked'),
+            'figOpt':window.figOpt
+  };
+  document.getElementById("preDEGfgseaspin").style.visibility="visible";
+  $(".preDEGfgseabt").prop('disabled',true);
+  $.ajax({
+    type:"POST",
+    url: VIPurl,
+    data:JSON.stringify(D),
+    contentType: 'application/json;charset=UTF-8',
+    success: function(res){
+      document.getElementById("preDEGfgseaspin").style.visibility="hidden";
+      $(".preDEGfgseabt").prop("disabled",false);
+      $('#preDEGfgseaTable').empty();
+
+      if(res.startsWith('ERROR')){
+        $('#preDEGfgseanote').text(res);
+        return;
+      }
+      resD = JSON.parse(res);
+      // process GSEA
+      showImg('preDEGfgseafig',resD[1]);
+      var gseaTable = d3.csvParse(resD[0],function(data){
+        return [].concat([data.pathway,
+                  data.pval.length===0? 1:(+data.pval).toExponential(2),
+                  data.padj.length===0? 1:(+data.padj).toExponential(2),
+                  data.ES.length===0? 'NaN':(+data.ES).toFixed(2),
+                  data.NES.length===0? 'NaN':(+data.NES).toFixed(2)],
+                  Object.values(data).slice(5));
+      });
+      var gseaTitle = [];
+      [].concat(resD[0].substring(0,500).
+        split("\n")[0].split(',').
+        forEach(function(d){gseaTitle=gseaTitle.concat({title:d.replace('pval','p value').replace('padj','adjusted p value')})}));
+      var gTable = $('#preDEGfgseaTable').DataTable({
+        destroy: true,
+        dom:'Blfrtip',
+        lengthMenu:[[10,50,100,200],[10,50,100,200]],
+        order:[[1,"asc"]],
+        buttons:['csv'],
+        data:gseaTable,
+        columns:gseaTitle
+      });
+
+    },
+    error: function(request,status,error){
+      $('#preDEGfgseanote').text(request.status+request.responseText);
+      document.getElementById("preDEGfgseaspin").style.visibility="hidden";
+      $(".preDEGfgseabt").prop("disabled",false);
+    }
+  })
 }
 function GSPplot(){
   $('#GSPnote').text("");
