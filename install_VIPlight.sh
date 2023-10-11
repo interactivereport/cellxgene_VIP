@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # CLT will not be available for this installation
 # Please provide the destnation conda env path (--prefix)
-appPATH="/home/zouyang/.conda/envs/VIP"
+appPATH="~/.conda/envs/VIP"
 
 set -e
 exePath=$(readlink -e $(dirname $0))
