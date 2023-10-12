@@ -6,11 +6,10 @@ channels:
   - defaults
   - bioconda
 dependencies:
-  - nodejs=13.13.0
   - mamba=0.15.3
   - numba=0.56.4
   - scanpy=1.4.6
-  - anndata=0.8.0
+  - anndata=0.7.8
   - h5py=2.10.0
   - pandas=1.5.3
   - matplotlib=3.6.2

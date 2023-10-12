@@ -25,7 +25,7 @@ source $condaPath/etc/profile.d/conda.sh
 conda activate $appPATH
 which python
 
-pip install --force-reinstall markupsafe==1.1.1 fsspec==0.7.4
+pip install --force-reinstall markupsafe==1.1.1 fsspec==0.7.4 anndata==0.7.8 scanpy==1.4.6
 #pip install --force-reinstall flask==2.2.3 flask-cors==3.0.10 flask-restful==0.3.9 flask-talisman==1.0.0 werkzeug==2.2.3 anndata==0.8.0 h5py==3.8.0 pandas==1.5.3 numpy==1.22.0
 
 ## config the env with cellxgene
@@ -61,7 +61,6 @@ cd ..
 which mamba
 mamba env update -f $exePath/VIPlight_V0.yml
 # update the VIP
-sed -i "s|server.common.compute.diffexp_generic|server.compute.diffexp_generic|g" VIPInterface.py
 $exePath/update.VIPInterface_V0.sh all
 
 # setup the update
