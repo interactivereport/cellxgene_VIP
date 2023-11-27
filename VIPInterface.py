@@ -321,7 +321,9 @@ def distributeTask(aTask):
     'saveTest':saveTest,
     'getBWinfo':getBWinfo,
     'GSP':GSP,
-    'plotBW':plotBW
+    'plotBW':plotBW,
+    'checkCosMx':getCosMx,
+    'plotCOSMX':plotCosMx
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1231,7 +1233,6 @@ def DENS(data):
   #ppr.pprint("plotting total cost: %f seconds" % (time.time()-sT))
   return iostreamFig(fig)
 
-
 def SANK(data):
   updateGene(data)
   if len(data['genes'])==0:
@@ -1720,6 +1721,82 @@ def plotBW(data):
         raise SyntaxError("in R: "+res.stderr.decode('utf-8'))
 
     return img
+
+def getCosMx(data):
+    scD=data['data_adapter']
+    cosMxKey='cosMx'
+    cosMxID=[]
+    if scD is not None and cosMxKey in scD.data.uns_keys():
+        cosMxID = list(scD.data.uns[cosMxKey].keys())
+        cosMxID.remove('keys')
+    return json.dumps(cosMxID)
+def bresenham_line(pt1,pt2):
+    x1,y1 = pt1
+    x2,y2 = pt2
+    points = []
+    dx = abs(x2 - x1)
+    dy = abs(y2 - y1)
+    sx = 1 if x1 < x2 else -1
+    sy = 1 if y1 < y2 else -1
+    error = dx - dy
+    while x1 != x2 or y1 != y2:
+        points.append((x1, y1))
+        e2 = 2 * error
+        if e2 > -dy:
+            error -= dy
+            x1 += sx
+        if e2 < dx:
+            error += dx
+            y1 += sy
+    points.append((x2, y2))
+    return points
+def loc_img(pt,imgH):
+    x,y = pt
+    return((round(imgH-y),round(x)))
+def square_integer(ct,halfS):
+    x_center, y_center = ct
+    coordinates_in_square = []
+    for x in range(x_center - halfS, x_center + halfS + 1):
+        for y in range(y_center - halfS, y_center + halfS + 1):
+            coordinates_in_square.append((x, y))
+    return coordinates_in_square
+def npArray2jpg(img):
+    buff = BytesIO()
+    plt.imsave(buff,img,format='jpg')
+    img_base64=base64.b64encode(buff.getvalue()).decode("utf-8")
+    return img_base64
+def plotCosMx(data):
+    scD=data['data_adapter']
+    cosMxKey='cosMx'
+    cosMxImg = {}
+    keys = scD.data.uns[cosMxKey]['keys']
+    for sID in data['sIDs']:
+        if data['histology']:
+            imgC = scD.data.uns[cosMxKey][sID][keys['img']]
+        else:
+            imgC = np.ones((scD.data.uns[cosMxKey][sID][keys['img']].shape[0],scD.data.uns[cosMxKey][sID][keys['img']].shape[1],3),dtype='uint8')*255
+        if data['cell']:
+            cell_color=data['cell'].lstrip('#')
+            rgb = np.array(tuple(int(cell_color[i:i+2], 16) for i in (0, 2, 4)),dtype='uint8')
+            cellB = scD.data.uns[cosMxKey][sID][keys['cell']]
+            for i in cellB.cell_ID.unique():
+                oneC = cellB[cellB.cell_ID==i].reset_index(drop=True)
+                N = oneC.shape[0]
+                for j in range(N):
+                    p = bresenham_line(loc_img((oneC[keys['local_px']['x']][j%N],oneC[keys['local_px']['y']][j%N]),imgC.shape[1]),
+                            loc_img((oneC[keys['local_px']['x']][(j+1)%N],oneC[keys['local_px']['y']][(j+1)%N]),imgC.shape[1]))
+                    for a in p:
+                        imgC[a]=rgb
+        if len(data['genes'])>0:
+            txLoc = scD.data.uns['cosMx'][sID][keys['tx_loc']]
+            for one in data['genes']:
+                col = data['genes'][one].lstrip('#')
+                rgb = np.array(tuple(int(col[i:i+2], 16) for i in (0, 2, 4)),dtype='uint8')
+                for i in txLoc.index[txLoc[keys['tx_col']]==one].tolist():
+                    for a in square_integer(loc_img((txLoc[keys['local_px']['x']][i],txLoc[keys['local_px']['y']][i]),imgC.shape[1]),int(data['geneSize'])-1):
+                        imgC[a] = rgb
+        cosMxImg[sID]=npArray2jpg(imgC)
+    return json.dumps(cosMxImg)
 
 #make sure the h5ad file full name is listed in vip.env as a variable 'testVIP';
 def testVIPready(data):

@@ -528,6 +528,16 @@
         text-align: center;
         background-color: #CCCCCC;
       }
+      .colorInput{
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          appearance: none;
+          width: 20px;
+          height: 22px;
+          background-color: transparent;
+          border: none;
+          cursor: pointer;
+      }
     </style>
   </head>
 <body>
@@ -551,6 +561,7 @@
       <button id="preDEGpanelBT" class="tablinks" onclick="selFun(event, 'preDEGpanel');defaultTopSel('DEG','DEGlinksPlot')" style="display: none;">Pre-Computed DEG</button>
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
       <button id="browserBT" class="tablinks" onclick="selFun(event, 'BROW')" style="display: none;">Multiome</button>
+      <button id='cosMxBT' class="tablinks" onclick="selFun(event, 'COSMX');" style="display: none;">CosMx</button>
       <button class="tablinks" onclick="selFun(event, 'SPATIAL');defaultTopSel('SPATIAL','SPATIALimage')">Spatial Transcriptomics</button>
       <button class="tablinks" onclick="selFun(event, 'CLI')">Command Line Interface</button>
       <button id="metaCellBT" class="tablinks colorButton" onclick="metaSel()" style="display: none;">Show MetaCell</button>
@@ -1540,7 +1551,31 @@
           <p id="BROWfig"></p>
       </div>
 
-    </div>
+    </div> <!-- Multiome -->
+    
+    <div id='COSMX' class='tabcontent'>
+      <h3>Jointly visualizing histology image, cell boundaries, transcript locations</h3>
+      <div id='COSMXinput'>
+          Choose cosMx captures to plot
+          <p id="COSMXsample"></p>
+          <p><label><input id="COSMXhistology" type="checkbox" checked/>Draw histology image</label></p>
+          <p><label><input id="COSMXcell" type="checkbox" checked/>Hightlight cell boundaries with color <input class="colorInput" id="COXMXcellColor" type='color' value='#ffffff'></label></p>
+          Choose transcripts to hightlight
+          <p id="COSMXgene"></p>
+          Choose color for selected transcripts
+          <p id="COSMXgeneColor"></p>
+          <p>Choose the size for transcript markers: <input type='number' id="COSMXgeneSize" step="1" value="3"></p>
+          <button class="COSMXbt"  onclick="COSMXplot()"><b>Plot</b> </button>
+      </div>
+      <button onclick="hideShow($('#COSMXinput'),$(this));">Hide Input</button>
+      <br>
+      <pre id="COSMXnote" style="color:red;"></pre>
+      <div id="COSMXspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+      <div id="COSMXresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6">
+          <div id="COSMXfigs"></div>
+      </div>
+      
+    </div> <!-- COSMX -->
 
     <div id="IMG" class="tabcontent">
       <h3>Global setting for VIP <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-figure-option" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
@@ -2189,6 +2224,30 @@ function enableBrowser(){
     }
   });
 }
+function enableCOXMX(){
+    $.ajax({
+    type: "POST",
+    url: VIPurl,
+    data:JSON.stringify({'method':"checkCosMx",'dataset': window.store.getState().config.displayNames.dataset+'.h5ad'}),
+    contentType: 'application/json;charset=UTF-8',
+    success: function(res){
+      cosMxIDs= JSON.parse(res);
+      if(cosMxIDs == null || cosMxIDs.length == 0){
+          return;
+      }
+      //available coxMx samples
+      var htmlCheck = "";
+      for(const s of cosMxIDs){
+          htmlCheck += '<label id="COSMXsampleCK_'+s+'"><input class="COSMXsamples" type="checkbox" value="'+s+'"/>'+s+'</label>';
+      }
+      $('#COSMXsample').append(htmlCheck);
+      $("#cosMxBT").show();
+    },
+    error: function(request,status,error){
+      console.log(request.status+': cannot get bigwig information ...');
+    }
+  });
+}
 function init(){
   if(!('bioInit' in window)){
     //----------------
@@ -2446,6 +2505,10 @@ function init(){
             // for browser track plot
             console.log("Checking browser track ...");
             enableBrowser();
+            
+            // for cosMx availability
+            console.log("Checking cosMx ...");
+            enableCOXMX();
 
             console.log("Initial server communication is completed!");
           }
@@ -2505,6 +2568,7 @@ function sync(){
   preDEGVolcanoref("preDEGvolcano");
   preDEGmultiref();
   GSPref();
+  COSMXref();
   if(window.store.getState().colors.colorAccessor != null){
     $('#tVIPgrp').val(window.store.getState().colors.colorAccessor);
   }
@@ -3175,7 +3239,29 @@ function SpatialEMBopacity(val) {
   document.getElementsByClassName('graph-canvas')[0].style.opacity=val;
   $('#embedding_opacity_val').text(val);
 }
-
+function COSMXref(){
+    showGene('COSMX','onchange="COSMXsetGeneColor()"','');
+    COSMXsetGeneColor();
+}
+function COSMXsetGeneColor(){
+    selG = getGenes("COSMX");
+    if(selG.length>5){
+        $(".COSMXgenes:checkbox:not(:checked)").prop("disabled",true);
+    }else{
+        $(".COSMXgenes").prop("disabled",false);
+    }
+    if(selG.length>0){
+        html = "";
+        for(const one of selG){
+            html += "<label>"+one+"<input class='COSMXgeneColors colorInput' id='COSMXgeneColor_"+one+"'";
+            if($("#COSMXgeneColor_"+one).val()!==undefined){
+                html += " value='"+$("#COSMXgeneColor_"+one).val()+"'";
+            }
+            html += " type='color'></label>";
+        }
+        $("#COSMXgeneColor").html(html);
+    }
+}
 function IMGset(){
   window.figOpt['scale'] = $("input[name='IMGscale']:checked").val();
   if(window.figOpt['scale'] == "Yes"){
@@ -5534,6 +5620,74 @@ function BROWplot(){
     }
   });
 
+}
+function COSMXplot(){
+    var sIDs =[];
+    $(".COSMXsamples").each(function(){
+        if($(this).prop("checked")){
+            sIDs.push($(this).val());
+        }
+    });
+    if(sIDs.length==0){
+        $('#COSMXnote').text("Please select at least one capture sample to plot");
+        return;
+    }
+    var genes={};
+    $(".COSMXgeneColors").each(function(){
+        genes[this.id.replace('COSMXgeneColor_','')] = this.value;
+    });
+    if(Object.keys(genes).length==0 && !$("#COSMXhistology").prop('checked') && !$("#COSMXcell").prop('checked')){
+        $('#COSMXnote').text("Please choose at least one to plot: histology image, cell boundaries, transcripts");
+        return;
+    }
+    if($("#COSMXgeneSize")<1 || $("#COSMXgeneSize")>10){
+        $('#COSMXnote').text("Please choose transcript marker size between 1 and 10");
+        return;
+    }
+    var D= {'method':'plotCOSMX',
+        'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+        'sIDs':sIDs,
+        'genes':genes,
+        'geneSize':$("#COSMXgeneSize").val(),
+        'histology':$("#COSMXhistology").prop('checked'),
+        'cell': $("#COSMXcell").prop('checked')? $("#COXMXcellColor").val() : false,
+        'figOpt':window.figOpt
+    };
+    $(".COSMXbt").prop('disabled',true);
+    $('#COSMXnote').text("");
+    //$(".BROWpngBT").prop('disabled',true);
+    document.getElementById("COSMXspin").style.visibility="visible";
+    $("#COSMXfigs").html("");
+    $.ajax({
+        type:"POST",
+        url:VIPurl,
+        data:JSON.stringify(D),
+        contentType: 'application/json;charset=UTF-8',//
+        success:function(res){
+            if(res.startsWith('ERROR')){
+                $('#COSMXnote').text(res);
+                $(".COSMXbt").prop("disabled",false);
+                document.getElementById("COSMXspin").style.visibility="hidden";
+                return;
+            }
+            imgs = JSON.parse(res);
+            var html = "";
+            for(const one of Object.keys(imgs)){
+                html += "<div style='text-align: center;'>"+one+"<p id='COSMXfig_"+one+"'></p></div>"
+            }
+            $("#COSMXfigs").html(html);
+            for(const one of Object.keys(imgs)){
+                showImg('COSMXfig_'+one,imgs[one])
+            }
+            $(".COSMXbt").prop("disabled",false);
+            document.getElementById("COSMXspin").style.visibility="hidden";
+        },
+        error: function(request,status,error){
+            $('#COSMXnote').text(request.status+request.responseText);
+            $(".COSMXbt").prop("disabled",false);
+            document.getElementById("COSMXspin").style.visibility="hidden";
+        }
+    });
 }
 function CLIplot(){
   $('#CLInote').text("");
