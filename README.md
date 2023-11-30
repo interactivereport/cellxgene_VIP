@@ -36,7 +36,7 @@ whole or sliced single cell dataset.
 bash ~/Downloads/Anaconda3-2020.02-Linux-x86_64.sh
 ```
 
-## 2. One step installation for VIPlight (without CLT for developer)
+## 2. One step installation for VIPlight (without CLI for command line programming)
 Clone the repo to your local,
 - For Linux users
 ```
