@@ -24,7 +24,10 @@ conda env remove -p $appPATH
 conda create -y -p $appPATH 
 source $condaPath/etc/profile.d/conda.sh
 conda activate $appPATH
-conda config --env --set subdir osx-64
+if [[ $(uname -m) == "arm64" ]] && [[ -z "${PUPPETEER_EXECUTABLE_PATH}" ]]; then
+    echo -e "\n=== M1/M2 Mac processer, set up osx-64 achitect for conda ===\n"
+    conda config --env --set subdir osx-64
+fi
 conda install -y -c conda-forge python=3.8.15 mamba=0.15.3 git=2.39.1 jq=1.6 nodejs=18.12.1 r-base=4.2.3
 pip install --force-reinstall flask==2.2.3 flask-cors==3.0.10 flask-restful==0.3.9 flask-talisman==1.0.0 werkzeug==2.2.3 anndata==0.8.0 h5py==3.8.0 pandas==1.5.3 numpy==1.22.0
 
