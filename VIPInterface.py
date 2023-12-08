@@ -1765,11 +1765,34 @@ def npArray2jpg(img):
     plt.imsave(buff,img,format='jpg')
     img_base64=base64.b64encode(buff.getvalue()).decode("utf-8")
     return img_base64
+def mergeGlobal(imgs,cood):
+    #https://stackoverflow.com/questions/20546182/how-to-perform-coordinates-affine-transformation-using-python-part-2?answertab=votes#tab-top
+    pad = lambda x: np.hstack([x, np.ones((x.shape[0], 1))])
+    unpad = lambda x: x[:,:-1]
+    imgMin={}
+    imgMax=[]
+    for sID in imgs:
+        X = pad(cood[sID]['local'])
+        Y = pad(cood[sID]['global'])
+        A, res, rank, s = np.linalg.lstsq(X, Y,rcond=None)
+        transform = lambda x: unpad(np.dot(pad(x), A))
+        imgMin[sID]=transform(np.array([[0,0]]))
+        imgMax.append(transform(np.array([[imgs[sID].shape[0],imgs[sID].shape[1]]])))
+    Xmin,Ymin = np.amin(np.concatenate(list(imgMin.values()),axis=0),axis=0)
+    Xmax,Ymax = np.amax(np.concatenate(imgMax,axis=0),axis=0)
+    # flip the coordinates
+    img = np.zeros((math.ceil(Ymax-Ymin),math.ceil(Xmax-Xmin),3),dtype='uint8')
+    for sID in imgs:
+        ix,iy = loc_img(imgMin[sID][0]-(Xmin,Ymin),img.shape[0]-imgs[sID].shape[0])
+        img[ix:(ix+imgs[sID].shape[0]),iy:(iy+imgs[sID].shape[1])] = imgs[sID]
+    return img
 def plotCosMx(data):
     scD=data['data_adapter']
     cosMxKey='cosMx'
-    cosMxImg = {}
     keys = scD.data.uns[cosMxKey]['keys']
+    cosMxArray={}
+    cood_pair={}
+    cood_N=10
     for sID in data['sIDs']:
         if data['histology']:
             imgC = scD.data.uns[cosMxKey][sID][keys['img']]
@@ -1795,7 +1818,15 @@ def plotCosMx(data):
                 for i in txLoc.index[txLoc[keys['tx_col']]==one].tolist():
                     for a in square_integer(loc_img((txLoc[keys['local_px']['x']][i],txLoc[keys['local_px']['y']][i]),imgC.shape[1]),int(data['geneSize'])-1):
                         imgC[a] = rgb
-        cosMxImg[sID]=npArray2jpg(imgC)
+        cosMxArray[sID]=imgC
+        txLoc_sub=scD.data.uns['cosMx'][sID][keys['tx_loc']].sample(n=cood_N)
+        cood_pair[sID]={'global':txLoc_sub[keys['global_px'].values()].to_numpy(),'local':txLoc_sub[keys['local_px'].values()].to_numpy()}
+    cosMxImg = {}
+    if data['cood']=='global' and len(cosMxArray)>1:
+        cosMxImg['Global'] = npArray2jpg(mergeGlobal(cosMxArray,cood_pair))
+    else:
+        for sID in cosMxArray:
+            cosMxImg[sID]=npArray2jpg(cosMxArray[sID])
     return json.dumps(cosMxImg)
 
 #make sure the h5ad file full name is listed in vip.env as a variable 'testVIP';

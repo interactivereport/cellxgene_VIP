@@ -538,6 +538,20 @@
           border: none;
           cursor: pointer;
       }
+      figure.zoom{
+          & img:hover{
+            opacity: 0;
+          }
+          img {
+              transition: opacity .5s;
+              display: block;
+              width: 100%;
+          }
+          background-position: 50% 50%;
+          position: relative;
+          overflow: hidden;
+          width: 100%;
+      }
     </style>
   </head>
 <body>
@@ -1558,6 +1572,10 @@
       <div id='COSMXinput'>
           Choose cosMx captures to plot
           <p id="COSMXsample"></p>
+          <p>Select coordinates: 
+            <input type="radio" name="COSMXcood" value="local" onclick="IMGcellSel()" checked>Local
+            <input type="radio" name="COSMXcood" value="global" onclick="IMGcellSel()">Global
+          </p>
           <p><label><input id="COSMXhistology" type="checkbox" checked/>Draw histology image</label></p>
           <p><label><input id="COSMXcell" type="checkbox" checked/>Hightlight cell boundaries with color <input class="colorInput" id="COXMXcellColor" type='color' value='#ffffff'></label></p>
           Choose transcripts to hightlight
@@ -1572,8 +1590,9 @@
       <pre id="COSMXnote" style="color:red;"></pre>
       <div id="COSMXspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="COSMXresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6">
-          <div id="COSMXfigs"></div>
+        <div id="COSMXfigs"></div>
       </div>
+      
       
     </div> <!-- COSMX -->
 
@@ -1965,14 +1984,14 @@ function ZoomOut(strDiv){
   r -= 5;
   $("#"+strDiv).width(Math.max(10,r)+'%');
 }
-function showImg(eID,data){
+function showImg(eID,data,extraIMG=""){
   if(data.length<5){
     data = "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAEklEQVQYGWP4jwUwYBH7T6EgAG8TY53uGzeKAAAAAElFTkSuQmCC";
   }
   if (['SGVfig','HEATfig'].includes(eID)) {
     document.getElementById(eID).innerHTML = '<img id="'+eID.replace('fig','img')+'" src="data:image/'+window.figOpt['img'].replace('svg','svg+xml')+';base64,'+data+'" width="100%" height="100%"/>';
   } else {
-    document.getElementById(eID).innerHTML = '<img id="'+eID.replace('fig','img')+'" src="data:image/'+window.figOpt['img'].replace('svg','svg+xml')+';base64,'+data+'" width="100%" height="auto"/>';
+    document.getElementById(eID).innerHTML = '<img id="'+eID.replace('fig','img')+'" src="data:image/'+window.figOpt['img'].replace('svg','svg+xml')+';base64,'+data+'" width="100%" height="auto" '+extraIMG+'/>';
   }
 }
 function saveImg(pngID){
@@ -5622,6 +5641,7 @@ function BROWplot(){
 
 }
 function COSMXplot(){
+    $('#COSMXnote').text("");
     var sIDs =[];
     $(".COSMXsamples").each(function(){
         if($(this).prop("checked")){
@@ -5644,8 +5664,13 @@ function COSMXplot(){
         $('#COSMXnote').text("Please choose transcript marker size between 1 and 10");
         return;
     }
+    if(sIDs.length==1 && $("input[name='COSMXcood']:checked").val()=='global'){
+        $('#COSMXnote').text("'Local' is set for plotting one capture");
+        $("input[name='COSMXcood'][value='local']").prop('checked',true);
+    }
     var D= {'method':'plotCOSMX',
         'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+        'cood': $("input[name='COSMXcood']:checked").val(),
         'sIDs':sIDs,
         'genes':genes,
         'geneSize':$("#COSMXgeneSize").val(),
@@ -5654,7 +5679,6 @@ function COSMXplot(){
         'figOpt':window.figOpt
     };
     $(".COSMXbt").prop('disabled',true);
-    $('#COSMXnote').text("");
     //$(".BROWpngBT").prop('disabled',true);
     document.getElementById("COSMXspin").style.visibility="visible";
     $("#COSMXfigs").html("");
@@ -5670,14 +5694,15 @@ function COSMXplot(){
                 document.getElementById("COSMXspin").style.visibility="hidden";
                 return;
             }
-            imgs = JSON.parse(res);
+            var imgs = JSON.parse(res);
             var html = "";
             for(const one of Object.keys(imgs)){
-                html += "<div style='text-align: center;'>"+one+"<p id='COSMXfig_"+one+"'></p></div>"
+                html += "<div style='text-align: center; overflow: scroll;'>"+one+"<figure class='zoom' onmousemove='localZoom(event)' id='COSMXfig_"+one+"'></figure></div>";
             }
             $("#COSMXfigs").html(html);
             for(const one of Object.keys(imgs)){
-                showImg('COSMXfig_'+one,imgs[one])
+                showImg('COSMXfig_'+one,imgs[one]);//,'onmouseover="localZoom(this)" onmousemove="localZoom(this)"';
+                $("#COSMXfig_"+one).css("background-image","url("+$("#COSMXimg_"+one).prop('src')+")");
             }
             $(".COSMXbt").prop("disabled",false);
             document.getElementById("COSMXspin").style.visibility="hidden";
@@ -5688,6 +5713,15 @@ function COSMXplot(){
             document.getElementById("COSMXspin").style.visibility="hidden";
         }
     });
+}
+function localZoom(e){
+    //console.log(event.offsetX," ",event.offsetX);
+    var zoomer = e.currentTarget;
+    e.offsetX ? offsetX = e.offsetX : offsetX = e.touches[0].pageX;
+    e.offsetY ? offsetY = e.offsetY : offsetX = e.touches[0].pageY;
+    x = offsetX/zoomer.offsetWidth*100;
+    y = offsetY/zoomer.offsetHeight*100;
+    zoomer.style.backgroundPosition = x + '% ' + y + '%';
 }
 function CLIplot(){
   $('#CLInote').text("");
