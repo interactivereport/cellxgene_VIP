@@ -46,7 +46,12 @@ Clone the repo to your local,
 ```
 ./install_VIPlight.sh
 ```
-**And then skip following step 3/4/5**
+Users can change the conda env location by changing ```appPATH``` in the above script.
+And lauch the VIP by (all input arguments the same as [cellxgene](https://github.com/chanzuckerberg/cellxgene):
+```
+./VIPlight launch <path/to/h5ad> --host <IP> -p <port>
+```
+**And then skip following step 3/4/5/6/**
 
 ## 3. Create and enable conda environment
 ``` bash
