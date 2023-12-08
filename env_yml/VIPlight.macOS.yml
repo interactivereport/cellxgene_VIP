@@ -1,0 +1,42 @@
+# conda create -y -n VIP -c conda-forge python=3.8.15 mamba=1.1.0
+# conda activate VIP
+# mamba env update -f VIPlight.yml
+channels:
+  - conda-forge
+  - defaults
+  - bioconda
+dependencies:
+  - nodejs=18.12.1
+  - python=3.8.15
+  - mamba=0.15.3
+  - numba=0.56.4
+  - scanpy=1.9.1
+  - anndata=0.8.0
+  - pandas=1.5.3
+  - matplotlib=3.6.2
+  - seaborn=0.12.1
+  - plotly=5.11.0
+  - pyarrow=10.0.1
+  - r-base=4.2.3
+  - r-ggplot2
+  - r-reshape2
+  - r-ggforce
+  - r-patchwork
+  - r-tidyverse
+  - r-ggpubr
+  - r-cairo
+  - r-dplyr
+  - r-png
+  - r-mass
+  - r-data.table
+  - r-rcolorbrewer
+  - r-glue
+  - r-gridextra
+  - r-ggrepel
+  - r-ggrastr
+  - r-viridis
+  - r-biocmanager
+  - pip
+  - pip:
+    - diffxpy==0.7.4
+#genomeinfodbdata

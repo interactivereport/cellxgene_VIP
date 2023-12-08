@@ -36,7 +36,19 @@ whole or sliced single cell dataset.
 bash ~/Downloads/Anaconda3-2020.02-Linux-x86_64.sh
 ```
 
-## 2. Create and enable conda environment
+## 2. One step installation for VIPlight (without CLI for command line programming)
+Clone the repo to your local,
+- For Linux users
+```
+./install_VIPlight.sh
+```
+- For MacOS users (including M1/M2 users)
+```
+./install_VIPlight.sh
+```
+**And then skip following step 3/4/5**
+
+## 3. Create and enable conda environment
 ``` bash
 git clone https://github.com/interactivereport/cellxgene_VIP.git
 cd cellxgene_VIP
@@ -51,12 +63,12 @@ conda activate <env name, such as: VIP>
 or
 source activate <env name>
 ```
-## 3. Install cellxgene by running config.sh in "cellxgene_VIP" directory
+## 4. Install cellxgene by running config.sh in "cellxgene_VIP" directory
 ```bash
 ./config.sh
 For Mac User, ./config.macOS.sh
 ```
-## 4. Install R packages
+## 5. Install R packages
 ```bash
 export LIBARROW_MINIMAL=false
 #  ensure that the right instance of R is used. e.g. system-wide: /bin/R or /usr/bin/R ; local R under conda: ~/.conda/envs/VIP_conda_R/bin/R
@@ -92,7 +104,7 @@ R -q -e 'if(!require(ggrepel)) devtools::install_version("ggrepel",version="0.8.
 R -q -e 'if(!require(MASS)) devtools::install_version("MASS",version="7.3-51.6",repos = "http://cran.us.r-project.org")'
 R -q -e 'if(!require(data.table)) devtools::install_version("data.table",version="1.13.0",repos = "http://cran.us.r-project.org")'
 ```
-## 5. Run cellxgene by specifiying a h5ad file storing scRNA-seq data along with a host and a port, use "ps" to find used ports to spare, see https://chanzuckerberg.github.io/cellxgene/posts/launch for details.
+## 6. Run cellxgene by specifiying a h5ad file storing scRNA-seq data along with a host and a port, use "ps" to find used ports to spare, see https://chanzuckerberg.github.io/cellxgene/posts/launch for details.
 ```bash
 ps -ef | grep cellxgene
 Rscript -e 'reticulate::py_config()'
@@ -100,7 +112,7 @@ Rscript -e 'reticulate::py_config()'
 export RETICULATE_PYTHON=`which python`
 cellxgene launch --host <xxx> --port <xxx> --disable-annotations --verbose <h5ad file>
 ```
-## 6. From web browser (Chrome is preferred, Version 87.0.4280.88 or 87.0.4280.141 is used), access http(s)://host:port
+## 7. From web browser (Chrome is preferred, Version 87.0.4280.88 or 87.0.4280.141 is used), access http(s)://host:port
 
 You should be able to see this in Console of Chrome Developer Tools if everything is right.
 ![VIP_ready](https://user-images.githubusercontent.com/29576524/92059839-46482d00-ed60-11ea-8890-8e1b513a1656.png)

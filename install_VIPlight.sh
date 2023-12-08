@@ -57,7 +57,7 @@ cd ..
 
 # install the rest of packages
 which mamba
-mamba env update -f $exePath/VIPlight.yml
+mamba env update -f $exePath/env_yml/VIPlight.yml
 # update the VIP
 $exePath/update.VIPInterface.sh all
 
