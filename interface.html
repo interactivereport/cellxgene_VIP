@@ -771,7 +771,7 @@
           <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.PGVgenes').prop('checked', this.checked);">Uncheck / Check All</p>
           <p id="PGVgene"></p>
           <p>Expression cutoff for cell filtering: <input id="PGVcutoff" type="number" step="0.1" value="1"/></p>
-          <p>Select user-defined gene sets:</p><p id="PGVgeneGrp"></p>
+          <p>Select user-defined gene sets: <input type="checkbox" checked onclick="$('.PGVsets').prop('checked', this.checked);">Uncheck / Check All</p><p id="PGVgeneGrp"></p>
           <div id="PVGgeneGrpCollapsing">
             <p>Collapsing the above gene sets:
               <input type="radio" name="PGVgeneGrpColl" value="Yes" onclick="$('#PGVgeneGrpCollShow').show()">Yes
@@ -998,7 +998,7 @@
         <p>Expression cutoff for cell fraction (dot size): <input id="DOTcutoff" type="number" step="0.1" value="1"/></p>
         <p>Expression is averaged only over cells expressing a given gene above the cutoff: <input type="radio" name="mean_only_expressed" value="Yes">Yes<input type="radio" name="mean_only_expressed" value="No" checked>No</p>
 
-        <p>Select user-defined gene sets:</p><p id="DOTgeneGrp"></p>
+        <p>Select user-defined gene sets: <input type="checkbox" checked onclick="$('.DOTsets').prop('checked', this.checked);">Uncheck / Check All</p><p id="DOTgeneGrp"></p>
         <div id="DOTgeneGrpCollapsing">
           <p>Collapsing the above gene sets:
             <input type="radio" name="DOTgeneGrpColl" value="Yes" onclick="$('#DOTgeneGrpCollShow').show()">Yes
@@ -1103,7 +1103,7 @@
         </p>
         <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.TRAKgenes').prop('checked', this.checked);">Uncheck / Check All</p>
         <p id="TRAKgene"></p>
-        <p>Select user-defined gene sets: </p><p id="TRAKgeneGrp"></p>
+        <p>Select user-defined gene sets: <input type="checkbox" checked onclick="$('.TRAKsets').prop('checked', this.checked);">Uncheck / Check All</p><p id="TRAKgeneGrp"></p>
         <div id="TRAKgeneGrpCollapsing">
           <p>Collapsing the above gene sets:
             <input type="radio" name="TRAKgeneGrpColl" value="Yes" onclick="$('#TRAKgeneGrpCollShow').show()">Yes
