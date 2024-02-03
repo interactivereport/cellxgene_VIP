@@ -1497,6 +1497,8 @@ def getDesp(data):
   return txt
 
 def setTimeStamp(data):
+  if data["h5ad"].startswith("http"):
+      return
   strF = re.sub("h5ad$","timestamp",data["h5ad"])
   Path(strF).touch()
 
