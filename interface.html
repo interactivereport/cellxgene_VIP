@@ -632,13 +632,17 @@
       <h3>User-defined gene sets:</h3>
       <p id="ADDGsets"></p>
 
-      <h3>Add gene sets of interest manually</h3>
+      <h4>Add gene sets of interest manually</h4>
       <p>Gene set name: <input id="Geneset_Name0" type="text" size=10/>
         Gene names: <input id="Geneset_Genes0" type="text" size=35/>
         <button onclick="ADDGsetAdd(0)"><b>Add</b></button>
       </p>
+      
+      <h4>Load gene sets from a text file</h4>
+      <p>geneset1: ACTB, Gapdh<br>geneset2: BTK, CD4<br>
+        <input type='file' id='Geneset_file' onchange=ADDGgsetFile(this) /></p>
 
-      <h3>Add gene sets from databases</h3>
+      <h4>Add gene sets from databases</h4>
       <div id="div_geneset1" class="div_geneset">
   		<div class="my-3 dropdown input-group">
   			<input id="Geneset_Name1" name="Geneset_Name1" placeholder="enter geneset name" type="text" class="form-control geneset_name dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"/>
@@ -1836,6 +1840,11 @@ var VIPCellSelectionMsg = "Please use selection tools to put cells into selectio
 var VIPGeneSelectionMsg = "Please choose a gene to plot";
 var uniqID = 'VIPtesting';
 var loadingCycle = 0;
+
+$(document).ready(function(){
+    let gSetFile=document.getElementById('Geneset_file');
+    gSetFile.onchange 
+})
 
 function printNotebook(){
     var html = $('#CLIresize').html();
@@ -3514,22 +3523,25 @@ function ADDGdel(gName){
 }
 function ADDGsetAdd(idx){//Geneset_Name Geneset_Genes
   $("#ADDGsetError").text("");
-  var grpName = $("#Geneset_Name"+idx).val().trim();
-  if(grpName.length<1){
-    $("#ADDGsetError").text("Please provide a gene set name with at least one character!");
-    return;
+  eMsg=AddGsetAddOne($("#Geneset_Name"+idx).val().trim(),$("#Geneset_Genes"+idx).val().trim().split(/\s+|\s*,\s*|\s*;\s*/))
+  $("#ADDGsetError").text(eMsg);
+  if(!eMsg.startsWith("Error")){
+      $("#Geneset_Name"+idx).val("");
+      $("#Geneset_Genes"+idx).val("");
   }
+}
+function AddGsetAddOne(grpName,gNames){
   var grpKeys = Object.keys(window.bioGeneGrp);
+  if(grpName.length<1){
+    return "Error: Please provide a gene set name with at least one character!";
+  }
   if(grpKeys.includes(grpName)){
-    $("#ADDGsetError").text("The gene set name exists!");
-    return;
+    return "Error: The gene set name exists!";
   }
   var definedG = [];
   for(var i=0;i<grpKeys.length;i++){
     definedG = definedG.concat(window.bioGeneGrp[grpKeys[i]]);
   }
-
-  var gNames = $("#Geneset_Genes"+idx).val().trim().split(/\s+|\s*,\s*|\s*;\s*/);
   var notG = [],geneNames=[];
   var totalG = window.store.getState().annoMatrix._cache.var.__columns[0];
   var totalGlower = totalG.map(function(s){return s.toLowerCase();});
@@ -3548,23 +3560,41 @@ function ADDGsetAdd(idx){//Geneset_Name Geneset_Genes
       notG.push(one);
     }
   }
+  
   var eMsg= "";
   if(notG.length>0){
-    eMsg +="The following genes cannot be found in the data or defined in previous gene sets: "+notG;
-    $("#ADDGsetError").text(eMsg);
+    eMsg ="The following genes cannot be found in the data or defined in previous gene sets: "+notG;
   }
   if(geneNames.length==0){
-    $("#ADDGsetError").text(eMsg+". No valid gene names is provided");
-    return;
+    eMsg = "Error: No valid gene names is provided! " + eMsg;
+  }else{
+      window.bioGeneGrp[grpName] = geneNames;
+      geneNames = geneNames.concat(window.biogen);
+      geneNames = [...new Set(geneNames)];
+      window.biogen = geneNames;
+      ADDGref();
   }
-  $("#Geneset_Name"+idx).val("");
-  $("#Geneset_Genes"+idx).val("");
-  window.bioGeneGrp[grpName] = geneNames;
+  return eMsg;
+}
 
-  geneNames = geneNames.concat(window.biogen);
-  geneNames = [...new Set(geneNames)];
-  window.biogen = geneNames;
-  ADDGref();
+function ADDGgsetFile(ele){
+    Global_F = ele.files;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        eMsg=""
+        e.target.result.split(/\r\n|\n/).forEach(function(line,ix){
+            res = line.split(":");
+            msg = AddGsetAddOne(res[0].trim(),res[1].trim().split(/\s+|\s*,\s*|\s*;\s*/));
+            if(msg.length>2){
+                eMsg += "<br/>"+res[0]+": "+msg;
+            }
+        })
+        $("#ADDGsetError").html(eMsg);
+    }
+    for (let file of ele.files) {
+        reader.readAsText(file)
+    }
+    //Global_reader = reader;
 }
 function ADDGsetDel(grpName){
   delete window.bioGeneGrp[grpName];
