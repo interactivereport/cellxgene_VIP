@@ -66,7 +66,7 @@ echo -e "#"'!'"/usr/bin/env bash\nsource $condaPath/etc/profile.d/conda.sh\ncond
 chmod a+x "$exePath/update"
 
 # setup the VIPlight
-echo -e "#"'!'"/usr/bin/env bash\nsource $condaPath/etc/profile.d/conda.sh\nconda activate $appPATH\ncellxgene \"\$@\"" > $exePath/VIPlight
+echo -e "#"'!'"/usr/bin/env bash\nexport PYTHONNOUSERSITE=1\nsource $condaPath/etc/profile.d/conda.sh\nconda activate $appPATH\ncellxgene \"\$@\"" > $exePath/VIPlight
 chmod a+x "$exePath/VIPlight"
 
 echo
