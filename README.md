@@ -126,7 +126,7 @@ You should be able to see this in Console of Chrome Developer Tools if everythin
 
 # Updating
 ```bash
-./update.VIPInterface.sh all # if "interface.html" or "VIPInterface.py" is modified or new code needs to go to right location, often.
+./update.VIPInterface.sh all # if "interface.html" or "VIPInterface.py" is modified or new source code needs to go to right location, often.
 
 ./update.index_template.sh # if jsPanel is modified, very rare.
 ```
