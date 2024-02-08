@@ -39,8 +39,8 @@ conda install mamba -n base -c conda-forge
 
 ## 2. Create and enable conda environment
 ``` bash
-git clone https://github.com/iii-cell-atlas/cellxgene_VIP.git
-cd cellxgene_VIP
+git clone https://github.com/sii-cell-atlas/paraCell.git
+cd paraCell
 
 source <path to Miniconda3>/etc/profile.d/conda.sh 
 conda config --set channel_priority flexible
