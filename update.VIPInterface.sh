@@ -33,7 +33,10 @@ if [ -n "$1" ]; then
     sed -i "s|route(request.data,current_app.app_config, \"/tmp\")|route(request.data,current_app.app_config)|" "$strPath/server/app/app.py"
     sed -i "s|MAX_LAYOUTS *= *[0-9]\+|MAX_LAYOUTS = 300|" "$strPath/server/common/constants.py"
   fi
-
+  
+  # fix the top left cornor image
+  find $strweb -name "*js" -exec sed -i 's|../static/assets|static/assets|' {} \;
+  
   find ./cellxgene/server/ -name "decode_fbs.py" -exec cp {} $strPath/server/app/. \;
 fi
 
