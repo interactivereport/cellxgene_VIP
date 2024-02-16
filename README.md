@@ -76,6 +76,7 @@ For Mac User, ./config.macOS.sh
 ## 5. Install R packages
 ```bash
 export LIBARROW_MINIMAL=false
+unset R_LIBS_USER
 #  ensure that the right instance of R is used. e.g. system-wide: /bin/R or /usr/bin/R ; local R under conda: ~/.conda/envs/VIP_conda_R/bin/R
 which R
 #  The version of a Bioconductor package is controlled by BiocManager, whose version is provided
