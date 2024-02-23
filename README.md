@@ -43,7 +43,7 @@ conda activate <env name, such as: paraCell>
 or
 source activate <env name>
 ```
-## 3. Install cellxgene by running config.sh in "cellxgene_VIP" directory
+## 3. Install cellxgene by running config.sh in "paraCell" directory
 ```bash
 ./config.sh
 For Mac User, ./config.macOS.sh
