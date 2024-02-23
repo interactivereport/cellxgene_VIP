@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# CLT will not be available for this installation
-# Please provide the destnation conda env path (--prefix)
+# CLI will not be available for this installation
+# Please provide the destnation conda env path (appPATH) below
+# if SSL certificate (../...crt) needs to be added into this conda env,
+# please export environment variabble "CONDA_SSL" with the path to the certificate file
 appPATH="~/.conda/envs/VIP"
 
 set -e
@@ -21,6 +23,9 @@ source $condaPath/etc/profile.d/conda.sh
 ## create conda env
 conda env remove -p $appPATH
 conda create -y python=3.8.15 mamba=0.15.3 git=2.39.1 jq=1.6 nodejs=18.12.1 -c conda-forge -p $appPATH #nodejs=13.13.0
+if [[ -n "$CONDA_SSL" ]] &&  [[ -f "$CONDA_SSL" ]]; then
+    cat $CONDA_SSL >> $appPATH/ssl/cacert.pem
+fi
 source $condaPath/etc/profile.d/conda.sh
 conda activate $appPATH
 which python
