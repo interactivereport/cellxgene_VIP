@@ -36,7 +36,7 @@ whole or sliced single cell dataset.
 bash ~/Downloads/Anaconda3-2020.02-Linux-x86_64.sh
 ```
 
-## 2. One step installation for VIPlight (without CLI for command line programming)
+## 2. One step installation for VIPlight (without CLI, Command Line Interface for programming)
 Clone the repo to your local,
 - For Linux users
 ```
@@ -76,6 +76,7 @@ For Mac User, ./config.macOS.sh
 ## 5. Install R packages
 ```bash
 export LIBARROW_MINIMAL=false
+unset R_LIBS_USER
 #  ensure that the right instance of R is used. e.g. system-wide: /bin/R or /usr/bin/R ; local R under conda: ~/.conda/envs/VIP_conda_R/bin/R
 which R
 #  The version of a Bioconductor package is controlled by BiocManager, whose version is provided
