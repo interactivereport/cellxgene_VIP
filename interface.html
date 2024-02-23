@@ -2089,6 +2089,14 @@ function addDescription(){
             if(one.startsWith("Initial Session")){
               $("#LOADurl").val(one.split(/:(.+)/)[1].trim());
             }
+            if(one.startsWith("Disable Panel")){
+                var rmPanels = one.split(":")[1].split(",").map(function(item){return item.trim();});
+                var a = $('.tablinks').each(function(i, obj) {
+                    if(rmPanels.includes($(obj).text())){
+                        $(obj).hide();
+                    }
+                });
+            }
           }
           window.store.dispatch({type: "show centroid labels for category", showLabels: true});
 
