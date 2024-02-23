@@ -12,11 +12,9 @@ Advances in sequencing technology have led to a dramatic increase in the number 
 - **_Plasmodium berghei_** - https://cellatlas-cxg.mvls.gla.ac.uk/view/Pb.Combined.h5ad/
 - **_Trypanosoma brucei_** - https://cellatlas-cxg.mvls.gla.ac.uk/view/Tbrucei.h5ad/
 
-## Online tutorial: https://interactivereport.github.io/cellxgene_VIP/tutorial/docs
-
-## Video tutorial: https://youtu.be/s3Cdz77ioGk
-
-## Pre-print: https://www.biorxiv.org/content/10.1101/2020.08.28.270652v2
+## Online tutorial:
+- **paraCell features** - https://github.com/sii-cell-atlas/paraCell/wiki
+- **Core VIP functionality** - https://interactivereport.github.io/cellxgene_VIP/tutorial/docs
 
 # Installation instruction
 
