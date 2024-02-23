@@ -6,7 +6,9 @@ To meet the growing demands from scientists to effectively extract deep insights
 
 **Figure 1 | Overview of the four main options in paraCell.** **_Advanced Gene Search_** - a custom gene-set is used to create a cellxgene VIP multi-gene violin plot (_Plasmodium berghei_ dataset). **_Host-Parasite Interactions_** - selection made on the Parasite UMAP is used to update the Host UMAP (Cow-_Theileria_ dataset). **_Database Integration_** - paraCell results table is shown alongside links to relevant external database systems (_P. berghei_ dataset). **_Trajectory Inference_** - [Slingshot](https://bioconductor.org/packages/devel/bioc/vignettes/slingshot/inst/doc/vignette.html) trajectories drawn over [PHATE](https://phate.readthedocs.io/en/stable/) space of single-cell data, enables [tradeSeq](https://bioconductor.org/packages/release/bioc/html/tradeSeq.html) to plot expression of genes over their “pseudo time” for different conditions - example relates the expression of the gene PAD2 to the progression of both trajectories in the WT and KO condition (_Trypanosoma brucei_ dataset).
 
-## Demo site: https://cellxgenevip-ms.bxgenomics.com , https://cellxgenevip-spatial.bxgenomics.com, and https://cellxgenevip-multiome.bxgenomics.com
+## Demo datasets:
+- **_Plasmodium berghei_** - https://cellatlas-cxg.mvls.gla.ac.uk/view/Pb.Combined.h5ad/
+- **_Trypanosoma brucei_** - https://cellatlas-cxg.mvls.gla.ac.uk/view/Tbrucei.h5ad/
 
 ## Online tutorial: https://interactivereport.github.io/cellxgene_VIP/tutorial/docs
 
