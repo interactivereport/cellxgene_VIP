@@ -1469,7 +1469,7 @@ def CLI(data):
       f.write(script)
     ppr.pprint(subprocess.run('which Rscript',capture_output=True,shell=True).stdout.decode('utf-8'))
     ppr.pprint(subprocess.run('which pandoc',capture_output=True,shell=True).stdout.decode('utf-8'))
-    ppr.pprint(subprocess.run("Rscript -e 'reticulate::py_config()'",capture_output=True,shell=True).stdout.decode('utf-8'))
+    # (time consuming) ppr.pprint(subprocess.run("Rscript -e 'reticulate::py_config()'",capture_output=True,shell=True).stdout.decode('utf-8'))
     res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to html --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
     html = res.stdout.decode('utf-8')
     h,s,e = html.partition('<div class="cell border-box-sizing code_cell rendered">')
