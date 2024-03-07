@@ -297,6 +297,7 @@ def distributeTask(aTask):
     'GD':GD,
     'DEG':DEG,
     'DOT':DOT,
+    'DOTdata':DOTdata,
     'EMBED':EMBED,
     'TRAK':TRACK,
     'DUAL':DUAL,
@@ -1014,6 +1015,13 @@ def DOT(data):
   #ppr.pprint(adata)
 
   return iostreamFig(fig)
+def DOTdata(data):
+  updateGene(data)
+  data['figOpt']['scale'] = 'No';
+  adata = createData(data)
+  if len(adata)==0:
+    raise ValueError('No cells in the condition!')
+  return pd.concat([adata.to_df(),adata.obs], axis=1, sort=False).to_csv()
 
 def EMBED(data):
   adata = createData(data)
