@@ -461,7 +461,11 @@ def SGV(data):
   ro = math.acos(10/max([15,ncharA]))/math.pi*180
   ##
   fig = plt.figure(figsize=[w,h])
-  sc.pl.violin(adata,data['genes'],groupby=data['grp'][0],ax=fig.gca(),show=False)
+  if data.get('dotsize') is None or float(data['dotsize'])==0:
+    sc.pl.violin(adata,data['genes'],groupby=data['grp'][0],ax=fig.gca(),show=False,stripplot=False)
+  else:
+    sc.pl.violin(adata,data['genes'],groupby=data['grp'][0],ax=fig.gca(),show=False,size=float(data['dotsize']))
+  #sc.pl.violin(adata,data['genes'],groupby=data['grp'][0],ax=fig.gca(),show=False,size=0.5)
   fig.autofmt_xdate(bottom=0.2,rotation=ro,ha='right')
   return iostreamFig(fig)
 
@@ -475,11 +479,9 @@ def SGVcompare(data):
   strF = ('%s/SGV%f.csv' % (data["CLItmp"],time.time()))
   X=pd.concat([adata.to_df(),adata.obs[data['grp']]],axis=1,sort=False)
   X[X.iloc[:,0]>=float(data['cellCutoff'])].to_csv(strF,index=False)
-
-
-  strCMD = " ".join(["%s/Rscript"%data['Rpath'],strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
+  #strCMD = " ".join(["%s/Rscript"%data['Rpath'],strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
   #ppr.pprint(strCMD)
-  res = subprocess.run([strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
+  res = subprocess.run([strExePath+'/violin.R',strF,str(data['cutoff']),str(data['dotsize']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
   os.remove(strF)
   if 'Error' in res.stderr.decode('utf-8'):

@@ -2,7 +2,7 @@
 args = commandArgs(trailingOnly = TRUE)
 if(length(args)<1) q()
 libPath = tail(args,1)
-if(nchar(libPath)>3){
+if(nchar(libPath)>3 && file.exists(libPath)){
   addPath <- unlist(strsplit(libPath,";"))
   addPath <- addPath[sapply(addPath,dir.exists)]
   .libPaths(c(addPath,.libPaths()))
@@ -18,7 +18,7 @@ loadPackages <- function(){
 suppressMessages(suppressWarnings(loadPackages()))
 options(bitmapType='cairo')
 
-violinPlot <- function(X,cutoff=0){
+violinPlot <- function(X,cutoff=0,dotsize=0.5){
   #X[cells,(gene.name,grouping,subgrouping)]
   gene.name <- colnames(X)[1]
   colnames(X)[1] <- 'count'
@@ -53,12 +53,13 @@ violinPlot <- function(X,cutoff=0){
   colors.expand <- colorRampPalette(brewer.pal(8, "Dark2"))( length( levels(as.factor(X[[color.type]])) ) )
 
   if(paired.type == "Unpaired Comparison"){
-
+    
     general.violin <- ggplot(X, aes_string(x = grouping, y= "count" )) +
-      geom_violin(aes_string(fill = fill.type), draw_quantiles =  0.5,  alpha=0.2) +
-      geom_jitter(aes_string(colour = color.type), size = 0.2,position = position_jitter(0.2)) +
-      scale_color_manual(values = colors.expand, name = glue("{color.type}.color")) +
-      scale_fill_manual(values = fill.expand, name = glue("{fill.type}.fill") ) +
+      geom_violin(aes_string(fill = fill.type), draw_quantiles =  0.5,  alpha=0.2)
+    if(dotsize>0) general.violin <- general.violin + geom_jitter(aes_string(colour = color.type), size = dotsize,position = position_jitter(0.2)) + 
+            scale_color_manual(values = colors.expand, name = glue("{color.type}.color")) +
+            guides(colour = guide_legend(title=glue("{color.type} "), override.aes = list(size=5) ))
+    general.violin <- general.violin + scale_fill_manual(values = fill.expand, name = glue("{fill.type}.fill") ) +
       stat_summary(
         fun=mean,fun.min=mean,fun.max=mean,
         #fun.y = mean, fun.ymin = mean, fun.ymax = mean,
@@ -75,18 +76,21 @@ violinPlot <- function(X,cutoff=0){
       ) +
       labs(y = "log2(Normalized Counts + 1)"
            #title = paste0(gene.name," in ",cluster,". The horizontal line in the violin plot represents the median")
-      ) +
-      guides(colour = guide_legend(title=glue("{color.type} "), override.aes = list(size=5) ), fill = guide_legend(title=glue("{fill.type}")) )
+      )+
+      guides(fill = guide_legend(title=glue("{fill.type}")) )
 
   }
 
   if(paired.type == "Paired Comparison"){
 
     general.violin <- ggplot(X, aes_string(x = grouping, y= "count" )) +
-      geom_violin(aes_string(fill = fill.type), draw_quantiles =  0.5,  alpha=0.2, position = position_dodge(0.75) ) +
-      geom_point(aes_string(colour = color.type), size = 0.2, position = position_jitterdodge(seed=1, dodge.width = 0.75) ) +
+      geom_violin(aes_string(fill = fill.type), draw_quantiles =  0.5,  alpha=0.2, position = position_dodge(0.75) )
+    if(dotsize>0) general.violin <- general.violin +
+            geom_point(aes_string(colour = color.type), size = dotsize, position = position_jitterdodge(seed=1, dodge.width = 0.75) ) +
+            scale_color_manual(values = colors.expand, name = glue("{color.type}.color")) +
+            guides(colour = guide_legend(title=glue("{color.type} "), override.aes = list(size=5)))
       #geom_jitter(aes_string(colour = color.type), size = 0.2, position = position_jitter(0.2)) +
-      scale_color_manual(values = colors.expand, name = glue("{color.type}.color")) +
+    general.violin <- general.violin +
       scale_fill_manual(values = fill.expand, name = glue("{fill.type}.fill") ) +
       stat_summary(
         aes_string(group=color.type),
@@ -108,7 +112,7 @@ violinPlot <- function(X,cutoff=0){
       labs(y = "log2(Normalized Counts + 1)"
            #title = paste0(gene.name," in ",cluster,". The horizontal line in the violin plot represents the median")
       ) +
-      guides(colour = guide_legend(title=glue("{color.type} "), override.aes = list(size=5) ), fill = guide_legend(title=glue("{fill.type}")) )
+      guides(fill = guide_legend(title=glue("{fill.type}")) )
 
   }
 
@@ -147,15 +151,16 @@ violinPlot <- function(X,cutoff=0){
 
 strCSV = args[1]
 expCut <- as.numeric(args[2])
-strFun <- args[3]
-fontsize <- as.numeric(args[4])
-dpi <- as.numeric(args[5])
+dotsize <- as.numeric(args[3])
+strFun <- args[4]
+fontsize <- as.numeric(args[5])
+dpi <- as.numeric(args[6])
 ## process
 mtable <- read.csv(strCSV,check.names=F)
 ## remove 0 on the violin plot
 #mtable <- mtable[mtable[,1]>=expCut,]
 
-g <- violinPlot(mtable,expCut)
+g <- violinPlot(mtable,expCut,dotsize)
 ## plot
 grpN <- compN <- nlevels(mtable[,2])
 if(ncol(mtable)>2){
