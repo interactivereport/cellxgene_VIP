@@ -505,10 +505,7 @@ def SGVcompare(data):
   X=pd.concat([adata.to_df(),adata.obs[data['grp']]],axis=1,sort=False)
   X[X.iloc[:,0]>=float(data['cellCutoff'])].to_csv(strF,index=False)
 
-  strCMD = " ".join(["%s/Rscript"%data['Rpath'],strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
-  
-
-  res = subprocess.run([strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
+  res = subprocess.run(["%s/Rscript" % data['Rpath'], strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
 
   os.remove(strF)
@@ -584,7 +581,7 @@ def PGVcompare(data):
   X=pd.concat([adata.to_df(),adata.obs[data['grp']]],axis=1,sort=False).to_csv(strF,index_label="cellID")
 
   # plot in R
-  strCMD = " ".join(["Rscript",strExePath+'/complex_vlnplot_multiple.R',strF,','.join(data['genes']),data['grp'][0],data['grp'][1],str(data['width']),str(data['height']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
+  strCMD = " ".join(["%s/Rscript" % data['Rpath'], strExePath+'/complex_vlnplot_multiple.R',strF,','.join(data['genes']),data['grp'][0],data['grp'][1],str(data['width']),str(data['height']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
   res = subprocess.run(strCMD,shell=True,capture_output=True)
   img = res.stdout.decode('utf-8')
   os.remove(strF)
@@ -742,7 +739,7 @@ def pHeatmap(data):
     #ppp = pprint.PrettyPrinter(depth=6,width=300)
     #ppp.pprint(cmd)
     #return SyntaxError("in R: ")
-    res = subprocess.run(cmd,check=True,shell=True,capture_output=True)#
+    res = subprocess.run("%s/Rscript " % data['Rpath'] + cmd,check=True,shell=True,capture_output=True)#
     img = res.stdout.decode('utf-8')
     os.remove(strF)
     #silentRM(strF.replace("HEAT","HEATgene"))
@@ -880,7 +877,7 @@ def DEG(data):
   strF = ('%s/DEG%f.csv' % (data["CLItmp"],time.time()))
   deg.to_csv(strF,index=False)
   #ppr.pprint([strExePath+'/volcano.R',strF,'"%s"'%';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]])
-  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(data['genes']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],str(data['sigFDR']),str(data['sigFC']),str(data['labelSize']),str(data['dotSize']),str(data['ymin']),str(data['ymax']),data['figOpt']['vectorFriendly'],data['Rlib']],capture_output=True)#
+  res = subprocess.run(["%s/Rscript" % data['Rpath'], strExePath+'/volcano.R',strF,';'.join(data['genes']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],str(data['sigFDR']),str(data['sigFC']),str(data['labelSize']),str(data['dotSize']),str(data['ymin']),str(data['ymax']),data['figOpt']['vectorFriendly'],data['Rlib']],capture_output=True)#
   if 'Error' in res.stderr.decode('utf-8'):
     raise SyntaxError("in volcano.R: "+res.stderr.decode('utf-8'))
   img = res.stdout.decode('utf-8')
@@ -889,7 +886,8 @@ def DEG(data):
   GSEAimg=""
   GSEAtable=pd.DataFrame()
   if data['gsea']['enable']:
-    res = subprocess.run([strExePath+'/fgsea.R',
+    res = subprocess.run(["%s/Rscript" % data['Rpath'],
+                          strExePath+'/fgsea.R',
                           strF,
                           '%s/gsea/%s.symbols.gmt'%(strExePath,data['gsea']['gs']),
                           str(data['gsea']['gsMin']),
@@ -1426,7 +1424,7 @@ def DENS2D(data):
   ## plot in R
   strF = ('%s/DENS2D%f.csv' % (data["CLItmp"],time.time()))
   adata.to_df().to_csv(strF)#
-  res = subprocess.run([strExePath+'/Density2D.R',strF,data['figOpt']['img'],str(data['cutoff']),str(data['bandwidth']),data['figOpt']['colorMap'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
+  res = subprocess.run(["%s/Rscript" % data['Rpath'], strExePath+'/Density2D.R',strF,data['figOpt']['img'],str(data['cutoff']),str(data['bandwidth']),data['figOpt']['colorMap'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
   os.remove(strF)
   if 'Error' in res.stderr.decode('utf-8'):
@@ -1557,7 +1555,7 @@ def getPreDEGvolcano(data):
   strF = ('%s/DEG%f.csv' % (data["CLItmp"],time.time()))
   deg.to_csv(strF,index=False)
   #ppr.pprint([strExePath+'/volcano.R',strF,';'.join(data['genes']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],str(data['sigFDR']),str(data['sigFC']),str(data['labelSize']),str(data['dotSize']),str(data['ymin']),str(data['ymax']),data['Rlib']])
-  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(data['genes']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],str(data['sigFDR']),str(data['sigFC']),str(data['labelSize']),str(data['dotSize']),str(data['ymin']),str(data['ymax']),data['figOpt']['vectorFriendly'],data['Rlib']],capture_output=True)#
+  res = subprocess.run(["%s/Rscript" % data['Rpath'], strExePath+'/volcano.R',strF,';'.join(data['genes']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],str(data['sigFDR']),str(data['sigFC']),str(data['labelSize']),str(data['dotSize']),str(data['ymin']),str(data['ymax']),data['figOpt']['vectorFriendly'],data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
   os.remove(strF)
   if 'Error' in res.stderr.decode('utf-8'):
@@ -1603,7 +1601,7 @@ def getPreDEGbubble(data):
   strF = ('%s/DEG%f.csv' % (data["CLItmp"],time.time()))
   deg.to_csv(strF,index=False)
   #ppr.pprint(' '.join([strExePath+'/bubbleMap.R',strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['scale'],data['Rlib']]))
-  res = subprocess.run([strExePath+'/bubbleMap.R',strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['scale'],data['Rlib']],capture_output=True)#
+  res = subprocess.run(["%s/Rscript" % data['Rpath'], strExePath+'/bubbleMap.R',strF,data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['scale'],data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
   os.remove(strF)
   if 'Error' in res.stderr.decode('utf-8'):
@@ -1622,9 +1620,11 @@ def getEnv():
         if not len(one)==2:
           continue
         config[one[0]]=one[1]
+  elif os.environ["R_HOME"]:
+    config["Rpath"] = os.path.join(os.environ["R_HOME"], "bin")
   #ppr.pprint(config)
   if len(config['Rpath'])>3:
-    os.stat("%s/Rscript"%config['Rpath'])
+    # os.stat("%s/Rscript"%config['Rpath'])
     os.environ['PATH'] = config['Rpath']+os.pathsep+os.environ['PATH']
   return config
 try:
@@ -1711,7 +1711,7 @@ def plotBW(data):
     ## plot in R
     #strCMD = ' '.join([strExePath+'/browserPlot.R',strD,data['region'],','.join(data['bw']),str(data['exUP']),str(data['exDN']),strCSV,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
     #ppr.pprint(strCMD)
-    res = subprocess.run([strExePath+'/browserPlot.R',strD,data['region'],','.join(data['bw']),str(data['exUP']),str(data['exDN']),strCSV,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
+    res = subprocess.run(["%s/Rscript" % data['Rpath'], strExePath+'/browserPlot.R',strD,data['region'],','.join(data['bw']),str(data['exUP']),str(data['exDN']),strCSV,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
     img = res.stdout.decode('utf-8')
     if len(adata)>0:
         os.remove(strCSV)
