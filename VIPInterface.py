@@ -1792,6 +1792,8 @@ def mergeGlobal(imgs,cood):
         imgMax.append(transform(np.array([[imgs[sID].shape[0],imgs[sID].shape[1]]])))
     Xmin,Ymin = np.amin(np.concatenate(list(imgMin.values()),axis=0),axis=0)
     Xmax,Ymax = np.amax(np.concatenate(imgMax,axis=0),axis=0)
+    if Xmax-Xmin>65000 or Ymax-Ymin>65000:
+      raise ValueError('Selected area is too large, try to select adjacent FOVs for global!')
     # flip the coordinates
     img = np.zeros((math.ceil(Ymax-Ymin),math.ceil(Xmax-Xmin),3),dtype='uint8')
     for sID in imgs:
