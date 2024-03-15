@@ -235,7 +235,6 @@ def createData(data):
   #ppr.pprint("finished layout ...")
   ## obtain the category annotation
   combUpdate, obs = getObs(data)
-
   ## create a custom annotation category and remove cells which are not in the selected annotation
   if combUpdate and len(data['grp'])>1:
     newGrp = 'Custom_combine'
