@@ -52,7 +52,7 @@ dependencies:
   - libedit=3.1.20191231
   - libev=4.33
   - libffi=3.3
-  - libgcc-ng=9.1.0
+  - libgcc-ng=11.2.0
   - libgfortran-ng=7.5.0
   - libgfortran4=7.5.0
   - libiconv=1.16
@@ -62,7 +62,7 @@ dependencies:
   - libpng=1.6.37
   - libsodium=1.0.18
   - libssh2=1.9.0
-  - libstdcxx-ng=9.1.0
+  - libstdcxx-ng=13.2.0
   - libtiff=4.1.0
   - libuuid=2.32.1
   - libuv=1.34.0
