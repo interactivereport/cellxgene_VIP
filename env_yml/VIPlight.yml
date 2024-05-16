@@ -45,4 +45,9 @@ dependencies:
   - pip=23.0.1
   - pip:
     - diffxpy==0.7.4
-#genomeinfodbdata
+variables:
+  PYTHONNOUSERSITE: 1
+  OPENBLAS_NUM_THREADS: 1
+  MKL_NUM_THREADS: 1
+  PKG_CONFIG_PATH: CONDA_PATH/lib/pkgconfig
+  RETICULATE_PYTHON: CONDA_PATH/bin/python
