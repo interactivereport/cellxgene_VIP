@@ -54,6 +54,8 @@ def complexViolin(data):
   genes=data['genes']
   grps=list(data['groups'].keys())
   gN = len(genes)
+  if gN<1:
+    raise ValueError('Missing genes!')
   
   D = getData(data)
   df = sc.get.obs_df(D,genes+grps)
@@ -67,7 +69,9 @@ def complexViolin(data):
       df[one] = df[one].cat.remove_unused_categories()
   
   fig, axes = plt.subplots(gN, 1, figsize=(w, h*gN), sharey='row')
-  for i in range(len(genes)):
+  if gN==1:
+    axes = [axes]
+  for i in range(gN):
     sns.violinplot(x=grps[0],y=genes[i],ax=axes[i],
       data=df,cut=0,
       hue=None if len(grps)<2 else grps[1])
