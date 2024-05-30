@@ -42,7 +42,9 @@ def iostreamFig(fig,img_format):
   if 'matplotlib' in str(type(fig)):
     plt.close(fig)#'all'
   return imgD
-def getData(data):
+def getData(data,dataframe=True):
+  if len(data["genes"])<1 or len(data["groups"])<1:
+    raise ValueError('Missing genes or annotations!')
   D = ad.read_h5ad(data['h5ad'],backed='r')
   if len(data['var_col'])>0 and data['var_col'] in D.var.columns:
     D.var_names = list(D.var[data['var_col']])
@@ -50,39 +52,40 @@ def getData(data):
   data['options']["img_format"] = data['options']["img_format"] if data['options'].get("img_format") in ['png','svg'] else "png"
   data['options']["img_width"]=6 if data['options'].get('img_width') is None else data['options'].get('img_width')
   data['options']["img_height"]=4 if data['options'].get('img_height') is None else data['options'].get('img_height')
-  return D
+  
+  #filter cells by annotation selections
+  selC = [True] * D.shape[0]
+  for one in data["groups"]:
+    if len(data["groups"][one])>0:
+      delGrp = [re.sub("^-","",_) for _ in data['groups'][one] if _.startswith('-')]
+      if len(delGrp)>0:
+        selC = selC & ~D.obs[one].isin(delGrp)
+      else:
+        selC = selC & D.obs[one].isin(data["groups"][one])
+  if dataframe:
+    return sc.get.obs_df(D[selC],data['genes']+list(data["groups"].keys()))
+  return D[selC]
+
 def complexViolin(data):
   st=time.time()
   recordT = {}
+  df = getData(data)
+  recordT["Get data"]=time.time()-st
+  
   w=data['options']["img_width"]
   h=data['options']["img_height"]
   genes=data['genes']
   grps=list(data['groups'].keys())
   gN = len(genes)
-  if gN<1:
-    raise ValueError('Missing genes!')
-  recordT["init"]=time.time()-st
-  D = getData(data)
-  recordT["Get obs"]=time.time()-st
-  df = sc.get.obs_df(D,genes+grps)
-  recordT["Create data"]=time.time()-st
-  for one in grps:
-    if len(data["groups"][one])>0:
-      delGrp = [re.sub("^-","",_) for _ in data['groups'][one] if _.startswith('-')]
-      if len(delGrp)>0:
-        df = df[~df[one].isin(data["groups"][one])]
-      else:
-        df = df[df[one].isin(data["groups"][one])]
-      df[one] = df[one].cat.remove_unused_categories()
-  recordT["Filter"]=time.time()-st
-  
   fig, axes = plt.subplots(gN, 1, figsize=(w, h*gN), sharey='row')
   if gN==1:
     axes = [axes]
   for i in range(gN):
     subDF = df
+    strTitle = "Total of %d cells" %df.shape[0]
     if data['options'].get("cutoff") is not None and data['options']['cutoff']>0:
       subDF = df[(df[genes[i]]>data['options']['cutoff']).values]
+      strTitle="%d out of selected %d cells passed the expression filter %.2f"%(subDF.shape[0],df.shape[0],data['options']['cutoff'])
     sns.violinplot(x=grps[0],y=genes[i],ax=axes[i],
       data=subDF,cut=0,
       palette="bright" if data['options'].get('palette') is None else data['options']['palette'],
@@ -95,14 +98,14 @@ def complexViolin(data):
         palette=[dotColor] if len(grps)<2 else [dotColor]*df[grps[1]].nunique(),
         dodge=False if len(grps)<2 else True,
         hue=None if len(grps)<2 else grps[1])
-    axes[i].set_title("%d cells"%df.shape[0],loc="left")
+    axes[i].set_title(strTitle,loc="left",fontdict={'fontsize':6 if data['options'].get("titlefontsize") is None else data['options']['titlefontsize']})
     if i<(len(genes)-1):
       axes[i].get_xaxis().set_visible(False)
     else:
       plt.setp(axes[i].get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
     if len(grps)>1:
       if i==0:
-        axes[i].legend(loc='upper center', bbox_to_anchor=(0.5, 1.1),
+        axes[i].legend(loc='lower right', bbox_to_anchor=(1, 1),
           ncol=1 if len(grps)<2 else df[grps[1]].nunique())
       else:
         axes[i].get_legend().remove()
