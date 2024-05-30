@@ -80,9 +80,19 @@ def complexViolin(data):
   if gN==1:
     axes = [axes]
   for i in range(gN):
+    subDF = df
+    if data['options'].get("cutoff") is not None and data['options']['cutoff']>0:
+      subDF = df[(df[genes[i]]>data['options']['cutoff']).values]
     sns.violinplot(x=grps[0],y=genes[i],ax=axes[i],
-      data=df,cut=0,
+      data=subDF,cut=0,
       hue=None if len(grps)<2 else grps[1])
+    if data['options'].get("dotsize") is not None and data['options']["dotsize"]>0:
+      sns.stripplot(x=grps[0],y=genes[i],ax=axes[i],
+        palette=['#000'],legend=False,
+        data=subDF,size=data['options']["dotsize"],
+        dodge=False if len(grps)<2 else True,
+        hue=None if len(grps)<2 else grps[1])
+    axes[i].set_title("%d cells"%df.shape[0],loc="left")
     if i<(len(genes)-1):
       axes[i].get_xaxis().set_visible(False)
     else:
