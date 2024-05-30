@@ -1,4 +1,5 @@
-import sys,json,re
+import sys,json,re,time
+import pandas as pd
 import seaborn as sns
 import anndata as ad
 import scanpy as sc
@@ -21,12 +22,14 @@ def distributeTask(aTask):
     'violin': complexViolin,
   }.get(aTask,errorTask)
 def toHTML(fig,data):
+  st = time.time()
   imgD = iostreamFig(fig,data['options']['img_format'])
   imgID=""
   if len(data['options']['img_id'])>0:
     imgID='id="%s" '%data['options']['img_id']
   imgFormat = re.sub("svg","svg+xml",data['options']['img_format'])
   if data['options']['img_html']:
+    print("toHtml: %.2f"%(time.time()-st))
     print('<html><body><img %s src="data:image/%s;base64,%s" width="100%%" height="auto"/></body></html>'%(imgID,imgFormat,imgD))
   else:
     print('<img %s src="data:image/%s;base64,%s" width="100%%" height="auto"/>'%(imgID,imgFormat,imgD))
@@ -49,6 +52,8 @@ def getData(data):
   data['options']["img_height"]=4 if data['options'].get('img_height') is None else data['options'].get('img_height')
   return D
 def complexViolin(data):
+  st=time.time()
+  recordT = {}
   w=data['options']["img_width"]
   h=data['options']["img_height"]
   genes=data['genes']
@@ -56,9 +61,11 @@ def complexViolin(data):
   gN = len(genes)
   if gN<1:
     raise ValueError('Missing genes!')
-  
+  recordT["init"]=time.time()-st
   D = getData(data)
+  recordT["Get obs"]=time.time()-st
   df = sc.get.obs_df(D,genes+grps)
+  recordT["Create data"]=time.time()-st
   for one in grps:
     if len(data["groups"][one])>0:
       delGrp = [re.sub("^-","",_) for _ in data['groups'][one] if _.startswith('-')]
@@ -67,6 +74,7 @@ def complexViolin(data):
       else:
         df = df[df[one].isin(data["groups"][one])]
       df[one] = df[one].cat.remove_unused_categories()
+  recordT["Filter"]=time.time()-st
   
   fig, axes = plt.subplots(gN, 1, figsize=(w, h*gN), sharey='row')
   if gN==1:
@@ -85,6 +93,9 @@ def complexViolin(data):
           ncol=1 if len(grps)<2 else df[grps[1]].nunique())
       else:
         axes[i].get_legend().remove()
+  recordT["Plot"]=time.time()-st
+  if data['options']['img_html']:
+    print(pd.DataFrame(recordT,index=["Time"]).transpose())
   #plt.savefig('f.pdf',bbox_inches="tight")
   return(toHTML(fig,data))
 
