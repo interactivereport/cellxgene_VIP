@@ -85,6 +85,8 @@ def complexViolin(data):
       subDF = df[(df[genes[i]]>data['options']['cutoff']).values]
     sns.violinplot(x=grps[0],y=genes[i],ax=axes[i],
       data=subDF,cut=0,
+      palette="bright" if data['options'].get('palette') is None else data['options']['palette'],
+      #fill=False,inner_kws={"alpha":0.5}, seaborn v0.13.0
       hue=None if len(grps)<2 else grps[1])
     if data['options'].get("dotsize") is not None and data['options']["dotsize"]>0:
       dotColor='#000' if data['options'].get("dotcolor") is None else data['options']['dotcolor']
