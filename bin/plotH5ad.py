@@ -87,9 +87,9 @@ def complexViolin(data):
       data=subDF,cut=0,
       hue=None if len(grps)<2 else grps[1])
     if data['options'].get("dotsize") is not None and data['options']["dotsize"]>0:
-      sns.stripplot(x=grps[0],y=genes[i],ax=axes[i],
-        palette=['#000'],legend=False,
+      sns.stripplot(x=grps[0],y=genes[i],ax=axes[i],legend=False,
         data=subDF,size=data['options']["dotsize"],
+        palette=['#000'] if len(grps)<2 else ['#000']*df[grps[1]].nunique(),
         dodge=False if len(grps)<2 else True,
         hue=None if len(grps)<2 else grps[1])
     axes[i].set_title("%d cells"%df.shape[0],loc="left")
