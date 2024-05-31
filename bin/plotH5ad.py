@@ -1,4 +1,4 @@
-import sys,json,re,time
+import sys,json,re,time,warnings
 import pandas as pd
 import seaborn as sns
 import anndata as ad
@@ -6,6 +6,7 @@ import scanpy as sc
 import matplotlib.pyplot as plt
 import base64
 from io import BytesIO
+warnings.simplefilter("ignore", UserWarning)
 
 def main():
   if len(sys.argv)==1:
@@ -20,6 +21,7 @@ def errorTask(data):
 def distributeTask(aTask):
   return {
     'violin': complexViolin,
+    'dotplot': twofactorDotplot
   }.get(aTask,errorTask)
 def toHTML(fig,data):
   st = time.time()
@@ -52,7 +54,14 @@ def getData(data,dataframe=True):
   data['options']["img_format"] = data['options']["img_format"] if data['options'].get("img_format") in ['png','svg'] else "png"
   data['options']["img_width"]=6 if data['options'].get('img_width') is None else data['options'].get('img_width')
   data['options']["img_height"]=4 if data['options'].get('img_height') is None else data['options'].get('img_height')
-  
+  data['options']['cutoff']=0 if data['options'].get("cutoff") is None else data['options']['cutoff']
+  data['options']['titlefontsize']=6 if data['options'].get("titlefontsize") is None else data['options']['titlefontsize']
+  reduc=[]
+  reducName = {}
+  for one in data['reductions']:
+    reducName[one] = one if one.startswith("X_") else "X_%s"%one
+    reduc += [(reducName[one],0),(reducName[one],1)]
+  data['reductions'] = list(reducName.values())
   #filter cells by annotation selections
   selC = [True] * D.shape[0]
   for one in data["groups"]:
@@ -63,7 +72,10 @@ def getData(data,dataframe=True):
       else:
         selC = selC & D.obs[one].isin(data["groups"][one])
   if dataframe:
-    return sc.get.obs_df(D[selC],data['genes']+list(data["groups"].keys()))
+    df = sc.get.obs_df(D[selC],data['genes']+list(data["groups"].keys()))
+    if len(reduc)>0:
+      df = df.merge(sc.get.obs_df(D,obsm_keys=reduc),how="left",left_index=True,right_index=True)
+    return df
   return D[selC]
 
 def complexViolin(data):
@@ -83,7 +95,7 @@ def complexViolin(data):
   for i in range(gN):
     subDF = df
     strTitle = "Total of %d cells" %df.shape[0]
-    if data['options'].get("cutoff") is not None and data['options']['cutoff']>0:
+    if data['options']['cutoff']>0:
       subDF = df[(df[genes[i]]>data['options']['cutoff']).values]
       strTitle="%d out of selected %d cells passed the expression filter %.2f"%(subDF.shape[0],df.shape[0],data['options']['cutoff'])
     sns.violinplot(x=grps[0],y=genes[i],ax=axes[i],
@@ -98,7 +110,7 @@ def complexViolin(data):
         palette=[dotColor] if len(grps)<2 else [dotColor]*df[grps[1]].nunique(),
         dodge=False if len(grps)<2 else True,
         hue=None if len(grps)<2 else grps[1])
-    axes[i].set_title(strTitle,loc="left",fontdict={'fontsize':6 if data['options'].get("titlefontsize") is None else data['options']['titlefontsize']})
+    axes[i].set_title(strTitle,loc="left",fontdict={'fontsize':data['options']['titlefontsize']})
     if i<(len(genes)-1):
       axes[i].get_xaxis().set_visible(False)
     else:
@@ -114,7 +126,39 @@ def complexViolin(data):
     print(pd.DataFrame(recordT,index=["Time"]).transpose())
   #plt.savefig('f.pdf',bbox_inches="tight")
   return(toHTML(fig,data))
+def twofactorDotplot(data):
+  df = getData(data)
+  w=data['options']["img_width"]
+  h=data['options']["img_height"]
+  grps=list(data['groups'].keys())
+  genes=data['genes']
 
+  D=ad.AnnData(X=df[genes],obs=df[grps])
+  strGrp=grps[0]
+  if len(grps)>1:
+    strGrp = "_".join(grps[:2])
+    D.obs[strGrp] = D.obs.apply(lambda x: "_".join(x[grps[:2]]),axis=1)
+  strTitle = "%d selected cells"%df.shape[0]
+  if data['options']['cutoff']>0:
+    strTitle = "%d selected cells with expression cutoff %.2f"%(df.shape[0],data['options']['cutoff'])
+  dp=sc.pl.dotplot(D,genes,groupby=strGrp,figsize=(w,h),
+    expression_cutoff=data['options']['cutoff'],mean_only_expressed=True,
+    return_fig=True)
+  dp = (dp.add_totals(size=1.2).
+    legend(show_size_legend=True). #,width=float(data['legendW'])
+    style(cmap="Reds" if data['options'].get('palette') is None else data['options']['palette'],
+      dot_edge_color='black', dot_edge_lw=0.5, size_exponent=1.5))
+  fig = dp.show(True)['mainplot_ax'].figure
+  if len(grps)>1:
+    n = df[grps[1]].nunique()
+    for i in range(df[grps[0]].nunique()):
+      if i==0:
+        fig.axes[0].set_title(strTitle,loc="left",fontdict={'fontsize':data['options']['titlefontsize']})
+      else:
+        fig.axes[0].axhline(y=i*n,color="#0002",linestyle="--")
+  return(toHTML(fig,data))
+
+  
 main()
 # cat ../testVIP/violin.json | python -u plotH5ad.py
 # python -u ./plotH5ad.py ../testVIP/violin.json
