@@ -181,10 +181,12 @@ def reductionPlot(data):
   gs = fig.add_gridspec(nrow,ncol,wspace=0.2)
   oneReduc = re.sub("^X_","",data['reductions'][0])
   for i in range(groupN):
-    ax = sc.pl.embedding(D,oneReduc,color=grps[groupN-i-1],ax=fig.add_subplot(gs[i,0]),
+    ix = groupN-i-1
+    ax = sc.pl.embedding(D,oneReduc,color=grps[ix],ax=fig.add_subplot(gs[i,0]),
       show=False,
-      palette="Set1" if data['options'].get("palette") is None else data['options']["palette"])
-    ax.legend(ncol=math.ceil(df[grps[i]].nunique()/10),loc=6,bbox_to_anchor=(1,0.5),frameon=False)
+      palette=None if data['options'].get("palette") is None or len(data['options']["palette"])==0 else data['options']["palette"])
+    ax.legend(ncol=math.ceil(df[grps[ix]].nunique()/10),loc=6,bbox_to_anchor=(1,0.5),
+      frameon=False,fontsize=8-math.ceil(df[grps[ix]].nunique()/20))
     ax.set_xlabel('%s 1'%oneReduc)
     ax.set_ylabel('%s 2'%oneReduc)
   if groupN==1:
@@ -210,7 +212,9 @@ def reductionPlot(data):
         ax.set_xlabel('%s 1'%oneReduc)
         ax.set_ylabel('%s 2'%oneReduc)
   return(toHTML(fig,data))
-  
+def stackBar(data):
+  pass
+  #pandas df.plot
 main()
 # cat ../testVIP/violin.json | python -u plotH5ad.py
 # python -u ./plotH5ad.py ../testVIP/violin.json
