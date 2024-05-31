@@ -1,4 +1,4 @@
-import sys,json,re,time,warnings,math
+import sys,json,re,time,warnings,math,colorsys
 import pandas as pd
 import seaborn as sns
 import anndata as ad
@@ -22,8 +22,11 @@ def distributeTask(aTask):
   return {
     'violin': complexViolin,
     'dotplot': twofactorDotplot,
-    'embedding': reductionPlot
+    'embedding': reductionPlot,
+    'stackbar':stackBar
   }.get(aTask,errorTask)
+def get_n_distinct_colors(n,lightness=0.5,saturation=0.9):
+  return [colorsys.hls_to_rgb(i/n, lightness, saturation) for i in range(n)]
 def toHTML(fig,data):
   st = time.time()
   imgD = iostreamFig(fig,data['options']['img_format'])
@@ -46,8 +49,6 @@ def iostreamFig(fig,img_format):
     plt.close(fig)#'all'
   return imgD
 def getData(data,dataframe=True):
-  if len(data["genes"])<1 or len(data["groups"])<1:
-    raise ValueError('Missing genes or annotations!')
   D = ad.read_h5ad(data['h5ad'],backed='r')
   if len(data['var_col'])>0 and data['var_col'] in D.var.columns:
     D.var_names = list(D.var[data['var_col']])
@@ -80,6 +81,8 @@ def getData(data,dataframe=True):
   return D[selC]
 
 def complexViolin(data):
+  if len(data["genes"])<1 or len(data["groups"])<1:
+    raise ValueError('Missing genes or annotations!')
   st=time.time()
   recordT = {}
   df = getData(data)
@@ -128,6 +131,8 @@ def complexViolin(data):
   #plt.savefig('f.pdf',bbox_inches="tight")
   return(toHTML(fig,data))
 def twofactorDotplot(data):
+  if len(data["genes"])<1 or len(data["groups"])<1:
+    raise ValueError('Missing genes or annotations!')
   df = getData(data)
   w=data['options']["img_width"]
   h=data['options']["img_height"]
@@ -159,8 +164,8 @@ def twofactorDotplot(data):
         fig.axes[0].axhline(y=i*n,color="#0002",linestyle="--")
   return(toHTML(fig,data))
 def reductionPlot(data):
-  if len(data["reductions"])<1:
-    raise ValueError('Missing reduction/embedding!')
+  if len(data["reductions"])<1 or len(data["genes"])<1 or len(data["groups"])<1:
+    raise ValueError('Missing gene or annotations or reduction/embedding!')
   df = getData(data)
   w=data['options']["img_width"]
   h=data['options']["img_height"]
@@ -186,7 +191,7 @@ def reductionPlot(data):
       show=False,
       palette=None if data['options'].get("palette") is None or len(data['options']["palette"])==0 else data['options']["palette"])
     ax.legend(ncol=math.ceil(df[grps[ix]].nunique()/10),loc=6,bbox_to_anchor=(1,0.5),
-      frameon=False,fontsize=8-math.ceil(df[grps[ix]].nunique()/20))
+      frameon=False,fontsize=8-df[grps[ix]].nunique()/20)
     ax.set_xlabel('%s 1'%oneReduc)
     ax.set_ylabel('%s 2'%oneReduc)
   if groupN==1:
@@ -213,8 +218,30 @@ def reductionPlot(data):
         ax.set_ylabel('%s 2'%oneReduc)
   return(toHTML(fig,data))
 def stackBar(data):
-  pass
-  #pandas df.plot
+  if len(data["groups"])<2:
+    raise ValueError('At least 2 annotation groups are required!')
+  df = getData(data)
+  w=data['options']["img_width"]
+  h=data['options']["img_height"]
+  grps=list(data['groups'].keys())
+  x = list(df[grps[1]].unique()) if len(data["groups"][grps[1]])==0 else data["groups"][grps[1]]
+  df = (df[grps[:2]].value_counts().to_frame("count").reset_index().
+    pivot_table(index=grps[0],columns=grps[1],values="count"))
+  plt.figure(figsize=(w,h))
+  if data["options"].get("yscale") is not None and data["options"]["yscale"]=="proportion":
+    df = df.apply(lambda x: x/x.sum())
+    plt.ylabel("Proportion")
+  else:
+    plt.ylabel("Count")
+  plt.xlabel(grps[1])
+  color=get_n_distinct_colors(df.shape[0])
+  for i in range(df.shape[0]):
+    plt.bar(x,df.iloc[i,:][x],color=color[i],
+      bottom=df.iloc[:i,:][x].sum())
+  plt.legend(df.index,loc=4,bbox_to_anchor=(1,1),
+    ncol=math.ceil(df.shape[0]/10),
+    fontsize=8-df.shape[0]/20)
+  return(toHTML(plt,data))
 main()
 # cat ../testVIP/violin.json | python -u plotH5ad.py
 # python -u ./plotH5ad.py ../testVIP/violin.json
