@@ -1,4 +1,4 @@
-import sys,json,re,time,warnings
+import sys,json,re,time,warnings,math
 import pandas as pd
 import seaborn as sns
 import anndata as ad
@@ -21,7 +21,8 @@ def errorTask(data):
 def distributeTask(aTask):
   return {
     'violin': complexViolin,
-    'dotplot': twofactorDotplot
+    'dotplot': twofactorDotplot,
+    'embedding': reductionPlot
   }.get(aTask,errorTask)
 def toHTML(fig,data):
   st = time.time()
@@ -146,7 +147,7 @@ def twofactorDotplot(data):
     return_fig=True)
   dp = (dp.add_totals(size=1.2).
     legend(show_size_legend=True). #,width=float(data['legendW'])
-    style(cmap="Reds" if data['options'].get('palette') is None else data['options']['palette'],
+    style(cmap="Reds" if data['options'].get('color_map') is None else data['options']['color_map'],
       dot_edge_color='black', dot_edge_lw=0.5, size_exponent=1.5))
   fig = dp.show(True)['mainplot_ax'].figure
   if len(grps)>1:
@@ -157,7 +158,58 @@ def twofactorDotplot(data):
       else:
         fig.axes[0].axhline(y=i*n,color="#0002",linestyle="--")
   return(toHTML(fig,data))
-
+def reductionPlot(data):
+  if len(data["reductions"])<1:
+    raise ValueError('Missing reduction/embedding!')
+  df = getData(data)
+  w=data['options']["img_width"]
+  h=data['options']["img_height"]
+  grps=list(data['groups'].keys())
+  genes=data['genes']
+  obsm={}
+  for one in data['reductions']:
+    obsm[one]=df[["%s-0"%one,"%s-1"%one]].to_numpy()
+  
+  D=ad.AnnData(X=df[genes],obs=df[grps],obsm=obsm)
+  dotsize=120000/D.shape[0]
+  subSize = 4
+  groupN = len(grps)
+  geneN = len(genes)
+  ncol = 4 if groupN==1 else df[grps[1]].nunique()
+  nrow = groupN + geneN if groupN>1 else groupN+math.ceil(geneN/ncol)
+  fig = plt.figure(figsize=(ncol*subSize,subSize*nrow))
+  gs = fig.add_gridspec(nrow,ncol,wspace=0.2)
+  oneReduc = re.sub("^X_","",data['reductions'][0])
+  for i in range(groupN):
+    ax = sc.pl.embedding(D,oneReduc,color=grps[groupN-i-1],ax=fig.add_subplot(gs[i,0]),
+      show=False,
+      palette="Set1" if data['options'].get("palette") is None else data['options']["palette"])
+    ax.legend(ncol=math.ceil(df[grps[i]].nunique()/10),loc=6,bbox_to_anchor=(1,0.5),frameon=False)
+    ax.set_xlabel('%s 1'%oneReduc)
+    ax.set_ylabel('%s 2'%oneReduc)
+  if groupN==1:
+    for i in geneN:
+      x = int(i/ncol)+groupN
+      y = i % ncol
+      ax = sc.pl.embedding(D,oneReduc,color=genes[i],ax=fig.add_subplot(gs[x,y]),show=False,size=dotsize)
+      ax.set_xlabel('%s 1'%oneReduc)
+      ax.set_ylabel('%s 2'%oneReduc)
+  else:
+    splitNames = list(df[grps[1]].unique())
+    for i in range(geneN):
+      for j in range(len(splitNames)):
+        x = groupN + i
+        y = j
+        
+        ax = sc.pl.embedding(D,oneReduc,ax=fig.add_subplot(gs[x,y]),show=False,size=dotsize)
+        ax = sc.pl.embedding(D[D.obs[grps[1]]==splitNames[j]],oneReduc,color=genes[i],
+          color_map="viridis" if data['options'].get("color_map") is None else data['options']["color_map"],
+          vmin=df[genes[i]].min(),vmax=df[genes[i]].max(),ax=ax,show=False,
+          size=dotsize,
+          title='{} in {}'.format(genes[i],splitNames[j]))
+        ax.set_xlabel('%s 1'%oneReduc)
+        ax.set_ylabel('%s 2'%oneReduc)
+  return(toHTML(fig,data))
   
 main()
 # cat ../testVIP/violin.json | python -u plotH5ad.py
