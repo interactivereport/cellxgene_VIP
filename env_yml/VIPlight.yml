@@ -45,6 +45,7 @@ dependencies:
   - pip=23.0.1
   - pip:
     - diffxpy==0.7.4
+    - PyComplexHeatmap==1.7.4
 variables:
   PYTHONNOUSERSITE: 1
   OPENBLAS_NUM_THREADS: 1

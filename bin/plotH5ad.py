@@ -1,4 +1,4 @@
-import sys,json,re,time,warnings,math,colorsys
+import sys,json,re,time,warnings,math,colorsys,os,contextlib
 import pandas as pd
 import seaborn as sns
 import anndata as ad
@@ -6,8 +6,11 @@ import scanpy as sc
 import matplotlib.pyplot as plt
 import base64
 from io import BytesIO
+import fastcluster as fc
+from scipy.cluster import hierarchy
+import PyComplexHeatmap as pch
 warnings.simplefilter("ignore", UserWarning)
-
+# Rscript ../complexHeatmap.R ttt.csv ZYG11B,OLFM4,PCNA,GSTA1 Expression Celltype,disease 6 8 Reds 1 1 png 2 300 F Yes
 def main():
   if len(sys.argv)==1:
     data = json.load(sys.stdin)
@@ -23,7 +26,8 @@ def distributeTask(aTask):
     'violin': complexViolin,
     'dotplot': twofactorDotplot,
     'embedding': reductionPlot,
-    'stackbar':stackBar
+    'stackbar':stackBar,
+    'heatmap':complexHeatmap
   }.get(aTask,errorTask)
 def get_n_distinct_colors(n,lightness=0.5,saturation=0.9):
   return [colorsys.hls_to_rgb(i/n, lightness, saturation) for i in range(n)]
@@ -210,24 +214,27 @@ def reductionPlot(data):
         
         ax = sc.pl.embedding(D,oneReduc,ax=fig.add_subplot(gs[x,y]),show=False,size=dotsize)
         ax = sc.pl.embedding(D[D.obs[grps[1]]==splitNames[j]],oneReduc,color=genes[i],
-          color_map="viridis" if data['options'].get("color_map") is None else data['options']["color_map"],
+          color_map="viridis" if data['options'].get("color_map") is None or len(data['options']["color_map"])==0 else data['options']["color_map"],
           vmin=df[genes[i]].min(),vmax=df[genes[i]].max(),ax=ax,show=False,
           size=dotsize,
           title='{} in {}'.format(genes[i],splitNames[j]))
         ax.set_xlabel('%s 1'%oneReduc)
         ax.set_ylabel('%s 2'%oneReduc)
+  fig.suptitle("%d selected cells"%df.shape[0],x=0.9,y=0.9,ha="right",va="top",
+    fontsize=data['options']['titlefontsize'])
   return(toHTML(fig,data))
 def stackBar(data):
   if len(data["groups"])<2:
     raise ValueError('At least 2 annotation groups are required!')
   df = getData(data)
+  strTitle = "%d selected cells"%df.shape[0]
   w=data['options']["img_width"]
   h=data['options']["img_height"]
   grps=list(data['groups'].keys())
   x = list(df[grps[1]].unique()) if len(data["groups"][grps[1]])==0 else data["groups"][grps[1]]
   df = (df[grps[:2]].value_counts().to_frame("count").reset_index().
     pivot_table(index=grps[0],columns=grps[1],values="count"))
-  plt.figure(figsize=(w,h))
+  fig = plt.figure(figsize=(w,h))
   if data["options"].get("yscale") is not None and data["options"]["yscale"]=="proportion":
     df = df.apply(lambda x: x/x.sum())
     plt.ylabel("Proportion")
@@ -241,6 +248,42 @@ def stackBar(data):
   plt.legend(df.index,loc=4,bbox_to_anchor=(1,1),
     ncol=math.ceil(df.shape[0]/10),
     fontsize=8-df.shape[0]/20)
+  fig.axes[0].set_title(strTitle,
+    loc="left",fontdict={'fontsize':data['options']['titlefontsize']})
+  return(toHTML(plt,data))
+def complexHeatmap(data):
+  if len(data["genes"])<1:
+    raise ValueError('Missing gene!')
+  df = getData(data)
+  w=data['options']["img_width"]
+  h=data['options']["img_height"]
+  grps=list(data['groups'].keys())
+  genes = data["genes"]
+  selN = df.shape[0]
+  df = df[df[genes].apply(lambda x: max(x)>data["options"]["cutoff"],axis=1)]
+  ix = hierarchy.leaves_list(fc.linkage_vector(df[genes],method="ward"))
+  df = df.iloc[ix,]
+  if data["options"].get("palette") is not None and len(data["options"]["palette"])>0:
+    cmap=data["options"]["palette"]
+    colors=None
+  else:
+    cmap='auto'
+    colors={_:dict(zip(df[_].unique(),get_n_distinct_colors(df[_].nunique()))) for _ in grps}
+  
+  fig = plt.figure(figsize=(w, h))
+  with open(os.devnull, "w") as f, contextlib.redirect_stdout(f):
+    cm = pch.ClusterMapPlotter(
+        data=df[genes],z_score=0,
+        label="Row Z-score",cmap="jet" if data['options'].get("color_map") is None or len(data['options']["color_map"])==0 else data['options']["color_map"],
+        left_annotation=pch.HeatmapAnnotation(df[grps],cmap=cmap,colors=colors,axis=0),
+        show_rownames=False,show_colnames=True,
+        row_dendrogram=False,col_dendrogram=False,
+        col_cluster=False,row_cluster=False,
+        #row_cluster_method="complete",col_cluster_method="complete",
+        rasterized=True,legend=True,legend_anchor='ax_heatmap',
+        verbose=0)
+  fig.axes[1].set_title("%d of %d selected cells passed expression threshold %.2f"%(df.shape[0],selN,data["options"]["cutoff"]),
+    loc="left",fontdict={'fontsize':data['options']['titlefontsize']})
   return(toHTML(plt,data))
 main()
 # cat ../testVIP/violin.json | python -u plotH5ad.py
