@@ -240,6 +240,7 @@ customBigwigTrack <- function(strBW,region,fontsize) {
         oneWig <- getBigwigCoverage(region,one)
         coverages <- rbind(coverages,cbind(oneWig,group=basename(one)))
       }
+      coverages$group <- factor(coverages$group,levels=unique(coverages$group))
       bwCol <- setNames(gg_color_hue(length(strBW)),basename(strBW))
       xlabel <- paste0(as.character(x = GenomicRanges::seqnames(x = region)), " position (bp)")
       AllPlots <- list(customCoverageTrack(coverages,xlabel,bwCol,fontsize=fontsize))
@@ -331,9 +332,9 @@ customCoverageTrack <- function(coverages,xlabel,colors_all=NULL,fontsize=12,reg
         geom_rect(
           data = df,
           inherit.aes = FALSE,
-          aes_string(
-            xmin = "start",
-            xmax = "end",
+          aes(
+            xmin = start,
+            xmax = end,
             ymin = 0,
             ymax = ymax),
           fill = rep(x = df$color, length(x = unique(x = coverages$group))),
@@ -839,4 +840,4 @@ reformat_annotations <- function(annotation,start.pos,end.pos) {
     )
 }
 
-main()
+suppressWarnings(main())
