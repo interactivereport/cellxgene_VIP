@@ -34,6 +34,7 @@ dependencies:
   - r-ggrepel=0.9.2
   - r-ggrastr=1.0.1
   - r-viridis=0.6.2
+  - r-rcpproll=0.3.0
   - r-biocmanager
   - bioconductor-rtracklayer=1.58.0=r42h171f361_1 # if the older bioconductor version is not available, install manually using other mirror site chooseBioCmirror()
   - bioconductor-genomicranges=1.50.0=r42hc0cfd56_0
