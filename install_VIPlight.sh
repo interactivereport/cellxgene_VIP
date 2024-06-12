@@ -33,7 +33,7 @@ conda create -y python=3.8.15 mamba=0.15.3 git=2.39.1 jq=1.6 nodejs=18.12.1 -c c
 sed "s|CONDA_PATH|$appEnvPath|g" env_yml/VIPlight.yml > env_yml/VIPlight_local.yml
 if [[ -n "$CONDA_SSL" ]] &&  [[ -f "$CONDA_SSL" ]]; then
     cat $CONDA_SSL >> $appEnvPath/ssl/cacert.pem
-    echo -e "  GIT_SSL_CAPATH: $CONDA_SSL" >> VIPlight_local.yml
+    echo -e "  GIT_SSL_CAINFO: $CONDA_SSL" >> VIPlight_local.yml
     echo -e "  REQUESTS_CA_BUNDLE: $CONDA_SSL" >> VIPlight_local.yml
     echo -e "  SSL_CERT_FILE: $CONDA_SSL" >> VIPlight_local.yml
 fi
