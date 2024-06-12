@@ -81,11 +81,11 @@ $exePath/update.VIPInterface.sh all
 echo "export VIPenv='source $appEnvPath/etc/profile.d/conda.sh;conda activate'" > $exePath/bin/.env
 
 # setup the update
-echo -e "#"'!'"/usr/bin/env bash\nsource $exePath/bin/.env\neval \$VIPenv\ncd $exePath\ngit pull\n./update.VIPInterface.sh all\n" > $exePath/update
+echo -e "#"'!'"/usr/bin/env bash\nsource $exePath/bin/.env\neval \$VIPenv >/dev/null 2>&1\ncd $exePath\ngit pull\n./update.VIPInterface.sh all\n" > $exePath/update
 chmod a+x "$exePath/update"
 
 # setup the VIPlight
-echo -e "#"'!'"/usr/bin/env bash\nsource $exePath/bin/.env\neval \$VIPenv\ncellxgene \"\$@\"" > $exePath/VIPlight
+echo -e "#"'!'"/usr/bin/env bash\nsource $exePath/bin/.env\neval \$VIPenv >/dev/null 2>&1\ncellxgene \"\$@\"" > $exePath/VIPlight
 chmod a+x "$exePath/VIPlight"
 
 echo
