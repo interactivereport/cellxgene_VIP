@@ -42,7 +42,7 @@ def toHTML(fig,data):
     print("toHtml: %.2f"%(time.time()-st))
     print('<html><body><img %s src="data:image/%s;base64,%s" width="100%%" height="auto"/></body></html>'%(imgID,imgFormat,imgD))
   else:
-    print('<img %s src="data:image/%s;base64,%s" width="100%%" height="auto"/>'%(imgID,imgFormat,imgD))
+    print('data:image/%s;base64,%s'%(imgFormat,imgD))
 def iostreamFig(fig,img_format):
   figD = BytesIO()
   fig.savefig(figD,bbox_inches="tight",
