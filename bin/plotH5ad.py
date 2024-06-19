@@ -30,6 +30,14 @@ def distributeTask(aTask):
     'stackbar':stackBar,
     'heatmap':complexHeatmap
   }.get(aTask,errorTask)
+def is_numeric(var):
+  try:
+    float(var)  # Convert to float (handles integers and floats)
+    return True
+  except ValueError:
+    return False
+def isOptionDefined(data,k):
+  return (data['options'].get(k) is not None and (is_numeric(data['options'][k]) or len(data['options'][k])>0))
 def get_n_distinct_colors(n,lightness=0.5,saturation=0.9,cName=None):
   if cName is None:
     return [colorsys.hls_to_rgb(i/n, lightness, saturation) for i in range(n)]
@@ -63,25 +71,27 @@ def getData(data,dataframe=True):
     D.var_names = list(D.var[data['var_col']])
   data["genes"] = list(D.var_names[D.var_names.str.lower().isin([s.lower() for s in data['genes']])])
   data['options']["img_format"] = data['options']["img_format"] if data['options'].get("img_format") in ['png','svg'] else "png"
-  data['options']["img_width"]=6 if data['options'].get('img_width') is None else data['options'].get('img_width')
-  data['options']["img_height"]=4 if data['options'].get('img_height') is None else data['options'].get('img_height')
-  data['options']['cutoff']=0 if data['options'].get("cutoff") is None else data['options']['cutoff']
-  data['options']['titlefontsize']=6 if data['options'].get("titlefontsize") is None else data['options']['titlefontsize']
+  data['options']["img_width"]=6 if not isOptionDefined(data,"img_width") else data['options']['img_width']
+  data['options']["img_height"]=4 if not isOptionDefined(data,"img_height") is None else data['options']['img_height']
+  data['options']['cutoff']=0 if not isOptionDefined(data,"cutoff") else data['options']['cutoff']
+  data['options']['titlefontsize']=6 if not isOptionDefined(data,"titlefontsize") else data['options']['titlefontsize']
+  # only needs when plotting embedding
   reduc=[]
-  reducName = []
-  for one in data['reductions']:
-    s=0.5
-    selK=None
-    for k in D.obsm.keys():
-      if SequenceMatcher(None,one.lower(),k.lower()).ratio()>s:
-        s=SequenceMatcher(None,one.lower(),k.lower()).ratio()
-        selK=k
-    if selK is not None and not selK in reducName:
-      reducName += [selK]
-      reduc += [(selK,0),(selK,1)]
-  if len(reducName)==0:
-    raise ValueError('No matching reduction/embedding!')
-  data['reductions'] = reducName
+  if data['plot']=='embedding':
+    reducName = []
+    for one in data['reductions']:
+      s=0.5
+      selK=None
+      for k in D.obsm.keys():
+        if SequenceMatcher(None,one.lower(),k.lower()).ratio()>s:
+          s=SequenceMatcher(None,one.lower(),k.lower()).ratio()
+          selK=k
+      if selK is not None and not selK in reducName:
+        reducName += [selK]
+        reduc += [(selK,0),(selK,1)]
+    if len(reducName)==0:
+      raise ValueError('No matching reduction/embedding!')
+    data['reductions'] = reducName
   #filter cells by annotation selections
   selC = [True] * D.shape[0]
   for one in data["groups"]:
@@ -122,11 +132,11 @@ def complexViolin(data):
       strTitle="%d out of selected %d cells passed the expression filter %.2f"%(subDF.shape[0],df.shape[0],data['options']['cutoff'])
     sns.violinplot(x=grps[0],y=genes[i],ax=axes[i],
       data=subDF,cut=0,
-      palette="bright" if data['options'].get('palette') is None else data['options']['palette'],
+      palette="bright" if not isOptionDefined(data,"palette") else data['options']['palette'],
       #fill=False,inner_kws={"alpha":0.5}, seaborn v0.13.0
       hue=None if len(grps)<2 else grps[1])
-    if data['options'].get("dotsize") is not None and data['options']["dotsize"]>0:
-      dotColor='#000' if data['options'].get("dotcolor") is None else data['options']['dotcolor']
+    if isOptionDefined(data,"dotsize"):
+      dotColor='#000' if not isOptionDefined(data,"dotcolor") else data['options']['dotcolor']
       sns.stripplot(x=grps[0],y=genes[i],ax=axes[i],legend=False,
         data=subDF,size=data['options']["dotsize"],
         palette=[dotColor] if len(grps)<2 else [dotColor]*df[grps[1]].nunique(),
@@ -170,7 +180,7 @@ def twofactorDotplot(data):
     return_fig=True)
   dp = (dp.add_totals(size=1.2).
     legend(show_size_legend=True). #,width=float(data['legendW'])
-    style(cmap="Reds" if data['options'].get('color_map') is None else data['options']['color_map'],
+    style(cmap="Reds" if not isOptionDefined(data,'color_map') else data['options']['color_map'],
       dot_edge_color='black', dot_edge_lw=0.5, size_exponent=1.5))
   fig = dp.show(True)['mainplot_ax'].figure
   if len(grps)>1:
@@ -207,7 +217,7 @@ def reductionPlot(data):
     ix = groupN-i-1
     ax = sc.pl.embedding(D,oneReduc,color=grps[ix],ax=fig.add_subplot(gs[i,0]),
       show=False,
-      palette=None if data['options'].get("palette") is None or len(data['options']["palette"])==0 else data['options']["palette"])
+      palette=None if not isOptionDefined(data,'palette') else data['options']["palette"])
     ax.legend(ncol=math.ceil(df[grps[ix]].nunique()/10),loc=6,bbox_to_anchor=(1,0.5),
       frameon=False,fontsize=8-df[grps[ix]].nunique()/20)
     ax.set_xlabel('%s 1'%oneReduc)
@@ -228,7 +238,7 @@ def reductionPlot(data):
         
         ax = sc.pl.embedding(D,oneReduc,ax=fig.add_subplot(gs[x,y]),show=False,size=dotsize)
         ax = sc.pl.embedding(D[D.obs[grps[1]]==splitNames[j]],oneReduc,color=genes[i],
-          color_map="viridis" if data['options'].get("color_map") is None or len(data['options']["color_map"])==0 else data['options']["color_map"],
+          color_map="viridis" if not isOptionDefined(data,'color_map') else data['options']["color_map"],
           vmin=df[genes[i]].min(),vmax=df[genes[i]].max(),ax=ax,show=False,
           size=dotsize,
           title='{} in {}'.format(genes[i],splitNames[j]))
@@ -255,7 +265,7 @@ def stackBar(data):
   else:
     plt.ylabel("Count")
   plt.xlabel(grps[1])
-  color=get_n_distinct_colors(df.shape[0],cName=data['options'].get("palette"))
+  color=get_n_distinct_colors(df.shape[0],cName=data['options']["palette"] if isOptionDefined(data,"palette") else None)
   for i in range(df.shape[0]):
     plt.bar(x,df.iloc[i,:][x],color=color[i],
       bottom=df.iloc[:i,:][x].sum())
@@ -296,7 +306,7 @@ def complexHeatmap(data):
   with open(os.devnull, "w") as f, contextlib.redirect_stdout(f):
     cm = pch.ClusterMapPlotter(
         data=df[genes],z_score=heat_scale,
-        label=heat_title,cmap="jet" if data['options'].get("color_map") is None or len(data['options']["color_map"])==0 else data['options']["color_map"],
+        label=heat_title,cmap="jet" if not isOptionDefined(data,"color_map") else data['options']["color_map"],
         left_annotation=pch.HeatmapAnnotation(df[grps],cmap=cmap,colors=colors,axis=0),
         show_rownames=False,show_colnames=True,
         row_dendrogram=False,col_dendrogram=False,
