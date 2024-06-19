@@ -8,6 +8,7 @@ import base64
 from io import BytesIO
 import fastcluster as fc
 from scipy.cluster import hierarchy
+from difflib import SequenceMatcher
 import PyComplexHeatmap as pch
 warnings.simplefilter("ignore", UserWarning)
 # Rscript ../complexHeatmap.R ttt.csv ZYG11B,OLFM4,PCNA,GSTA1 Expression Celltype,disease 6 8 Reds 1 1 png 2 300 F Yes
@@ -67,11 +68,20 @@ def getData(data,dataframe=True):
   data['options']['cutoff']=0 if data['options'].get("cutoff") is None else data['options']['cutoff']
   data['options']['titlefontsize']=6 if data['options'].get("titlefontsize") is None else data['options']['titlefontsize']
   reduc=[]
-  reducName = {}
+  reducName = []
   for one in data['reductions']:
-    reducName[one] = one if one.startswith("X_") else "X_%s"%one
-    reduc += [(reducName[one],0),(reducName[one],1)]
-  data['reductions'] = list(reducName.values())
+    s=0.5
+    selK=None
+    for k in D.obsm.keys():
+      if SequenceMatcher(None,one.lower(),k.lower()).ratio()>s:
+        s=SequenceMatcher(None,one.lower(),k.lower()).ratio()
+        selK=k
+    if selK is not None and not selK in reducName:
+      reducName += [selK]
+      reduc += [(selK,0),(selK,1)]
+  if len(reducName)==0:
+    raise ValueError('No matching reduction/embedding!')
+  data['reductions'] = reducName
   #filter cells by annotation selections
   selC = [True] * D.shape[0]
   for one in data["groups"]:
