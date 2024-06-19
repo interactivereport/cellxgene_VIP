@@ -29,8 +29,12 @@ def distributeTask(aTask):
     'stackbar':stackBar,
     'heatmap':complexHeatmap
   }.get(aTask,errorTask)
-def get_n_distinct_colors(n,lightness=0.5,saturation=0.9):
-  return [colorsys.hls_to_rgb(i/n, lightness, saturation) for i in range(n)]
+def get_n_distinct_colors(n,lightness=0.5,saturation=0.9,cName=None):
+  if cName is None:
+    return [colorsys.hls_to_rgb(i/n, lightness, saturation) for i in range(n)]
+  else:
+    cmap=plt.get_cmap(cName)
+    return([cmap(i) for i in range(n)])
 def toHTML(fig,data):
   st = time.time()
   imgD = iostreamFig(fig,data['options']['img_format'])
@@ -241,7 +245,7 @@ def stackBar(data):
   else:
     plt.ylabel("Count")
   plt.xlabel(grps[1])
-  color=get_n_distinct_colors(df.shape[0])
+  color=get_n_distinct_colors(df.shape[0],cName=data['options'].get("palette"))
   for i in range(df.shape[0]):
     plt.bar(x,df.iloc[i,:][x],color=color[i],
       bottom=df.iloc[:i,:][x].sum())
