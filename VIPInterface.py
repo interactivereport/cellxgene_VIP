@@ -481,7 +481,7 @@ def SGVcompare(data):
   X=pd.concat([adata.to_df(),adata.obs[data['grp']]],axis=1,sort=False)
   X[X.iloc[:,0]>=float(data['cellCutoff'])].to_csv(strF,index=False)
   #strCMD = " ".join(["%s/Rscript"%data['Rpath'],strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
-  #ppr.pprint(strCMD)
+  #ppr.pprint(" ".join([strExePath+'/violin.R',strF,str(data['cutoff']),str(data['dotsize']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']]))
   res = subprocess.run([strExePath+'/violin.R',strF,str(data['cutoff']),str(data['dotsize']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
   os.remove(strF)
