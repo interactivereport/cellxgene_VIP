@@ -265,8 +265,16 @@ def complexHeatmap(data):
   genes = data["genes"]
   selN = df.shape[0]
   df = df[df[genes].apply(lambda x: max(x)>data["options"]["cutoff"],axis=1)]
-  ix = hierarchy.leaves_list(fc.linkage_vector(df[genes],method="ward"))
-  df = df.iloc[ix,]
+  heat_scale=None
+  heat_title="Expression"
+  if data["options"].get("heat_scale") is not None and data["options"]["heat_scale"]=="z-score":
+    heat_scale=0
+    heat_title="Row Z-score"
+  if data["options"].get("cell_order") is None or data["options"]["cell_order"]=="groups":
+    df = df.sort_values(list(data["groups"].keys()))
+  elif data["options"]["cell_order"]=="expression":
+    ix = hierarchy.leaves_list(fc.linkage_vector(df[genes],method="ward"))
+    df = df.iloc[ix,]
   if data["options"].get("palette") is not None and len(data["options"]["palette"])>0:
     cmap=data["options"]["palette"]
     colors=None
@@ -277,8 +285,8 @@ def complexHeatmap(data):
   fig = plt.figure(figsize=(w, h))
   with open(os.devnull, "w") as f, contextlib.redirect_stdout(f):
     cm = pch.ClusterMapPlotter(
-        data=df[genes],z_score=0,
-        label="Row Z-score",cmap="jet" if data['options'].get("color_map") is None or len(data['options']["color_map"])==0 else data['options']["color_map"],
+        data=df[genes],z_score=heat_scale,
+        label=heat_title,cmap="jet" if data['options'].get("color_map") is None or len(data['options']["color_map"])==0 else data['options']["color_map"],
         left_annotation=pch.HeatmapAnnotation(df[grps],cmap=cmap,colors=colors,axis=0),
         show_rownames=False,show_colnames=True,
         row_dendrogram=False,col_dendrogram=False,
