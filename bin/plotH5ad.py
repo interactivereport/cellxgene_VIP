@@ -1,4 +1,4 @@
-import sys,json,re,time,warnings,math,colorsys,os,contextlib
+import sys,json,re,time,warnings,math,colorsys,os,contextlib,textwrap
 import pandas as pd
 import seaborn as sns
 import anndata as ad
@@ -21,7 +21,27 @@ def main():
   taskRes = distributeTask(data['plot'])(data)
 
 def errorTask(data):
-  raise ValueError('Error task!')
+  msgPlot('Error plot task (unknown %s)!'%data['plot'],data)
+def errorCheck(data):
+  if data['plot'] in ["violin","dotplot","heatmap"]:
+    if len(data["genes"])<1:
+      msgPlot('Error: No matched gene!',data)
+    if len(data["groups"])<1:
+      msgPlot('Error: No matched annotation!',data)
+  if data['plot']=="embedding":
+    if len(data["reductions"])<1:
+      msgPlot('Error: No matched embedding keys or genes or annotations)!',data)
+    if len(data["genes"])<1 and len(data["groups"])<1):
+      msgPlot('Error: No matched genes and annotations)!',data)
+  if data['plot']=="stackbar":
+    if len(data["groups"])<2:
+      msgPlot('Error: At least two matched annotations are required!',data)
+def msgPlot(msg,data):
+  fig = plt.figure(figsize=(4,3))
+  a= plt.text(0.5,0.5,textwrap.fill(msg,35),fontsize=14,horizontalalignment="center",verticalalignment="center")
+  a= plt.axis("off")
+  toHTML(fig,data)
+  exit()
 def distributeTask(aTask):
   return {
     'violin': complexViolin,
@@ -66,15 +86,18 @@ def iostreamFig(fig,img_format):
     plt.close(fig)#'all'
   return imgD
 def getData(data,dataframe=True):
+  errorCheck(data)
   D = ad.read_h5ad(data['h5ad'],backed='r')
   if len(data['var_col'])>0 and data['var_col'] in D.var.columns:
     D.var_names = list(D.var[data['var_col']])
-  data["genes"] = list(D.var_names[D.var_names.str.lower().isin([s.lower() for s in data['genes']])])
   data['options']["img_format"] = data['options']["img_format"] if data['options'].get("img_format") in ['png','svg'] else "png"
   data['options']["img_width"]=6 if not isOptionDefined(data,"img_width") else data['options']['img_width']
   data['options']["img_height"]=4 if not isOptionDefined(data,"img_height") is None else data['options']['img_height']
   data['options']['cutoff']=0 if not isOptionDefined(data,"cutoff") else data['options']['cutoff']
   data['options']['titlefontsize']=6 if not isOptionDefined(data,"titlefontsize") else data['options']['titlefontsize']
+  # checking existing genes/annotations/reduction keys
+  data["genes"] = list(D.var_names[D.var_names.str.lower().isin([s.lower() for s in data['genes']])])
+  data["groups"] = {k:data["groups"][k] for k in data["groups"] if k in D.obs.columns}
   # only needs when plotting embedding
   reduc=[]
   if data['plot']=='embedding':
@@ -89,9 +112,8 @@ def getData(data,dataframe=True):
       if selK is not None and not selK in reducName:
         reducName += [selK]
         reduc += [(selK,0),(selK,1)]
-    if len(reducName)==0:
-      raise ValueError('No matching reduction/embedding!')
     data['reductions'] = reducName
+  errorCheck(data)
   #filter cells by annotation selections
   selC = [True] * D.shape[0]
   for one in data["groups"]:
@@ -109,8 +131,6 @@ def getData(data,dataframe=True):
   return D[selC]
 
 def complexViolin(data):
-  if len(data["genes"])<1 or len(data["groups"])<1:
-    raise ValueError('Missing genes or annotations!')
   st=time.time()
   recordT = {}
   df = getData(data)
@@ -159,8 +179,6 @@ def complexViolin(data):
   #plt.savefig('f.pdf',bbox_inches="tight")
   return(toHTML(fig,data))
 def twofactorDotplot(data):
-  if len(data["genes"])<1 or len(data["groups"])<1:
-    raise ValueError('Missing genes or annotations!')
   df = getData(data)
   w=data['options']["img_width"]
   h=data['options']["img_height"]
@@ -192,8 +210,6 @@ def twofactorDotplot(data):
         fig.axes[0].axhline(y=i*n,color="#0002",linestyle="--")
   return(toHTML(fig,data))
 def reductionPlot(data):
-  if len(data["reductions"])<1 or len(data["genes"])<1 or len(data["groups"])<1:
-    raise ValueError('Missing gene or annotations or reduction/embedding!')
   df = getData(data)
   w=data['options']["img_width"]
   h=data['options']["img_height"]
@@ -248,8 +264,6 @@ def reductionPlot(data):
     fontsize=data['options']['titlefontsize'])
   return(toHTML(fig,data))
 def stackBar(data):
-  if len(data["groups"])<2:
-    raise ValueError('At least 2 annotation groups are required!')
   df = getData(data)
   strTitle = "%d selected cells"%df.shape[0]
   w=data['options']["img_width"]
@@ -276,8 +290,6 @@ def stackBar(data):
     loc="left",fontdict={'fontsize':data['options']['titlefontsize']})
   return(toHTML(plt,data))
 def complexHeatmap(data):
-  if len(data["genes"])<1:
-    raise ValueError('Missing gene!')
   df = getData(data)
   w=data['options']["img_width"]
   h=data['options']["img_height"]
@@ -320,3 +332,5 @@ def complexHeatmap(data):
 main()
 # cat ../testVIP/violin.json | python -u plotH5ad.py
 # python -u ./plotH5ad.py ../testVIP/violin.json
+
+
