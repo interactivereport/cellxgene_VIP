@@ -11,6 +11,7 @@ from scipy.cluster import hierarchy
 from difflib import SequenceMatcher
 import PyComplexHeatmap as pch
 warnings.simplefilter("ignore", UserWarning)
+verbose_time=False
 def main():
   if len(sys.argv)==1:
     data = json.load(sys.stdin)
@@ -65,8 +66,8 @@ def isOptionDefined(data,k):
   return (data['options'].get(k) is not None and (is_numeric(data['options'][k]) or len(data['options'][k])>0))
 def get_n_distinct_colors(n,lightness=0.5,saturation=0.9,cName=None):
   if cName is None:
-    cmap=plt.get_cmap("Set1")
-    if n<9:
+    cmap=plt.get_cmap("Set3")
+    if n<12:
       return([cmap(i) for i in range(n)])
     else:
       return distinctipy.get_colors(n,[cmap(i)[:3] for i in range(12)])
@@ -96,8 +97,12 @@ def iostreamFig(fig,img_format):
     plt.close(fig)#'all'
   return imgD
 def getData(data,dataframe=True):
+  st = time.time()
   errorCheck(data)
   D = ad.read_h5ad(data['h5ad'],backed='r')
+  if verbose_time:
+    print("Read: ",time.time()-st)
+    st = time.time()
   if len(data['var_col'])>0 and data['var_col'] in D.var.columns:
     D.var_names = list(D.var[data['var_col']])
   data['options']["img_format"] = data['options']["img_format"] if data['options'].get("img_format") in ['png','svg'] else "png"
@@ -124,6 +129,9 @@ def getData(data,dataframe=True):
         reduc += [(selK,0),(selK,1)]
     data['reductions'] = reducName
   errorCheck(data)
+  if verbose_time:
+    print("Init: ",time.time()-st)
+    st = time.time()
   #filter cells by annotation selections
   selC = [True] * D.shape[0]
   for one in data["groups"]:
@@ -133,10 +141,16 @@ def getData(data,dataframe=True):
         selC = selC & ~D.obs[one].isin(delGrp)
       else:
         selC = selC & D.obs[one].isin(data["groups"][one])
+  if verbose_time:
+    print("Filter: ",time.time()-st)
+    st = time.time()
   if dataframe:
     df = sc.get.obs_df(D[selC],data['genes']+list(data["groups"].keys()))
     if len(reduc)>0:
       df = df.merge(sc.get.obs_df(D,obsm_keys=reduc),how="left",left_index=True,right_index=True)
+    if verbose_time:
+      print("Get data: ",time.time()-st)
+      st = time.time()
     return df
   return D[selC]
 
