@@ -25,7 +25,6 @@ def main():
 def errorTask(data):
   msgPlot('Error plot task (unknown %s)!'%data['plot'],data)
 def errorCheck(data):
-  a = UDYED#data["ISUE"]
   if data['plot'] in ["violin","dotplot","heatmap"]:
     if len(data["genes"])<1:
       msgPlot('Error: No matched gene!',data)
@@ -69,7 +68,7 @@ def get_n_distinct_colors(n,lightness=0.5,saturation=0.9,cName=None):
     return [colorsys.hls_to_rgb(i/n, lightness, saturation) for i in range(n)]
   else:
     cmap=plt.get_cmap(cName)
-    return([cmap(i) for i in range(n)])
+    return([cmap(i%len(cmap.colors)) for i in range(n)])
 def toHTML(fig,data):
   st = time.time()
   imgD = iostreamFig(fig,data['options']['img_format'])
