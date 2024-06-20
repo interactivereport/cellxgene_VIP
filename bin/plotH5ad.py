@@ -31,7 +31,7 @@ def errorCheck(data):
   if data['plot']=="embedding":
     if len(data["reductions"])<1:
       msgPlot('Error: No matched embedding keys or genes or annotations)!',data)
-    if len(data["genes"])<1 and len(data["groups"])<1):
+    if len(data["genes"])<1 and len(data["groups"])<1:
       msgPlot('Error: No matched genes and annotations)!',data)
   if data['plot']=="stackbar":
     if len(data["groups"])<2:
@@ -218,17 +218,16 @@ def reductionPlot(data):
   obsm={}
   for one in data['reductions']:
     obsm[one]=df[["%s-0"%one,"%s-1"%one]].to_numpy()
-  
-  D=ad.AnnData(X=df[genes],obs=df[grps],obsm=obsm)
-  dotsize=120000/D.shape[0]
+  dotsize=120000/df.shape[0]
   subSize = 4
   groupN = len(grps)
   geneN = len(genes)
-  ncol = 4 if groupN==1 else df[grps[1]].nunique()
-  nrow = groupN + geneN if groupN>1 else groupN+math.ceil(geneN/ncol)
+  ncol = 4 if groupN<2 else df[grps[1]].nunique()
+  nrow = (groupN + geneN) if groupN>1 else (groupN+math.ceil(geneN/ncol))
   fig = plt.figure(figsize=(ncol*subSize,subSize*nrow))
   gs = fig.add_gridspec(nrow,ncol,wspace=0.2)
   oneReduc = re.sub("^X_","",data['reductions'][0])
+  D=ad.AnnData(X=None if geneN==0 else df[genes],obs=None if groupN==0 else df[grps],obsm=obsm)
   for i in range(groupN):
     ix = groupN-i-1
     ax = sc.pl.embedding(D,oneReduc,color=grps[ix],ax=fig.add_subplot(gs[i,0]),
@@ -238,8 +237,8 @@ def reductionPlot(data):
       frameon=False,fontsize=8-df[grps[ix]].nunique()/20)
     ax.set_xlabel('%s 1'%oneReduc)
     ax.set_ylabel('%s 2'%oneReduc)
-  if groupN==1:
-    for i in geneN:
+  if groupN<2:
+    for i in range(geneN):
       x = int(i/ncol)+groupN
       y = i % ncol
       ax = sc.pl.embedding(D,oneReduc,color=genes[i],ax=fig.add_subplot(gs[x,y]),show=False,size=dotsize)
@@ -251,7 +250,6 @@ def reductionPlot(data):
       for j in range(len(splitNames)):
         x = groupN + i
         y = j
-        
         ax = sc.pl.embedding(D,oneReduc,ax=fig.add_subplot(gs[x,y]),show=False,size=dotsize)
         ax = sc.pl.embedding(D[D.obs[grps[1]]==splitNames[j]],oneReduc,color=genes[i],
           color_map="viridis" if not isOptionDefined(data,'color_map') else data['options']["color_map"],
