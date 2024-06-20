@@ -1,4 +1,4 @@
-import sys,json,re,time,warnings,math,colorsys,os,contextlib,textwrap
+import sys,json,re,time,warnings,math,colorsys,os,contextlib,textwrap,traceback
 import pandas as pd
 import seaborn as sns
 import anndata as ad
@@ -11,18 +11,21 @@ from scipy.cluster import hierarchy
 from difflib import SequenceMatcher
 import PyComplexHeatmap as pch
 warnings.simplefilter("ignore", UserWarning)
-# Rscript ../complexHeatmap.R ttt.csv ZYG11B,OLFM4,PCNA,GSTA1 Expression Celltype,disease 6 8 Reds 1 1 png 2 300 F Yes
 def main():
   if len(sys.argv)==1:
     data = json.load(sys.stdin)
   else:
     with open(sys.argv[1],'r') as f:
       data = json.load(f)
-  taskRes = distributeTask(data['plot'])(data)
+  try:
+    taskRes = distributeTask(data['plot'])(data)
+  except Exception as e:
+    msgPlot(traceback.format_exc(),data)
 
 def errorTask(data):
   msgPlot('Error plot task (unknown %s)!'%data['plot'],data)
 def errorCheck(data):
+  a = UDYED#data["ISUE"]
   if data['plot'] in ["violin","dotplot","heatmap"]:
     if len(data["genes"])<1:
       msgPlot('Error: No matched gene!',data)
@@ -38,7 +41,10 @@ def errorCheck(data):
       msgPlot('Error: At least two matched annotations are required!',data)
 def msgPlot(msg,data):
   fig = plt.figure(figsize=(4,3))
-  a= plt.text(0.5,0.5,textwrap.fill(msg,35),fontsize=14,horizontalalignment="center",verticalalignment="center")
+  if msg.startswith("Traceback"):
+    a= plt.text(0.01,0.5,msg,fontsize=4,horizontalalignment="left",verticalalignment="center")
+  else:
+    a= plt.text(0.5,0.5,textwrap.fill(msg,35),fontsize=14,horizontalalignment="center",verticalalignment="center")
   a= plt.axis("off")
   toHTML(fig,data)
   exit()
