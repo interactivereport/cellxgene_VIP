@@ -65,16 +65,12 @@ def is_numeric(var):
 def isOptionDefined(data,k):
   return (data['options'].get(k) is not None and (is_numeric(data['options'][k]) or len(data['options'][k])>0))
 def get_n_distinct_colors(n,lightness=0.5,saturation=0.9,cName=None):
-  if cName is None:
-    cmap=plt.get_cmap("Set3")
-    if n<12:
-      return([cmap(i) for i in range(n)])
-    else:
-      return distinctipy.get_colors(n,[cmap(i)[:3] for i in range(12)])
-    #return [colorsys.hls_to_rgb(i/n, lightness, saturation) for i in range(n)]
+  cmap = plt.get_cmap("Set3" if cName is None else cName)
+  if n<len(cmap.colors):
+    return([cmap(i) for i in range(n)])
   else:
-    cmap=plt.get_cmap(cName)
-    return([cmap(i%len(cmap.colors)) for i in range(n)])
+    return distinctipy.get_colors(n,[cmap(i)[:3] for i in range(len(cmap.colors))])
+  #return [colorsys.hls_to_rgb(i/n, lightness, saturation) for i in range(n)]
 def toHTML(fig,data):
   st = time.time()
   imgD = iostreamFig(fig,data['options']['img_format'])
@@ -107,7 +103,7 @@ def getData(data,dataframe=True):
     D.var_names = list(D.var[data['var_col']])
   data['options']["img_format"] = data['options']["img_format"] if data['options'].get("img_format") in ['png','svg'] else "png"
   data['options']["img_width"]=6 if not isOptionDefined(data,"img_width") else data['options']['img_width']
-  data['options']["img_height"]=4 if not isOptionDefined(data,"img_height") is None else data['options']['img_height']
+  data['options']["img_height"]=4 if not isOptionDefined(data,"img_height") else data['options']['img_height']
   data['options']['cutoff']=0 if not isOptionDefined(data,"cutoff") else data['options']['cutoff']
   data['options']['titlefontsize']=6 if not isOptionDefined(data,"titlefontsize") else data['options']['titlefontsize']
   # checking existing genes/annotations/reduction keys
@@ -159,7 +155,6 @@ def complexViolin(data):
   recordT = {}
   df = getData(data)
   recordT["Get data"]=time.time()-st
-  
   w=data['options']["img_width"]
   h=data['options']["img_height"]
   genes=data['genes']
@@ -329,25 +324,26 @@ def complexHeatmap(data):
   elif data["options"]["cell_order"]=="expression":
     ix = hierarchy.leaves_list(fc.linkage_vector(df[genes],method="ward"))
     df = df.iloc[ix,]
-  if data["options"].get("palette") is not None and len(data["options"]["palette"])>0:
-    cmap=data["options"]["palette"]
-    colors=None
-  else:
-    cmap='auto'
-    colors={_:dict(zip(df[_].unique(),get_n_distinct_colors(df[_].nunique()))) for _ in grps}
-  
+  colors={_:dict(zip(df[_].unique(),get_n_distinct_colors(df[_].nunique(),
+    cName=data["options"]["palette"] if isOptionDefined(data,"palette") else None))) for _ in grps}
   fig = plt.figure(figsize=(w, h))
+  df.to_csv("test.csv")
   with open(os.devnull, "w") as f, contextlib.redirect_stdout(f):
+    left_anno = pch.HeatmapAnnotation(df[grps],colors=colors,axis=0)
+    left_anno.plot_annotations()
+    plt.close()
+    plt.rc('legend',fontsize=8 if not isOptionDefined(data,"heat_legend_fontsize") else data['options']['heat_legend_fontsize'])
     cm = pch.ClusterMapPlotter(
         data=df[genes],z_score=heat_scale,
         label=heat_title,cmap="jet" if not isOptionDefined(data,"color_map") else data['options']["color_map"],
-        left_annotation=pch.HeatmapAnnotation(df[grps],cmap=cmap,colors=colors,axis=0),
+        left_annotation=left_anno,
         show_rownames=False,show_colnames=True,
         row_dendrogram=False,col_dendrogram=False,
         col_cluster=False,row_cluster=False,
         #row_cluster_method="complete",col_cluster_method="complete",
         rasterized=True,legend=True,legend_anchor='ax_heatmap',
         verbose=0)
+  #print(len(fig.axes))
   fig.axes[1].set_title("%d of %d selected cells passed expression threshold %.2f"%(df.shape[0],selN,data["options"]["cutoff"]),
     loc="left",fontdict={'fontsize':data['options']['titlefontsize']})
   return(toHTML(plt,data))
