@@ -1,4 +1,4 @@
-import sys,json,re,time,warnings,math,colorsys,os,contextlib,textwrap,traceback
+import sys,json,re,time,warnings,math,os,contextlib,textwrap,traceback,distinctipy
 import pandas as pd
 import seaborn as sns
 import anndata as ad
@@ -65,7 +65,12 @@ def isOptionDefined(data,k):
   return (data['options'].get(k) is not None and (is_numeric(data['options'][k]) or len(data['options'][k])>0))
 def get_n_distinct_colors(n,lightness=0.5,saturation=0.9,cName=None):
   if cName is None:
-    return [colorsys.hls_to_rgb(i/n, lightness, saturation) for i in range(n)]
+    cmap=plt.get_cmap("Set1")
+    if n<9:
+      return([cmap(i) for i in range(n)])
+    else:
+      return distinctipy.get_colors(n,[cmap(i)[:3] for i in range(12)])
+    #return [colorsys.hls_to_rgb(i/n, lightness, saturation) for i in range(n)]
   else:
     cmap=plt.get_cmap(cName)
     return([cmap(i%len(cmap.colors)) for i in range(n)])
@@ -288,7 +293,7 @@ def stackBar(data):
       bottom=df.iloc[:i,:][x].sum())
   plt.legend(df.index,loc=4,bbox_to_anchor=(1,1),
     ncol=math.ceil(df.shape[0]/10),
-    fontsize=8-df.shape[0]/20)
+    fontsize=max(2,6-df.shape[0]/20))
   fig.axes[0].set_title(strTitle,
     loc="left",fontdict={'fontsize':data['options']['titlefontsize']})
   return(toHTML(plt,data))
