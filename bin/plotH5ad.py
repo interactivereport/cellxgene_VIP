@@ -1,4 +1,5 @@
-import sys,json,re,time,warnings,math,os,contextlib,textwrap,traceback,distinctipy
+import sys,json,re,time,warnings,math,os,contextlib,textwrap,traceback,distinctipy,resource
+from datetime import timedelta
 import pandas as pd
 import seaborn as sns
 import anndata as ad
@@ -11,7 +12,7 @@ from scipy.cluster import hierarchy
 from difflib import SequenceMatcher
 import PyComplexHeatmap as pch
 warnings.simplefilter("ignore", UserWarning)
-verbose_time=False
+verbose=False
 def main():
   if len(sys.argv)==1:
     data = json.load(sys.stdin)
@@ -22,6 +23,8 @@ def main():
     taskRes = distributeTask(data['plot'])(data)
   except Exception as e:
     msgPlot(traceback.format_exc(),data)
+  if verbose:
+    print("Final main memory %.2fG<br>"%(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024**2))
 
 def errorTask(data):
   msgPlot('Error plot task (unknown %s)!'%data['plot'],data)
@@ -79,7 +82,8 @@ def toHTML(fig,data):
     imgID='id="%s" '%data['options']['img_id']
   imgFormat = re.sub("svg","svg+xml",data['options']['img_format'])
   if data['options']['img_html']:
-    print("toHtml: %.2f"%(time.time()-st))
+    if verbose:
+      print("toHtml: %s<br>"%str(timedelta(seconds=time.time()-st)))
     print('<html><body><img %s src="data:image/%s;base64,%s" width="100%%" height="auto"/></body></html>'%(imgID,imgFormat,imgD))
   else:
     print('data:image/%s;base64,%s'%(imgFormat,imgD))
@@ -96,18 +100,21 @@ def getData(data,dataframe=True):
   st = time.time()
   errorCheck(data)
   D = ad.read_h5ad(data['h5ad'],backed='r')
-  if verbose_time:
-    print("Read: ",time.time()-st)
+  if verbose:
+    print("Read: %s<br>"%str(timedelta(seconds=time.time()-st)))
     st = time.time()
-  if len(data['var_col'])>0 and data['var_col'] in D.var.columns:
-    D.var_names = list(D.var[data['var_col']])
   data['options']["img_format"] = data['options']["img_format"] if data['options'].get("img_format") in ['png','svg'] else "png"
   data['options']["img_width"]=6 if not isOptionDefined(data,"img_width") else data['options']['img_width']
   data['options']["img_height"]=4 if not isOptionDefined(data,"img_height") else data['options']['img_height']
   data['options']['cutoff']=0 if not isOptionDefined(data,"cutoff") else data['options']['cutoff']
   data['options']['titlefontsize']=6 if not isOptionDefined(data,"titlefontsize") else data['options']['titlefontsize']
   # checking existing genes/annotations/reduction keys
-  data["genes"] = list(D.var_names[D.var_names.str.lower().isin([s.lower() for s in data['genes']])])
+  if len(data['var_col'])>0 and data['var_col'] in D.var.columns:
+    genes = {(D.var_names[D.var["feature_name"]==k][0]):k for k in data['genes']}
+  else:
+    g = list(D.var_names[D.var_names.str.lower().isin([s.lower() for s in data['genes']])])
+    genes = dict(zip(g,g))
+  data["genes"] = list(genes.values())
   data["groups"] = {k:data["groups"][k] for k in data["groups"] if k in D.obs.columns}
   # only needs when plotting embedding
   reduc=[]
@@ -125,8 +132,8 @@ def getData(data,dataframe=True):
         reduc += [(selK,0),(selK,1)]
     data['reductions'] = reducName
   errorCheck(data)
-  if verbose_time:
-    print("Init: ",time.time()-st)
+  if verbose:
+    print("Init: %s<br>"%str(timedelta(seconds=time.time()-st)))
     st = time.time()
   #filter cells by annotation selections
   selC = [True] * D.shape[0]
@@ -137,24 +144,25 @@ def getData(data,dataframe=True):
         selC = selC & ~D.obs[one].isin(delGrp)
       else:
         selC = selC & D.obs[one].isin(data["groups"][one])
-  if verbose_time:
-    print("Filter: ",time.time()-st)
+  if verbose:
+    print("Filter: %s<br>"%str(timedelta(seconds=time.time()-st)))
     st = time.time()
   if dataframe:
-    df = sc.get.obs_df(D[selC],data['genes']+list(data["groups"].keys()))
+    df = sc.get.obs_df(D,list(genes.keys())+list(data["groups"].keys()))[selC].rename(columns=genes)
+    for k in data["groups"]:
+      df[k] = df[k].astype(str).astype('category')
     if len(reduc)>0:
       df = df.merge(sc.get.obs_df(D,obsm_keys=reduc),how="left",left_index=True,right_index=True)
-    if verbose_time:
-      print("Get data: ",time.time()-st)
-      st = time.time()
+    if verbose:
+      print("Get data: %s<br>"%str(timedelta(seconds=time.time()-st)))
     return df
-  return D[selC]
+  if verbose:
+    print("Get data: %s<br>"%str(timedelta(seconds=time.time()-st)))
+  return D,selC
 
 def complexViolin(data):
-  st=time.time()
-  recordT = {}
   df = getData(data)
-  recordT["Get data"]=time.time()-st
+  st=time.time()
   w=data['options']["img_width"]
   h=data['options']["img_height"]
   genes=data['genes']
@@ -192,44 +200,67 @@ def complexViolin(data):
           ncol=1 if len(grps)<2 else df[grps[1]].nunique())
       else:
         axes[i].get_legend().remove()
-  recordT["Plot"]=time.time()-st
-  if data['options']['img_html']:
-    print(pd.DataFrame(recordT,index=["Time"]).transpose())
-  #plt.savefig('f.pdf',bbox_inches="tight")
+  if verbose:
+    print("complexViolin: %s<br>"%str(timedelta(seconds=time.time()-st)))
   return(toHTML(fig,data))
 def twofactorDotplot(data):
+  #D,selC = getData(data,False)
+  #cellN = pd.DataFrame(selC).sum()[0]
   df = getData(data)
+  st = time.time()
+  cellN = df.shape[0]
+  if verbose:
+    print("Dotplot Backed peak memory %.2fG %s<br>"%(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024**2,
+      str(timedelta(seconds=time.time()-st))))
+    st = time.time()
   w=data['options']["img_width"]
   h=data['options']["img_height"]
   grps=list(data['groups'].keys())
   genes=data['genes']
-
   D=ad.AnnData(X=df[genes],obs=df[grps])
+
   strGrp=grps[0]
   if len(grps)>1:
     strGrp = "_".join(grps[:2])
-    D.obs[strGrp] = D.obs.apply(lambda x: "_".join(x[grps[:2]]),axis=1)
-  strTitle = "%d selected cells"%df.shape[0]
+    D.obs[strGrp] = (D.obs[grps[0]].astype(str)+"_"+ D.obs[grps[1]].astype(str)).astype('category') #D.obs.apply(lambda x: "_".join(x[grps[:2]]),axis=1)
+  if verbose:
+    print("Dotplot merge groups peak memory %.2fG %s<br>"%(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024**2,
+      str(timedelta(seconds=time.time()-st))))
+    st = time.time()
+  strTitle = "%d selected cells"%cellN
   if data['options']['cutoff']>0:
-    strTitle = "%d selected cells with expression cutoff %.2f"%(df.shape[0],data['options']['cutoff'])
+    strTitle = "%d selected cells with expression cutoff %.2f"%(cellN,data['options']['cutoff'])
   dp=sc.pl.dotplot(D,genes,groupby=strGrp,figsize=(w,h),
     expression_cutoff=data['options']['cutoff'],mean_only_expressed=True,
     return_fig=True)
+  if verbose:
+    print("Dotplot Plot1 peak memory %.2fG %s<br>"%(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024**2,
+      str(timedelta(seconds=time.time()-st))))
+    st = time.time()
   dp = (dp.add_totals(size=1.2).
     legend(show_size_legend=True). #,width=float(data['legendW'])
     style(cmap="Reds" if not isOptionDefined(data,'color_map') else data['options']['color_map'],
       dot_edge_color='black', dot_edge_lw=0.5, size_exponent=1.5))
+  if verbose:
+    print("Dotplot Plot2 peak memory %.2fG %s<br>"%(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024**2,
+      str(timedelta(seconds=time.time()-st))))
+    st = time.time()
   fig = dp.show(True)['mainplot_ax'].figure
   if len(grps)>1:
+    #n = df[selC][grps[1]].nunique()
     n = df[grps[1]].nunique()
-    for i in range(df[grps[0]].nunique()):
+    for i in range(df[grps[0]].nunique()):#[selC]
       if i==0:
         fig.axes[0].set_title(strTitle,loc="left",fontdict={'fontsize':data['options']['titlefontsize']})
       else:
         fig.axes[0].axhline(y=i*n,color="#0002",linestyle="--")
+  if verbose:
+    print("Dotplot Add line peak memory %.2fG %s <br>"%(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024**2,
+      str(timedelta(seconds=time.time()-st))))
   return(toHTML(fig,data))
 def reductionPlot(data):
   df = getData(data)
+  st=time.time()
   w=data['options']["img_width"]
   h=data['options']["img_height"]
   grps=list(data['groups'].keys())
@@ -279,9 +310,12 @@ def reductionPlot(data):
         ax.set_ylabel('%s 2'%oneReduc)
   fig.suptitle("%d selected cells"%df.shape[0],x=0.9,y=0.9,ha="right",va="top",
     fontsize=data['options']['titlefontsize'])
+  if verbose:
+    print("reductionPlot: %s<br>"%str(timedelta(seconds=time.time()-st)))
   return(toHTML(fig,data))
 def stackBar(data):
   df = getData(data)
+  st=time.time()
   strTitle = "%d selected cells"%df.shape[0]
   w=data['options']["img_width"]
   h=data['options']["img_height"]
@@ -305,9 +339,12 @@ def stackBar(data):
     fontsize=max(2,6-df.shape[0]/20))
   fig.axes[0].set_title(strTitle,
     loc="left",fontdict={'fontsize':data['options']['titlefontsize']})
+  if verbose:
+    print("stackBar: %s<br>"%str(timedelta(seconds=time.time()-st)))
   return(toHTML(plt,data))
 def complexHeatmap(data):
   df = getData(data)
+  st=time.time()
   w=data['options']["img_width"]
   h=data['options']["img_height"]
   grps=list(data['groups'].keys())
@@ -346,6 +383,8 @@ def complexHeatmap(data):
   #print(len(fig.axes))
   fig.axes[1].set_title("%d of %d selected cells passed expression threshold %.2f"%(df.shape[0],selN,data["options"]["cutoff"]),
     loc="left",fontdict={'fontsize':data['options']['titlefontsize']})
+  if verbose:
+    print("complexHeatmap: %s<br>"%str(timedelta(seconds=time.time()-st)))
   return(toHTML(plt,data))
 main()
 # cat ../testVIP/violin.json | python -u plotH5ad.py
