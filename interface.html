@@ -1472,7 +1472,7 @@
 
         </div>
 
-        <button class="DEGbt" onclick="DEGfind()"><b>Find</b></button>
+        <button class="DEGbt" onclick="DEGfind(); helpText('deg_table')"><b>Find</b></button>
         <button onclick="hideShow($('#DEGinput'),$(this));">Hide Input</button>
         <button id="DEGinteractiveBtn" onclick="hideShow($('#DEGfinal'),$(this),'Interactive');">Hide Interactive</button>
         <pre id="DEGnote" style="color:red;">Note: Unscaled data is used. Scaling option in Global Setting does not apply to DEG.</pre>
@@ -1508,6 +1508,8 @@
             <p id="DEGinteractive" style="height: 500px; width:500px; padding: 0.5em; border: 1px solid #B6B6B6"></p>
           </div>
         </div>
+        <p></p>
+        <p id="DEG_Table_Help" style="color:green"></p>
         <p id="DEG_TAB_LFC_Note" style="visibility: hidden;">Select a Log Fold Change Threshold:
         <input type="number" id="DEG_TAB_LFC" value="0.5" step="0.1" style="visibility: hidden;"></p>
         <table id="DEGtable" class="display"></table>
@@ -4943,7 +4945,7 @@ function DEGfind(){
 
             csv = table_to_csv(allData);
 
-            var LFC = document.getElementById("DEG_LFC").value;
+            var LFC = document.getElementById("DEG_TAB_LFC").value;
             
             searchDB(csv,'up',LFC);
 
@@ -4959,7 +4961,7 @@ function DEGfind(){
 
             csv = table_to_csv(allData);
 
-            var LFC = document.getElementById("DEG_LFC").value;
+            var LFC = document.getElementById("DEG_TAB_LFC").value;
             
             searchDB(csv,'down',LFC);
 
@@ -7874,6 +7876,11 @@ function helpText(x){
   if (x=='table'){
     $("#Table_Help").text('CSV: Download Table as CSV. SearchDB (Up): Explore the relevant database with Table Genes whose LFC value exceeds threshold. SearchDB (Down): Explore the relevant database with Table Genes whose LFC value falls below threshold.');
   }
+
+  if (x=='deg_table'){
+    $("#DEG_Table_Help").text('CSV: Download Table as CSV. SearchDB (Up): Explore the relevant database with Table Genes whose LFC value exceeds threshold. SearchDB (Down): Explore the relevant database with Table Genes whose LFC value falls below threshold.');
+  }
+
 }
 
 
