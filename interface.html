@@ -703,13 +703,13 @@
           <select id="gene_MetaCat"></select></p>
       </div>
       <button class="CPVbt" onclick="CellPopPlot()"><b>Plot</b></button>
-      <button class="CPVTablebt" onclick="CellPopTable(); helpText('table')"><b>Table</b></button>
+      <button class="CPVTablebt" onclick="CellPopTable(); helpText('#Table_Help')"><b>Table</b></button>
       <p id="CPVnote" style="color:red;"></p>
       <div id="CPVspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="CPVresize" style="height: 'auto'; width: 'auto'; padding: 0.5em;">
         <p id="CPVfig"></p>
       </div>
-      <p id="Table_Help" style="color:green"></p>
+      <ul id="Table_Help" style="color:green"></ul>
       <p></p>
       <p id="LFC_Note" style="visibility: hidden;">Select a Log Fold Change Threshold:
       <input type="number" id="DEG_LFC" value="0.5" step="0.1" style="visibility: hidden;"></p>
@@ -739,6 +739,7 @@
 
     <div id="geneSearch" class="tabcontent">
       <h3>Advanced Search Options <a href="https://github.com/iii-cell-atlas/cellxgene_VIP/wiki/1.-Advanced-Gene-Search" target="_blank"><i class="fa fa-question-circle" style="color:purple;font-size:20px"></i></a></h3>
+      <p style="color: green;">Tabs compatible with user defined gene-sets include: Violin (multi-genes), Dot Plot, and Track Plot.</p>
       <div id="gsInput">
         <h4>Search by Gene Name or Function:</h4>
         <p>
@@ -783,6 +784,7 @@
     <div id="HostParasiteG" class="HPAcontent">
       <div id="hpInput">
         <h3>Run Host-Parasite Interaction analyses within paraCell <a href="https://github.com/iii-cell-atlas/cellxgene_VIP/wiki/5.-Host-Parasite-Interactions" target="_blank"><i class="fa fa-question-circle" style="color:purple;font-size:20px"></i></a></h3>
+        <p style="color: green;">*Under Development!</p>
         <p id="hp_exported_cells"></p>
         <p>Host-Parasite Percent Concent Violin Plots:
         <button class="hpViol" onclick="hpViolins()"><b>Host-Parasite Violins</b></button>
@@ -1472,7 +1474,7 @@
 
         </div>
 
-        <button class="DEGbt" onclick="DEGfind()"><b>Find</b></button>
+        <button class="DEGbt" onclick="DEGfind(); helpText('#DEG_Table_Help')"><b>Find</b></button>
         <button onclick="hideShow($('#DEGinput'),$(this));">Hide Input</button>
         <button id="DEGinteractiveBtn" onclick="hideShow($('#DEGfinal'),$(this),'Interactive');">Hide Interactive</button>
         <pre id="DEGnote" style="color:red;">Note: Unscaled data is used. Scaling option in Global Setting does not apply to DEG.</pre>
@@ -1508,6 +1510,8 @@
             <p id="DEGinteractive" style="height: 500px; width:500px; padding: 0.5em; border: 1px solid #B6B6B6"></p>
           </div>
         </div>
+        <p></p>
+        <ul id="DEG_Table_Help" style="color:green"></ul>
         <p id="DEG_TAB_LFC_Note" style="visibility: hidden;">Select a Log Fold Change Threshold:
         <input type="number" id="DEG_TAB_LFC" value="0.5" step="0.1" style="visibility: hidden;"></p>
         <table id="DEGtable" class="display"></table>
@@ -4943,7 +4947,7 @@ function DEGfind(){
 
             csv = table_to_csv(allData);
 
-            var LFC = document.getElementById("DEG_LFC").value;
+            var LFC = document.getElementById("DEG_TAB_LFC").value;
             
             searchDB(csv,'up',LFC);
 
@@ -4959,7 +4963,7 @@ function DEGfind(){
 
             csv = table_to_csv(allData);
 
-            var LFC = document.getElementById("DEG_LFC").value;
+            var LFC = document.getElementById("DEG_TAB_LFC").value;
             
             searchDB(csv,'down',LFC);
 
@@ -7871,9 +7875,10 @@ function gsDB_dropdown(){
 }
 
 function helpText(x){
-  if (x=='table'){
-    $("#Table_Help").text('CSV: Download Table as CSV. SearchDB (Up): Explore the relevant database with Table Genes whose LFC value exceeds threshold. SearchDB (Down): Explore the relevant database with Table Genes whose LFC value falls below threshold.');
-  }
+  $(x).empty()
+  $(x).append('<li>CSV: Download Table as CSV.</li>')
+  $(x).append('<li>SearchDB (Up): Explore the relevant database with Table Genes whose LFC value exceeds threshold.</li>')
+  $(x).append('<li>SearchDB (Down): Explore the relevant database with Table Genes whose LFC value falls below threshold.</li>')
 }
 
 
