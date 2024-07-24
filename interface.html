@@ -703,13 +703,13 @@
           <select id="gene_MetaCat"></select></p>
       </div>
       <button class="CPVbt" onclick="CellPopPlot()"><b>Plot</b></button>
-      <button class="CPVTablebt" onclick="CellPopTable(); helpText('table')"><b>Table</b></button>
+      <button class="CPVTablebt" onclick="CellPopTable(); helpText('#Table_Help')"><b>Table</b></button>
       <p id="CPVnote" style="color:red;"></p>
       <div id="CPVspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <div id="CPVresize" style="height: 'auto'; width: 'auto'; padding: 0.5em;">
         <p id="CPVfig"></p>
       </div>
-      <p id="Table_Help" style="color:green"></p>
+      <ul id="Table_Help" style="color:green"></ul>
       <p></p>
       <p id="LFC_Note" style="visibility: hidden;">Select a Log Fold Change Threshold:
       <input type="number" id="DEG_LFC" value="0.5" step="0.1" style="visibility: hidden;"></p>
@@ -1474,7 +1474,7 @@
 
         </div>
 
-        <button class="DEGbt" onclick="DEGfind(); helpText('deg_table')"><b>Find</b></button>
+        <button class="DEGbt" onclick="DEGfind(); helpText('#DEG_Table_Help')"><b>Find</b></button>
         <button onclick="hideShow($('#DEGinput'),$(this));">Hide Input</button>
         <button id="DEGinteractiveBtn" onclick="hideShow($('#DEGfinal'),$(this),'Interactive');">Hide Interactive</button>
         <pre id="DEGnote" style="color:red;">Note: Unscaled data is used. Scaling option in Global Setting does not apply to DEG.</pre>
@@ -1511,7 +1511,7 @@
           </div>
         </div>
         <p></p>
-        <p id="DEG_Table_Help" style="color:green"></p>
+        <ul id="DEG_Table_Help" style="color:green"></ul>
         <p id="DEG_TAB_LFC_Note" style="visibility: hidden;">Select a Log Fold Change Threshold:
         <input type="number" id="DEG_TAB_LFC" value="0.5" step="0.1" style="visibility: hidden;"></p>
         <table id="DEGtable" class="display"></table>
@@ -7875,14 +7875,10 @@ function gsDB_dropdown(){
 }
 
 function helpText(x){
-  if (x=='table'){
-    $("#Table_Help").text('CSV: Download Table as CSV. SearchDB (Up): Explore the relevant database with Table Genes whose LFC value exceeds threshold. SearchDB (Down): Explore the relevant database with Table Genes whose LFC value falls below threshold.');
-  }
-
-  if (x=='deg_table'){
-    $("#DEG_Table_Help").text('CSV: Download Table as CSV. SearchDB (Up): Explore the relevant database with Table Genes whose LFC value exceeds threshold. SearchDB (Down): Explore the relevant database with Table Genes whose LFC value falls below threshold.');
-  }
-
+  $(x).empty()
+  $(x).append('<li>CSV: Download Table as CSV.</li>')
+  $(x).append('<li>SearchDB (Up): Explore the relevant database with Table Genes whose LFC value exceeds threshold.</li>')
+  $(x).append('<li>SearchDB (Down): Explore the relevant database with Table Genes whose LFC value falls below threshold.</li>')
 }
 
 
