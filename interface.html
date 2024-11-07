@@ -1981,10 +1981,15 @@
         <select id="pagaEmbed"></select></p>
         <p>Select an Categorical Annotation:
         <select id="paga_cluster_key"></select></p>
-        <button class="pagaAnalysis" onclick="pagaPlot()"><b>PAGA Plot</b></button>
+        <button class="pagaAnalysis" onclick="PAGAplot()"><b>PAGA Plot</b></button>
+        <button onclick="ZoomIn('PAGAresize')">Zoom In</button>
+        <button onclick="ZoomOut('PAGAresize')">Zoom Out</button>
+        <button class="PAGApngBT" onclick="saveImg('PAGAimg')" disabled>Save</button>
         <div id="pagaSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
         <p id="pagaNote" style="color:red;"></p>
-        <p id="pagaFig"></p>
+        <div id="PAGAresize" style="height: 'auto'">
+          <p id="PAGAfig"></p>
+        </div>
       </div>
     </div><!--PAGA-->
 
@@ -6146,7 +6151,7 @@ function CellPopPlot(){
   var CPV_Con2 = document.getElementById("CPV_C2").value;
 
   var geneMetaData = document.getElementById("gene_MetaCat").value;
-  
+
   var imgFmt = window.figOpt['img'];
 
   if(CPV_Con1 == CPV_Con2) {
@@ -6886,7 +6891,7 @@ error: function() {
 })
 }
  
-function pagaPlot(){
+function PAGAplot(){
 
   document.getElementById("pagaSpin").style.visibility="visible";
 
@@ -6897,7 +6902,7 @@ function pagaPlot(){
   grp.push(paga_grp)
 
   paga_embedding = document.getElementById("pagaEmbed").value;
-
+  $(".PAGApngBT").prop('disabled', true);
   var D = 
   {
   'method':'PAGA',
@@ -6917,7 +6922,8 @@ contentType: 'application/json;charset=UTF-8',//
 success: function(res){
 
   document.getElementById("pagaSpin").style.visibility="hidden";
-  showImg('pagaFig',res)
+  showImg('PAGAfig',res)
+  $(".PAGApngBT").prop('disabled', false);
 
 },
 error: function() {
