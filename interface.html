@@ -788,8 +788,9 @@
         <p id="hp_exported_cells"></p>
         <p>Host-Parasite Percent Concent Violin Plots:
         <button class="hpViol" onclick="hpViolins()"><b>Host-Parasite Violins</b></button>
+        <button class="hpViolpngBT" onclick="saveImg('hpViolinsimg')" disabled>Save</button>
         <div id="hpSpin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
-        <p id="hpViolins"></p>
+        <p id="hpViolinsfig"></p>
         </p>
         <p>Host-Parasite UMAPs:
         <button class="hpCC" onclick="hp_umap('hostFig')"><b>Cluster by Host</b></button>
@@ -6941,7 +6942,7 @@ function hpViolins(){
   $(".hpCC").prop("disabled",true);
   $(".hpViol").prop("disabled",true);
   $(".hpCM").prop("disabled",true);
-
+  $(".hpViolpngBT").prop('disabled', true);
   var D = {'method':'hp_viol',
           'h_prefix':hostPrefix,
           'p_prefix':parasitePrefix};
@@ -6964,6 +6965,7 @@ success: function(res){
   $("#hpGraphsNote").text(resD[0]);
 
   showImg(resD[1],resD[2]);
+  $(".hpViolpngBT").prop('disabled', false);
 
 },
 error: function() {

@@ -2322,7 +2322,7 @@ def hpClusterViolins(data):
   fig = sc.pl.violin(adata, ['percent_parasite', 'percent_host'],
              jitter=0.4, multi_panel=True, groupby="seurat_clusters")
   
-  html = "hpViolins"
+  html = "hpViolinsfig"
 
   note = ""
 
