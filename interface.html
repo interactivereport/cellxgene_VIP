@@ -6147,6 +6147,7 @@ function CellPopPlot(){
 
   var geneMetaData = document.getElementById("gene_MetaCat").value;
   
+  var imgFmt = window.figOpt['img'];
 
   if(CPV_Con1 == CPV_Con2) {
     $("#CPVnote").text('Please input two different conditions');
@@ -6168,7 +6169,9 @@ function CellPopPlot(){
     'grp':grp,
     'gMD':geneMetaData,
 		'Cond1':CPV_Con1,
-		'Cond2':CPV_Con2};
+		'Cond2':CPV_Con2,
+    'imgFmt': imgFmt
+    };
     $(".CPVbt").prop("disabled",true);
     $(".CPVTablebt").prop("disabled",true);
     document.getElementById("CPVspin").style.visibility="visible";

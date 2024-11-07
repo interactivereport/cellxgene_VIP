@@ -1755,6 +1755,9 @@ def cellpopview(data):
 
     adata = data['data_adapter'].data.copy()
 
+    # Get image format
+    img_fmt = data["imgFmt"]
+
     # Subset Data by cluster.
     cluster_key = data['ClusterKey']
     
@@ -1811,7 +1814,15 @@ def cellpopview(data):
 
     cellpop_plot = px.scatter(plot_dataframe, x=condition_1, y=condition_2, hover_data=hd, hover_name="Gene_Name", title=plot_title)
 
-    div = plotIO.to_html(cellpop_plot)
+    div = plotIO.to_html(cellpop_plot,
+                         config={
+                           "toImageButtonOptions": {
+                             "format": img_fmt,
+                             "filename": "cellpopview",
+                            #  "height": None,
+                            #  "width": None
+                           }
+                         })
     
     return div
 
