@@ -853,7 +853,7 @@ def DEG(data):
   strF = ('%s/DEG%f.csv' % (data["CLItmp"],time.time()))
   deg.to_csv(strF,index=False)
   #ppr.pprint([strExePath+'/volcano.R',strF,'"%s"'%';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0]])
-  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(data['genes']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],str(data['sigFDR']),str(data['sigFC']),str(data['labelSize']),str(data['dotSize']),str(data['ymin']),str(data['ymax']),data['figOpt']['vectorFriendly'],data['Rlib']],capture_output=True)#
+  res = subprocess.run([strExePath+'/volcano.R',strF,';'.join(genes),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),str(data['logFC']),data['comGrp'][1],data['comGrp'][0],str(data['sigFDR']),str(data['sigFC']),str(data['labelSize']),str(data['dotSize']),str(data['ymin']),str(data['ymax']),data['figOpt']['vectorFriendly'],data['Rlib']],capture_output=True)#
   if 'Error' in res.stderr.decode('utf-8'):
     raise SyntaxError("in volcano.R: "+res.stderr.decode('utf-8'))
   img = res.stdout.decode('utf-8')

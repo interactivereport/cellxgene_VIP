@@ -53,7 +53,12 @@ if (rasterize) {
 
 g <- g + theme_bw(base_size = 12) + xlab("log2(FC)") +
   scale_color_manual(values = c("Up"="#B41A29", "Not Sig"="grey", "Down"="#5B98E6")) +
-  geom_text_repel(data = subset(mtable, gene_name %in% genes), aes(label = gene_name), size = labelSize, box.padding = unit(0.35, "lines"), point.padding = unit(0.3, "lines"))
+  geom_text_repel(data = subset(mtable, gene_name %in% genes), 
+                  aes(label = gene_name), 
+                  max.overlaps=100,
+                  size = labelSize,
+                  box.padding = unit(0.35, "lines"), 
+                  point.padding = unit(0.3, "lines"))
 g <- g + theme(legend.position="none") + geom_hline(yintercept=-log10(FDR), linetype="dashed", color = "darkgreen")
 xrange = ggplot_build(g)$layout$panel_scales_x[[1]]$range$range
 yrange = ggplot_build(g)$layout$panel_scales_y[[1]]$range$range
