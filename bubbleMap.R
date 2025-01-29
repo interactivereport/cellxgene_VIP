@@ -17,10 +17,12 @@ fontsize <- as.numeric(args[3])
 dpi <- as.numeric(args[4])
 figScale <- as.numeric(args[5])#0.5
 
+#file.copy(strCSV,"/tmp/bubbleMap.csv")
 X <- read.csv(strCSV,check.names=F)
-
-container = data.frame(tag = sort(factor(rep(levels(X$tag),nlevels(X$gene)),levels=unique(X$tag))),
-                       gene = rep(levels(X$gene),nlevels(X$tag)))
+tags <- unique(X$tag)
+genes <- unique(X$gene)
+container = data.frame(tag = sort(factor(rep(tags,length(genes)),levels=tags)),
+                       gene = rep(genes,length(tags)))
 #Make graph format
 D <- container %>% left_join(X) %>%
   mutate(abslog2FC = abs(log2fc)) %>%
