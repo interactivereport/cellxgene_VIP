@@ -73,9 +73,9 @@ g <- ggplot(D, aes(y=gene, x=tag, shape=log2FC.sign, fill=FDR.bin, size=abslog2F
 strImg <- gsub("csv$",strFun,strCSV)
 f <- get(strFun)
 if(sum(strFun%in%c('png','jpeg','tiff'))>0){
-  f(strImg, width=5+round(nlevels(D$tag)*figScale,1), height=max(6,2+round(nlevels(D$gene)*figScale,1)),units='in',res=dpi)
+  f(strImg, width=5+round(length(tags)*figScale,1), height=max(6,2+round(length(genes)*figScale,1)),units='in',res=dpi)
 }else{
-  f(strImg, width=5+round(nlevels(D$tag)*figScale,1), height=max(6,2+round(nlevels(D$gene)*figScale,1)))
+  f(strImg, width=5+round(length(tags)*figScale,1), height=max(6,2+round(length(genes)*figScale,1)))
 }
 print(g)
 a <- dev.off()
