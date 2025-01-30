@@ -188,18 +188,18 @@ Step 2. Select a gene from the gene list which could be added as shown in sectio
 Step 3. Select the annotation to group cells for plotting.
 Step 4. Execute plotting, get plotting data (i.e., gene expression), manipulate image (e.g., zoom in/out) or save the image.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F7_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F7_label.png" alt="Figure F7_label" /></a>
-Supplementary Fig. 7. Violin plot of gene expression values of a gene grouped by cell type.</p>
+Supplementary Fig. 7a. Violin plot of gene expression values of a gene grouped by cell type.</p>
 <p>Note: Figure resolution and format can be set in “Global Setting” tab as shown in tutorial section 5.</p>
 <p>Beyond plotting expression values of a gene, stacked violin plots in the Multi-genes and Multi-genes/Multi-factors tabs allow plotting of multiple genes together grouped by one or two categorical factors.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F8_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F8_label.png" alt="Figure F8_label" /></a>
-Supplementary Fig. 8. Stacked Violin plot of multiple genes and/or gene set.</p>
+Supplementary Fig. 7b. Stacked Violin plot of multiple genes and/or gene set.</p>
 <p>Note: If collapsing of gene sets is set to ‘Yes’, average gene expression of genes in a set is used for plotting.</p>
 </div>
 <div id="vip-heatmap" class="section level2 hasAnchor" number="1.8">
 <h2><span class="header-section-number">1.8</span> VIP – Heatmap<a href="#vip-heatmap" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>To show or compare the expression level (i.e., expression value or expression Z-score) of multiple genes among the selected group of cells.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F9_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F9_label.png" alt="Figure F9_label" /></a>
-Supplementary Fig. 9. Heatmap of gene expression in cells grouped by annotations.</p>
+Supplementary Fig. 8. Heatmap of gene expression in cells grouped by annotations.</p>
 </div>
 <div id="vip-embedding" class="section level2 hasAnchor" number="1.9">
 <h2><span class="header-section-number">1.9</span> VIP – Embedding<a href="#vip-embedding" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -207,39 +207,39 @@ Supplementary Fig. 9. Heatmap of gene expression in cells grouped by annotations
 <p>The user can color cells in the embedding plots by multiple annotations (e.g., cell_type, diagnosis).</p>
 <p>Besides coloring cells by annotations, user can color cells based on gene expression level of selected genes in the embedding plots.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F10_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F10_label.png" alt="Figure F10_label" /></a>
-Supplementary Fig. 10. Embedding plotting of expression level of genes or gene set in the cells split by categories of an annotation.</p>
+Supplementary Fig. 9. Embedding plotting of expression level of genes or gene set in the cells split by categories of an annotation.</p>
 </div>
 <div id="vip-dot-plot" class="section level2 hasAnchor" number="1.10">
 <h2><span class="header-section-number">1.10</span> VIP – Dot Plot<a href="#vip-dot-plot" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>To show the fraction of cells (annotated by dot size) expressing a gene in each group and the averaged expression level of the gene (annotated by color intensity) in the group.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F11_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F11_label.png" alt="Figure F11_label" /></a>
-Supplementary Fig. 11. Dot plotting of the fraction of cells expressing genes above a cutoff in each categorie of the selected annotation.</p>
+Supplementary Fig. 10. Dot plotting of the fraction of cells expressing genes above a cutoff in each categorie of the selected annotation.</p>
 <p>Note: The number of cells represented by side bar chart are always numbers of cells distributed in each category of certain annotation without filtering. It will give an accurate estimate of number of cells in each bubble in the plot. The use of the plot is only meaningful when the counts matrix contains zeros representing no gene counts. Its visualization does not work for scaled or corrected matrices in which zero counts had been replaced by other values, see <a href="https://scanpy-tutorials.readthedocs.io/en/multiomics/visualizing-marker-genes.html#Dot-plots" class="uri">https://scanpy-tutorials.readthedocs.io/en/multiomics/visualizing-marker-genes.html#Dot-plots</a>.</p>
 </div>
 <div id="vip-track-plot" class="section level2 hasAnchor" number="1.11">
 <h2><span class="header-section-number">1.11</span> VIP – Track Plot<a href="#vip-track-plot" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>To show the expression of gene(s) of individual cells as vertical lines grouped by the selected annotation on x-axis. Instead of a color scale, the gene expression is represented by height.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F12_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F12_label.png" alt="Figure F12_label" /></a>
-Supplementary Fig. 12. Track plotting of expression of genes or gene set in each category of the selected annotation. Gene expression levels are represented by the heights of vertical lines.</p>
+Supplementary Fig. 11. Track plotting of expression of genes or gene set in each category of the selected annotation. Gene expression levels are represented by the heights of vertical lines.</p>
 </div>
 <div id="vip-density-plot" class="section level2 hasAnchor" number="1.12">
 <h2><span class="header-section-number">1.12</span> VIP – Density Plot<a href="#vip-density-plot" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>To show the density of gene(s) expression in the cells annotated by category in the selected group(s) of cells. A density plot is a representation of the distribution of a numeric variable. It uses a kernel density estimate to show the probability density function of the variable (see more). It is a smoothed version of the histogram and is used in the same concept.</p>
 <p>The bandwidth defines how close to a value point the distance between two points must be to influence the estimation of the density at the point. A small bandwidth only considers the closest values, so the estimation is close to the data. A large bandwidth considers more points and gives a smoother estimation.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F13_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F13_label.png" alt="Figure F13_label" /></a></p>
-<p>Supplementary Fig. 13. Density plotting of the expression of genes in each group split by one annotation while colored by another.</p>
+<p>Supplementary Fig. 12. Density plotting of the expression of genes in each group split by one annotation while colored by another.</p>
 </div>
 <div id="vip-density-scatter-plot" class="section level2 hasAnchor" number="1.13">
 <h2><span class="header-section-number">1.13</span> VIP – Density Scatter Plot<a href="#vip-density-scatter-plot" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Besides plotting of expression density of single gene, density scatter plot allows to explore the joint expression density of two genes in the cells expressing both genes above a cutoff.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F27_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F27_label.png" alt="Figure F27_label" /></a></p>
-<p>Supplementary Fig. 14. Density scatter plotting of expression of two genes in the selected cells.</p>
+<p>Supplementary Fig. 13. Density scatter plotting of expression of two genes in the selected cells.</p>
 </div>
 <div id="vip-dual-genes" class="section level2 hasAnchor" number="1.14">
 <h2><span class="header-section-number">1.14</span> VIP – Dual Genes<a href="#vip-dual-genes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>To view the relationship of expression levels of two genes in selected cells. It is based on the embedding plot of cells while coloring cells according to the expression levels of gene(s) in each cell.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F15_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F15_label.png" alt="Figure F15_label" /></a></p>
-<p>Supplementary Fig. 15. Embedding plotting of the expression of two genes in the selected cell group(s).</p>
+<p>Supplementary Fig. 14. Embedding plotting of the expression of two genes in the selected cell group(s).</p>
 </div>
 <div id="vip-sankey-diagram" class="section level2 hasAnchor" number="1.15">
 <h2><span class="header-section-number">1.15</span> VIP – Sankey Diagram<a href="#vip-sankey-diagram" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -247,13 +247,13 @@ Supplementary Fig. 12. Track plotting of expression of genes or gene set in each
 <p>The diagram is also shown in an interactive way so that user can change the layout by selecting several items (e.g., thin or thick on color bar, small or large space) from the panel. Also, the user can drag these small boxes on the plot to get preferred layout and save it as high resolution SVG figure.</p>
 <p>In addition, when you hover over mouse on a box, you can get detailed information about the source and target of flow</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F16_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F16_label.png" alt="Figure F16_label" /></a>
-Supplementary Fig. 16. Sankey diagram provides quick and easy way to explore the inter-dependent relationship of variables.</p>
+Supplementary Fig. 15. Sankey diagram provides quick and easy way to explore the inter-dependent relationship of variables.</p>
 </div>
 <div id="vip-stacked-barplot" class="section level2 hasAnchor" number="1.16">
 <h2><span class="header-section-number">1.16</span> VIP – Stacked Barplot<a href="#vip-stacked-barplot" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>To show the distribution of cells among categories of an annotation and/or ranges of expression of a gene. Only two factors from annotations or genes can be chosen. The plot allows user to explore the distribution of cells in different views interactively.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F17_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F17_label.png" alt="Figure F17_label" /></a>
-Supplementary Fig. 17. The distribution of cells in the selected group(s) regarding categories of an annotation and expression ranges of a gene by three different layout:count, streamgraph, proportion.</p>
+Supplementary Fig. 16. The distribution of cells in the selected group(s) regarding categories of an annotation and expression ranges of a gene by three different layout:count, streamgraph, proportion.</p>
 <!-- ![Expand view to show percentage instead of numbers of cells](figures/F17B.jpg) -->
 <!-- ![Mouse over a bar to show details. Y-axis is re-located for better view and the number of cells represented by the bar is also shown in legend.](figures/F17C.jpg) -->
 </div>
@@ -261,13 +261,13 @@ Supplementary Fig. 17. The distribution of cells in the selected group(s) regard
 <h2><span class="header-section-number">1.17</span> VIP – Gene Specificity<a href="#vip-gene-specificity" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>To show the distribution of gene expression among categories of an annotation</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F29_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F29_label.png" alt="Figure F29_label" /></a>
-Supplementary Fig. 18. The distribution of gene expression among categories of an annotation</p>
+Supplementary Fig. 17. The distribution of gene expression among categories of an annotation</p>
 </div>
 <div id="vip-gene-detected" class="section level2 hasAnchor" number="1.18">
 <h2><span class="header-section-number">1.18</span> VIP – Gene Detected<a href="#vip-gene-detected" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>To show the number of genes expressed above the specified expression cut-off in the selected group(s) of cells.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F18_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F18_label.png" alt="Figure F18_label" /></a>
-Supplementary Fig. 19. The number of genes with expression over the cut-off in the cells from the selected group(s) of cells.</p>
+Supplementary Fig. 18. The number of genes with expression over the cut-off in the cells from the selected group(s) of cells.</p>
 </div>
 <div id="vip-deg-differential-expressed-genes" class="section level2 hasAnchor" number="1.19">
 <h2><span class="header-section-number">1.19</span> VIP – DEG (Differential Expressed Genes)<a href="#vip-deg-differential-expressed-genes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -275,7 +275,7 @@ Supplementary Fig. 19. The number of genes with expression over the cut-off in t
 <p>Three differential analysis statistical test methods are provided including Welch’s t-test, Wilcoxon rank test and Wald’s test. The statistical test results are presented in a table format including log2 Fold change, p-value and adjusted p-value (i.e, FDR value). Please note, we provide users with simple test methods for quick exploration within the interactive framework. However, there would be covariates need to be considered in a proper statistical test. Please consult your stats experts for appropriate test by using the right test method and right model.</p>
 <p>Volcano plotting is also provided to show the log2FC vs. -log10(FDR) relationship for all genes. The user can select the gene(s) from the pre-selected gene list to be highlighted with text in the volcano plot.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F19_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F19_label.png" alt="Figure F19_label" /></a>
-Supplementary Fig. 20. DEG analysis between the selected group(s) with volcano plots</p>
+Supplementary Fig. 19. DEG analysis between the selected group(s) with volcano plots</p>
 <!-- ![Volcano plotting of identified DEGs.](figures/F19B.jpg) -->
 <p>Note: The data used by DEG is unscaled (please refer to description of the dataset to find out what preprocessing was done on the data). Scaling control in the Global Setting does not apply to DEG. The three methods: ‘Welch’s t-test’ uses t-test (assuming underlining data with normal distributions) this uses cellxgene t-test implementation, ‘Wilcoxon rank test’ uses Wilcoxon rank-sum test (does not assume known distributions, non-parametric test) and ‘Wald’s test’ uses Wald Chi-Squared test which is based on maximum likelihood. ‘Wilcoxon rank test’ and ‘Wald’s test’ use diffxpy’s implementation. Gene set enrichment analysis (GSEA) can be enabled for the DEGs on the gene sets of interest.</p>
 </div>
@@ -283,7 +283,7 @@ Supplementary Fig. 20. DEG analysis between the selected group(s) with volcano p
 <h2><span class="header-section-number">1.20</span> VIP - Pre-computed DEG<a href="#vip---pre-computed-deg" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>In addition, cellxgene VIP shows the differential analysis within some pre-computed annotated groups.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F28_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F28_label.png" alt="Figure F28_label" /></a>
-Supplementary Fig. 21. Pre-computed DEG analysis between/ among the selected pre-defubed group(s) with volcano plots and bubble heatmap.</p>
+Supplementary Fig. 20. Pre-computed DEG analysis between/ among the selected pre-defubed group(s) with volcano plots and bubble heatmap.</p>
 </div>
 <div id="vip-marker-genes" class="section level2 hasAnchor" number="1.21">
 <h2><span class="header-section-number">1.21</span> VIP – Marker Genes<a href="#vip-marker-genes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -291,20 +291,20 @@ Supplementary Fig. 21. Pre-computed DEG analysis between/ among the selected pre
 <p>Four methods are provided for detecting marker genes including logreg, t-test, Wilcoxon, and t-testoverest_var. For each identified marker gene, the gene name, scores (the z-score underlying the computation of a p-value for each gene for each group) and assigned group are listed in the output table.</p>
 <p>In each annotation category, top ranked marker genes (this example shows top 10) will be plotted by score in comparison to the rest of the categories.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F22_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F22_label.png" alt="Figure F22_label" /></a>
-Supplementary Fig. 22. Marker genes detection in the selected group(s) of cells regarding the selected annotation categories.</p>
+Supplementary Fig. 21. Marker genes detection in the selected group(s) of cells regarding the selected annotation categories.</p>
 <!-- ![Plotting of identified marker genes by each category](figures/F20B.jpg) -->
 <p>Note: The four methods implementations by calling scanpy.tl.rank_genes_groups function: ‘logreg’ uses logistic regression, ‘t-test’ uses t-test, ‘wilcoxon’ uses Wilcoxon rank-sum, and ‘t-test_overestim_var’ overestimates variance of each group.</p>
 </div>
 <div id="vip---spatial-transcriptomics" class="section level2 hasAnchor" number="1.22">
 <h2><span class="header-section-number">1.22</span> VIP - Spatial Transcriptomics<a href="#vip---spatial-transcriptomics" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F26_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F26_label.png" alt="Figure F26_label" /></a>
-Supplementary Fig. 23. Spatial transcriptomics analysis.</p>
+Supplementary Fig. 22. Spatial transcriptomics analysis.</p>
 </div>
 <div id="vip-command-line-interface" class="section level2 hasAnchor" number="1.23">
 <h2><span class="header-section-number">1.23</span> VIP – Command Line Interface<a href="#vip-command-line-interface" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Although cellxgene VIP provides a rich set of visualization modules as shown above, command line interface is also built to allow unlimited visualization and analytical capabilities by power user who know how to program in Python / R languages.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F23_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F23_label.png" alt="Figure F23_label" /></a>
-Supplementary Fig. 24. Command line interface for the user to program for advanced plotting and statistical analysis.</p>
+Supplementary Fig. 23. Command line interface for the user to program for advanced plotting and statistical analysis.</p>
 <p>Note: In CLI the AnnData (adata) object is available by default, and it is processed as ‘Description’ of the dataset states (i.e.: normalized and log transformed, but not scaled etc.). Settings in ‘Global Setting’ tab won’t apply to CLI.</p>
 </div>
 <div id="vip-comb.-abbr." class="section level2 hasAnchor" number="1.24">
@@ -312,7 +312,7 @@ Supplementary Fig. 24. Command line interface for the user to program for advanc
 <p>The user can combine multiple annotations to create a combinatorial annotation to group cells in many plotting modules, e.g., stacked violin and dot plot. Firstly, the user clicks ‘uncheck all annotations’ and, secondly goes to the annotation panel in main window to select annotation categories to be combined, e.g., diagnosis (Control and MS) combined with sex (female and male). After clicking on ‘Create’ button, all possible combinatorial names will be listed and ‘Custom_combine’ will be automatically available as an option in ‘Group by’ drop down menu of many plotting functions.</p>
 <p>The user can also rename each annotation by creating abbreviations to shorten axis labels in figures.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F25_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F25_label.png" alt="Figure F25_label" /></a>
-Supplementary Fig. 25. Comb. &amp; Abbr. function allows user to create new annotation by combining multiple annotations and abbreviations to shorten axis labels in figures especially when custom combinatorial names are used.</p>
+Supplementary Fig. 24. Comb. &amp; Abbr. function allows user to create new annotation by combining multiple annotations and abbreviations to shorten axis labels in figures especially when custom combinatorial names are used.</p>
 </div>
 <div id="vip-other-functions" class="section level2 hasAnchor" number="1.25">
 <h2><span class="header-section-number">1.25</span> VIP – Other Functions<a href="#vip-other-functions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -321,7 +321,7 @@ Supplementary Fig. 25. Comb. &amp; Abbr. function allows user to create new anno
 <p>‘Check All Annotations’ is used to check all categorical selection boxes of annotations on the left panel.</p>
 <p>‘Brush’ is to display exactly these selected ranges from histograms of variables on the right panel in a nice table that is not available in original cellxgene.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F24_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F24_label.png" alt="Figure F24_label" /></a>
-Supplementary Fig. 26. Other functions allow user to ‘Save’ or ‘Load’ session information, ‘Check All Annotations’ and show values of brushed ranges on histograms.</p>
+Supplementary Fig. 25. Other functions allow user to ‘Save’ or ‘Load’ session information, ‘Check All Annotations’ and show values of brushed ranges on histograms.</p>
 </div>
 </div>
             </section>
