@@ -4,19 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 2 How to use Cellxgene VIP | Supplementary Information: Cellxgene VIP unleashes full power of interactive visualization and integrative analysis of scRNA-seq, spatial transcriptomics, and multiome data</title>
-  <meta name="description" content="Chapter 2 How to use Cellxgene VIP | Supplementary Information: Cellxgene VIP unleashes full power of interactive visualization and integrative analysis of scRNA-seq, spatial transcriptomics, and multiome data" />
-  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+  <title>Chapter 1 How to use Cellxgene VIP | 02-HowTo.knit</title>
+  <meta name="description" content="" />
+  <meta name="generator" content="bookdown 0.36 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 2 How to use Cellxgene VIP | Supplementary Information: Cellxgene VIP unleashes full power of interactive visualization and integrative analysis of scRNA-seq, spatial transcriptomics, and multiome data" />
+  <meta property="og:title" content="Chapter 1 How to use Cellxgene VIP | 02-HowTo.knit" />
   <meta property="og:type" content="book" />
-  
   
   
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 2 How to use Cellxgene VIP | Supplementary Information: Cellxgene VIP unleashes full power of interactive visualization and integrative analysis of scRNA-seq, spatial transcriptomics, and multiome data" />
+  <meta name="twitter:title" content="Chapter 1 How to use Cellxgene VIP | 02-HowTo.knit" />
   
   
   
@@ -29,9 +28,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="index.html"/>
-<link rel="next" href="methods.html"/>
-<script src="libs/header-attrs-2.11/header-attrs.js"></script>
+
+
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -49,75 +47,16 @@
 
 
 
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
 
 
 <style type="text/css">
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 </style>
-
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
@@ -135,70 +74,33 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="./">CellXgene VIP</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Getting started with cellxgene VIP</a>
+<li class="chapter" data-level="1" data-path=""><a href="#how-to-use-cellxgene-vip"><i class="fa fa-check"></i><b>1</b> How to use Cellxgene VIP</a>
 <ul>
-<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#why-use-cellxgene-vip"><i class="fa fa-check"></i><b>1.1</b> Why use cellxgene VIP?</a></li>
-<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#getting-set-up"><i class="fa fa-check"></i><b>1.2</b> Getting Set up</a>
-<ul>
-<li class="chapter" data-level="1.2.1" data-path="index.html"><a href="index.html#execute-anaconda"><i class="fa fa-check"></i><b>1.2.1</b> Execute anaconda</a></li>
-<li class="chapter" data-level="1.2.2" data-path="index.html"><a href="index.html#cellxgene-installation"><i class="fa fa-check"></i><b>1.2.2</b> Cellxgene installation</a></li>
-<li class="chapter" data-level="1.2.3" data-path="index.html"><a href="index.html#r-dependencies"><i class="fa fa-check"></i><b>1.2.3</b> R dependencies</a></li>
-<li class="chapter" data-level="1.2.4" data-path="index.html"><a href="index.html#run-cellxgene-by-h5ad-file"><i class="fa fa-check"></i><b>1.2.4</b> Run cellxgene by h5ad file</a></li>
-<li class="chapter" data-level="1.2.5" data-path="index.html"><a href="index.html#cellxgene-on-web-browser"><i class="fa fa-check"></i><b>1.2.5</b> Cellxgene on web browser</a></li>
-</ul></li>
-<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#authors"><i class="fa fa-check"></i><b>1.3</b> Authors</a></li>
-</ul></li>
-<li class="chapter" data-level="2" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html"><i class="fa fa-check"></i><b>2</b> How to use Cellxgene VIP</a>
-<ul>
-<li class="chapter" data-level="2.1" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#graphical-user-interface-of-cellxgene-and-vip"><i class="fa fa-check"></i><b>2.1</b> Graphical user interface of cellxgene and VIP</a></li>
-<li class="chapter" data-level="2.2" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#cell-selection-by-categorial-annotations"><i class="fa fa-check"></i><b>2.2</b> Cell selection by categorial annotations</a></li>
-<li class="chapter" data-level="2.3" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#cell-selection-by-brushing-on-distribution-of-continues-variables"><i class="fa fa-check"></i><b>2.3</b> Cell selection by brushing on distribution of continues variables</a></li>
-<li class="chapter" data-level="2.4" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#free-hand-lasso-selection-on-dots-representing-cells"><i class="fa fa-check"></i><b>2.4</b> Free hand Lasso selection on dots representing cells</a></li>
-<li class="chapter" data-level="2.5" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-global-setting"><i class="fa fa-check"></i><b>2.5</b> VIP – Global Setting</a></li>
-<li class="chapter" data-level="2.6" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-add-genes-gene-sets"><i class="fa fa-check"></i><b>2.6</b> VIP – Add Genes / Gene Sets</a></li>
-<li class="chapter" data-level="2.7" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-violin-plot"><i class="fa fa-check"></i><b>2.7</b> VIP – Violin Plot</a></li>
-<li class="chapter" data-level="2.8" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-stacked-violin"><i class="fa fa-check"></i><b>2.8</b> VIP – Stacked Violin</a></li>
-<li class="chapter" data-level="2.9" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-heatmap"><i class="fa fa-check"></i><b>2.9</b> VIP – Heatmap</a></li>
-<li class="chapter" data-level="2.10" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-embedding"><i class="fa fa-check"></i><b>2.10</b> VIP – Embedding</a></li>
-<li class="chapter" data-level="2.11" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-dot-plot"><i class="fa fa-check"></i><b>2.11</b> VIP – Dot Plot</a></li>
-<li class="chapter" data-level="2.12" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-track-plot"><i class="fa fa-check"></i><b>2.12</b> VIP – Track Plot</a></li>
-<li class="chapter" data-level="2.13" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-density-plot"><i class="fa fa-check"></i><b>2.13</b> VIP – Density Plot</a></li>
-<li class="chapter" data-level="2.14" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-density-scatter-plot"><i class="fa fa-check"></i><b>2.14</b> VIP – Density Scatter Plot</a></li>
-<li class="chapter" data-level="2.15" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-dual-genes"><i class="fa fa-check"></i><b>2.15</b> VIP – Dual Genes</a></li>
-<li class="chapter" data-level="2.16" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-sankey-diagram"><i class="fa fa-check"></i><b>2.16</b> VIP – Sankey Diagram</a></li>
-<li class="chapter" data-level="2.17" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-stacked-barplot"><i class="fa fa-check"></i><b>2.17</b> VIP – Stacked Barplot</a></li>
-<li class="chapter" data-level="2.18" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-gene-detected"><i class="fa fa-check"></i><b>2.18</b> VIP – Gene Detected</a></li>
-<li class="chapter" data-level="2.19" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-deg-differential-expressed-genes"><i class="fa fa-check"></i><b>2.19</b> VIP – DEG (Differential Expressed Genes)</a></li>
-<li class="chapter" data-level="2.20" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip---pre-computed-deg"><i class="fa fa-check"></i><b>2.20</b> VIP - Pre-computed DEG</a></li>
-<li class="chapter" data-level="2.21" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-marker-genes"><i class="fa fa-check"></i><b>2.21</b> VIP – Marker Genes</a></li>
-<li class="chapter" data-level="2.22" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip---spatial-transcriptomics"><i class="fa fa-check"></i><b>2.22</b> VIP - Spatial Transcriptomics</a></li>
-<li class="chapter" data-level="2.23" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-command-line-interface"><i class="fa fa-check"></i><b>2.23</b> VIP – Command Line Interface</a></li>
-<li class="chapter" data-level="2.24" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-comb.-abbr."><i class="fa fa-check"></i><b>2.24</b> VIP – Comb. &amp; Abbr.</a></li>
-<li class="chapter" data-level="2.25" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-other-functions"><i class="fa fa-check"></i><b>2.25</b> VIP – Other Functions</a></li>
-</ul></li>
-<li class="chapter" data-level="3" data-path="methods.html"><a href="methods.html"><i class="fa fa-check"></i><b>3</b> Methods</a>
-<ul>
-<li class="chapter" data-level="3.1" data-path="methods.html"><a href="methods.html#client-side-integration-by-a-jspanel-window-vip"><i class="fa fa-check"></i><b>3.1</b> Client-side Integration by a jsPanel Window (VIP)</a></li>
-<li class="chapter" data-level="3.2" data-path="methods.html"><a href="methods.html#server-side-integration"><i class="fa fa-check"></i><b>3.2</b> Server-side Integration</a></li>
-<li class="chapter" data-level="3.3" data-path="methods.html"><a href="methods.html#communication-between-vip-and-cellxgene-web-gui"><i class="fa fa-check"></i><b>3.3</b> Communication between VIP and cellxgene web GUI</a></li>
-<li class="chapter" data-level="3.4" data-path="methods.html"><a href="methods.html#diffxpy-integration"><i class="fa fa-check"></i><b>3.4</b> Diffxpy Integration</a></li>
-<li class="chapter" data-level="3.5" data-path="methods.html"><a href="methods.html#create-a-h5ad-file-from-seurat-object"><i class="fa fa-check"></i><b>3.5</b> Create a h5ad file from Seurat object</a></li>
-</ul></li>
-<li class="chapter" data-level="4" data-path="helpful-tips.html"><a href="helpful-tips.html"><i class="fa fa-check"></i><b>4</b> Helpful Tips</a>
-<ul>
-<li class="chapter" data-level="4.1" data-path="helpful-tips.html"><a href="helpful-tips.html#handle-nulls-in-categorical-annotation"><i class="fa fa-check"></i><b>4.1</b> Handle nulls in categorical annotation</a></li>
-<li class="chapter" data-level="4.2" data-path="helpful-tips.html"><a href="helpful-tips.html#display-full-traceback-stack-for-debugging-in-vip"><i class="fa fa-check"></i><b>4.2</b> Display full traceback stack for debugging in VIP</a></li>
-<li class="chapter" data-level="4.3" data-path="helpful-tips.html"><a href="helpful-tips.html#pitfall-of-using-special-characters"><i class="fa fa-check"></i><b>4.3</b> Pitfall of using special characters</a></li>
-<li class="chapter" data-level="4.4" data-path="helpful-tips.html"><a href="helpful-tips.html#potential-use-for-bulk-or-pseudo-bulk-sample-dataset"><i class="fa fa-check"></i><b>4.4</b> Potential use for bulk or pseudo bulk sample dataset</a></li>
-<li class="chapter" data-level="4.5" data-path="helpful-tips.html"><a href="helpful-tips.html#common-mistakes-in-naming"><i class="fa fa-check"></i><b>4.5</b> Common mistakes in naming</a></li>
-<li class="chapter" data-level="4.6" data-path="helpful-tips.html"><a href="helpful-tips.html#loading-h5ad-file-generated-by-seuratdisk-from-r"><i class="fa fa-check"></i><b>4.6</b> Loading h5ad file generated by SeuratDisk from R</a></li>
-</ul></li>
-<li class="chapter" data-level="5" data-path="web-resource.html"><a href="web-resource.html"><i class="fa fa-check"></i><b>5</b> Web Resource</a>
-<ul>
-<li class="chapter" data-level="5.1" data-path="web-resource.html"><a href="web-resource.html#cellxgene-vip"><i class="fa fa-check"></i><b>5.1</b> Cellxgene VIP</a></li>
-<li class="chapter" data-level="5.2" data-path="web-resource.html"><a href="web-resource.html#cellxgene"><i class="fa fa-check"></i><b>5.2</b> Cellxgene</a></li>
-<li class="chapter" data-level="5.3" data-path="web-resource.html"><a href="web-resource.html#python-packages"><i class="fa fa-check"></i><b>5.3</b> Python packages</a></li>
-<li class="chapter" data-level="5.4" data-path="web-resource.html"><a href="web-resource.html#others"><i class="fa fa-check"></i><b>5.4</b> Others</a></li>
+<li class="chapter" data-level="1.1" data-path=""><a href="#graphical-user-interface-of-cellxgene-and-vip"><i class="fa fa-check"></i><b>1.1</b> Graphical user interface of cellxgene and VIP</a></li>
+<li class="chapter" data-level="1.2" data-path=""><a href="#cell-selection-by-categorial-annotations"><i class="fa fa-check"></i><b>1.2</b> Cell selection by categorial annotations</a></li>
+<li class="chapter" data-level="1.3" data-path=""><a href="#cell-selection-by-brushing-on-distribution-of-continues-variables"><i class="fa fa-check"></i><b>1.3</b> Cell selection by brushing on distribution of continues variables</a></li>
+<li class="chapter" data-level="1.4" data-path=""><a href="#free-hand-lasso-selection-on-dots-representing-cells"><i class="fa fa-check"></i><b>1.4</b> Free hand Lasso selection on dots representing cells</a></li>
+<li class="chapter" data-level="1.5" data-path=""><a href="#vip-global-setting"><i class="fa fa-check"></i><b>1.5</b> VIP – Global Setting</a></li>
+<li class="chapter" data-level="1.6" data-path=""><a href="#vip-add-genes-gene-sets"><i class="fa fa-check"></i><b>1.6</b> VIP – Add Genes / Gene Sets</a></li>
+<li class="chapter" data-level="1.7" data-path=""><a href="#vip-violin-plot"><i class="fa fa-check"></i><b>1.7</b> VIP – Violin Plot</a></li>
+<li class="chapter" data-level="1.8" data-path=""><a href="#vip-heatmap"><i class="fa fa-check"></i><b>1.8</b> VIP – Heatmap</a></li>
+<li class="chapter" data-level="1.9" data-path=""><a href="#vip-embedding"><i class="fa fa-check"></i><b>1.9</b> VIP – Embedding</a></li>
+<li class="chapter" data-level="1.10" data-path=""><a href="#vip-dot-plot"><i class="fa fa-check"></i><b>1.10</b> VIP – Dot Plot</a></li>
+<li class="chapter" data-level="1.11" data-path=""><a href="#vip-track-plot"><i class="fa fa-check"></i><b>1.11</b> VIP – Track Plot</a></li>
+<li class="chapter" data-level="1.12" data-path=""><a href="#vip-density-plot"><i class="fa fa-check"></i><b>1.12</b> VIP – Density Plot</a></li>
+<li class="chapter" data-level="1.13" data-path=""><a href="#vip-density-scatter-plot"><i class="fa fa-check"></i><b>1.13</b> VIP – Density Scatter Plot</a></li>
+<li class="chapter" data-level="1.14" data-path=""><a href="#vip-dual-genes"><i class="fa fa-check"></i><b>1.14</b> VIP – Dual Genes</a></li>
+<li class="chapter" data-level="1.15" data-path=""><a href="#vip-sankey-diagram"><i class="fa fa-check"></i><b>1.15</b> VIP – Sankey Diagram</a></li>
+<li class="chapter" data-level="1.16" data-path=""><a href="#vip-stacked-barplot"><i class="fa fa-check"></i><b>1.16</b> VIP – Stacked Barplot</a></li>
+<li class="chapter" data-level="1.17" data-path=""><a href="#vip-gene-specificity"><i class="fa fa-check"></i><b>1.17</b> VIP – Gene Specificity</a></li>
+<li class="chapter" data-level="1.18" data-path=""><a href="#vip-gene-detected"><i class="fa fa-check"></i><b>1.18</b> VIP – Gene Detected</a></li>
+<li class="chapter" data-level="1.19" data-path=""><a href="#vip-deg-differential-expressed-genes"><i class="fa fa-check"></i><b>1.19</b> VIP – DEG (Differential Expressed Genes)</a></li>
+<li class="chapter" data-level="1.20" data-path=""><a href="#vip---pre-computed-deg"><i class="fa fa-check"></i><b>1.20</b> VIP - Pre-computed DEG</a></li>
+<li class="chapter" data-level="1.21" data-path=""><a href="#vip-marker-genes"><i class="fa fa-check"></i><b>1.21</b> VIP – Marker Genes</a></li>
+<li class="chapter" data-level="1.22" data-path=""><a href="#vip---spatial-transcriptomics"><i class="fa fa-check"></i><b>1.22</b> VIP - Spatial Transcriptomics</a></li>
+<li class="chapter" data-level="1.23" data-path=""><a href="#vip-command-line-interface"><i class="fa fa-check"></i><b>1.23</b> VIP – Command Line Interface</a></li>
+<li class="chapter" data-level="1.24" data-path=""><a href="#vip-comb.-abbr."><i class="fa fa-check"></i><b>1.24</b> VIP – Comb. &amp; Abbr.</a></li>
+<li class="chapter" data-level="1.25" data-path=""><a href="#vip-other-functions"><i class="fa fa-check"></i><b>1.25</b> VIP – Other Functions</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -212,7 +114,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Supplementary Information: Cellxgene VIP unleashes full power of interactive visualization and integrative analysis of scRNA-seq, spatial transcriptomics, and multiome data</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./"></a>
           </h1>
         </div>
 
@@ -220,10 +122,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="how-to-use-cellxgene-vip" class="section level1" number="2">
-<h1><span class="header-section-number">Chapter 2</span> How to use Cellxgene VIP</h1>
-<div id="graphical-user-interface-of-cellxgene-and-vip" class="section level2" number="2.1">
-<h2><span class="header-section-number">2.1</span> Graphical user interface of cellxgene and VIP</h2>
+<!--bookdown:title:end-->
+<!--bookdown:title:start-->
+<div id="how-to-use-cellxgene-vip" class="section level1 hasAnchor" number="1">
+<h1><span class="header-section-number">Chapter 1</span> How to use Cellxgene VIP<a href="#how-to-use-cellxgene-vip" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="graphical-user-interface-of-cellxgene-and-vip" class="section level2 hasAnchor" number="1.1">
+<h2><span class="header-section-number">1.1</span> Graphical user interface of cellxgene and VIP<a href="#graphical-user-interface-of-cellxgene-and-vip" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The main window of cellxgene is divided into three regions, the left panel mainly displays categorial
 annotations, brief description of the data set and initial graphics setting, specifically embedding and
 coloring of cells. On the right panel, it hosts continuous variables, such as qc metrics shown in histogram
@@ -236,28 +140,28 @@ pressed rain drop icon, e.g., cell_type in Supplementary Fig. 1a.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F1B_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F1B_label.png" alt="Figure F1B_label" /></a></p>
 <p>Supplementary Fig. 1b. VIP (Visualization in Plugin) window and controls of user interface. The cursor will change to corresponding icon when mouse hovers over control anchors inside the window. In the case of missing title bar after operation, changing the size of outside browser window (not VIP window) will always bring the VIP window back to the original location near the cellxgene logo.</p>
 </div>
-<div id="cell-selection-by-categorial-annotations" class="section level2" number="2.2">
-<h2><span class="header-section-number">2.2</span> Cell selection by categorial annotations</h2>
+<div id="cell-selection-by-categorial-annotations" class="section level2 hasAnchor" number="1.2">
+<h2><span class="header-section-number">1.2</span> Cell selection by categorial annotations<a href="#cell-selection-by-categorial-annotations" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F2_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F2_label.png" alt="Figure F2_label" /></a></p>
 <p>Supplementary Fig. 2. Cell selection by categorial annotation. Selected B cells are shown in bold dots and highlighted in purple color when hovering the mouse over the cluster.</p>
 <p>It is an overlap operation when categories from multiple annotations are checked to make the final selection. E.g., if male from sex is also checked besides B cells, it means cells from B cells cluster of male samples are selected.
 Note: Click “1:” or “2:” button to save cell selection into group 1 or 2</p>
 </div>
-<div id="cell-selection-by-brushing-on-distribution-of-continues-variables" class="section level2" number="2.3">
-<h2><span class="header-section-number">2.3</span> Cell selection by brushing on distribution of continues variables</h2>
+<div id="cell-selection-by-brushing-on-distribution-of-continues-variables" class="section level2 hasAnchor" number="1.3">
+<h2><span class="header-section-number">1.3</span> Cell selection by brushing on distribution of continues variables<a href="#cell-selection-by-brushing-on-distribution-of-continues-variables" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F3_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F3_label.png" alt="Figure F3_label" /></a></p>
 <p>Supplementary Fig. 3. Cell selection by brushing the ranges of continuous variables. Low- and high-end values are shown at the top corners of the brushing boxes in dark gray.</p>
 <p>Note: Histograms of expression values of genes can by brushed as well to get cells expressing certain genes in the range.</p>
 </div>
-<div id="free-hand-lasso-selection-on-dots-representing-cells" class="section level2" number="2.4">
-<h2><span class="header-section-number">2.4</span> Free hand Lasso selection on dots representing cells</h2>
+<div id="free-hand-lasso-selection-on-dots-representing-cells" class="section level2 hasAnchor" number="1.4">
+<h2><span class="header-section-number">1.4</span> Free hand Lasso selection on dots representing cells<a href="#free-hand-lasso-selection-on-dots-representing-cells" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>From the cell visualization panel, user can freely select a cluster of cells of interest by using ‘Lasso’ selection tool. The selected cluster of cells can also be added as a group for downstream analysis in cellxgene VIP.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F4_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F4_label.png" alt="Figure F4_label" /></a></p>
 <p>Supplementary Fig. 4. Select cells by using free hand Lasso selection tool and add these cells as a group for further analysis in cellxgene VIP.</p>
 <p>Note: Please try to draw as close as possible to the starting point in the end to make an enclosed shape to ensure successfully lasso selection.</p>
 </div>
-<div id="vip-global-setting" class="section level2" number="2.5">
-<h2><span class="header-section-number">2.5</span> VIP – Global Setting</h2>
+<div id="vip-global-setting" class="section level2 hasAnchor" number="1.5">
+<h2><span class="header-section-number">1.5</span> VIP – Global Setting<a href="#vip-global-setting" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>User can set parameters for figure plotting that control plotting functions except CLI. ‘split_show’ branch of Scanpy offers better representation of Stacked Violin and Dot Plot comparing to master branch.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F5_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F5_label.png" alt="Figure F5_label" /></a></p>
 <p>Supplementary Fig. 5. Setting parameters for figure plotting.</p>
@@ -266,16 +170,19 @@ Note: Click “1:” or “2:” button to save cell selection into group 1 or 2
 <p>We recommend using scaled data for plotting/visualization while using non-scaled data for differential gene expression analysis.</p>
 <p>Note: Dot plot is one exception in visualization category which uses non-scaled data for meaningful interpretation.</p>
 </div>
-<div id="vip-add-genes-gene-sets" class="section level2" number="2.6">
-<h2><span class="header-section-number">2.6</span> VIP – Add Genes / Gene Sets</h2>
+<div id="vip-add-genes-gene-sets" class="section level2 hasAnchor" number="1.6">
+<h2><span class="header-section-number">1.6</span> VIP – Add Genes / Gene Sets<a href="#vip-add-genes-gene-sets" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Cellxgene VIP allows user to add any genes or gene sets for extensive exploration and visualization. User can either type a list of gene in the textbox or create sets of genes to be grouped together in plots. Then the genes will be automatically listed for plotting in other functional modules after checking availability in the dataset.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F6_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F6_label.png" alt="Figure F6_label" /></a>
 Supplementary Fig. 6. Add gene or gene sets for plotting.</p>
 <p>Note: The cursor will turn to cross icon while hovering over a gene name, then click to delete the gene.</p>
 </div>
-<div id="vip-violin-plot" class="section level2" number="2.7">
-<h2><span class="header-section-number">2.7</span> VIP – Violin Plot</h2>
-<p>To plot expression of gene among categories of an annotation, e.g., cell type, sex, or batch etc.
+<div id="vip-violin-plot" class="section level2 hasAnchor" number="1.7">
+<h2><span class="header-section-number">1.7</span> VIP – Violin Plot<a href="#vip-violin-plot" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>To visualize gene expression across annotation categories (e.g., cell type, sex, batch, or treatment), the tool provides four distinct violin plot configurations based on combinations of:
+* Single or multiple genes
+* Single or multiple categorical factors
+These configurations are organized into four tabs, allowing users to flexibly explore relationships between gene expression patterns and experimental variables.
 Step 1. User needs to select the group(s) of cells for plotting. These groups can be created by using selection tools illustrated in tutorial section 2, 3 and/or 4. Initially, all of cells are gathered in ‘Group 1’ by default.
 Step 2. Select a gene from the gene list which could be added as shown in section 6. An expression level cutoff can be set to further filter out cells with low level expression of such gene.
 Step 3. Select the annotation to group cells for plotting.
@@ -283,136 +190,138 @@ Step 4. Execute plotting, get plotting data (i.e., gene expression), manipulate 
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F7_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F7_label.png" alt="Figure F7_label" /></a>
 Supplementary Fig. 7. Violin plot of gene expression values of a gene grouped by cell type.</p>
 <p>Note: Figure resolution and format can be set in “Global Setting” tab as shown in tutorial section 5.</p>
-</div>
-<div id="vip-stacked-violin" class="section level2" number="2.8">
-<h2><span class="header-section-number">2.8</span> VIP – Stacked Violin</h2>
-<p>Beyond plotting expression values of a gene, stacked violin allows plotting of multiple genes together.</p>
+<p>Beyond plotting expression values of a gene, stacked violin plots in the Multi-genes and Multi-genes/Multi-factors tabs allow plotting of multiple genes together grouped by one or two categorical factors.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F8_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F8_label.png" alt="Figure F8_label" /></a>
 Supplementary Fig. 8. Stacked Violin plot of multiple genes and/or gene set.</p>
 <p>Note: If collapsing of gene sets is set to ‘Yes’, average gene expression of genes in a set is used for plotting.</p>
 </div>
-<div id="vip-heatmap" class="section level2" number="2.9">
-<h2><span class="header-section-number">2.9</span> VIP – Heatmap</h2>
+<div id="vip-heatmap" class="section level2 hasAnchor" number="1.8">
+<h2><span class="header-section-number">1.8</span> VIP – Heatmap<a href="#vip-heatmap" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>To show or compare the expression level (i.e., expression value or expression Z-score) of multiple genes among the selected group of cells.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F9_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F9_label.png" alt="Figure F9_label" /></a>
 Supplementary Fig. 9. Heatmap of gene expression in cells grouped by annotations.</p>
 </div>
-<div id="vip-embedding" class="section level2" number="2.10">
-<h2><span class="header-section-number">2.10</span> VIP – Embedding</h2>
+<div id="vip-embedding" class="section level2 hasAnchor" number="1.9">
+<h2><span class="header-section-number">1.9</span> VIP – Embedding<a href="#vip-embedding" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>To plot the embedding (UMAP, tSNE, or spatial) of cells in the selected group(s). One of pre-computed and loaded embeddings can be selected.</p>
 <p>The user can color cells in the embedding plots by multiple annotations (e.g., cell_type, diagnosis).</p>
 <p>Besides coloring cells by annotations, user can color cells based on gene expression level of selected genes in the embedding plots.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F10_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F10_label.png" alt="Figure F10_label" /></a>
 Supplementary Fig. 10. Embedding plotting of expression level of genes or gene set in the cells split by categories of an annotation.</p>
 </div>
-<div id="vip-dot-plot" class="section level2" number="2.11">
-<h2><span class="header-section-number">2.11</span> VIP – Dot Plot</h2>
+<div id="vip-dot-plot" class="section level2 hasAnchor" number="1.10">
+<h2><span class="header-section-number">1.10</span> VIP – Dot Plot<a href="#vip-dot-plot" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>To show the fraction of cells (annotated by dot size) expressing a gene in each group and the averaged expression level of the gene (annotated by color intensity) in the group.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F11_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F11_label.png" alt="Figure F11_label" /></a>
 Supplementary Fig. 11. Dot plotting of the fraction of cells expressing genes above a cutoff in each categorie of the selected annotation.</p>
 <p>Note: The number of cells represented by side bar chart are always numbers of cells distributed in each category of certain annotation without filtering. It will give an accurate estimate of number of cells in each bubble in the plot. The use of the plot is only meaningful when the counts matrix contains zeros representing no gene counts. Its visualization does not work for scaled or corrected matrices in which zero counts had been replaced by other values, see <a href="https://scanpy-tutorials.readthedocs.io/en/multiomics/visualizing-marker-genes.html#Dot-plots" class="uri">https://scanpy-tutorials.readthedocs.io/en/multiomics/visualizing-marker-genes.html#Dot-plots</a>.</p>
 </div>
-<div id="vip-track-plot" class="section level2" number="2.12">
-<h2><span class="header-section-number">2.12</span> VIP – Track Plot</h2>
+<div id="vip-track-plot" class="section level2 hasAnchor" number="1.11">
+<h2><span class="header-section-number">1.11</span> VIP – Track Plot<a href="#vip-track-plot" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>To show the expression of gene(s) of individual cells as vertical lines grouped by the selected annotation on x-axis. Instead of a color scale, the gene expression is represented by height.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F12_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F12_label.png" alt="Figure F12_label" /></a>
 Supplementary Fig. 12. Track plotting of expression of genes or gene set in each category of the selected annotation. Gene expression levels are represented by the heights of vertical lines.</p>
 </div>
-<div id="vip-density-plot" class="section level2" number="2.13">
-<h2><span class="header-section-number">2.13</span> VIP – Density Plot</h2>
+<div id="vip-density-plot" class="section level2 hasAnchor" number="1.12">
+<h2><span class="header-section-number">1.12</span> VIP – Density Plot<a href="#vip-density-plot" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>To show the density of gene(s) expression in the cells annotated by category in the selected group(s) of cells. A density plot is a representation of the distribution of a numeric variable. It uses a kernel density estimate to show the probability density function of the variable (see more). It is a smoothed version of the histogram and is used in the same concept.</p>
 <p>The bandwidth defines how close to a value point the distance between two points must be to influence the estimation of the density at the point. A small bandwidth only considers the closest values, so the estimation is close to the data. A large bandwidth considers more points and gives a smoother estimation.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F13_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F13_label.png" alt="Figure F13_label" /></a></p>
 <p>Supplementary Fig. 13. Density plotting of the expression of genes in each group split by one annotation while colored by another.</p>
 </div>
-<div id="vip-density-scatter-plot" class="section level2" number="2.14">
-<h2><span class="header-section-number">2.14</span> VIP – Density Scatter Plot</h2>
+<div id="vip-density-scatter-plot" class="section level2 hasAnchor" number="1.13">
+<h2><span class="header-section-number">1.13</span> VIP – Density Scatter Plot<a href="#vip-density-scatter-plot" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Besides plotting of expression density of single gene, density scatter plot allows to explore the joint expression density of two genes in the cells expressing both genes above a cutoff.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F27_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F27_label.png" alt="Figure F27_label" /></a></p>
 <p>Supplementary Fig. 14. Density scatter plotting of expression of two genes in the selected cells.</p>
 </div>
-<div id="vip-dual-genes" class="section level2" number="2.15">
-<h2><span class="header-section-number">2.15</span> VIP – Dual Genes</h2>
+<div id="vip-dual-genes" class="section level2 hasAnchor" number="1.14">
+<h2><span class="header-section-number">1.14</span> VIP – Dual Genes<a href="#vip-dual-genes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>To view the relationship of expression levels of two genes in selected cells. It is based on the embedding plot of cells while coloring cells according to the expression levels of gene(s) in each cell.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F15_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F15_label.png" alt="Figure F15_label" /></a></p>
 <p>Supplementary Fig. 15. Embedding plotting of the expression of two genes in the selected cell group(s).</p>
 </div>
-<div id="vip-sankey-diagram" class="section level2" number="2.16">
-<h2><span class="header-section-number">2.16</span> VIP – Sankey Diagram</h2>
+<div id="vip-sankey-diagram" class="section level2 hasAnchor" number="1.15">
+<h2><span class="header-section-number">1.15</span> VIP – Sankey Diagram<a href="#vip-sankey-diagram" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Sankey diagram shows the flow of gene expression and annotations linked by cells. Gene expression is divided equally into bins so user can view distribution relationship between gene expression and annotations.</p>
 <p>The diagram is also shown in an interactive way so that user can change the layout by selecting several items (e.g., thin or thick on color bar, small or large space) from the panel. Also, the user can drag these small boxes on the plot to get preferred layout and save it as high resolution SVG figure.</p>
 <p>In addition, when you hover over mouse on a box, you can get detailed information about the source and target of flow</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F16_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F16_label.png" alt="Figure F16_label" /></a>
 Supplementary Fig. 16. Sankey diagram provides quick and easy way to explore the inter-dependent relationship of variables.</p>
 </div>
-<div id="vip-stacked-barplot" class="section level2" number="2.17">
-<h2><span class="header-section-number">2.17</span> VIP – Stacked Barplot</h2>
-<p>To show the distribution of cells among categories of an annotation and/or ranges of expression of agene. Only two factors from annotations or genes can be chosen. The plot allows user to explore the distribution of cells in different views interactively.</p>
+<div id="vip-stacked-barplot" class="section level2 hasAnchor" number="1.16">
+<h2><span class="header-section-number">1.16</span> VIP – Stacked Barplot<a href="#vip-stacked-barplot" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>To show the distribution of cells among categories of an annotation and/or ranges of expression of a gene. Only two factors from annotations or genes can be chosen. The plot allows user to explore the distribution of cells in different views interactively.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F17_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F17_label.png" alt="Figure F17_label" /></a>
 Supplementary Fig. 17. The distribution of cells in the selected group(s) regarding categories of an annotation and expression ranges of a gene by three different layout:count, streamgraph, proportion.</p>
 <!-- ![Expand view to show percentage instead of numbers of cells](figures/F17B.jpg) -->
 <!-- ![Mouse over a bar to show details. Y-axis is re-located for better view and the number of cells represented by the bar is also shown in legend.](figures/F17C.jpg) -->
 </div>
-<div id="vip-gene-detected" class="section level2" number="2.18">
-<h2><span class="header-section-number">2.18</span> VIP – Gene Detected</h2>
+<div id="vip-gene-specificity" class="section level2 hasAnchor" number="1.17">
+<h2><span class="header-section-number">1.17</span> VIP – Gene Specificity<a href="#vip-gene-specificity" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>To show the distribution of gene expression among categories of an annotation</p>
+<p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F29_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F29_label.png" alt="Figure F29_label" /></a>
+Supplementary Fig. 18. The distribution of gene expression among categories of an annotation</p>
+</div>
+<div id="vip-gene-detected" class="section level2 hasAnchor" number="1.18">
+<h2><span class="header-section-number">1.18</span> VIP – Gene Detected<a href="#vip-gene-detected" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>To show the number of genes expressed above the specified expression cut-off in the selected group(s) of cells.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F18_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F18_label.png" alt="Figure F18_label" /></a>
-Supplementary Fig. 18. The number of genes with expression over the cut-off in the cells from the selected group(s) of cells.</p>
+Supplementary Fig. 19. The number of genes with expression over the cut-off in the cells from the selected group(s) of cells.</p>
 </div>
-<div id="vip-deg-differential-expressed-genes" class="section level2" number="2.19">
-<h2><span class="header-section-number">2.19</span> VIP – DEG (Differential Expressed Genes)</h2>
+<div id="vip-deg-differential-expressed-genes" class="section level2 hasAnchor" number="1.19">
+<h2><span class="header-section-number">1.19</span> VIP – DEG (Differential Expressed Genes)<a href="#vip-deg-differential-expressed-genes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Besides plotting functions, cellxgene VIP also provides differential analysis between two selected groups of cells to identify differential expressed genes.</p>
 <p>Three differential analysis statistical test methods are provided including Welch’s t-test, Wilcoxon rank test and Wald’s test. The statistical test results are presented in a table format including log2 Fold change, p-value and adjusted p-value (i.e, FDR value). Please note, we provide users with simple test methods for quick exploration within the interactive framework. However, there would be covariates need to be considered in a proper statistical test. Please consult your stats experts for appropriate test by using the right test method and right model.</p>
 <p>Volcano plotting is also provided to show the log2FC vs. -log10(FDR) relationship for all genes. The user can select the gene(s) from the pre-selected gene list to be highlighted with text in the volcano plot.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F19_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F19_label.png" alt="Figure F19_label" /></a>
-Supplementary Fig. 19. DEG analysis between the selected group(s) with volcano plots</p>
+Supplementary Fig. 20. DEG analysis between the selected group(s) with volcano plots</p>
 <!-- ![Volcano plotting of identified DEGs.](figures/F19B.jpg) -->
 <p>Note: The data used by DEG is unscaled (please refer to description of the dataset to find out what preprocessing was done on the data). Scaling control in the Global Setting does not apply to DEG. The three methods: ‘Welch’s t-test’ uses t-test (assuming underlining data with normal distributions) this uses cellxgene t-test implementation, ‘Wilcoxon rank test’ uses Wilcoxon rank-sum test (does not assume known distributions, non-parametric test) and ‘Wald’s test’ uses Wald Chi-Squared test which is based on maximum likelihood. ‘Wilcoxon rank test’ and ‘Wald’s test’ use diffxpy’s implementation. Gene set enrichment analysis (GSEA) can be enabled for the DEGs on the gene sets of interest.</p>
 </div>
-<div id="vip---pre-computed-deg" class="section level2" number="2.20">
-<h2><span class="header-section-number">2.20</span> VIP - Pre-computed DEG</h2>
+<div id="vip---pre-computed-deg" class="section level2 hasAnchor" number="1.20">
+<h2><span class="header-section-number">1.20</span> VIP - Pre-computed DEG<a href="#vip---pre-computed-deg" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>In addition, cellxgene VIP shows the differential analysis within some pre-computed annotated groups.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F28_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F28_label.png" alt="Figure F28_label" /></a>
-Supplementary Fig. 20. Pre-computed DEG analysis between/ among the selected pre-defubed group(s) with volcano plots and bubble heatmap.</p>
+Supplementary Fig. 21. Pre-computed DEG analysis between/ among the selected pre-defubed group(s) with volcano plots and bubble heatmap.</p>
 </div>
-<div id="vip-marker-genes" class="section level2" number="2.21">
-<h2><span class="header-section-number">2.21</span> VIP – Marker Genes</h2>
+<div id="vip-marker-genes" class="section level2 hasAnchor" number="1.21">
+<h2><span class="header-section-number">1.21</span> VIP – Marker Genes<a href="#vip-marker-genes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>This functional module allows user to identify marker genes in the selected group(s) (more than 2, if 2 groups, please use DEG) of cells by annotation categories.</p>
 <p>Four methods are provided for detecting marker genes including logreg, t-test, Wilcoxon, and t-testoverest_var. For each identified marker gene, the gene name, scores (the z-score underlying the computation of a p-value for each gene for each group) and assigned group are listed in the output table.</p>
-<p>In each annotation category, top ranked marker genes (this example shows top 2) will be plotted by score in comparison to the rest of the categories.</p>
+<p>In each annotation category, top ranked marker genes (this example shows top 10) will be plotted by score in comparison to the rest of the categories.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F22_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F22_label.png" alt="Figure F22_label" /></a>
-Supplementary Fig. 21. Marker genes detection in the selected group(s) of cells regarding the selected annotation categories.</p>
+Supplementary Fig. 22. Marker genes detection in the selected group(s) of cells regarding the selected annotation categories.</p>
 <!-- ![Plotting of identified marker genes by each category](figures/F20B.jpg) -->
 <p>Note: The four methods implementations by calling scanpy.tl.rank_genes_groups function: ‘logreg’ uses logistic regression, ‘t-test’ uses t-test, ‘wilcoxon’ uses Wilcoxon rank-sum, and ‘t-test_overestim_var’ overestimates variance of each group.</p>
 </div>
-<div id="vip---spatial-transcriptomics" class="section level2" number="2.22">
-<h2><span class="header-section-number">2.22</span> VIP - Spatial Transcriptomics</h2>
+<div id="vip---spatial-transcriptomics" class="section level2 hasAnchor" number="1.22">
+<h2><span class="header-section-number">1.22</span> VIP - Spatial Transcriptomics<a href="#vip---spatial-transcriptomics" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F26_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F26_label.png" alt="Figure F26_label" /></a>
-Supplementary Fig. 22. Spatial transcriptomics analysis.</p>
+Supplementary Fig. 23. Spatial transcriptomics analysis.</p>
 </div>
-<div id="vip-command-line-interface" class="section level2" number="2.23">
-<h2><span class="header-section-number">2.23</span> VIP – Command Line Interface</h2>
+<div id="vip-command-line-interface" class="section level2 hasAnchor" number="1.23">
+<h2><span class="header-section-number">1.23</span> VIP – Command Line Interface<a href="#vip-command-line-interface" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Although cellxgene VIP provides a rich set of visualization modules as shown above, command line interface is also built to allow unlimited visualization and analytical capabilities by power user who know how to program in Python / R languages.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F23_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F23_label.png" alt="Figure F23_label" /></a>
-Supplementary Fig. 23. Command line interface for the user to program for advanced plotting and statistical analysis.</p>
+Supplementary Fig. 24. Command line interface for the user to program for advanced plotting and statistical analysis.</p>
 <p>Note: In CLI the AnnData (adata) object is available by default, and it is processed as ‘Description’ of the dataset states (i.e.: normalized and log transformed, but not scaled etc.). Settings in ‘Global Setting’ tab won’t apply to CLI.</p>
 </div>
-<div id="vip-comb.-abbr." class="section level2" number="2.24">
-<h2><span class="header-section-number">2.24</span> VIP – Comb. &amp; Abbr.</h2>
+<div id="vip-comb.-abbr." class="section level2 hasAnchor" number="1.24">
+<h2><span class="header-section-number">1.24</span> VIP – Comb. &amp; Abbr.<a href="#vip-comb.-abbr." class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The user can combine multiple annotations to create a combinatorial annotation to group cells in many plotting modules, e.g., stacked violin and dot plot. Firstly, the user clicks ‘uncheck all annotations’ and, secondly goes to the annotation panel in main window to select annotation categories to be combined, e.g., diagnosis (Control and MS) combined with sex (female and male). After clicking on ‘Create’ button, all possible combinatorial names will be listed and ‘Custom_combine’ will be automatically available as an option in ‘Group by’ drop down menu of many plotting functions.</p>
 <p>The user can also rename each annotation by creating abbreviations to shorten axis labels in figures.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F25_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F25_label.png" alt="Figure F25_label" /></a>
-Supplementary Fig. 24. Comb. &amp; Abbr. function allows user to create new annotation by combining multiple annotations and abbreviations to shorten axis labels in figures especially when custom combinatorial names are used.</p>
+Supplementary Fig. 25. Comb. &amp; Abbr. function allows user to create new annotation by combining multiple annotations and abbreviations to shorten axis labels in figures especially when custom combinatorial names are used.</p>
 </div>
-<div id="vip-other-functions" class="section level2" number="2.25">
-<h2><span class="header-section-number">2.25</span> VIP – Other Functions</h2>
+<div id="vip-other-functions" class="section level2 hasAnchor" number="1.25">
+<h2><span class="header-section-number">1.25</span> VIP – Other Functions<a href="#vip-other-functions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>There are other convenient functions available to user, such as ‘Save’ or ‘Load’ session, ‘Check All Annotations’ and ‘Brush’.</p>
 <p>‘Save’ or ‘Load’ session are used to save the current cell selections and parameter settings to text file or load a previously saved session file in the tool for visualization.</p>
 <p>‘Check All Annotations’ is used to check all categorical selection boxes of annotations on the left panel.</p>
 <p>‘Brush’ is to display exactly these selected ranges from histograms of variables on the right panel in a nice table that is not available in original cellxgene.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F24_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F24_label.png" alt="Figure F24_label" /></a>
-Supplementary Fig. 25. Other functions allow user to ‘Save’ or ‘Load’ session information, ‘Check All Annotations’ and show values of brushed ranges on histograms.</p>
-
+Supplementary Fig. 26. Other functions allow user to ‘Save’ or ‘Load’ session information, ‘Check All Annotations’ and show values of brushed ranges on histograms.</p>
 </div>
 </div>
             </section>
@@ -420,8 +329,8 @@ Supplementary Fig. 25. Other functions allow user to ‘Save’ or ‘Load’ se
           </div>
         </div>
       </div>
-<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="methods.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+
+
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -463,11 +372,8 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": ["cellxgene_VIP.pdf"],
-"search": {
-"engine": "fuse",
-"options": null
-},
+"download": null,
+"search": false,
 "toc": {
 "collapse": "subsection"
 }
