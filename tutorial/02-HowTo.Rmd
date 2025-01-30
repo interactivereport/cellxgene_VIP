@@ -73,7 +73,10 @@ Note: The cursor will turn to cross icon while hovering over a gene name, then c
 
 ## VIP – Violin Plot
 
-To plot expression of gene among categories of an annotation, e.g., cell type, sex, or batch etc.
+To visualize gene expression across annotation categories (e.g., cell type, sex, batch, or treatment), the tool provides four distinct violin plot configurations based on combinations of:
+* Single or multiple genes
+* Single or multiple categorical factors
+These configurations are organized into four tabs, allowing users to flexibly explore relationships between gene expression patterns and experimental variables.
 Step 1. User needs to select the group(s) of cells for plotting. These groups can be created by using selection tools illustrated in tutorial section 2, 3 and/or 4. Initially, all of cells are gathered in ‘Group 1’ by default.
 Step 2. Select a gene from the gene list which could be added as shown in section 6. An expression level cutoff can be set to further filter out cells with low level expression of such gene.
 Step 3. Select the annotation to group cells for plotting.
@@ -84,12 +87,10 @@ Supplementary Fig. 7. Violin plot of gene expression values of a gene grouped by
 
 Note: Figure resolution and format can be set in “Global Setting” tab as shown in tutorial section 5.
 
-## VIP – Stacked Violin
-Beyond plotting expression values of a gene, stacked violin allows plotting of multiple genes together.
+Beyond plotting expression values of a gene, stacked violin plots in the Multi-genes and Multi-genes/Multi-factors tabs allow plotting of multiple genes together grouped by one or two categorical factors.
 
 [![Figure F8_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F8_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F8_label.png)
 Supplementary Fig. 8. Stacked Violin plot of multiple genes and/or gene set.
-
 
 Note: If collapsing of gene sets is set to ‘Yes’, average gene expression of genes in a set is used for plotting.
 
@@ -214,7 +215,7 @@ This functional module allows user to identify marker genes in the selected grou
 
 Four methods are provided for detecting marker genes including logreg, t-test, Wilcoxon, and t-testoverest_var. For each identified marker gene, the gene name, scores (the z-score underlying the computation of a p-value for each gene for each group) and assigned group are listed in the output table.
 
-In each annotation category, top ranked marker genes (this example shows top 2) will be plotted by score in comparison to the rest of the categories.
+In each annotation category, top ranked marker genes (this example shows top 10) will be plotted by score in comparison to the rest of the categories.
 
 [![Figure F22_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F22_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F22_label.png)
 Supplementary Fig. 21. Marker genes detection in the selected group(s) of cells regarding the selected annotation categories.
