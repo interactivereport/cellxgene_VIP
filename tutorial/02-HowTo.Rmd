@@ -169,7 +169,7 @@ Supplementary Fig. 16. Sankey diagram provides quick and easy way to explore the
 
 
 ## VIP – Stacked Barplot
-To show the distribution of cells among categories of an annotation and/or ranges of expression of agene. Only two factors from annotations or genes can be chosen. The plot allows user to explore the distribution of cells in different views interactively.
+To show the distribution of cells among categories of an annotation and/or ranges of expression of a gene. Only two factors from annotations or genes can be chosen. The plot allows user to explore the distribution of cells in different views interactively.
 
 [![Figure F17_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F17_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F17_label.png)
 Supplementary Fig. 17. The distribution of cells in the selected group(s) regarding categories of an annotation and expression ranges of a gene by three different layout:count, streamgraph, proportion.
@@ -179,11 +179,17 @@ Supplementary Fig. 17. The distribution of cells in the selected group(s) regard
 
 <!-- ![Mouse over a bar to show details. Y-axis is re-located for better view and the number of cells represented by the bar is also shown in legend.](figures/F17C.jpg) -->
 
+## VIP – Gene Specificity
+To show the distribution of gene expression among categories of an annotation
+
+[![Figure F29_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F29_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F29_label.png)
+Supplementary Fig. 18. The distribution of gene expression among categories of an annotation
+
 ## VIP – Gene Detected
 To show the number of genes expressed above the specified expression cut-off in the selected group(s) of cells.
 
 [![Figure F18_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F18_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F18_label.png)
-Supplementary Fig. 18. The number of genes with expression over the cut-off in the cells from the selected group(s) of cells.
+Supplementary Fig. 19. The number of genes with expression over the cut-off in the cells from the selected group(s) of cells.
 
 
 ## VIP – DEG (Differential Expressed Genes)
@@ -194,7 +200,7 @@ Three differential analysis statistical test methods are provided including Welc
 Volcano plotting is also provided to show the log2FC vs. -log10(FDR) relationship for all genes. The user can select the gene(s) from the pre-selected gene list to be highlighted with text in the volcano plot.
 
 [![Figure F19_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F19_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F19_label.png)
-Supplementary Fig. 19. DEG analysis between the selected group(s) with volcano plots
+Supplementary Fig. 20. DEG analysis between the selected group(s) with volcano plots
 
 
 <!-- ![Volcano plotting of identified DEGs.](figures/F19B.jpg) -->
@@ -206,7 +212,7 @@ Note: The data used by DEG is unscaled (please refer to description of the datas
 In addition, cellxgene VIP shows the differential analysis within some pre-computed annotated groups.
 
 [![Figure F28_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F28_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F28_label.png)
-Supplementary Fig. 20. Pre-computed DEG analysis between/ among the selected pre-defubed group(s) with volcano plots and bubble heatmap. 
+Supplementary Fig. 21. Pre-computed DEG analysis between/ among the selected pre-defubed group(s) with volcano plots and bubble heatmap. 
 
 
 
@@ -218,7 +224,7 @@ Four methods are provided for detecting marker genes including logreg, t-test, W
 In each annotation category, top ranked marker genes (this example shows top 10) will be plotted by score in comparison to the rest of the categories.
 
 [![Figure F22_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F22_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F22_label.png)
-Supplementary Fig. 21. Marker genes detection in the selected group(s) of cells regarding the selected annotation categories.
+Supplementary Fig. 22. Marker genes detection in the selected group(s) of cells regarding the selected annotation categories.
 
 
 
@@ -229,14 +235,14 @@ Note: The four methods implementations by calling scanpy.tl.rank_genes_groups fu
 ## VIP - Spatial Transcriptomics
 
 [![Figure F26_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F26_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F26_label.png)
-Supplementary Fig. 22. Spatial transcriptomics analysis. 
+Supplementary Fig. 23. Spatial transcriptomics analysis. 
 
 
 ## VIP – Command Line Interface
 Although cellxgene VIP provides a rich set of visualization modules as shown above, command line interface is also built to allow unlimited visualization and analytical capabilities by power user who know how to program in Python / R languages. 
 
 [![Figure F23_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F23_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F23_label.png)
-Supplementary Fig. 23. Command line interface for the user to program for advanced plotting and statistical analysis.
+Supplementary Fig. 24. Command line interface for the user to program for advanced plotting and statistical analysis.
 
 
 Note: In CLI the AnnData (adata) object is available by default, and it is processed as ‘Description’ of the dataset states (i.e.: normalized and log transformed, but not scaled etc.). Settings in ‘Global Setting’ tab won’t apply to CLI.
@@ -248,7 +254,7 @@ The user can combine multiple annotations to create a combinatorial annotation t
 The user can also rename each annotation by creating abbreviations to shorten axis labels in figures.
 
 [![Figure F25_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F25_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F25_label.png)
-Supplementary Fig. 24. Comb. & Abbr. function allows user to create new annotation by combining multiple annotations and abbreviations to shorten axis labels in figures especially when custom combinatorial names are used.
+Supplementary Fig. 25. Comb. & Abbr. function allows user to create new annotation by combining multiple annotations and abbreviations to shorten axis labels in figures especially when custom combinatorial names are used.
 
 
 ## VIP – Other Functions
@@ -262,6 +268,6 @@ There are other convenient functions available to user, such as ‘Save’ or �
 ‘Brush’ is to display exactly these selected ranges from histograms of variables on the right panel in a nice table that is not available in original cellxgene.
 
 [![Figure F24_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F24_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F24_label.png)
-Supplementary Fig. 25. Other functions allow user to ‘Save’ or ‘Load’ session information, ‘Check All Annotations’ and show values of brushed ranges on histograms. 
+Supplementary Fig. 26. Other functions allow user to ‘Save’ or ‘Load’ session information, ‘Check All Annotations’ and show values of brushed ranges on histograms. 
 
 
