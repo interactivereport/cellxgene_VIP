@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 3 Methods | Supplementary Information: Cellxgene VIP unleashes full power of interactive visualization and integrative analysis of scRNA-seq, spatial transcriptomics, and multiome data</title>
   <meta name="description" content="Chapter 3 Methods | Supplementary Information: Cellxgene VIP unleashes full power of interactive visualization and integrative analysis of scRNA-seq, spatial transcriptomics, and multiome data" />
-  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.36 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 3 Methods | Supplementary Information: Cellxgene VIP unleashes full power of interactive visualization and integrative analysis of scRNA-seq, spatial transcriptomics, and multiome data" />
   <meta property="og:type" content="book" />
-  
   
   
   
@@ -31,7 +30,6 @@
   
 <link rel="prev" href="how-to-use-cellxgene-vip.html"/>
 <link rel="next" href="helpful-tips.html"/>
-<script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -49,8 +47,9 @@
 
 
 
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 
 
 <style type="text/css">
@@ -91,7 +90,7 @@ code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
 code span.at { color: #7d9029; } /* Attribute */
 code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
+code span.bu { color: #008000; } /* BuiltIn */
 code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
 code span.ch { color: #4070a0; } /* Char */
 code span.cn { color: #880000; } /* Constant */
@@ -104,7 +103,7 @@ code span.er { color: #ff0000; font-weight: bold; } /* Error */
 code span.ex { } /* Extension */
 code span.fl { color: #40a070; } /* Float */
 code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
+code span.im { color: #008000; font-weight: bold; } /* Import */
 code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
 code span.kw { color: #007020; font-weight: bold; } /* Keyword */
 code span.op { color: #666666; } /* Operator */
@@ -118,6 +117,10 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
@@ -157,16 +160,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.5" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-global-setting"><i class="fa fa-check"></i><b>2.5</b> VIP – Global Setting</a></li>
 <li class="chapter" data-level="2.6" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-add-genes-gene-sets"><i class="fa fa-check"></i><b>2.6</b> VIP – Add Genes / Gene Sets</a></li>
 <li class="chapter" data-level="2.7" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-violin-plot"><i class="fa fa-check"></i><b>2.7</b> VIP – Violin Plot</a></li>
-<li class="chapter" data-level="2.8" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-stacked-violin"><i class="fa fa-check"></i><b>2.8</b> VIP – Stacked Violin</a></li>
-<li class="chapter" data-level="2.9" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-heatmap"><i class="fa fa-check"></i><b>2.9</b> VIP – Heatmap</a></li>
-<li class="chapter" data-level="2.10" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-embedding"><i class="fa fa-check"></i><b>2.10</b> VIP – Embedding</a></li>
-<li class="chapter" data-level="2.11" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-dot-plot"><i class="fa fa-check"></i><b>2.11</b> VIP – Dot Plot</a></li>
-<li class="chapter" data-level="2.12" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-track-plot"><i class="fa fa-check"></i><b>2.12</b> VIP – Track Plot</a></li>
-<li class="chapter" data-level="2.13" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-density-plot"><i class="fa fa-check"></i><b>2.13</b> VIP – Density Plot</a></li>
-<li class="chapter" data-level="2.14" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-density-scatter-plot"><i class="fa fa-check"></i><b>2.14</b> VIP – Density Scatter Plot</a></li>
-<li class="chapter" data-level="2.15" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-dual-genes"><i class="fa fa-check"></i><b>2.15</b> VIP – Dual Genes</a></li>
-<li class="chapter" data-level="2.16" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-sankey-diagram"><i class="fa fa-check"></i><b>2.16</b> VIP – Sankey Diagram</a></li>
-<li class="chapter" data-level="2.17" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-stacked-barplot"><i class="fa fa-check"></i><b>2.17</b> VIP – Stacked Barplot</a></li>
+<li class="chapter" data-level="2.8" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-heatmap"><i class="fa fa-check"></i><b>2.8</b> VIP – Heatmap</a></li>
+<li class="chapter" data-level="2.9" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-embedding"><i class="fa fa-check"></i><b>2.9</b> VIP – Embedding</a></li>
+<li class="chapter" data-level="2.10" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-dot-plot"><i class="fa fa-check"></i><b>2.10</b> VIP – Dot Plot</a></li>
+<li class="chapter" data-level="2.11" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-track-plot"><i class="fa fa-check"></i><b>2.11</b> VIP – Track Plot</a></li>
+<li class="chapter" data-level="2.12" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-density-plot"><i class="fa fa-check"></i><b>2.12</b> VIP – Density Plot</a></li>
+<li class="chapter" data-level="2.13" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-density-scatter-plot"><i class="fa fa-check"></i><b>2.13</b> VIP – Density Scatter Plot</a></li>
+<li class="chapter" data-level="2.14" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-dual-genes"><i class="fa fa-check"></i><b>2.14</b> VIP – Dual Genes</a></li>
+<li class="chapter" data-level="2.15" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-sankey-diagram"><i class="fa fa-check"></i><b>2.15</b> VIP – Sankey Diagram</a></li>
+<li class="chapter" data-level="2.16" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-stacked-barplot"><i class="fa fa-check"></i><b>2.16</b> VIP – Stacked Barplot</a></li>
+<li class="chapter" data-level="2.17" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-gene-specificity"><i class="fa fa-check"></i><b>2.17</b> VIP – Gene Specificity</a></li>
 <li class="chapter" data-level="2.18" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-gene-detected"><i class="fa fa-check"></i><b>2.18</b> VIP – Gene Detected</a></li>
 <li class="chapter" data-level="2.19" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-deg-differential-expressed-genes"><i class="fa fa-check"></i><b>2.19</b> VIP – DEG (Differential Expressed Genes)</a></li>
 <li class="chapter" data-level="2.20" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip---pre-computed-deg"><i class="fa fa-check"></i><b>2.20</b> VIP - Pre-computed DEG</a></li>
@@ -183,6 +186,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.3" data-path="methods.html"><a href="methods.html#communication-between-vip-and-cellxgene-web-gui"><i class="fa fa-check"></i><b>3.3</b> Communication between VIP and cellxgene web GUI</a></li>
 <li class="chapter" data-level="3.4" data-path="methods.html"><a href="methods.html#diffxpy-integration"><i class="fa fa-check"></i><b>3.4</b> Diffxpy Integration</a></li>
 <li class="chapter" data-level="3.5" data-path="methods.html"><a href="methods.html#create-a-h5ad-file-from-seurat-object"><i class="fa fa-check"></i><b>3.5</b> Create a h5ad file from Seurat object</a></li>
+<li class="chapter" data-level="3.6" data-path="methods.html"><a href="methods.html#prepare-spatial-data-for-visualization"><i class="fa fa-check"></i><b>3.6</b> Prepare Spatial Data for Visualization</a>
+<ul>
+<li class="chapter" data-level="3.6.1" data-path="methods.html"><a href="methods.html#x-visium-data"><i class="fa fa-check"></i><b>3.6.1</b> 10X visium data</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="helpful-tips.html"><a href="helpful-tips.html"><i class="fa fa-check"></i><b>4</b> Helpful Tips</a>
 <ul>
@@ -220,10 +227,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="methods" class="section level1" number="3">
-<h1><span class="header-section-number">Chapter 3</span> Methods</h1>
-<div id="client-side-integration-by-a-jspanel-window-vip" class="section level2" number="3.1">
-<h2><span class="header-section-number">3.1</span> Client-side Integration by a jsPanel Window (VIP)</h2>
+<div id="methods" class="section level1 hasAnchor" number="3">
+<h1><span class="header-section-number">Chapter 3</span> Methods<a href="methods.html#methods" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="client-side-integration-by-a-jspanel-window-vip" class="section level2 hasAnchor" number="3.1">
+<h2><span class="header-section-number">3.1</span> Client-side Integration by a jsPanel Window (VIP)<a href="methods.html#client-side-integration-by-a-jspanel-window-vip" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Related lines in config.sh file.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="methods.html#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sed</span> <span class="at">-i</span> <span class="st">&quot;s|&lt;div id=</span><span class="dt">\&quot;</span><span class="st">root</span><span class="dt">\&quot;</span><span class="st">&gt;&lt;/div&gt;|</span><span class="va">$(</span><span class="fu">sed</span> <span class="at">-e</span> <span class="st">&#39;s/[&amp;\\/]/\\&amp;/g; s/|/\\|/g; s/$/\\/;&#39;</span> <span class="at">-e</span> <span class="st">&#39;$s/\\$//&#39;</span> index_template.insert<span class="va">)</span><span class="st">\n&amp;|&quot;</span> <span class="st">&quot;cellxgene/client/index_template.html&quot;</span></span></code></pre></div>
 <p>The content of the index_template.insert file.</p>
@@ -289,8 +296,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb9-60"><a href="methods.html#cb9-60" aria-hidden="true" tabindex="-1"></a><span class="op">&lt;/</span>script<span class="op">&gt;</span></span></code></pre></div>
 <p>All functional VIP HTML and JavaScript code will be in a new file called “interface.html”, which is out of cellxgene code base.</p>
 </div>
-<div id="server-side-integration" class="section level2" number="3.2">
-<h2><span class="header-section-number">3.2</span> Server-side Integration</h2>
+<div id="server-side-integration" class="section level2 hasAnchor" number="3.2">
+<h2><span class="header-section-number">3.2</span> Server-side Integration<a href="methods.html#server-side-integration" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Related in config.sh file.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="methods.html#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&#39;</span></span>
 <span id="cb10-2"><a href="methods.html#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="st">from server.app.VIPInterface import route</span></span>
@@ -343,8 +350,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb11-35"><a href="methods.html#cb11-35" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="at">-e</span> <span class="st">&quot;\nls -l </span><span class="va">$strweb</span><span class="st">\n&quot;</span></span>
 <span id="cb11-36"><a href="methods.html#cb11-36" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-l</span> <span class="va">$strweb</span></span></code></pre></div>
 </div>
-<div id="communication-between-vip-and-cellxgene-web-gui" class="section level2" number="3.3">
-<h2><span class="header-section-number">3.3</span> Communication between VIP and cellxgene web GUI</h2>
+<div id="communication-between-vip-and-cellxgene-web-gui" class="section level2 hasAnchor" number="3.3">
+<h2><span class="header-section-number">3.3</span> Communication between VIP and cellxgene web GUI<a href="methods.html#communication-between-vip-and-cellxgene-web-gui" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Cellxgene client utilizes React Redux that is the official React binding for Redux. It lets your React components read data from a Redux store, and dispatch actions to the store to update data.</p>
 <p>So, this following code in config.sh appends “window.store = store;” to the end of client/src/reducers/index.js of cellxgene source code to expose the store to the browser.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="methods.html#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="at">-e</span> <span class="st">&quot;\nwindow.store = store;&quot;</span> <span class="op">&gt;&gt;</span> cellxgene/client/src/reducers/index.js</span></code></pre></div>
@@ -367,8 +374,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb14-8"><a href="methods.html#cb14-8" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb14-9"><a href="methods.html#cb14-9" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
 </div>
-<div id="diffxpy-integration" class="section level2" number="3.4">
-<h2><span class="header-section-number">3.4</span> Diffxpy Integration</h2>
+<div id="diffxpy-integration" class="section level2 hasAnchor" number="3.4">
+<h2><span class="header-section-number">3.4</span> Diffxpy Integration<a href="methods.html#diffxpy-integration" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>This is the sample pseudocode, please see VIPInterface.py for actual implementation.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="methods.html#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scanpy <span class="im">as</span> sc</span>
 <span id="cb15-2"><a href="methods.html#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -385,8 +392,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb15-13"><a href="methods.html#cb15-13" aria-hidden="true" tabindex="-1"></a>deg <span class="op">=</span> de.test.two_sample(adata,<span class="st">&#39;comGrp&#39;</span>).summary()</span>
 <span id="cb15-14"><a href="methods.html#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co">#deg is a dataframe contains the folloing columns [&#39;gene&#39;,&#39;log2fc&#39;,&#39;pval&#39;,&#39;qval&#39;]</span></span></code></pre></div>
 </div>
-<div id="create-a-h5ad-file-from-seurat-object" class="section level2" number="3.5">
-<h2><span class="header-section-number">3.5</span> Create a h5ad file from Seurat object</h2>
+<div id="create-a-h5ad-file-from-seurat-object" class="section level2 hasAnchor" number="3.5">
+<h2><span class="header-section-number">3.5</span> Create a h5ad file from Seurat object<a href="methods.html#create-a-h5ad-file-from-seurat-object" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>First, export the following from Seurat object in R: <strong>expression matrix (assume normalized), metadata and coordinates (pca, tsne, umap) as separate txt files.</strong></p>
 <p>Next in Python, create an AnnData object from 10x (scanpy.read_h5ad function) as a starting point. Then replace the expression matrix, meta data and coordinates as shown in the following Python code block to generate a h5ad file.</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb16-1"><a href="methods.html#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
@@ -401,35 +408,179 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb16-10"><a href="methods.html#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-11"><a href="methods.html#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="co"># read clustering res</span></span>
 <span id="cb16-12"><a href="methods.html#cb16-12" aria-hidden="true" tabindex="-1"></a>xpca <span class="op">=</span> pd.read_csv(“.<span class="op">/</span>data<span class="op">/</span>harmony_clustered.h5ad.pca_coordinates.txt<span class="st">&quot;, sep=&#39;</span><span class="ch">\t</span><span class="st">&#39;, encoding=&#39;utf-8&#39;)</span></span>
-<span id="cb16-13"><a href="methods.html#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="st">xtsne = pd.read_csv(“./data/harmony_clustered.h5ad.tsne_coordinates.txt&quot;</span>, sep<span class="op">=</span><span class="st">&#39;</span><span class="ch">\t</span><span class="st">&#39;</span>, encoding<span class="op">=</span><span class="st">&#39;utf-8&#39;</span>)</span>
-<span id="cb16-14"><a href="methods.html#cb16-14" aria-hidden="true" tabindex="-1"></a>xumap <span class="op">=</span> pd.read_csv(“.<span class="op">/</span>data<span class="op">/</span>harmony_clustered.h5ad.umap_coordinates.txt<span class="st">&quot;, sep=&#39;</span><span class="ch">\t</span><span class="st">&#39;, encoding=&#39;utf-8&#39;)</span></span>
-<span id="cb16-15"><a href="methods.html#cb16-15" aria-hidden="true" tabindex="-1"></a><span class="st">xobs = pd.read_csv(“./data/harmony_clustered.h5ad.meta_data.txt&quot;</span>, sep<span class="op">=</span><span class="st">&#39;</span><span class="ch">\t</span><span class="st">&#39;</span>, encoding<span class="op">=</span><span class="st">&#39;utf-8&#39;</span>)</span>
+<span id="cb16-13"><a href="methods.html#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="er">xtsne = pd.read_csv(“./data/harmony_clustered.h5ad.tsne_coordinates.txt&quot;, sep=&#39;\t&#39;, encoding=&#39;utf-8&#39;)</span></span>
+<span id="cb16-14"><a href="methods.html#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="er">xumap = pd.read_csv(“./data/harmony_clustered.h5ad.umap_coordinates.txt&quot;, sep=&#39;\t&#39;, encoding=&#39;utf-8&#39;)</span></span>
+<span id="cb16-15"><a href="methods.html#cb16-15" aria-hidden="true" tabindex="-1"></a><span class="er">xobs = pd.read_csv(“./data/harmony_clustered.h5ad.meta_data.txt&quot;, sep=&#39;\t&#39;, encoding=&#39;utf-8&#39;)</span></span>
 <span id="cb16-16"><a href="methods.html#cb16-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-17"><a href="methods.html#cb16-17" aria-hidden="true" tabindex="-1"></a>xpca.set_index(<span class="st">&#39;index&#39;</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb16-18"><a href="methods.html#cb16-18" aria-hidden="true" tabindex="-1"></a>xtsne.set_index(<span class="st">&#39;index&#39;</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb16-19"><a href="methods.html#cb16-19" aria-hidden="true" tabindex="-1"></a>xumap.set_index(<span class="st">&#39;index&#39;</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb16-20"><a href="methods.html#cb16-20" aria-hidden="true" tabindex="-1"></a>xobs.set_index(<span class="st">&#39;index&#39;</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb16-17"><a href="methods.html#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="er">xpca.set_index(&#39;index&#39;, inplace=True)</span></span>
+<span id="cb16-18"><a href="methods.html#cb16-18" aria-hidden="true" tabindex="-1"></a><span class="er">xtsne.set_index(&#39;index&#39;, inplace=True)</span></span>
+<span id="cb16-19"><a href="methods.html#cb16-19" aria-hidden="true" tabindex="-1"></a><span class="er">xumap.set_index(&#39;index&#39;, inplace=True)</span></span>
+<span id="cb16-20"><a href="methods.html#cb16-20" aria-hidden="true" tabindex="-1"></a><span class="er">xobs.set_index(&#39;index&#39;, inplace=True)</span></span>
 <span id="cb16-21"><a href="methods.html#cb16-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-22"><a href="methods.html#cb16-22" aria-hidden="true" tabindex="-1"></a>adata.obsm[<span class="st">&#39;X_pca&#39;</span>] <span class="op">=</span> np.array(xpca.loc[adataRaw.obs.index])</span>
+<span id="cb16-22"><a href="methods.html#cb16-22" aria-hidden="true" tabindex="-1"></a><span class="er">adata.obsm[&#39;X_pca&#39;] = np.array(xpca.loc[adataRaw.obs.index])</span></span>
 <span id="cb16-23"><a href="methods.html#cb16-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-24"><a href="methods.html#cb16-24" aria-hidden="true" tabindex="-1"></a>adata.obsm[<span class="st">&#39;X_tsne&#39;</span>] <span class="op">=</span> np.array(xtsne.loc[adataRaw.obs.index])</span>
-<span id="cb16-25"><a href="methods.html#cb16-25" aria-hidden="true" tabindex="-1"></a>adata.obsm[<span class="st">&#39;X_umap&#39;</span>] <span class="op">=</span> np.array(xumap.loc[adataRaw.obs.index])</span>
-<span id="cb16-26"><a href="methods.html#cb16-26" aria-hidden="true" tabindex="-1"></a>adata.obs <span class="op">=</span> xobs.loc[adataRaw.obs.index] <span class="co"># this is a pandas dataframe</span></span>
+<span id="cb16-24"><a href="methods.html#cb16-24" aria-hidden="true" tabindex="-1"></a><span class="er">adata.obsm[&#39;X_tsne&#39;] = np.array(xtsne.loc[adataRaw.obs.index])</span></span>
+<span id="cb16-25"><a href="methods.html#cb16-25" aria-hidden="true" tabindex="-1"></a><span class="er">adata.obsm[&#39;X_umap&#39;] = np.array(xumap.loc[adataRaw.obs.index])</span></span>
+<span id="cb16-26"><a href="methods.html#cb16-26" aria-hidden="true" tabindex="-1"></a><span class="er">adata.obs = xobs.loc[adataRaw.obs.index] # this is a pandas dataframe</span></span>
 <span id="cb16-27"><a href="methods.html#cb16-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-28"><a href="methods.html#cb16-28" aria-hidden="true" tabindex="-1"></a><span class="co"># read in expression matrix as numpy.ndarray</span></span>
-<span id="cb16-29"><a href="methods.html#cb16-29" aria-hidden="true" tabindex="-1"></a>exp_mat <span class="op">=</span> np.loadtxt(fname <span class="op">=</span>”expression matrix .txt<span class="st">&quot;)</span></span>
-<span id="cb16-30"><a href="methods.html#cb16-30" aria-hidden="true" tabindex="-1"></a><span class="st">adata.X = exp_mat</span></span>
+<span id="cb16-28"><a href="methods.html#cb16-28" aria-hidden="true" tabindex="-1"></a><span class="er"># read in expression matrix as numpy.ndarray</span></span>
+<span id="cb16-29"><a href="methods.html#cb16-29" aria-hidden="true" tabindex="-1"></a><span class="er">exp_mat = np.loadtxt(fname =”expression matrix .txt&quot;)</span></span>
+<span id="cb16-30"><a href="methods.html#cb16-30" aria-hidden="true" tabindex="-1"></a><span class="er">adata.X = exp_mat</span></span>
 <span id="cb16-31"><a href="methods.html#cb16-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-32"><a href="methods.html#cb16-32" aria-hidden="true" tabindex="-1"></a><span class="st"># convert dense matrix into sparse matrix to save storage space and memory usage</span></span>
-<span id="cb16-33"><a href="methods.html#cb16-33" aria-hidden="true" tabindex="-1"></a><span class="st">adata.X = csc_matrix(adata.X)_matrix</span></span>
+<span id="cb16-32"><a href="methods.html#cb16-32" aria-hidden="true" tabindex="-1"></a><span class="er"># convert dense matrix into sparse matrix to save storage space and memory usage</span></span>
+<span id="cb16-33"><a href="methods.html#cb16-33" aria-hidden="true" tabindex="-1"></a><span class="er">adata.X = csc_matrix(adata.X)_matrix</span></span>
 <span id="cb16-34"><a href="methods.html#cb16-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-35"><a href="methods.html#cb16-35" aria-hidden="true" tabindex="-1"></a><span class="st"># add short description and initial graph settings. “|” and “by” are delimiters for VIP to parse the initial settings. Please follow the same rule for your own h5ad files.</span></span>
-<span id="cb16-36"><a href="methods.html#cb16-36" aria-hidden="true" tabindex="-1"></a><span class="st">adata.obs[&#39;&gt;Description&#39;] = [&#39;Human brain snRNAseq 46k cells (MS Nature 2019 Schirmer et al.); data normalized, log transformed and scaled UMI; platform - 10X v2 chemistry | embedding by umap; color by cell_type&#39;]*adata.n_obs</span></span>
+<span id="cb16-35"><a href="methods.html#cb16-35" aria-hidden="true" tabindex="-1"></a><span class="er"># add short description and initial graph settings. “|” and “by” are delimiters for VIP to parse the initial settings. Please follow the same rule for your own h5ad files.</span></span>
+<span id="cb16-36"><a href="methods.html#cb16-36" aria-hidden="true" tabindex="-1"></a><span class="er">adata.obs[&#39;&gt;Description&#39;] = [&#39;Human brain snRNAseq 46k cells (MS Nature 2019 Schirmer et al.); data normalized, log transformed and scaled UMI; platform - 10X v2 chemistry | embedding by umap; color by cell_type&#39;]*adata.n_obs</span></span>
 <span id="cb16-37"><a href="methods.html#cb16-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-38"><a href="methods.html#cb16-38" aria-hidden="true" tabindex="-1"></a><span class="st"># Then last step to save h5ad:</span></span>
-<span id="cb16-39"><a href="methods.html#cb16-39" aria-hidden="true" tabindex="-1"></a><span class="st">adata.write_h5ad(&quot;</span>final output.h5ad<span class="st">&quot;)</span></span></code></pre></div>
+<span id="cb16-38"><a href="methods.html#cb16-38" aria-hidden="true" tabindex="-1"></a><span class="er"># Then last step to save h5ad:</span></span>
+<span id="cb16-39"><a href="methods.html#cb16-39" aria-hidden="true" tabindex="-1"></a><span class="er">adata.write_h5ad(&quot;final output.h5ad&quot;)</span></span></code></pre></div>
 <p>When the h5ad file is uploaded to cellxgeneVIP, AnnData.X matrix is to be used for visualization and DEG analysis. By default, the data (e.g, raw count matrix) is assumed to be unscaled , however, if the data have been scaled or normalized, the user needs to turn off the option ‘Scale data to unit variance for plotting:’ in ‘Global Setting’.</p>
+</div>
+<div id="prepare-spatial-data-for-visualization" class="section level2 hasAnchor" number="3.6">
+<h2><span class="header-section-number">3.6</span> Prepare Spatial Data for Visualization<a href="methods.html#prepare-spatial-data-for-visualization" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="x-visium-data" class="section level3 hasAnchor" number="3.6.1">
+<h3><span class="header-section-number">3.6.1</span> 10X visium data<a href="methods.html#x-visium-data" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>This is the sample script for the spatial demo data set adapted from <a href="https://github.com/interactivereport/cellxgene_VIP/blob/master/notebook/spatial_transcriptomics.ipynb">cellxgene_VIP spatial transcriptomics notebook</a>. Please go to <a href="https://github.com/interactivereport/cellxgene_VIP/blob/master/notebook/spatial_transcriptomics.ipynb">cellxgene_VIP spatial transcriptomics notebook</a> to check the intermediate outputs.</p>
+<div id="download-input-demo-data" class="section level4 hasAnchor" number="3.6.1.1">
+<h4><span class="header-section-number">3.6.1.1</span> Download input demo data<a href="methods.html#download-input-demo-data" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="methods.html#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="at">-O</span> 10X_ST_demo.tar.gz https://zenodo.org/record/5765589/files/10X_ST_demo.tar.gz<span class="pp">?</span>download=1</span>
+<span id="cb17-2"><a href="methods.html#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="methods.html#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tar</span> <span class="at">-zxvf</span> 10X_ST_demo.tar.gz</span></code></pre></div>
+</div>
+<div id="using-python-to-prepare-10x-visium-spatial-data" class="section level4 hasAnchor" number="3.6.1.2">
+<h4><span class="header-section-number">3.6.1.2</span> Using python to prepare 10X visium spatial data<a href="methods.html#using-python-to-prepare-10x-visium-spatial-data" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb18"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb18-1"><a href="methods.html#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb18-2"><a href="methods.html#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb18-3"><a href="methods.html#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys, getopt</span>
+<span id="cb18-4"><a href="methods.html#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb18-5"><a href="methods.html#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb18-6"><a href="methods.html#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> copy</span>
+<span id="cb18-7"><a href="methods.html#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb18-8"><a href="methods.html#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image, ImageOps</span>
+<span id="cb18-9"><a href="methods.html#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scanpy <span class="im">as</span> </span>
+<span id="cb18-10"><a href="methods.html#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> anndata</span>
+<span id="cb18-11"><a href="methods.html#cb18-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-12"><a href="methods.html#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="co"># change directory to 10X_ST_demo which is just downloaded, if in current directory</span></span>
+<span id="cb18-13"><a href="methods.html#cb18-13" aria-hidden="true" tabindex="-1"></a>os.chdir(<span class="st">&#39;./10X_ST_demo&#39;</span>)</span>
+<span id="cb18-14"><a href="methods.html#cb18-14" aria-hidden="true" tabindex="-1"></a>inputfile<span class="op">=</span><span class="st">&#39;inputfiles.txt&#39;</span></span>
+<span id="cb18-15"><a href="methods.html#cb18-15" aria-hidden="true" tabindex="-1"></a>samples <span class="op">=</span> pd.read_csv(inputfile, header <span class="op">=</span> <span class="va">None</span>)[<span class="dv">0</span>]</span>
+<span id="cb18-16"><a href="methods.html#cb18-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-17"><a href="methods.html#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_each(i):</span>
+<span id="cb18-18"><a href="methods.html#cb18-18" aria-hidden="true" tabindex="-1"></a>    adata <span class="op">=</span> sc.read_visium(i)</span>
+<span id="cb18-19"><a href="methods.html#cb18-19" aria-hidden="true" tabindex="-1"></a>    adata.var_names_make_unique()</span>
+<span id="cb18-20"><a href="methods.html#cb18-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># flip Y axis to show correctly in cellxgene VIP</span></span>
+<span id="cb18-21"><a href="methods.html#cb18-21" aria-hidden="true" tabindex="-1"></a>    adata.obsm[<span class="st">&#39;spatial&#39;</span>][:,<span class="dv">1</span>] <span class="op">=</span> <span class="op">-</span>adata.obsm[<span class="st">&#39;spatial&#39;</span>][:,<span class="dv">1</span>]</span>
+<span id="cb18-22"><a href="methods.html#cb18-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span>(adata)</span>
+<span id="cb18-23"><a href="methods.html#cb18-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-24"><a href="methods.html#cb18-24" aria-hidden="true" tabindex="-1"></a>adatals <span class="op">=</span> [read_each(i) <span class="cf">for</span> i <span class="kw">in</span> samples]</span>
+<span id="cb18-25"><a href="methods.html#cb18-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-26"><a href="methods.html#cb18-26" aria-hidden="true" tabindex="-1"></a>sampleIDs <span class="op">=</span> samples.<span class="bu">str</span>.extract(<span class="vs">r&#39;10X_demo_data_(.*)&#39;</span>)</span>
+<span id="cb18-27"><a href="methods.html#cb18-27" aria-hidden="true" tabindex="-1"></a>sampleIDs <span class="op">=</span> <span class="st">&quot;V1_&quot;</span><span class="op">+</span> sampleIDs</span>
+<span id="cb18-28"><a href="methods.html#cb18-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-29"><a href="methods.html#cb18-29" aria-hidden="true" tabindex="-1"></a>adata_merge <span class="op">=</span> sc.AnnData.concatenate(<span class="op">*</span>adatals, batch_key<span class="op">=</span><span class="st">&#39;sample&#39;</span>, join<span class="op">=</span><span class="st">&#39;outer&#39;</span>, batch_categories<span class="op">=</span> sampleIDs[<span class="dv">0</span>].astype(<span class="st">&quot;category&quot;</span>))</span>
+<span id="cb18-30"><a href="methods.html#cb18-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-31"><a href="methods.html#cb18-31" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">list</span>(<span class="bu">range</span>(<span class="bu">len</span>(adatals))):</span>
+<span id="cb18-32"><a href="methods.html#cb18-32" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(i)</span>
+<span id="cb18-33"><a href="methods.html#cb18-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># add back the spatial coordinates as separate embeddings</span></span>
+<span id="cb18-34"><a href="methods.html#cb18-34" aria-hidden="true" tabindex="-1"></a>    adata_merge.obsm[<span class="st">&#39;X_spatial_&#39;</span><span class="op">+</span><span class="bu">list</span>(adatals[i].uns[<span class="st">&quot;spatial&quot;</span>])[<span class="dv">0</span>]] <span class="op">=</span> np.zeros(adata_merge.obsm[<span class="st">&#39;spatial&#39;</span>].shape)</span>
+<span id="cb18-35"><a href="methods.html#cb18-35" aria-hidden="true" tabindex="-1"></a>    adata_merge.obsm[<span class="st">&#39;X_spatial_&#39;</span><span class="op">+</span><span class="bu">list</span>(adatals[i].uns[<span class="st">&quot;spatial&quot;</span>])[<span class="dv">0</span>]][np.where(adata_merge.obs[<span class="st">&#39;sample&#39;</span>]<span class="op">==</span><span class="bu">list</span>(adatals[i].uns[<span class="st">&quot;spatial&quot;</span>])[<span class="dv">0</span>])] <span class="op">=</span> adatals[i].obsm[<span class="st">&#39;spatial&#39;</span>]</span>
+<span id="cb18-36"><a href="methods.html#cb18-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-37"><a href="methods.html#cb18-37" aria-hidden="true" tabindex="-1"></a>adata_merge.uns[<span class="st">&#39;spatial&#39;</span>] <span class="op">=</span> <span class="bu">dict</span>()</span>
+<span id="cb18-38"><a href="methods.html#cb18-38" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">list</span>(<span class="bu">range</span>(<span class="bu">len</span>(adatals))):</span>
+<span id="cb18-39"><a href="methods.html#cb18-39" aria-hidden="true" tabindex="-1"></a>    adata_merge.uns[<span class="st">&#39;spatial&#39;</span>][<span class="st">&quot;spatial_&quot;</span><span class="op">+</span><span class="bu">list</span>(adatals[i].uns[<span class="st">&quot;spatial&quot;</span>])[<span class="dv">0</span>]] <span class="op">=</span> adatals[i].uns[<span class="st">&#39;spatial&#39;</span>][<span class="bu">list</span>(adatals[i].uns[<span class="st">&quot;spatial&quot;</span>])[<span class="dv">0</span>]]</span>
+<span id="cb18-40"><a href="methods.html#cb18-40" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb18-41"><a href="methods.html#cb18-41" aria-hidden="true" tabindex="-1"></a><span class="co"># QC metric</span></span>
+<span id="cb18-42"><a href="methods.html#cb18-42" aria-hidden="true" tabindex="-1"></a>adata_merge.var[<span class="st">&quot;mt&quot;</span>] <span class="op">=</span> adata_merge.var_names.<span class="bu">str</span>.startswith(<span class="st">&quot;MT-&quot;</span>)</span>
+<span id="cb18-43"><a href="methods.html#cb18-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-44"><a href="methods.html#cb18-44" aria-hidden="true" tabindex="-1"></a>sc.pp.calculate_qc_metrics(adata_merge, qc_vars<span class="op">=</span>[<span class="st">&quot;mt&quot;</span>], inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb18-45"><a href="methods.html#cb18-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-46"><a href="methods.html#cb18-46" aria-hidden="true" tabindex="-1"></a><span class="co"># QC plots</span></span>
+<span id="cb18-47"><a href="methods.html#cb18-47" aria-hidden="true" tabindex="-1"></a>fig, axs <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">4</span>, figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">4</span>))</span>
+<span id="cb18-48"><a href="methods.html#cb18-48" aria-hidden="true" tabindex="-1"></a>sns.distplot(adata_merge.obs[<span class="st">&quot;total_counts&quot;</span>], kde<span class="op">=</span><span class="va">False</span>, ax<span class="op">=</span>axs[<span class="dv">0</span>])</span>
+<span id="cb18-49"><a href="methods.html#cb18-49" aria-hidden="true" tabindex="-1"></a>sns.distplot(adata_merge.obs[<span class="st">&quot;total_counts&quot;</span>][adata_merge.obs[<span class="st">&quot;total_counts&quot;</span>] <span class="op">&lt;</span> <span class="dv">10000</span>], kde<span class="op">=</span><span class="va">False</span>, bins<span class="op">=</span><span class="dv">40</span>, ax<span class="op">=</span>axs[<span class="dv">1</span>])</span>
+<span id="cb18-50"><a href="methods.html#cb18-50" aria-hidden="true" tabindex="-1"></a>sns.distplot(adata_merge.obs[<span class="st">&quot;n_genes_by_counts&quot;</span>], kde<span class="op">=</span><span class="va">False</span>, bins<span class="op">=</span><span class="dv">60</span>, ax<span class="op">=</span>axs[<span class="dv">2</span>])</span>
+<span id="cb18-51"><a href="methods.html#cb18-51" aria-hidden="true" tabindex="-1"></a>sns.distplot(adata_merge.obs[<span class="st">&quot;n_genes_by_counts&quot;</span>][adata_merge.obs[<span class="st">&quot;n_genes_by_counts&quot;</span>] <span class="op">&lt;</span> <span class="dv">4000</span>], kde<span class="op">=</span><span class="va">False</span>, bins<span class="op">=</span><span class="dv">60</span>, ax<span class="op">=</span>axs[<span class="dv">3</span>])</span>
+<span id="cb18-52"><a href="methods.html#cb18-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-53"><a href="methods.html#cb18-53" aria-hidden="true" tabindex="-1"></a><span class="co"># filtering, turn this off to keep all spots for visualization also cutoffs are case-by-case based on the QC plots</span></span>
+<span id="cb18-54"><a href="methods.html#cb18-54" aria-hidden="true" tabindex="-1"></a><span class="co">#sc.pp.filter_cells(adata, min_counts=5000)</span></span>
+<span id="cb18-55"><a href="methods.html#cb18-55" aria-hidden="true" tabindex="-1"></a><span class="co">#sc.pp.filter_cells(adata, max_counts=35000)</span></span>
+<span id="cb18-56"><a href="methods.html#cb18-56" aria-hidden="true" tabindex="-1"></a><span class="co">#adata = adata[adata.obs[&quot;pct_counts_mt&quot;] &lt; 20]</span></span>
+<span id="cb18-57"><a href="methods.html#cb18-57" aria-hidden="true" tabindex="-1"></a><span class="co">#print(f&quot;#cells after MT filter: {adata.n_obs}&quot;)</span></span>
+<span id="cb18-58"><a href="methods.html#cb18-58" aria-hidden="true" tabindex="-1"></a><span class="co">#sc.pp.filter_genes(adata, min_cells=10)</span></span>
+<span id="cb18-59"><a href="methods.html#cb18-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-60"><a href="methods.html#cb18-60" aria-hidden="true" tabindex="-1"></a><span class="co"># normalization, log1p transformation and select HVGs</span></span>
+<span id="cb18-61"><a href="methods.html#cb18-61" aria-hidden="true" tabindex="-1"></a>sc.pp.normalize_total(adata_merge, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb18-62"><a href="methods.html#cb18-62" aria-hidden="true" tabindex="-1"></a>sc.pp.log1p(adata_merge)</span>
+<span id="cb18-63"><a href="methods.html#cb18-63" aria-hidden="true" tabindex="-1"></a>sc.pp.highly_variable_genes(adata_merge, flavor<span class="op">=</span><span class="st">&quot;seurat&quot;</span>, n_top_genes<span class="op">=</span><span class="dv">2000</span>)</span>
+<span id="cb18-64"><a href="methods.html#cb18-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-65"><a href="methods.html#cb18-65" aria-hidden="true" tabindex="-1"></a><span class="co"># PCA, UMAP and clustering by leiden</span></span>
+<span id="cb18-66"><a href="methods.html#cb18-66" aria-hidden="true" tabindex="-1"></a>sc.pp.pca(adata_merge)</span>
+<span id="cb18-67"><a href="methods.html#cb18-67" aria-hidden="true" tabindex="-1"></a>sc.pp.neighbors(adata_merge)</span>
+<span id="cb18-68"><a href="methods.html#cb18-68" aria-hidden="true" tabindex="-1"></a>sc.tl.umap(adata_merge)</span>
+<span id="cb18-69"><a href="methods.html#cb18-69" aria-hidden="true" tabindex="-1"></a>sc.tl.leiden(adata_merge, key_added<span class="op">=</span><span class="st">&quot;clusters&quot;</span>)</span>
+<span id="cb18-70"><a href="methods.html#cb18-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-71"><a href="methods.html#cb18-71" aria-hidden="true" tabindex="-1"></a><span class="co"># collect sample names</span></span>
+<span id="cb18-72"><a href="methods.html#cb18-72" aria-hidden="true" tabindex="-1"></a>sampleNames <span class="op">=</span> <span class="bu">list</span>()</span>
+<span id="cb18-73"><a href="methods.html#cb18-73" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> <span class="bu">list</span>(adata_merge.obsm):</span>
+<span id="cb18-74"><a href="methods.html#cb18-74" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="st">&quot;spatial_&quot;</span> <span class="kw">in</span> f: <span class="co"># search for the pattern</span></span>
+<span id="cb18-75"><a href="methods.html#cb18-75" aria-hidden="true" tabindex="-1"></a>        library_id<span class="op">=</span>f.replace(<span class="st">&quot;X_spatial_&quot;</span>,<span class="st">&quot;&quot;</span>) <span class="co"># parse the string and get the sample id</span></span>
+<span id="cb18-76"><a href="methods.html#cb18-76" aria-hidden="true" tabindex="-1"></a>        <span class="co">#library_id=library_id.replace(&quot;V1_&quot;,&quot;&quot;)</span></span>
+<span id="cb18-77"><a href="methods.html#cb18-77" aria-hidden="true" tabindex="-1"></a>        sampleNames.append(library_id)</span>
+<span id="cb18-78"><a href="methods.html#cb18-78" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb18-79"><a href="methods.html#cb18-79" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image</span>
+<span id="cb18-80"><a href="methods.html#cb18-80" aria-hidden="true" tabindex="-1"></a>spatial<span class="op">=</span>adata_merge.uns[<span class="st">&quot;spatial&quot;</span>]</span>
+<span id="cb18-81"><a href="methods.html#cb18-81" aria-hidden="true" tabindex="-1"></a>dim<span class="op">=</span><span class="st">&#39;&#39;</span></span>
+<span id="cb18-82"><a href="methods.html#cb18-82" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb18-83"><a href="methods.html#cb18-83" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> dim<span class="op">==</span><span class="st">&#39;&#39;</span>:</span>
+<span id="cb18-84"><a href="methods.html#cb18-84" aria-hidden="true" tabindex="-1"></a>    height <span class="op">=</span> math.ceil(math.sqrt(<span class="bu">len</span>(samples)))</span>
+<span id="cb18-85"><a href="methods.html#cb18-85" aria-hidden="true" tabindex="-1"></a>    width <span class="op">=</span> math.ceil(<span class="bu">len</span>(samples)<span class="op">/</span>height)</span>
+<span id="cb18-86"><a href="methods.html#cb18-86" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb18-87"><a href="methods.html#cb18-87" aria-hidden="true" tabindex="-1"></a>    width,height <span class="op">=</span> dim.split(<span class="st">&#39;x&#39;</span>)</span>
+<span id="cb18-88"><a href="methods.html#cb18-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-89"><a href="methods.html#cb18-89" aria-hidden="true" tabindex="-1"></a>idx <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb18-90"><a href="methods.html#cb18-90" aria-hidden="true" tabindex="-1"></a>size<span class="op">=</span><span class="dv">700</span></span>
+<span id="cb18-91"><a href="methods.html#cb18-91" aria-hidden="true" tabindex="-1"></a><span class="co">#creates a new empty image, RGB mode, and size 1400 by 1400.</span></span>
+<span id="cb18-92"><a href="methods.html#cb18-92" aria-hidden="true" tabindex="-1"></a>new_im <span class="op">=</span> Image.new(<span class="st">&#39;RGB&#39;</span>, (size<span class="op">*</span>width,size<span class="op">*</span>height))</span>
+<span id="cb18-93"><a href="methods.html#cb18-93" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>,size<span class="op">*</span>width,size):</span>
+<span id="cb18-94"><a href="methods.html#cb18-94" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>,size<span class="op">*</span>height,size):</span>
+<span id="cb18-95"><a href="methods.html#cb18-95" aria-hidden="true" tabindex="-1"></a>        <span class="co"># load the image from the object</span></span>
+<span id="cb18-96"><a href="methods.html#cb18-96" aria-hidden="true" tabindex="-1"></a>        <span class="co">#im = Image.fromarray((spatial[&quot;spatial_V1_&quot;+samples[idx]][&quot;images&quot;][&quot;lowres&quot;]* 255).round().astype(np.uint8)) # found a solution to covert float32 to unit8</span></span>
+<span id="cb18-97"><a href="methods.html#cb18-97" aria-hidden="true" tabindex="-1"></a>        im <span class="op">=</span> Image.fromarray((spatial[<span class="st">&quot;spatial_&quot;</span><span class="op">+</span>sampleNames[idx]][<span class="st">&quot;images&quot;</span>][<span class="st">&quot;lowres&quot;</span>]<span class="op">*</span> <span class="dv">255</span>).<span class="bu">round</span>().astype(np.uint8)) <span class="co"># found a solution to covert float32 to unit8</span></span>
+<span id="cb18-98"><a href="methods.html#cb18-98" aria-hidden="true" tabindex="-1"></a>        <span class="co"># paste images together</span></span>
+<span id="cb18-99"><a href="methods.html#cb18-99" aria-hidden="true" tabindex="-1"></a>        new_im.paste(im, (j,i))</span>
+<span id="cb18-100"><a href="methods.html#cb18-100" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(idx)</span>
+<span id="cb18-101"><a href="methods.html#cb18-101" aria-hidden="true" tabindex="-1"></a>        idx <span class="op">=</span> idx<span class="op">+</span><span class="dv">1</span></span>
+<span id="cb18-102"><a href="methods.html#cb18-102" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> idx<span class="op">&gt;=</span><span class="bu">len</span>(sampleNames):</span>
+<span id="cb18-103"><a href="methods.html#cb18-103" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
+<span id="cb18-104"><a href="methods.html#cb18-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-105"><a href="methods.html#cb18-105" aria-hidden="true" tabindex="-1"></a><span class="co"># fake a adata.uns by providing merged lowres image and scale factors 1</span></span>
+<span id="cb18-106"><a href="methods.html#cb18-106" aria-hidden="true" tabindex="-1"></a>adata_merge.uns[<span class="st">&#39;spatial&#39;</span>][<span class="st">&#39;spatial_Merged&#39;</span>] <span class="op">=</span> copy.deepcopy(adata_merge.uns[<span class="st">&#39;spatial&#39;</span>][<span class="bu">list</span>(adata_merge.uns[<span class="st">&#39;spatial&#39;</span>])[<span class="dv">0</span>]])</span>
+<span id="cb18-107"><a href="methods.html#cb18-107" aria-hidden="true" tabindex="-1"></a>adata_merge.uns[<span class="st">&#39;spatial&#39;</span>][<span class="st">&#39;spatial_Merged&#39;</span>][<span class="st">&#39;images&#39;</span>][<span class="st">&quot;hires&quot;</span>] <span class="op">=</span> np.asarray(new_im)</span>
+<span id="cb18-108"><a href="methods.html#cb18-108" aria-hidden="true" tabindex="-1"></a>adata_merge.uns[<span class="st">&#39;spatial&#39;</span>][<span class="st">&#39;spatial_Merged&#39;</span>][<span class="st">&#39;images&#39;</span>][<span class="st">&quot;lowres&quot;</span>] <span class="op">=</span> np.asarray(new_im)</span>
+<span id="cb18-109"><a href="methods.html#cb18-109" aria-hidden="true" tabindex="-1"></a>adata_merge.uns[<span class="st">&#39;spatial&#39;</span>][<span class="st">&#39;spatial_Merged&#39;</span>][<span class="st">&#39;scalefactors&#39;</span>][<span class="st">&#39;tissue_lowres_scalef&#39;</span>] <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb18-110"><a href="methods.html#cb18-110" aria-hidden="true" tabindex="-1"></a>adata_merge.uns[<span class="st">&#39;spatial&#39;</span>][<span class="st">&#39;spatial_Merged&#39;</span>][<span class="st">&#39;scalefactors&#39;</span>][<span class="st">&#39;tissue_hires_scalef&#39;</span>] <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb18-111"><a href="methods.html#cb18-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-112"><a href="methods.html#cb18-112" aria-hidden="true" tabindex="-1"></a><span class="co"># add back the spatial coordinates as separate embeddings</span></span>
+<span id="cb18-113"><a href="methods.html#cb18-113" aria-hidden="true" tabindex="-1"></a>idx <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb18-114"><a href="methods.html#cb18-114" aria-hidden="true" tabindex="-1"></a>adata_merge.obsm[<span class="st">&#39;X_spatial_Merged&#39;</span>] <span class="op">=</span> adata_merge.obsm[<span class="st">&#39;spatial&#39;</span>]</span>
+<span id="cb18-115"><a href="methods.html#cb18-115" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>,size<span class="op">*</span>width,size):</span>
+<span id="cb18-116"><a href="methods.html#cb18-116" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>,size<span class="op">*</span>height,size):</span>
+<span id="cb18-117"><a href="methods.html#cb18-117" aria-hidden="true" tabindex="-1"></a>        <span class="co">#library_id=&#39;spatial_V1_&#39;+samples[idx] # parse the string and get the sample id</span></span>
+<span id="cb18-118"><a href="methods.html#cb18-118" aria-hidden="true" tabindex="-1"></a>        library_id<span class="op">=</span><span class="st">&#39;spatial_&#39;</span><span class="op">+</span>sampleNames[idx] <span class="co"># parse the string and get the sample id</span></span>
+<span id="cb18-119"><a href="methods.html#cb18-119" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(library_id)</span>
+<span id="cb18-120"><a href="methods.html#cb18-120" aria-hidden="true" tabindex="-1"></a>        tissue_lowres_scalef <span class="op">=</span> spatial[library_id][<span class="st">&#39;scalefactors&#39;</span>][<span class="st">&#39;tissue_lowres_scalef&#39;</span>]</span>
+<span id="cb18-121"><a href="methods.html#cb18-121" aria-hidden="true" tabindex="-1"></a>        adata_merge.obsm[<span class="st">&#39;X_spatial_Merged&#39;</span>][np.where(adata_merge.obs[<span class="st">&#39;sample&#39;</span>]<span class="op">==</span>sampleNames[idx])] <span class="op">=</span> copy.deepcopy(adatals[idx].obsm[<span class="st">&#39;spatial&#39;</span>])</span>
+<span id="cb18-122"><a href="methods.html#cb18-122" aria-hidden="true" tabindex="-1"></a>        adata_merge.obsm[<span class="st">&#39;X_spatial_Merged&#39;</span>][np.where(adata_merge.obs[<span class="st">&#39;sample&#39;</span>]<span class="op">==</span>sampleNames[idx]),<span class="dv">1</span>] <span class="op">=</span> adatals[idx].obsm[<span class="st">&#39;spatial&#39;</span>][:,<span class="dv">1</span>]<span class="op">*</span>tissue_lowres_scalef <span class="op">-</span> i</span>
+<span id="cb18-123"><a href="methods.html#cb18-123" aria-hidden="true" tabindex="-1"></a>        adata_merge.obsm[<span class="st">&#39;X_spatial_Merged&#39;</span>][np.where(adata_merge.obs[<span class="st">&#39;sample&#39;</span>]<span class="op">==</span>sampleNames[idx]),<span class="dv">0</span>] <span class="op">=</span> adatals[idx].obsm[<span class="st">&#39;spatial&#39;</span>][:,<span class="dv">0</span>]<span class="op">*</span>tissue_lowres_scalef <span class="op">+</span> j</span>
+<span id="cb18-124"><a href="methods.html#cb18-124" aria-hidden="true" tabindex="-1"></a>        idx <span class="op">=</span> idx<span class="op">+</span><span class="dv">1</span></span>
+<span id="cb18-125"><a href="methods.html#cb18-125" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> idx<span class="op">&gt;=</span><span class="bu">len</span>(sampleNames):</span>
+<span id="cb18-126"><a href="methods.html#cb18-126" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
+<span id="cb18-127"><a href="methods.html#cb18-127" aria-hidden="true" tabindex="-1"></a>outputfile <span class="op">=</span> <span class="st">&#39;10X_data.h5ad&#39;</span></span>
+<span id="cb18-128"><a href="methods.html#cb18-128" aria-hidden="true" tabindex="-1"></a>adata_merge.write_h5ad(outputfile)</span></code></pre></div>
 
+</div>
+</div>
 </div>
 </div>
             </section>

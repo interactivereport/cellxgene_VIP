@@ -4,6 +4,8 @@
 Such nulls in categorical annotation would cause trouble in VIP because it cannot be converted to string. Here is how to handle it, let’s call the annotation X_annotation:
 
 
+
+
 ```python
 # Cast to str from categorical
 adata.obs = adata.obs.astype({'X_annotation':'str'})
@@ -34,5 +36,4 @@ import scanpy as sc
 adata = sc.read_h5ad(<input h5ad>)
 adata.__dict__['_raw'].__dict__['_var'] = adata.__dict__['_raw'].__dict__['_var'].rename(columns={'_index': 'features'})
 ```
-
 

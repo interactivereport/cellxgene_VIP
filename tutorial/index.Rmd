@@ -102,5 +102,5 @@ The development and delivery of this material has also contributed by:
 knitr::write_bib(c(
   .packages(), 'bookdown', 'knitr', 'rmarkdown'
 ), 'packages.bib')
-library(reticulate)
+#library(reticulate)
 ```

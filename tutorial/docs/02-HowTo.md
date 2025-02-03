@@ -73,23 +73,24 @@ Note: The cursor will turn to cross icon while hovering over a gene name, then c
 
 ## VIP – Violin Plot
 
-To plot expression of gene among categories of an annotation, e.g., cell type, sex, or batch etc.
+To visualize gene expression across annotation categories (e.g., cell type, sex, batch, or treatment), the tool provides four distinct violin plot configurations based on combinations of:
+* Single or multiple genes
+* Single or multiple categorical factors
+These configurations are organized into four tabs, allowing users to flexibly explore relationships between gene expression patterns and experimental variables.
 Step 1. User needs to select the group(s) of cells for plotting. These groups can be created by using selection tools illustrated in tutorial section 2, 3 and/or 4. Initially, all of cells are gathered in ‘Group 1’ by default.
 Step 2. Select a gene from the gene list which could be added as shown in section 6. An expression level cutoff can be set to further filter out cells with low level expression of such gene.
 Step 3. Select the annotation to group cells for plotting.
 Step 4. Execute plotting, get plotting data (i.e., gene expression), manipulate image (e.g., zoom in/out) or save the image. 
 
 [![Figure F7_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F7_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F7_label.png)
-Supplementary Fig. 7. Violin plot of gene expression values of a gene grouped by cell type. 
+Supplementary Fig. 7a. Violin plot of gene expression values of a gene grouped by cell type. 
 
 Note: Figure resolution and format can be set in “Global Setting” tab as shown in tutorial section 5.
 
-## VIP – Stacked Violin
-Beyond plotting expression values of a gene, stacked violin allows plotting of multiple genes together.
+Beyond plotting expression values of a gene, stacked violin plots in the Multi-genes and Multi-genes/Multi-factors tabs allow plotting of multiple genes together grouped by one or two categorical factors.
 
 [![Figure F8_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F8_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F8_label.png)
-Supplementary Fig. 8. Stacked Violin plot of multiple genes and/or gene set.
-
+Supplementary Fig. 7b. Stacked Violin plot of multiple genes and/or gene set.
 
 Note: If collapsing of gene sets is set to ‘Yes’, average gene expression of genes in a set is used for plotting.
 
@@ -97,7 +98,7 @@ Note: If collapsing of gene sets is set to ‘Yes’, average gene expression of
 To show or compare the expression level (i.e., expression value or expression Z-score) of multiple genes among the selected group of cells.
 
 [![Figure F9_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F9_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F9_label.png)
-Supplementary Fig. 9. Heatmap of gene expression in cells grouped by annotations.
+Supplementary Fig. 8. Heatmap of gene expression in cells grouped by annotations.
 
 
 
@@ -109,7 +110,7 @@ The user can color cells in the embedding plots by multiple annotations (e.g., c
 Besides coloring cells by annotations, user can color cells based on gene expression level of selected genes in the embedding plots.
 
 [![Figure F10_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F10_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F10_label.png)
-Supplementary Fig. 10. Embedding plotting of expression level of genes or gene set in the cells split by categories of an annotation.
+Supplementary Fig. 9. Embedding plotting of expression level of genes or gene set in the cells split by categories of an annotation.
 
 
 
@@ -117,7 +118,7 @@ Supplementary Fig. 10. Embedding plotting of expression level of genes or gene s
 To show the fraction of cells (annotated by dot size) expressing a gene in each group and the averaged expression level of the gene (annotated by color intensity) in the group.
 
 [![Figure F11_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F11_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F11_label.png)
-Supplementary Fig. 11. Dot plotting of the fraction of cells expressing genes above a cutoff in each categorie of the selected annotation.
+Supplementary Fig. 10. Dot plotting of the fraction of cells expressing genes above a cutoff in each categorie of the selected annotation.
 
 
 Note: The number of cells represented by side bar chart are always numbers of cells distributed in each category of certain annotation without filtering. It will give an accurate estimate of number of cells in each bubble in the plot. The use of the plot is only meaningful when the counts matrix contains zeros representing no gene counts. Its visualization does not work for scaled or corrected matrices in which zero counts had been replaced by other values, see https://scanpy-tutorials.readthedocs.io/en/multiomics/visualizing-marker-genes.html#Dot-plots.
@@ -127,7 +128,7 @@ Note: The number of cells represented by side bar chart are always numbers of ce
 To show the expression of gene(s) of individual cells as vertical lines grouped by the selected annotation on x-axis. Instead of a color scale, the gene expression is represented by height.
 
 [![Figure F12_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F12_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F12_label.png)
-Supplementary Fig. 12. Track plotting of expression of genes or gene set in each category of the selected annotation. Gene expression levels are represented by the heights of vertical lines.
+Supplementary Fig. 11. Track plotting of expression of genes or gene set in each category of the selected annotation. Gene expression levels are represented by the heights of vertical lines.
 
 
 ## VIP – Density Plot
@@ -138,14 +139,14 @@ The bandwidth defines how close to a value point the distance between two points
 
 [![Figure F13_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F13_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F13_label.png)
 
-Supplementary Fig. 13. Density plotting of the expression of genes in each group split by one annotation while colored by another.
+Supplementary Fig. 12. Density plotting of the expression of genes in each group split by one annotation while colored by another.
 
 ## VIP – Density Scatter Plot
 Besides plotting of expression density of single gene, density scatter plot allows to explore the joint expression density of two genes in the cells expressing both genes above a cutoff.
 
 [![Figure F27_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F27_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F27_label.png)
 
-Supplementary Fig. 14. Density scatter plotting of expression of two genes in the selected cells.
+Supplementary Fig. 13. Density scatter plotting of expression of two genes in the selected cells.
 
 
 ## VIP – Dual Genes
@@ -153,7 +154,7 @@ To view the relationship of expression levels of two genes in selected cells. It
 
 [![Figure F15_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F15_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F15_label.png)
 
-Supplementary Fig. 15. Embedding plotting of the expression of two genes in the selected cell group(s). 
+Supplementary Fig. 14. Embedding plotting of the expression of two genes in the selected cell group(s). 
 
 
 ## VIP – Sankey Diagram
@@ -164,19 +165,25 @@ The diagram is also shown in an interactive way so that user can change the layo
 In addition, when you hover over mouse on a box, you can get detailed information about the source and target of flow
 
 [![Figure F16_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F16_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F16_label.png)
-Supplementary Fig. 16. Sankey diagram provides quick and easy way to explore the inter-dependent relationship of variables.
+Supplementary Fig. 15. Sankey diagram provides quick and easy way to explore the inter-dependent relationship of variables.
 
 
 ## VIP – Stacked Barplot
-To show the distribution of cells among categories of an annotation and/or ranges of expression of agene. Only two factors from annotations or genes can be chosen. The plot allows user to explore the distribution of cells in different views interactively.
+To show the distribution of cells among categories of an annotation and/or ranges of expression of a gene. Only two factors from annotations or genes can be chosen. The plot allows user to explore the distribution of cells in different views interactively.
 
 [![Figure F17_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F17_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F17_label.png)
-Supplementary Fig. 17. The distribution of cells in the selected group(s) regarding categories of an annotation and expression ranges of a gene by three different layout:count, streamgraph, proportion.
+Supplementary Fig. 16. The distribution of cells in the selected group(s) regarding categories of an annotation and expression ranges of a gene by three different layout:count, streamgraph, proportion.
 
 
 <!-- ![Expand view to show percentage instead of numbers of cells](figures/F17B.jpg) -->
 
 <!-- ![Mouse over a bar to show details. Y-axis is re-located for better view and the number of cells represented by the bar is also shown in legend.](figures/F17C.jpg) -->
+
+## VIP – Gene Specificity
+To show the distribution of gene expression among categories of an annotation
+
+[![Figure F29_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F29_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F29_label.png)
+Supplementary Fig. 17. The distribution of gene expression among categories of an annotation
 
 ## VIP – Gene Detected
 To show the number of genes expressed above the specified expression cut-off in the selected group(s) of cells.
@@ -214,7 +221,7 @@ This functional module allows user to identify marker genes in the selected grou
 
 Four methods are provided for detecting marker genes including logreg, t-test, Wilcoxon, and t-testoverest_var. For each identified marker gene, the gene name, scores (the z-score underlying the computation of a p-value for each gene for each group) and assigned group are listed in the output table.
 
-In each annotation category, top ranked marker genes (this example shows top 2) will be plotted by score in comparison to the rest of the categories.
+In each annotation category, top ranked marker genes (this example shows top 10) will be plotted by score in comparison to the rest of the categories.
 
 [![Figure F22_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F22_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F22_label.png)
 Supplementary Fig. 21. Marker genes detection in the selected group(s) of cells regarding the selected annotation categories.
@@ -230,6 +237,7 @@ Note: The four methods implementations by calling scanpy.tl.rank_genes_groups fu
 [![Figure F26_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F26_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F26_label.png)
 Supplementary Fig. 22. Spatial transcriptomics analysis. 
 
+Please check section 3.6 for preparing the spatial data set for visualization.
 
 ## VIP – Command Line Interface
 Although cellxgene VIP provides a rich set of visualization modules as shown above, command line interface is also built to allow unlimited visualization and analytical capabilities by power user who know how to program in Python / R languages. 

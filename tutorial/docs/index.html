@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Supplementary Information: Cellxgene VIP unleashes full power of interactive visualization and integrative analysis of scRNA-seq, spatial transcriptomics, and multiome data</title>
   <meta name="description" content="Supplementary Information: Cellxgene VIP unleashes full power of interactive visualization and integrative analysis of scRNA-seq, spatial transcriptomics, and multiome data" />
-  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.36 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Supplementary Information: Cellxgene VIP unleashes full power of interactive visualization and integrative analysis of scRNA-seq, spatial transcriptomics, and multiome data" />
   <meta property="og:type" content="book" />
-  
   
   
   
@@ -31,7 +30,6 @@
   
 
 <link rel="next" href="how-to-use-cellxgene-vip.html"/>
-<script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -49,8 +47,9 @@
 
 
 
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 
 
 <style type="text/css">
@@ -91,7 +90,7 @@ code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
 code span.at { color: #7d9029; } /* Attribute */
 code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
+code span.bu { color: #008000; } /* BuiltIn */
 code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
 code span.ch { color: #4070a0; } /* Char */
 code span.cn { color: #880000; } /* Constant */
@@ -104,7 +103,7 @@ code span.er { color: #ff0000; font-weight: bold; } /* Error */
 code span.ex { } /* Extension */
 code span.fl { color: #40a070; } /* Float */
 code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
+code span.im { color: #008000; font-weight: bold; } /* Import */
 code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
 code span.kw { color: #007020; font-weight: bold; } /* Keyword */
 code span.op { color: #666666; } /* Operator */
@@ -118,6 +117,10 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
@@ -157,16 +160,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.5" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-global-setting"><i class="fa fa-check"></i><b>2.5</b> VIP – Global Setting</a></li>
 <li class="chapter" data-level="2.6" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-add-genes-gene-sets"><i class="fa fa-check"></i><b>2.6</b> VIP – Add Genes / Gene Sets</a></li>
 <li class="chapter" data-level="2.7" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-violin-plot"><i class="fa fa-check"></i><b>2.7</b> VIP – Violin Plot</a></li>
-<li class="chapter" data-level="2.8" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-heatmap"><i class="fa fa-check"></i><b>2.9</b> VIP – Heatmap</a></li>
-<li class="chapter" data-level="2.9" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-embedding"><i class="fa fa-check"></i><b>2.10</b> VIP – Embedding</a></li>
-<li class="chapter" data-level="2.10" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-dot-plot"><i class="fa fa-check"></i><b>2.11</b> VIP – Dot Plot</a></li>
-<li class="chapter" data-level="2.11" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-track-plot"><i class="fa fa-check"></i><b>2.12</b> VIP – Track Plot</a></li>
-<li class="chapter" data-level="2.12" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-density-plot"><i class="fa fa-check"></i><b>2.13</b> VIP – Density Plot</a></li>
-<li class="chapter" data-level="2.13" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-density-scatter-plot"><i class="fa fa-check"></i><b>2.14</b> VIP – Density Scatter Plot</a></li>
-<li class="chapter" data-level="2.14" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-dual-genes"><i class="fa fa-check"></i><b>2.15</b> VIP – Dual Genes</a></li>
-<li class="chapter" data-level="2.15" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-sankey-diagram"><i class="fa fa-check"></i><b>2.16</b> VIP – Sankey Diagram</a></li>
-<li class="chapter" data-level="2.16" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-stacked-barplot"><i class="fa fa-check"></i><b>2.17</b> VIP – Stacked Barplot</a></li>
-<li class="chapter" data-level="2.17" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-gene-specificity"><i class="fa fa-check"></i><b>2.8</b> VIP – Gene Specificity</a></li>
+<li class="chapter" data-level="2.8" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-heatmap"><i class="fa fa-check"></i><b>2.8</b> VIP – Heatmap</a></li>
+<li class="chapter" data-level="2.9" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-embedding"><i class="fa fa-check"></i><b>2.9</b> VIP – Embedding</a></li>
+<li class="chapter" data-level="2.10" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-dot-plot"><i class="fa fa-check"></i><b>2.10</b> VIP – Dot Plot</a></li>
+<li class="chapter" data-level="2.11" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-track-plot"><i class="fa fa-check"></i><b>2.11</b> VIP – Track Plot</a></li>
+<li class="chapter" data-level="2.12" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-density-plot"><i class="fa fa-check"></i><b>2.12</b> VIP – Density Plot</a></li>
+<li class="chapter" data-level="2.13" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-density-scatter-plot"><i class="fa fa-check"></i><b>2.13</b> VIP – Density Scatter Plot</a></li>
+<li class="chapter" data-level="2.14" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-dual-genes"><i class="fa fa-check"></i><b>2.14</b> VIP – Dual Genes</a></li>
+<li class="chapter" data-level="2.15" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-sankey-diagram"><i class="fa fa-check"></i><b>2.15</b> VIP – Sankey Diagram</a></li>
+<li class="chapter" data-level="2.16" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-stacked-barplot"><i class="fa fa-check"></i><b>2.16</b> VIP – Stacked Barplot</a></li>
+<li class="chapter" data-level="2.17" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-gene-specificity"><i class="fa fa-check"></i><b>2.17</b> VIP – Gene Specificity</a></li>
 <li class="chapter" data-level="2.18" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-gene-detected"><i class="fa fa-check"></i><b>2.18</b> VIP – Gene Detected</a></li>
 <li class="chapter" data-level="2.19" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-deg-differential-expressed-genes"><i class="fa fa-check"></i><b>2.19</b> VIP – DEG (Differential Expressed Genes)</a></li>
 <li class="chapter" data-level="2.20" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip---pre-computed-deg"><i class="fa fa-check"></i><b>2.20</b> VIP - Pre-computed DEG</a></li>
@@ -183,6 +186,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.3" data-path="methods.html"><a href="methods.html#communication-between-vip-and-cellxgene-web-gui"><i class="fa fa-check"></i><b>3.3</b> Communication between VIP and cellxgene web GUI</a></li>
 <li class="chapter" data-level="3.4" data-path="methods.html"><a href="methods.html#diffxpy-integration"><i class="fa fa-check"></i><b>3.4</b> Diffxpy Integration</a></li>
 <li class="chapter" data-level="3.5" data-path="methods.html"><a href="methods.html#create-a-h5ad-file-from-seurat-object"><i class="fa fa-check"></i><b>3.5</b> Create a h5ad file from Seurat object</a></li>
+<li class="chapter" data-level="3.6" data-path="methods.html"><a href="methods.html#prepare-spatial-data-for-visualization"><i class="fa fa-check"></i><b>3.6</b> Prepare Spatial Data for Visualization</a>
+<ul>
+<li class="chapter" data-level="3.6.1" data-path="methods.html"><a href="methods.html#x-visium-data"><i class="fa fa-check"></i><b>3.6.1</b> 10X visium data</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="helpful-tips.html"><a href="helpful-tips.html"><i class="fa fa-check"></i><b>4</b> Helpful Tips</a>
 <ul>
@@ -223,17 +230,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="header">
 <h1 class="title">Supplementary Information: Cellxgene VIP unleashes full power of interactive visualization and integrative analysis of scRNA-seq, spatial transcriptomics, and multiome data</h1>
 </div>
-<div id="getting-started-with-cellxgene-vip" class="section level1" number="1">
-<h1><span class="header-section-number">Chapter 1</span> Getting started with cellxgene VIP</h1>
+<div id="getting-started-with-cellxgene-vip" class="section level1 hasAnchor" number="1">
+<h1><span class="header-section-number">Chapter 1</span> Getting started with cellxgene VIP<a href="index.html#getting-started-with-cellxgene-vip" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>This is a cellxgene VIP supplementary information including a tutorial book written in <strong>Bookdown</strong>.</p>
-<div id="why-use-cellxgene-vip" class="section level2" number="1.1">
-<h2><span class="header-section-number">1.1</span> Why use cellxgene VIP?</h2>
+<div id="why-use-cellxgene-vip" class="section level2 hasAnchor" number="1.1">
+<h2><span class="header-section-number">1.1</span> Why use cellxgene VIP?<a href="index.html#why-use-cellxgene-vip" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>To meet the growing demands from scientists to effectively extract deep insights from single cell RNA sequencing, spatial transcriptomics, and emerging multiome datasets, we developed cellxgene VIP (Visualization In Plugin), a frontend interactive visualization plugin of cellxgene framework, which greatly expanded capabilities of the base tool in the following aspects. First, it generates a comprehensive set of over eighteen commonly used quality control and analytical plots in high resolution with highly customizable settings in real time. Second, it provides more advanced analytical functions to gain insights on cellular compositions and deep biology, such as marker gene identification, differential gene expression analysis, and gene set enrichment analysis. Third, it empowers advanced users to perform analysis in a Jupyter Notebook like environment, dubbed Command Line Interface (CLI) by programming in Python and/or R directly without limiting themselves to functional modules available via graphical user interface (GUI). Finally, it pioneers methods to visualize multi-modal data, such as spatial transcriptomics embedding aligned with histological image on one slice or multiple slices in a grid format, and the latest 10x Genomic Multiome dataset where both DNA accessibility and gene expression in the same cells are measured, under the same framework in an integrative way to fully leverage the functionalities mentioned above. Taken together, the open-source tool makes large scale single cell data visualization and analysis more accessible to biologists in a user-friendly manner and fosters computational reproducibility by simplifying data and code reuse through the CLI. Going forward, it has the potential to become a crowdsourcing ecosystem for the scientific community to contribute even more modules to the Swiss Army knife of single cell data exploration tools.</p>
 </div>
-<div id="getting-set-up" class="section level2" number="1.2">
-<h2><span class="header-section-number">1.2</span> Getting Set up</h2>
-<div id="execute-anaconda" class="section level3" number="1.2.1">
-<h3><span class="header-section-number">1.2.1</span> Execute anaconda</h3>
+<div id="getting-set-up" class="section level2 hasAnchor" number="1.2">
+<h2><span class="header-section-number">1.2</span> Getting Set up<a href="index.html#getting-set-up" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="execute-anaconda" class="section level3 hasAnchor" number="1.2.1">
+<h3><span class="header-section-number">1.2.1</span> Execute anaconda<a href="index.html#execute-anaconda" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="index.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> ~/Downloads/Anaconda3-2020.02-Linux-x86_64.sh</span></code></pre></div>
 <p>If anaconda is not installed on server, you can install it following anaconda documentation (<a href="https://docs.anaconda.com/anaconda/install/linux/" class="uri">https://docs.anaconda.com/anaconda/install/linux/</a>)
 ### Create and enable conda environment</p>
@@ -250,13 +257,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>or</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="index.html#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> activate <span class="op">&lt;</span>env name<span class="op">&gt;</span></span></code></pre></div>
 </div>
-<div id="cellxgene-installation" class="section level3" number="1.2.2">
-<h3><span class="header-section-number">1.2.2</span> Cellxgene installation</h3>
+<div id="cellxgene-installation" class="section level3 hasAnchor" number="1.2.2">
+<h3><span class="header-section-number">1.2.2</span> Cellxgene installation<a href="index.html#cellxgene-installation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Install cellxgene by running config.sh in “cellxgene_VIP” directory</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="index.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./config.sh</span></span></code></pre></div>
 </div>
-<div id="r-dependencies" class="section level3" number="1.2.3">
-<h3><span class="header-section-number">1.2.3</span> R dependencies</h3>
+<div id="r-dependencies" class="section level3 hasAnchor" number="1.2.3">
+<h3><span class="header-section-number">1.2.3</span> R dependencies<a href="index.html#r-dependencies" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Install all required R packages on linux:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="index.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">LIBARROW_MINIMAL</span><span class="op">=</span>false</span>
 <span id="cb6-2"><a href="index.html#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#  ensure that the right instance of R is used. e.g. system-wide: /bin/R or /usr/bin/R ; local R under conda: ~/.conda/envs/VIP_conda_R/bin/R</span></span>
@@ -284,8 +291,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb6-24"><a href="index.html#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(MASS)) devtools::install_version(&quot;MASS&quot;,version=&quot;7.3-51.6&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span>
 <span id="cb6-25"><a href="index.html#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="ex">R</span> <span class="at">-q</span> <span class="at">-e</span> <span class="st">&#39;if(!require(data.table)) devtools::install_version(&quot;data.table&quot;,version=&quot;1.13.0&quot;,repos = &quot;http://cran.us.r-project.org&quot;)&#39;</span></span></code></pre></div>
 </div>
-<div id="run-cellxgene-by-h5ad-file" class="section level3" number="1.2.4">
-<h3><span class="header-section-number">1.2.4</span> Run cellxgene by h5ad file</h3>
+<div id="run-cellxgene-by-h5ad-file" class="section level3 hasAnchor" number="1.2.4">
+<h3><span class="header-section-number">1.2.4</span> Run cellxgene by h5ad file<a href="index.html#run-cellxgene-by-h5ad-file" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>You can aslo run cellxgene by specifying a h5ad file, which stores scRNA-seq data along with a host and a port.
 Use ‘ps’ to find used ports to spare. Please see <a href="https://chanzuckerberg.github.io/cellxgene/posts/launch" class="uri">https://chanzuckerberg.github.io/cellxgene/posts/launch</a> for details</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="index.html#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ps</span> <span class="at">-ef</span> <span class="kw">|</span> <span class="fu">grep</span> cellxgene</span>
@@ -294,15 +301,15 @@ Use ‘ps’ to find used ports to spare. Please see <a href="https://chanzucker
 <span id="cb7-4"><a href="index.html#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">RETICULATE_PYTHON</span><span class="op">=</span><span class="kw">`</span><span class="fu">which</span> python<span class="kw">`</span></span>
 <span id="cb7-5"><a href="index.html#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">cellxgene</span> launch <span class="at">--host</span> <span class="op">&lt;</span>xxx<span class="op">&gt;</span> --port <span class="op">&lt;</span>xxx<span class="op">&gt;</span> --disable-annotations <span class="at">--verbose</span> <span class="op">&lt;</span>h5ad file<span class="op">&gt;</span></span></code></pre></div>
 </div>
-<div id="cellxgene-on-web-browser" class="section level3" number="1.2.5">
-<h3><span class="header-section-number">1.2.5</span> Cellxgene on web browser</h3>
+<div id="cellxgene-on-web-browser" class="section level3 hasAnchor" number="1.2.5">
+<h3><span class="header-section-number">1.2.5</span> Cellxgene on web browser<a href="index.html#cellxgene-on-web-browser" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>chrome is preferred, version 87.0.4280.88 or 87.0.4280.141 is used. Users can access .
 Following screenshot is what you should be able to see in console of chrome developer tools.
 <img src="cellonweb.png" alt="Alt text" /></p>
 </div>
 </div>
-<div id="authors" class="section level2" number="1.3">
-<h2><span class="header-section-number">1.3</span> Authors</h2>
+<div id="authors" class="section level2 hasAnchor" number="1.3">
+<h2><span class="header-section-number">1.3</span> Authors<a href="index.html#authors" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <ul>
 <li>Keijie Li (<a href="mailto:kejie.li@biogen.com" class="email">kejie.li@biogen.com</a>), Associate Director at Biogen in the research department. Main author and content wrangler.</li>
 <li>Zhengyu Ouyang, Associate Director of Bioingormatics at BioinfoRx. Content wrangler.</li>

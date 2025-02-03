@@ -237,6 +237,7 @@ Note: The four methods implementations by calling scanpy.tl.rank_genes_groups fu
 [![Figure F26_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F26_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F26_label.png)
 Supplementary Fig. 22. Spatial transcriptomics analysis. 
 
+Please check section 3.6 for preparing the spatial data set for visualization.
 
 ## VIP – Command Line Interface
 Although cellxgene VIP provides a rich set of visualization modules as shown above, command line interface is also built to allow unlimited visualization and analytical capabilities by power user who know how to program in Python / R languages. 
