@@ -1480,12 +1480,15 @@ def CLI(data):
     ppr.pprint(subprocess.run('which Rscript',capture_output=True,shell=True).stdout.decode('utf-8'))
     ppr.pprint(subprocess.run('which pandoc',capture_output=True,shell=True).stdout.decode('utf-8'))
     # (time consuming) ppr.pprint(subprocess.run("Rscript -e 'reticulate::py_config()'",capture_output=True,shell=True).stdout.decode('utf-8'))
-    res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to html --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
+    try:
+      res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to html --template classic --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
+    except:
+      res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to html --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
     html = res.stdout.decode('utf-8')
-    h,s,e = html.partition('<div class="cell border-box-sizing code_cell rendered">')
-    h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">') ## remove the first cell
-    h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">') ## remove the second cell
-    html = h+s+e
+#    h,s,e = html.partition('<div class="cell border-box-sizing code_cell rendered">')
+#    h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">') ## remove the first cell
+#    h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">') ## remove the second cell
+#    html = h+s+e
   if 'Error' in res.stderr.decode('utf-8'):
      html = 'ERROR @server:\nstderr:\n' + re.sub(r"\x1b[^m]*m", "", res.stderr.decode('utf-8')) + '\nstdout:\n' + res.stdout.decode('utf-8')
   for f in glob.glob(strPath+"*"):

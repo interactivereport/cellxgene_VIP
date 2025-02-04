@@ -724,7 +724,6 @@
           </p>
           <p>Choose a gene ('Add Genes' first): <select id="SGVgene"></select></p>
           <p>Expression cutoff for cell filtering: <input id="SGVcutoff" type="number" step="0.1" value="1" min="0"/></p>
-          <p></p>Dot size for cells: <input type="range" min="0" max="2" value="1" step="0.1" id="SGVdotsize" oninput="this.nextElementSibling.value = this.value"><output>1</output></p>
           <p>Group by:
           <select id="SGVgrp"></select></p>
         </div>
@@ -749,7 +748,6 @@
           <p>Choose a gene ('Add Genes' first): <select id="SGVcomparegene"></select></p>
           <p>Expression cutoff (for cell filtering): <input id="SGVcompareCellcutoff" type="number" step="0.01" value="0.01" min="0"/></p>
           <p>Expression cutoff (for percentage calculation): <input id="SGVcomparecutoff" type="number" step="0.1" value="1" min="0"/></p>
-          <p></p>Dot size for cells: <input type="range" min="0" max="1" value="0.5" step="0.1" id="SGVcomparedotsize" oninput="this.nextElementSibling.value = this.value"><output>0.5</output></p>
           <p>Group by:
           <select id="SGVcompareorder"></select></p>
           <p>Sub-group by:
@@ -1055,8 +1053,7 @@
 
         <pre id="DOTnote" style="color:red;">Note: Unscaled data is used as the visualiztion is hard to interpret for scaled or corrected matrices in which zero counts had been replaced by other values. Scaling option in Global Setting does not apply to Dot plot</pre>
       </div>
-      <button class="DOTbt" onclick="DOTplot('plot')"><b>Plot</b></button>
-      <button class="DOTbt" onclick="DOTplot('data')">Get Data</button>
+      <button class="DOTbt" onclick="DOTplot()"><b>Plot</b></button>
       <button class="DOTbt" onclick="ZoomIn('DOTresize')">Zoom In</button>
       <button class="DOTbt" onclick="ZoomOut('DOTresize')">Zoom Out</button>
       <button class="DOTpngBT" onclick="saveImg('DOTimg')" disabled>Save</button>
@@ -1575,7 +1572,7 @@
     </div> <!-- Multiome -->
     
     <div id='COSMX' class='tabcontent'>
-      <h3>Jointly visualizing FOV image, cell boundaries, transcript locations</h3>
+      <h3>Jointly visualizing histology image, cell boundaries, transcript locations</h3>
       <div id='COSMXinput'>
           Choose cosMx captures to plot
           <p id="COSMXsample"></p>
@@ -1583,7 +1580,7 @@
             <input type="radio" name="COSMXcood" value="local" onclick="IMGcellSel()" checked>Local
             <input type="radio" name="COSMXcood" value="global" onclick="IMGcellSel()">Global
           </p>
-          <p><label><input id="COSMXhistology" type="checkbox" checked/>Draw FOV image</label></p>
+          <p><label><input id="COSMXhistology" type="checkbox" checked/>Draw histology image</label></p>
           <p><label><input id="COSMXcell" type="checkbox" checked/>Hightlight cell boundaries with color <input class="colorInput" id="COXMXcellColor" type='color' value='#ffffff'></label></p>
           Choose transcripts to hightlight
           <p id="COSMXgene"></p>
@@ -3980,7 +3977,6 @@ function SGVplot(acc){
             'grp':grp,
             'abb':window.bioAbbr,
             'cutoff':$("#SGVcutoff").val(),
-            'dotsize':$("#SGVdotsize").val(),
             'combine':combGrp,
             'combineOrder':combGrpOrder,
             'figOpt':window.figOpt};
@@ -4059,7 +4055,6 @@ function SGVcompareplot(){
             'cells':cells,
             'genes':[$("#SGVcomparegene").val()],
             'grp':grp,
-            'dotsize': $("#SGVcomparedotsize").val(),
             'abb':window.bioAbbr,
             'cutoff':$("#SGVcomparecutoff").val(),
             'cellCutoff':$("#SGVcompareCellcutoff").val(),
@@ -4265,6 +4260,9 @@ function PGVcomparebt(){
       document.getElementById("PGVcomparespin").style.visibility="hidden";
     }
   })
+
+}
+function violinData(){
 
 }
 function HEATgeneFileUpdate(){
@@ -5017,7 +5015,7 @@ function GSPplot(){
   })
 }
 
-function DOTplot(acc){
+function DOTplot(){
   $('#DOTnote').text("");
   var genes =getGenes('DOT');
   var geneSets = getGeneSet('DOT');
@@ -5067,7 +5065,6 @@ function DOTplot(acc){
             'legendW':$('#DOTlegendW').val(),
             'color':color,
             'figOpt':window.figOpt};
-  if(acc=='data') D['method']='DOTdata';
   $(".DOTbt").prop('disabled',true);
   document.getElementById("DOTspin").style.visibility="visible";
   $.ajax({
@@ -5083,15 +5080,8 @@ function DOTplot(acc){
         document.getElementById("DOTfig").innerHTML = '';
         return;
       }
-      if(acc=='data'){
-        var hiddenE = document.createElement('a');
-        hiddenE.href="data:attachment/text,"+encodeURIComponent(res);
-        hiddenE.target='_blank';
-        hiddenE.download='cellxgene.'+window.store.getState().config.displayNames.dataset+'.dotData.csv';
-        hiddenE.click();
-      }else{
-        showImg('DOTfig',res);
-      }
+
+      showImg('DOTfig',res)
       //document.getElementById("DOTfig").innerHTML = '<img id="DOTpng" src="data:image/png;base64,'+res+'" width=100% height="auto"/>';// height="450" width="450"
       $(".DOTpngBT").prop('disabled',false);
     },
@@ -5348,7 +5338,7 @@ function EMBEDplot(){
             'grpNum':grpMeta,
             'ncol':$('#EMBEDslot').val(),
             'layout':$("#EMBEDlayout").val(),
-            'abb':window.bioAbbr,
+            //'abb':window.bioAbbr,
             'figOpt':window.figOpt};
   if($("#EMBEDsplit").val()!="NONE" && genes.length>0){
     D['splitGrp'] = $("#EMBEDsplit").val();
@@ -5857,12 +5847,18 @@ function CLIplot(){
         }
         if (line.includes('<\/body>')) readIt = false;
       });
-      $("#CLIresize").html(filteredRes);
+      // console.log(filteredRes);
+      $("#CLIresize").html(res);
 
       var num = 0;
       for (let item of document.getElementsByClassName('output_svg')) {
-        makeIdsUnique(item.getElementsByTagName('svg')[0], false);
-        var onclickCode = "var a = document.createElement('a'); a.href = 'data:application/octet-stream;base64,' + btoa(unescape(encodeURIComponent(document.getElementsByClassName('output_svg')["+num+"].getElementsByTagName('svg')[0].outerHTML))); a.download = 'CLI-"+num+".svg'; a.click();"
+        if (item.getElementsByTagName('svg')[0] != null) {
+          makeIdsUnique(item.getElementsByTagName('svg')[0], false);
+          var onclickCode = "var link = document.createElement('a'); link.href = 'data:application/octet-stream;base64,' + btoa(unescape(encodeURIComponent(document.getElementsByClassName('output_svg')["+num+"].getElementsByTagName('svg')[0].outerHTML))); link.download = 'CLI-"+num+".svg'; link.click();"
+        } else {
+          makeIdsUnique(item.getElementsByTagName('img')[0], false);
+          var onclickCode = "var link = document.createElement('a'); link.href = document.getElementsByClassName('output_svg')["+num+"].getElementsByTagName('img')[0].src; link.download = 'CLI-"+num+".svg'; link.click();"
+        }
         item.innerHTML += '<p><button class="CLIbt" onclick="' + onclickCode + '">Save as SVG</button></p>';
         num ++;
       }
@@ -6066,7 +6062,7 @@ geneGrpPos = [(0,2), (3,4), (5,7)]
 geneGrpName = ['set1', 'set2', 'set3']
 fig,axs = plt.subplots(1,3,figsize=(15,5))
 sc.pl.rank_genes_groups_violin(adata,groups='OPC',n_genes=8,ax=axs[0],show=False,strip=False)
-sc.pl.stacked_violin(adata,marker_genes,groupby='cell_type',var_group_positions=geneGrpPos,var_group_labels=geneGrpName,row_palette='muted',rotation=90,yticklabels=True,ax=axs[1],show=False)
+sc.pl.stacked_violin(adata,marker_genes,groupby='cell_type',var_group_positions=geneGrpPos,var_group_labels=geneGrpName,row_palette='muted',rotation=90,yticklabels=False,ax=axs[1],show=False)
 sc.pl.matrixplot(adata,marker_genes,groupby='cell_type',var_group_positions=geneGrpPos,var_group_labels=geneGrpName,ax=axs[2],show=False)
 fig.tight_layout()
 </div>
@@ -6084,11 +6080,12 @@ feather.write_feather(meta,strPath+".obs.feather")
 library(Seurat)
 library(patchwork)
 library(ggplot2)
-D <- t(arrow::read_feather(paste(strPath,".feather",sep="")))
+D <- t(tibble::column_to_rownames(arrow::read_feather(paste(strPath,".feather",sep="")), var="__index_level_0__"))
 meta <- as.data.frame(arrow::read_feather(paste(strPath,".obs.feather",sep="")))
 colnames(D) <- meta[,"name_0"]
 X <- CreateSeuratObject(counts=D)
 X@meta.data <- cbind(X@meta.data,meta)
+X[['RNA']]['data'] <- X[['RNA']]['counts']
 
 %Rdevice png
 
@@ -6132,8 +6129,9 @@ suppressMessages(library(dplyr))
 X <- FindNeighbors(X, dims = 1:10, verbose=FALSE)
 X <- FindClusters(X, resolution = 0.5)
 X.markers <- FindAllMarkers(X, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
-top10 <- X.markers %>% group_by(cluster) %>% top_n(n = 10, wt = avg_logFC)
+top10 <- X.markers %>% group_by(cluster) %>% top_n(n = 10, wt = avg_log2FC)
 DoHeatmap(X, features = top10$gene, label=FALSE) + theme(text = element_text(size = 8))
+sessionInfo()
 </div>
 
 <div id="CLIVignetteCode3" style="display:none;">
@@ -6155,11 +6153,12 @@ feather.write_feather(meta,r.strPath+".obs.feather")
 library(Seurat)
 library(patchwork)
 library(ggplot2)
-D <- t(arrow::read_feather(paste(strPath,".feather",sep="")))
+D <- t(tibble::column_to_rownames(arrow::read_feather(paste(strPath,".feather",sep="")), var="__index_level_0__"))
 meta <- as.data.frame(arrow::read_feather(paste(strPath,".obs.feather",sep="")))
 colnames(D) <- meta[,"name_0"]
 X <- CreateSeuratObject(counts=D)
 X@meta.data <- cbind(X@meta.data,meta)
+X[['RNA']]['data'] <- X[['RNA']]['counts']
 
 
 X[["percent.mt"]] <- PercentageFeatureSet(X, pattern = "^MT-")
