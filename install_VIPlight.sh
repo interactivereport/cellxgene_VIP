@@ -33,9 +33,9 @@ conda create -y python=3.8.15 mamba=0.15.3 git=2.39.1 jq=1.6 nodejs=18.12.1 -c c
 sed "s|CONDA_PATH|$appEnvPath|g" env_yml/VIPlight.yml > env_yml/VIPlight_local.yml
 if [[ -n "$CONDA_SSL" ]] &&  [[ -f "$CONDA_SSL" ]]; then
     cat $CONDA_SSL >> $appEnvPath/ssl/cacert.pem
-    echo -e "  GIT_SSL_CAINFO: $CONDA_SSL" >> VIPlight_local.yml
-    echo -e "  REQUESTS_CA_BUNDLE: $CONDA_SSL" >> VIPlight_local.yml
-    echo -e "  SSL_CERT_FILE: $CONDA_SSL" >> VIPlight_local.yml
+    echo -e "  GIT_SSL_CAINFO: $CONDA_SSL" >> env_yml/VIPlight_local.yml
+    echo -e "  REQUESTS_CA_BUNDLE: $CONDA_SSL" >> env_yml/VIPlight_local.yml
+    echo -e "  SSL_CERT_FILE: $CONDA_SSL" >> env_yml/VIPlight_local.yml
 fi
 source $appEnvPath/etc/profile.d/conda.sh
 conda activate
@@ -74,20 +74,10 @@ cd ..
 # install the rest of packages
 which mamba
 mamba env update -f $exePath/env_yml/VIPlight_local.yml
-# update the VIP
-$exePath/update.VIPInterface.sh all
-
 # setup the env
+$exePath/install_VIPlight_link.sh
 echo "export VIPenv='source $appEnvPath/etc/profile.d/conda.sh;conda activate'" > $exePath/bin/.env
-
-# setup the update
-echo -e "#"'!'"/usr/bin/env bash\nsource $exePath/bin/.env\neval \$VIPenv >/dev/null 2>&1\ncd $exePath\ngit pull\n./update.VIPInterface.sh all\n" > $exePath/update
-chmod a+x "$exePath/update"
-
 # setup the VIPlight
 echo -e "#"'!'"/usr/bin/env bash\nsource $exePath/bin/.env\neval \$VIPenv >/dev/null 2>&1\ncellxgene \"\$@\"" > $exePath/VIPlight
 chmod a+x "$exePath/VIPlight"
-
-echo
-echo "Updating: use '$exePath/update'"
 echo "Please considering to use '$exePath/VIPlight' as 'cellxgene'"
