@@ -21,7 +21,11 @@ their selective expression and validates the scRNAseq approach and visualization
 Interface (CLI)** exposed by mini Jupyter Notebook to provide maximal flexibility of doing various analytics on the
 whole or sliced single cell dataset.
 
-## Demo site: https://cellxgenevip-ms.bxgenomics.com , https://cellxgenevip-spatial.bxgenomics.com, and https://cellxgenevip-multiome.bxgenomics.com
+## Demo site: 
+### Multiple Sclerosis (Nature 2019): https://cellxgenevip-ms.bxgenomics.com
+### 10X visium: https://cellxgenevip-spatial.bxgenomics.com
+### 10X multime: https://cellxgenevip-multiome.bxgenomics.com
+### nanoString cosMx: https://cellxgenevip-cosmx.bxgenomics.com/
 
 ## Online tutorial: https://interactivereport.github.io/cellxgene_VIP/tutorial/docs
 
