@@ -6085,6 +6085,7 @@ meta <- as.data.frame(arrow::read_feather(paste(strPath,".obs.feather",sep="")))
 colnames(D) <- meta[,"name_0"]
 X <- CreateSeuratObject(counts=D)
 X@meta.data <- cbind(X@meta.data,meta)
+# For seurat < ver.5, use X@assays$RNA@data <- X@assays$RNA@counts
 X[['RNA']]['data'] <- X[['RNA']]['counts']
 
 %Rdevice png
@@ -6158,6 +6159,7 @@ meta <- as.data.frame(arrow::read_feather(paste(strPath,".obs.feather",sep="")))
 colnames(D) <- meta[,"name_0"]
 X <- CreateSeuratObject(counts=D)
 X@meta.data <- cbind(X@meta.data,meta)
+# For seurat < ver.5, use X@assays$RNA@data <- X@assays$RNA@counts
 X[['RNA']]['data'] <- X[['RNA']]['counts']
 
 
