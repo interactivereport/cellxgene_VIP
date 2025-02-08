@@ -24,7 +24,7 @@ whole or sliced single cell dataset.
 ## Demo site: 
 #### Multiple Sclerosis (Nature 2019): https://cellxgenevip-ms.bxgenomics.com
 #### 10X visium: https://cellxgenevip-spatial.bxgenomics.com
-#### 10X multime: https://cellxgenevip-multiome.bxgenomics.com
+#### 10X multiome: https://cellxgenevip-multiome.bxgenomics.com
 #### nanoString cosMx: https://cellxgenevip-cosmx.bxgenomics.com/
 
 ## Online tutorial: https://interactivereport.github.io/cellxgene_VIP/tutorial/docs
