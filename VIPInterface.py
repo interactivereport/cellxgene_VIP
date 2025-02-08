@@ -1812,7 +1812,7 @@ def plotCosMx(data):
     cood_N=10
     for sID in data['sIDs']:
         if data['histology']:
-            imgC = scD.data.uns[cosMxKey][sID][keys['img']]
+            imgC = scD.data.uns[cosMxKey][sID][keys['img']].copy()
         else:
             imgC = np.ones((scD.data.uns[cosMxKey][sID][keys['img']].shape[0],scD.data.uns[cosMxKey][sID][keys['img']].shape[1],3),dtype='uint8')*255
         if data['cell']:
