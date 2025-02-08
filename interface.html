@@ -3286,17 +3286,15 @@ function COSMXsetGeneColor(){
     }else{
         $(".COSMXgenes").prop("disabled",false);
     }
-    if(selG.length>0){
-        html = "";
-        for(const one of selG){
-            html += "<label>"+one+"<input class='COSMXgeneColors colorInput' id='COSMXgeneColor_"+one+"'";
-            if($("#COSMXgeneColor_"+one).val()!==undefined){
-                html += " value='"+$("#COSMXgeneColor_"+one).val()+"'";
-            }
-            html += " type='color'></label>";
+    html = "";
+    for(const one of selG){
+        html += "<label>"+one+"<input class='COSMXgeneColors colorInput' id='COSMXgeneColor_"+one+"'";
+        if($("#COSMXgeneColor_"+one).val()!==undefined){
+            html += " value='"+$("#COSMXgeneColor_"+one).val()+"'";
         }
-        $("#COSMXgeneColor").html(html);
+        html += " type='color'></label>";
     }
+    $("#COSMXgeneColor").html(html);
 }
 function IMGset(){
   window.figOpt['scale'] = $("input[name='IMGscale']:checked").val();
