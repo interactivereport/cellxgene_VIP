@@ -1767,7 +1767,7 @@ def bresenham_line(pt1,pt2):
     return points
 def loc_img(pt,imgH):
     x,y = pt
-    return((round(imgH-y),round(x)))
+    return((round(y),round(x)))#imgH-y
 def square_integer(ct,halfS):
     x_center, y_center = ct
     coordinates_in_square = []
