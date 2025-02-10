@@ -232,7 +232,6 @@ Supplementary Fig. 21. Marker genes detection in the selected group(s) of cells 
 
 Note: The four methods implementations by calling scanpy.tl.rank_genes_groups function: 'logreg' uses logistic regression, 't-test' uses t-test, 'wilcoxon' uses Wilcoxon rank-sum, and ‘t-test_overestim_var’ overestimates variance of each group.
 
-###############################
 
 ## VIP - CosMx
 
@@ -243,7 +242,6 @@ Supplementary Fig. 22. nanoString CosMx spatial transcriptomics analysis.
 
 Please check section 3.6 for preparing the spatial data set for visualization.
 
-##############################
 
 ## VIP - Spatial Transcriptomics
 
