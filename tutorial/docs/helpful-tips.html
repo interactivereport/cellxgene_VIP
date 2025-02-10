@@ -174,10 +174,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.19" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-deg-differential-expressed-genes"><i class="fa fa-check"></i><b>2.19</b> VIP – DEG (Differential Expressed Genes)</a></li>
 <li class="chapter" data-level="2.20" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip---pre-computed-deg"><i class="fa fa-check"></i><b>2.20</b> VIP - Pre-computed DEG</a></li>
 <li class="chapter" data-level="2.21" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-marker-genes"><i class="fa fa-check"></i><b>2.21</b> VIP – Marker Genes</a></li>
-<li class="chapter" data-level="2.22" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip---spatial-transcriptomics"><i class="fa fa-check"></i><b>2.22</b> VIP - Spatial Transcriptomics</a></li>
-<li class="chapter" data-level="2.23" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-command-line-interface"><i class="fa fa-check"></i><b>2.23</b> VIP – Command Line Interface</a></li>
-<li class="chapter" data-level="2.24" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-comb.-abbr."><i class="fa fa-check"></i><b>2.24</b> VIP – Comb. &amp; Abbr.</a></li>
-<li class="chapter" data-level="2.25" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-other-functions"><i class="fa fa-check"></i><b>2.25</b> VIP – Other Functions</a></li>
+<li class="chapter" data-level="2.22" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip---cosmx"><i class="fa fa-check"></i><b>2.22</b> VIP - CosMx</a></li>
+<li class="chapter" data-level="2.23" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip---spatial-transcriptomics"><i class="fa fa-check"></i><b>2.23</b> VIP - Spatial Transcriptomics</a></li>
+<li class="chapter" data-level="2.24" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-command-line-interface"><i class="fa fa-check"></i><b>2.24</b> VIP – Command Line Interface</a></li>
+<li class="chapter" data-level="2.25" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-comb.-abbr."><i class="fa fa-check"></i><b>2.25</b> VIP – Comb. &amp; Abbr.</a></li>
+<li class="chapter" data-level="2.26" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-other-functions"><i class="fa fa-check"></i><b>2.26</b> VIP – Other Functions</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="methods.html"><a href="methods.html"><i class="fa fa-check"></i><b>3</b> Methods</a>
 <ul>
@@ -189,6 +190,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.6" data-path="methods.html"><a href="methods.html#prepare-spatial-data-for-visualization"><i class="fa fa-check"></i><b>3.6</b> Prepare Spatial Data for Visualization</a>
 <ul>
 <li class="chapter" data-level="3.6.1" data-path="methods.html"><a href="methods.html#x-visium-data"><i class="fa fa-check"></i><b>3.6.1</b> 10X visium data</a></li>
+<li class="chapter" data-level="3.6.2" data-path="methods.html"><a href="methods.html#nanostring-cosmx-data"><i class="fa fa-check"></i><b>3.6.2</b> NanoString CosMx data</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="helpful-tips.html"><a href="helpful-tips.html"><i class="fa fa-check"></i><b>4</b> Helpful Tips</a>
@@ -232,11 +234,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="handle-nulls-in-categorical-annotation" class="section level2 hasAnchor" number="4.1">
 <h2><span class="header-section-number">4.1</span> Handle nulls in categorical annotation<a href="helpful-tips.html#handle-nulls-in-categorical-annotation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Such nulls in categorical annotation would cause trouble in VIP because it cannot be converted to string. Here is how to handle it, let’s call the annotation X_annotation:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb19-1"><a href="helpful-tips.html#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cast to str from categorical</span></span>
-<span id="cb19-2"><a href="helpful-tips.html#cb19-2" aria-hidden="true" tabindex="-1"></a>adata.obs <span class="op">=</span> adata.obs.astype({<span class="st">&#39;X_annotation&#39;</span>:<span class="st">&#39;str&#39;</span>})</span>
-<span id="cb19-3"><a href="helpful-tips.html#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-4"><a href="helpful-tips.html#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># replace all of nan by ‘nan’</span></span>
-<span id="cb19-5"><a href="helpful-tips.html#cb19-5" aria-hidden="true" tabindex="-1"></a>adata.obs[<span class="st">&quot;X_annotation &quot;</span>][adata.obs[<span class="st">&quot;X_annotation &quot;</span>].isnull()] <span class="op">=</span> <span class="st">&#39;nan&#39;</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb24-1"><a href="helpful-tips.html#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cast to str from categorical</span></span>
+<span id="cb24-2"><a href="helpful-tips.html#cb24-2" aria-hidden="true" tabindex="-1"></a>adata.obs <span class="op">=</span> adata.obs.astype({<span class="st">&#39;X_annotation&#39;</span>:<span class="st">&#39;str&#39;</span>})</span>
+<span id="cb24-3"><a href="helpful-tips.html#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="helpful-tips.html#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># replace all of nan by ‘nan’</span></span>
+<span id="cb24-5"><a href="helpful-tips.html#cb24-5" aria-hidden="true" tabindex="-1"></a>adata.obs[<span class="st">&quot;X_annotation &quot;</span>][adata.obs[<span class="st">&quot;X_annotation &quot;</span>].isnull()] <span class="op">=</span> <span class="st">&#39;nan&#39;</span></span></code></pre></div>
 </div>
 <div id="display-full-traceback-stack-for-debugging-in-vip" class="section level2 hasAnchor" number="4.2">
 <h2><span class="header-section-number">4.2</span> Display full traceback stack for debugging in VIP<a href="helpful-tips.html#display-full-traceback-stack-for-debugging-in-vip" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -260,9 +262,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="loading-h5ad-file-generated-by-seuratdisk-from-r" class="section level2 hasAnchor" number="4.6">
 <h2><span class="header-section-number">4.6</span> Loading h5ad file generated by SeuratDisk from R<a href="helpful-tips.html#loading-h5ad-file-generated-by-seuratdisk-from-r" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>SeuratDisk provides a convenient way to convert a Seurat object into the h5ad format. However, there are cases cellxgene VIP window would be blank when loading such h5ad file. To fix the issue, simply run the following python code to re-generate the h5ad file, which should solve the blank VIP window issue.</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb20-1"><a href="helpful-tips.html#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scanpy <span class="im">as</span> sc</span>
-<span id="cb20-2"><a href="helpful-tips.html#cb20-2" aria-hidden="true" tabindex="-1"></a>adata <span class="op">=</span> sc.read_h5ad(<span class="op">&lt;</span><span class="bu">input</span> h5ad<span class="op">&gt;</span>)</span>
-<span id="cb20-3"><a href="helpful-tips.html#cb20-3" aria-hidden="true" tabindex="-1"></a>adata.__dict__[<span class="st">&#39;_raw&#39;</span>].__dict__[<span class="st">&#39;_var&#39;</span>] <span class="op">=</span> adata.__dict__[<span class="st">&#39;_raw&#39;</span>].__dict__[<span class="st">&#39;_var&#39;</span>].rename(columns<span class="op">=</span>{<span class="st">&#39;_index&#39;</span>: <span class="st">&#39;features&#39;</span>})</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb25-1"><a href="helpful-tips.html#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scanpy <span class="im">as</span> sc</span>
+<span id="cb25-2"><a href="helpful-tips.html#cb25-2" aria-hidden="true" tabindex="-1"></a>adata <span class="op">=</span> sc.read_h5ad(<span class="op">&lt;</span><span class="bu">input</span> h5ad<span class="op">&gt;</span>)</span>
+<span id="cb25-3"><a href="helpful-tips.html#cb25-3" aria-hidden="true" tabindex="-1"></a>adata.__dict__[<span class="st">&#39;_raw&#39;</span>].__dict__[<span class="st">&#39;_var&#39;</span>] <span class="op">=</span> adata.__dict__[<span class="st">&#39;_raw&#39;</span>].__dict__[<span class="st">&#39;_var&#39;</span>].rename(columns<span class="op">=</span>{<span class="st">&#39;_index&#39;</span>: <span class="st">&#39;features&#39;</span>})</span></code></pre></div>
 
 </div>
 </div>

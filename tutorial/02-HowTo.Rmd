@@ -232,10 +232,25 @@ Supplementary Fig. 21. Marker genes detection in the selected group(s) of cells 
 
 Note: The four methods implementations by calling scanpy.tl.rank_genes_groups function: 'logreg' uses logistic regression, 't-test' uses t-test, 'wilcoxon' uses Wilcoxon rank-sum, and ‘t-test_overestim_var’ overestimates variance of each group.
 
+###############################
+
+## VIP - CosMx
+
+The CosMx function tab will appear in the left menu when the dataset is in the nanoString CosMx data format. This feature enables users to visualize gene expression on-site at the resolution of individual cells. 
+
+[![Figure F30_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F30_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F30_label.png)
+Supplementary Fig. 22. nanoString CosMx spatial transcriptomics analysis. 
+
+Please check section 3.6 for preparing the spatial data set for visualization.
+
+##############################
+
 ## VIP - Spatial Transcriptomics
 
+This feature enables users to visualize spatial image overlays the embedding plot for 10X visium data. 
+
 [![Figure F26_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F26_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F26_label.png)
-Supplementary Fig. 22. Spatial transcriptomics analysis. 
+Supplementary Fig. 23. 10X visium spatial transcriptomics analysis. 
 
 Please check section 3.6 for preparing the spatial data set for visualization.
 
@@ -243,7 +258,7 @@ Please check section 3.6 for preparing the spatial data set for visualization.
 Although cellxgene VIP provides a rich set of visualization modules as shown above, command line interface is also built to allow unlimited visualization and analytical capabilities by power user who know how to program in Python / R languages. 
 
 [![Figure F23_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F23_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F23_label.png)
-Supplementary Fig. 23. Command line interface for the user to program for advanced plotting and statistical analysis.
+Supplementary Fig. 24. Command line interface for the user to program for advanced plotting and statistical analysis.
 
 
 Note: In CLI the AnnData (adata) object is available by default, and it is processed as ‘Description’ of the dataset states (i.e.: normalized and log transformed, but not scaled etc.). Settings in ‘Global Setting’ tab won’t apply to CLI.
@@ -255,7 +270,7 @@ The user can combine multiple annotations to create a combinatorial annotation t
 The user can also rename each annotation by creating abbreviations to shorten axis labels in figures.
 
 [![Figure F25_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F25_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F25_label.png)
-Supplementary Fig. 24. Comb. & Abbr. function allows user to create new annotation by combining multiple annotations and abbreviations to shorten axis labels in figures especially when custom combinatorial names are used.
+Supplementary Fig. 25. Comb. & Abbr. function allows user to create new annotation by combining multiple annotations and abbreviations to shorten axis labels in figures especially when custom combinatorial names are used.
 
 
 ## VIP – Other Functions
@@ -269,6 +284,6 @@ There are other convenient functions available to user, such as ‘Save’ or �
 ‘Brush’ is to display exactly these selected ranges from histograms of variables on the right panel in a nice table that is not available in original cellxgene.
 
 [![Figure F24_label](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F24_label.png)](https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F24_label.png)
-Supplementary Fig. 25. Other functions allow user to ‘Save’ or ‘Load’ session information, ‘Check All Annotations’ and show values of brushed ranges on histograms. 
+Supplementary Fig. 26. Other functions allow user to ‘Save’ or ‘Load’ session information, ‘Check All Annotations’ and show values of brushed ranges on histograms. 
 
 

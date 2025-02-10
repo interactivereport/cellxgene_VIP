@@ -29,6 +29,7 @@ vip-gene-detected
 vip-deg-differential-expressed-genes
 vip---pre-computed-deg
 vip-marker-genes
+vip---cosmx
 vip---spatial-transcriptomics
 vip-command-line-interface
 vip-comb.-abbr.
@@ -43,6 +44,13 @@ prepare-spatial-data-for-visualization
 x-visium-data
 download-input-demo-data
 using-python-to-prepare-10x-visium-spatial-data
+nanostring-cosmx-data
+download-input-demo-data-1
+export-expression-cell-meta-transcript-coordinate-and-reduction-umap-from-seurat-object-using-r
+extract-cell-boundaries-from-cell-id-labeled-tif-file-using-python
+the-function-to-read-one-fov-data
+use-two-fovs-from-human-liver-data-as-an-example
+check-the-coordinates-among-cell-boundaries-transcript-locations-and-the-image-are-aligned
 helpful-tips
 handle-nulls-in-categorical-annotation
 display-full-traceback-stack-for-debugging-in-vip

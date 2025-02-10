@@ -174,10 +174,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.19" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-deg-differential-expressed-genes"><i class="fa fa-check"></i><b>2.19</b> VIP – DEG (Differential Expressed Genes)</a></li>
 <li class="chapter" data-level="2.20" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip---pre-computed-deg"><i class="fa fa-check"></i><b>2.20</b> VIP - Pre-computed DEG</a></li>
 <li class="chapter" data-level="2.21" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-marker-genes"><i class="fa fa-check"></i><b>2.21</b> VIP – Marker Genes</a></li>
-<li class="chapter" data-level="2.22" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip---spatial-transcriptomics"><i class="fa fa-check"></i><b>2.22</b> VIP - Spatial Transcriptomics</a></li>
-<li class="chapter" data-level="2.23" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-command-line-interface"><i class="fa fa-check"></i><b>2.23</b> VIP – Command Line Interface</a></li>
-<li class="chapter" data-level="2.24" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-comb.-abbr."><i class="fa fa-check"></i><b>2.24</b> VIP – Comb. &amp; Abbr.</a></li>
-<li class="chapter" data-level="2.25" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-other-functions"><i class="fa fa-check"></i><b>2.25</b> VIP – Other Functions</a></li>
+<li class="chapter" data-level="2.22" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip---cosmx"><i class="fa fa-check"></i><b>2.22</b> VIP - CosMx</a></li>
+<li class="chapter" data-level="2.23" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip---spatial-transcriptomics"><i class="fa fa-check"></i><b>2.23</b> VIP - Spatial Transcriptomics</a></li>
+<li class="chapter" data-level="2.24" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-command-line-interface"><i class="fa fa-check"></i><b>2.24</b> VIP – Command Line Interface</a></li>
+<li class="chapter" data-level="2.25" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-comb.-abbr."><i class="fa fa-check"></i><b>2.25</b> VIP – Comb. &amp; Abbr.</a></li>
+<li class="chapter" data-level="2.26" data-path="how-to-use-cellxgene-vip.html"><a href="how-to-use-cellxgene-vip.html#vip-other-functions"><i class="fa fa-check"></i><b>2.26</b> VIP – Other Functions</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="methods.html"><a href="methods.html"><i class="fa fa-check"></i><b>3</b> Methods</a>
 <ul>
@@ -189,6 +190,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.6" data-path="methods.html"><a href="methods.html#prepare-spatial-data-for-visualization"><i class="fa fa-check"></i><b>3.6</b> Prepare Spatial Data for Visualization</a>
 <ul>
 <li class="chapter" data-level="3.6.1" data-path="methods.html"><a href="methods.html#x-visium-data"><i class="fa fa-check"></i><b>3.6.1</b> 10X visium data</a></li>
+<li class="chapter" data-level="3.6.2" data-path="methods.html"><a href="methods.html#nanostring-cosmx-data"><i class="fa fa-check"></i><b>3.6.2</b> NanoString CosMx data</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="helpful-tips.html"><a href="helpful-tips.html"><i class="fa fa-check"></i><b>4</b> Helpful Tips</a>
@@ -397,35 +399,49 @@ Supplementary Fig. 20. Pre-computed DEG analysis between/ among the selected pre
 Supplementary Fig. 21. Marker genes detection in the selected group(s) of cells regarding the selected annotation categories.</p>
 <!-- ![Plotting of identified marker genes by each category](figures/F20B.jpg) -->
 <p>Note: The four methods implementations by calling scanpy.tl.rank_genes_groups function: ‘logreg’ uses logistic regression, ‘t-test’ uses t-test, ‘wilcoxon’ uses Wilcoxon rank-sum, and ‘t-test_overestim_var’ overestimates variance of each group.</p>
+<div id="section" class="section level31" number="2.21.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1">
+<p class="heading"><span class="header-section-number">2.21.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1</span> </p>
 </div>
-<div id="vip---spatial-transcriptomics" class="section level2 hasAnchor" number="2.22">
-<h2><span class="header-section-number">2.22</span> VIP - Spatial Transcriptomics<a href="how-to-use-cellxgene-vip.html#vip---spatial-transcriptomics" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+</div>
+<div id="vip---cosmx" class="section level2 hasAnchor" number="2.22">
+<h2><span class="header-section-number">2.22</span> VIP - CosMx<a href="how-to-use-cellxgene-vip.html#vip---cosmx" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The CosMx function tab will appear in the left menu when the dataset is in the nanoString CosMx data format. This feature enables users to visualize gene expression on-site at the resolution of individual cells.</p>
+<p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F30_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F30_label.png" alt="Figure F30_label" /></a>
+Supplementary Fig. 22. nanoString CosMx spatial transcriptomics analysis.</p>
+<p>Please check section 3.6 for preparing the spatial data set for visualization.</p>
+<div id="section-1" class="section level30" number="2.22.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1">
+<p class="heading"><span class="header-section-number">2.22.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1</span> </p>
+</div>
+</div>
+<div id="vip---spatial-transcriptomics" class="section level2 hasAnchor" number="2.23">
+<h2><span class="header-section-number">2.23</span> VIP - Spatial Transcriptomics<a href="how-to-use-cellxgene-vip.html#vip---spatial-transcriptomics" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This feature enables users to visualize spatial image overlays the embedding plot for 10X visium data.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F26_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F26_label.png" alt="Figure F26_label" /></a>
-Supplementary Fig. 22. Spatial transcriptomics analysis.</p>
+Supplementary Fig. 23. 10X visium spatial transcriptomics analysis.</p>
 <p>Please check section 3.6 for preparing the spatial data set for visualization.</p>
 </div>
-<div id="vip-command-line-interface" class="section level2 hasAnchor" number="2.23">
-<h2><span class="header-section-number">2.23</span> VIP – Command Line Interface<a href="how-to-use-cellxgene-vip.html#vip-command-line-interface" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="vip-command-line-interface" class="section level2 hasAnchor" number="2.24">
+<h2><span class="header-section-number">2.24</span> VIP – Command Line Interface<a href="how-to-use-cellxgene-vip.html#vip-command-line-interface" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Although cellxgene VIP provides a rich set of visualization modules as shown above, command line interface is also built to allow unlimited visualization and analytical capabilities by power user who know how to program in Python / R languages.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F23_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F23_label.png" alt="Figure F23_label" /></a>
-Supplementary Fig. 23. Command line interface for the user to program for advanced plotting and statistical analysis.</p>
+Supplementary Fig. 24. Command line interface for the user to program for advanced plotting and statistical analysis.</p>
 <p>Note: In CLI the AnnData (adata) object is available by default, and it is processed as ‘Description’ of the dataset states (i.e.: normalized and log transformed, but not scaled etc.). Settings in ‘Global Setting’ tab won’t apply to CLI.</p>
 </div>
-<div id="vip-comb.-abbr." class="section level2 hasAnchor" number="2.24">
-<h2><span class="header-section-number">2.24</span> VIP – Comb. &amp; Abbr.<a href="how-to-use-cellxgene-vip.html#vip-comb.-abbr." class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="vip-comb.-abbr." class="section level2 hasAnchor" number="2.25">
+<h2><span class="header-section-number">2.25</span> VIP – Comb. &amp; Abbr.<a href="how-to-use-cellxgene-vip.html#vip-comb.-abbr." class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The user can combine multiple annotations to create a combinatorial annotation to group cells in many plotting modules, e.g., stacked violin and dot plot. Firstly, the user clicks ‘uncheck all annotations’ and, secondly goes to the annotation panel in main window to select annotation categories to be combined, e.g., diagnosis (Control and MS) combined with sex (female and male). After clicking on ‘Create’ button, all possible combinatorial names will be listed and ‘Custom_combine’ will be automatically available as an option in ‘Group by’ drop down menu of many plotting functions.</p>
 <p>The user can also rename each annotation by creating abbreviations to shorten axis labels in figures.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F25_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F25_label.png" alt="Figure F25_label" /></a>
-Supplementary Fig. 24. Comb. &amp; Abbr. function allows user to create new annotation by combining multiple annotations and abbreviations to shorten axis labels in figures especially when custom combinatorial names are used.</p>
+Supplementary Fig. 25. Comb. &amp; Abbr. function allows user to create new annotation by combining multiple annotations and abbreviations to shorten axis labels in figures especially when custom combinatorial names are used.</p>
 </div>
-<div id="vip-other-functions" class="section level2 hasAnchor" number="2.25">
-<h2><span class="header-section-number">2.25</span> VIP – Other Functions<a href="how-to-use-cellxgene-vip.html#vip-other-functions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="vip-other-functions" class="section level2 hasAnchor" number="2.26">
+<h2><span class="header-section-number">2.26</span> VIP – Other Functions<a href="how-to-use-cellxgene-vip.html#vip-other-functions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>There are other convenient functions available to user, such as ‘Save’ or ‘Load’ session, ‘Check All Annotations’ and ‘Brush’.</p>
 <p>‘Save’ or ‘Load’ session are used to save the current cell selections and parameter settings to text file or load a previously saved session file in the tool for visualization.</p>
 <p>‘Check All Annotations’ is used to check all categorical selection boxes of annotations on the left panel.</p>
 <p>‘Brush’ is to display exactly these selected ranges from histograms of variables on the right panel in a nice table that is not available in original cellxgene.</p>
 <p><a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F24_label.png"><img src="https://interactivereport.github.io/cellxgene_VIP/tutorial/figures/F24_label.png" alt="Figure F24_label" /></a>
-Supplementary Fig. 25. Other functions allow user to ‘Save’ or ‘Load’ session information, ‘Check All Annotations’ and show values of brushed ranges on histograms.</p>
+Supplementary Fig. 26. Other functions allow user to ‘Save’ or ‘Load’ session information, ‘Check All Annotations’ and show values of brushed ranges on histograms.</p>
 
 </div>
 </div>
