@@ -576,6 +576,7 @@
       <button class="tablinks" onclick="selFun(event, 'MARK')">Marker Genes</button>
       <button id="browserBT" class="tablinks" onclick="selFun(event, 'BROW')" style="display: none;">Multiome</button>
       <button id='cosMxBT' class="tablinks" onclick="selFun(event, 'COSMX');" style="display: none;">CosMx</button>
+      <button id='visiumBT' class="tablinks" onclick="selFun(event, 'VISIUM');" style="display: none;">Visium</button>
       <button class="tablinks" onclick="selFun(event, 'SPATIAL');defaultTopSel('SPATIAL','SPATIALimage')">Spatial Transcriptomics</button>
       <button class="tablinks" onclick="selFun(event, 'CLI')">Command Line Interface</button>
       <button id="metaCellBT" class="tablinks colorButton" onclick="metaSel()" style="display: none;">Show MetaCell</button>
@@ -1596,9 +1597,37 @@
       <div id="COSMXresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6">
         <div id="COSMXfigs"></div>
       </div>
-      
-      
     </div> <!-- COSMX -->
+    
+    <div id='VISIUM' class='tabcontent'>
+      <h3>Visualizing 10X visium data along with histology images</h3>
+      <div id='VISIUMinput'>
+          Choose visium samples to be included: <input type="checkbox" checked onclick="$('.VISIUMsamples').prop('checked', this.checked);">Uncheck / Check All
+          <p id="VISIUMsample"></p>
+          <p>Choose categorical annotation(s):</p>
+          <p id="VISIUMgrp"></p>
+          <p>Choose continuous annotation(s):</p>
+          <p id="VISIUMmeta"></p>
+          <p>Choose genes ('Add Genes' first): <input type="checkbox" checked onclick="$('.VISIUMgenes').prop('checked', this.checked);">Uncheck / Check All</p>
+          <p id="VISIUMgene"></p>
+          <p>Group the plot by slides: <input id="VISIUMsortID" type="checkbox" checked/></p>
+          <p>The number of plots per row: <input id="VISIUMslot" type="number" value="4" min="2"/></p>
+          <p>The transparent alpha: <input id="VISIUMalpha" type="number" value="0.7" min="0" max="1"/></p>
+          <p>The dotsize of the spot: <input id="VISIUMdotsize" type="number" value="2" min="1" max="6"/></p>
+          <p>The size of subplots: <input id="VISIUMsubsize" type="number" value="4" min="3" max="8"/></p>
+      </div>
+      <button class="VISIUMbt" onclick="VISIUMplot()"><b>Plot</b> </button>
+      <button onclick="ZoomIn('VISIUMresize')">Zoom In</button>
+      <button onclick="ZoomOut('VISIUMresize')">Zoom Out</button>
+      <button class="VISIUMpngBT" onclick="saveImg('VISIUMimg')" disabled>Save</button>
+      <button onclick="hideShow($('#VISIUMinput'),$(this));">Hide Input</button>
+      <br>
+      <pre id="VISIUMnote" style="color:red;"></pre>
+      <div id="VISIUMspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
+      <div id="VISIUMresize" style="height: 'auto'; padding: 0.5em; border: 1px solid #B6B6B6">
+        <div id="VISIUMfig"></div>
+      </div>
+    </div> <!-- VISIUM -->
 
     <div id="IMG" class="tabcontent">
       <h3>Global setting for VIP <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-figure-option" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
@@ -2280,7 +2309,31 @@ function enableCOXMX(){
       $("#cosMxBT").show();
     },
     error: function(request,status,error){
-      console.log(request.status+': cannot get bigwig information ...');
+      console.log(request.status+': cannot get cosMx information ...');
+    }
+  });
+}
+function enableVISIUM(){
+    $.ajax({
+    type: "POST",
+    url: VIPurl,
+    data:JSON.stringify({'method':"checkVisium",'dataset': window.store.getState().config.displayNames.dataset+'.h5ad'}),
+    contentType: 'application/json;charset=UTF-8',
+    success: function(res){
+      VisiumIDs= JSON.parse(res);
+      if(VisiumIDs == null || VisiumIDs.length == 0){
+          return;
+      }
+      //available coxMx samples
+      var htmlCheck = "";
+      for(const s of VisiumIDs){
+          htmlCheck += '<label id="VISIUMsampleCK_'+s+'"><input class="VISIUMsamples" type="checkbox" value="'+s+'"/>'+s+'</label>';
+      }
+      $('#VISIUMsample').append(htmlCheck);
+      $("#visiumBT").show();
+    },
+    error: function(request,status,error){
+      console.log(request.status+': cannot get visium information ...');
     }
   });
 }
@@ -2393,10 +2446,11 @@ function init(){
     if(iChar==-1){
       htmlCheck += '</span>&nbsp;&nbsp;<a href="#" onclick="hideShow($(\'#eIDgrpsHideShow\'),$(this));return false;"><font size="+2">+</font></a>'
     }
-    //HEAT, EMBED, SANK, STACBAR, CLI
+    //HEAT, EMBED, SANK, STACBAR, CLI, VISIUM
     $('#HEATgrp').html(htmlCheck.replace(/eID/g,'HEAT').replace(/value/g,'onchange="HEATorder()" value'));
     $('#CLIgrp').html(htmlCheck.replace(/eID/g,'CLI'));
     $('#EMBEDgrp').html(htmlCheck.replace(/eID/g,'EMBED'));
+    $('#VISIUMgrp').html(htmlCheck.replace(/eID/g,'VISIUM'));
     $('#SANKgrp').html(htmlCheck.replace(/eID/g,'SANK').replace(/value/g,'onchange="SANKorderUpdate()" value'));
     $('#STACBARgrp').html(htmlCheck.replace(/eID/g,'STACBAR').replace(/value/g,'onchange="STACBARref()" value'));
 
@@ -2418,6 +2472,7 @@ function init(){
       htmlCheck += '</span>&nbsp;&nbsp;<a href="#" onclick="hideShow($(\'#eIDmetaHideShow\'),$(this));return false;"><font size="+2">+</font></a>'
     }
     $('#EMBEDmeta').html(htmlCheck.replace(/eID/g,'EMBED'));
+    $('#VISIUMmeta').html(htmlCheck.replace(/eID/g,'VISIUM'));
     $('#HEATmeta').html(htmlCheck.replace(/eID/g,'HEAT'));
 
     //SANK
@@ -2545,6 +2600,10 @@ function init(){
             // for cosMx availability
             console.log("Checking cosMx ...");
             enableCOXMX();
+            
+            // for cosMx availability
+            console.log("Checking visium ...");
+            enableVISIUM();
 
             console.log("Initial server communication is completed!");
           }
@@ -2605,6 +2664,7 @@ function sync(){
   preDEGmultiref();
   GSPref();
   COSMXref();
+  VISIUMref();
   if(window.store.getState().colors.colorAccessor != null){
     $('#tVIPgrp').val(window.store.getState().colors.colorAccessor);
   }
@@ -3295,6 +3355,9 @@ function COSMXsetGeneColor(){
         html += " type='color'></label>";
     }
     $("#COSMXgeneColor").html(html);
+}
+function VISIUMref(){
+    showGene('VISIUM');
 }
 function IMGset(){
   window.figOpt['scale'] = $("input[name='IMGscale']:checked").val();
@@ -5301,9 +5364,7 @@ function EMBEDplot(){
     $('#EMBEDnote').text(VIPCellSelectionMsg);
     return;
   }
-
   var genes = getGenes('EMBED');
-
   var grps = $(".EMBEDgrps:checked").map(function(){return this.value;}).get();
   var grpMeta = $(".EMBEDmetas:checked").map(function(){return this.value;}).get();
 
@@ -5747,6 +5808,62 @@ function COSMXplot(){
             $('#COSMXnote').text(request.status+request.responseText);
             $(".COSMXbt").prop("disabled",false);
             document.getElementById("COSMXspin").style.visibility="hidden";
+        }
+    });
+}
+function VISIUMplot(){
+    $('#VISIUMnote').text("");
+    var sIDs =[];
+    $(".VISIUMsamples").each(function(){
+        if($(this).prop("checked")){
+            sIDs.push($(this).val());
+        }
+    });
+    if(sIDs.length==0){
+        $('#VISIUMnote').text("Please select at least one visium slide to plot");
+        return;
+    }
+    var genes = getGenes('VISIUM');
+    var grps = $(".VISIUMgrps:checked").map(function(){return this.value;}).get();
+    var grpMeta = $(".VISIUMmetas:checked").map(function(){return this.value;}).get();
+    var D= {'method':'plotVisium',
+        'dataset': window.store.getState().config.displayNames.dataset+'.h5ad',
+        'sIDs':sIDs,
+        'genes':genes,
+        'grp':grps,
+        'grpNum':grpMeta,
+        'sortID':$("#VISIUMsortID").prop('checked'),
+        'ncol':$("#VISIUMslot").val(),
+        'alpha':$("#VISIUMalpha").val(),
+        'dotsize':$("#VISIUMdotsize").val(),
+        'subsize':$("#VISIUMsubsize").val(),
+        'figOpt':window.figOpt
+    };
+    $(".VISIUMbt").prop('disabled',true);
+    $(".VISIUMpngBT").prop('disabled',true);
+    document.getElementById("VISIUMspin").style.visibility="visible";
+    $("#VISIUMfig").html("");
+    $.ajax({
+        type:"POST",
+        url:VIPurl,
+        data:JSON.stringify(D),
+        contentType: 'application/json;charset=UTF-8',
+        success:function(res){
+            $(".VISIUMpngBT").prop('disabled',false);
+            $(".VISIUMbt").prop("disabled",false);
+            document.getElementById("VISIUMspin").style.visibility="hidden";
+            if(res.startsWith('ERROR')){
+                $('#VISIUMnote').text(res);
+                return;
+            }
+            //var imgs = JSON.parse(res);
+            visiumData = res;
+            showImg('VISIUMfig',res);
+        },
+        error: function(request,status,error){
+            $('#VISIUMnote').text(request.status+request.responseText);
+            $(".VISIUMbt").prop("disabled",false);
+            document.getElementById("VISIUMspin").style.visibility="hidden";
         }
     });
 }

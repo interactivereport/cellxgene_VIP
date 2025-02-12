@@ -11,6 +11,8 @@ import diffxpy.api as de
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
+from matplotlib.lines import Line2D
+
 import seaborn as sns
 import matplotlib.patches as mpatches
 from matplotlib import rcParams
@@ -324,7 +326,9 @@ def distributeTask(aTask):
     'GSP':GSP,
     'plotBW':plotBW,
     'checkCosMx':getCosMx,
-    'plotCOSMX':plotCosMx
+    'plotCOSMX':plotCosMx,
+    'checkVisium':getVisium,
+    'plotVisium':plotVisium
   }.get(aTask,errorTask)
 
 def HELLO(data):
@@ -1157,7 +1161,7 @@ def MARK(data):
     #return json.dumps([[['name','scores'],['None','0']],Msg('Less than 3 groups in selected cells!Please use DEG for 2 groups')])
 
   sc.tl.rank_genes_groups(adata,groupby=data["grp"][0],n_genes=int(data['geneN']),method=data['markMethod'])#
-  ppr.pprint(int(data['geneN']))
+  #ppr.pprint(int(data['geneN']))
   sc.pl.rank_genes_groups(adata,n_genes=int(data['geneN']),ncols=min([3,len(adata.obs[data['grp'][0]].unique())]),show=False)
   fig =plt.gcf()
 
@@ -1485,10 +1489,10 @@ def CLI(data):
     except:
       res = subprocess.run('jupytext --to notebook --output - %s | jupyter nbconvert --ExecutePreprocessor.timeout=1800 --to html --execute --stdin --stdout'%strScript,capture_output=True,shell=True)
     html = res.stdout.decode('utf-8')
-#    h,s,e = html.partition('<div class="cell border-box-sizing code_cell rendered">')
-#    h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">') ## remove the first cell
-#    h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">') ## remove the second cell
-#    html = h+s+e
+  #    h,s,e = html.partition('<div class="cell border-box-sizing code_cell rendered">')
+  #    h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">') ## remove the first cell
+  #    h1,s,e = e.partition('<div class="cell border-box-sizing code_cell rendered">') ## remove the second cell
+  #    html = h+s+e
   if 'Error' in res.stderr.decode('utf-8'):
      html = 'ERROR @server:\nstderr:\n' + re.sub(r"\x1b[^m]*m", "", res.stderr.decode('utf-8')) + '\nstdout:\n' + res.stdout.decode('utf-8')
   for f in glob.glob(strPath+"*"):
@@ -1845,6 +1849,89 @@ def plotCosMx(data):
         for sID in cosMxArray:
             cosMxImg[sID]=npArray2jpg(cosMxArray[sID])
     return json.dumps(cosMxImg)
+
+def getVisium(data):
+    scD=data['data_adapter']
+    k='visium'
+    visiumID=[]
+    if scD is not None and k in scD.data.uns_keys():
+        adata = scD.data
+        keys = adata.uns[k]['keys']
+        visiumID = list(set(adata.obs[keys['slide_column']].unique()) & set(adata.uns['spatial'].keys()))
+    return json.dumps(visiumID)
+def adjustAlpha(alpha,adjA):
+    x = alpha/max(alpha)
+    return (1+adjA)*x/(x+adjA)
+def plotVisiumOne(adata,sid,col,ax,fig,alpha=1,cmap='viridis',dotsize=4):
+    keys = adata.uns['visium']['keys']
+    img = adata.uns['spatial'][sid]
+    for v in keys['img']:
+        img = img[v]
+    scaler = adata.uns['spatial'][sid]
+    for v in keys['scale']:
+        scaler = scaler[v]
+    subD = adata[adata.obs[keys['slide_column']]==sid,]
+    a=ax.imshow(img)
+    x = subD.obsm[keys['coordinates']][:,0]*scaler
+    y = subD.obsm[keys['coordinates']][:,1]*scaler
+    df = sc.get.obs_df(subD,[col])
+    if pd.api.types.is_numeric_dtype(df[col]):
+        a=ax.scatter(x,y,
+            c=df[col].to_numpy(),cmap=cmap,s=dotsize,
+            alpha=adjustAlpha(df[col].to_numpy(),1-alpha))
+        a=fig.colorbar(a,ax=ax)
+    else:
+        try:
+            grps = sorted(adata.obs[col].unique().to_list(),key=int)
+        except:
+            grps = sorted(adata.obs[col].unique().to_list())
+        if len(grps)<10:
+            colors = dict(zip(grps,sns.color_palette('Set1',n_colors=len(grps)).as_hex()))
+        else:
+            colors = dict(zip(grps,sns.color_palette('husl',n_colors=len(grps)).as_hex()))
+        a=ax.scatter(x,y,
+            color=[colors[_] for _ in df[col]],
+            s=dotsize,alpha=alpha)
+        legend_handles = [Line2D([],[],marker='.',color=colors[i],linestyle='None') for i in colors.keys()]
+        a=ax.legend(handles=legend_handles,labels=colors.keys(),ncols=math.ceil(len(grps)/11),
+            bbox_to_anchor=(1.05, 1),loc='upper left')
+    a=ax.set_title("%s: %s"%(sid,col))
+def plotVisium(data):
+    subSize = float(data['subsize'])
+    adata = data['data_adapter'].data
+    sel = data['grpNum'] + data['genes']+data['grp']
+    keys = adata.uns['visium']['keys']
+    ncol = int(data['ncol'])
+    nSel = len(sel)
+    slides = adata.obs[keys['slide_column']].unique()
+    nSlides = adata.obs[keys['slide_column']].nunique()
+    if data['sortID']:
+        nrowSection = math.ceil(nSel/ncol)
+        nrow = nSlides*nrowSection
+        fig, axs = plt.subplots(nrow, ncol, figsize=(ncol*subSize,nrow*subSize))
+        axs_flat = axs.flatten()
+        for i in range(nSlides):
+            for j in range(nSel):
+                plotVisiumOne(adata,slides[i],sel[j],
+                    axs_flat[i*nrowSection*ncol+j],fig,
+                    alpha=float(data['alpha']),
+                    cmap=data['figOpt']['colorMap'],
+                    dotsize=float(data['dotsize']))
+    else:
+        nrowSection = math.ceil(nSlides/ncol)
+        nrow = nSel*nrowSection
+        fig, axs = plt.subplots(nrow, ncol, figsize=(ncol*subSize,nrow*subSize))
+        axs_flat = axs.flatten()
+        for j in range(nSel):
+            for i in range(nSlides):
+                plotVisiumOne(adata,slides[i],sel[j],
+                    axs_flat[j*nrowSection*ncol+i],fig,
+                    alpha=float(data['alpha']),
+                    cmap=data['figOpt']['colorMap'],
+                    dotsize=float(data['dotsize']))
+    for ax in axs_flat:
+        a=ax.axis('off')
+    return iostreamFig(fig)
 
 #make sure the h5ad file full name is listed in vip.env as a variable 'testVIP';
 def testVIPready(data):
