@@ -1874,7 +1874,10 @@ def plotVisiumOne(adata,sid,col,ax,fig,alpha=1,cmap='viridis',dotsize=4):
     a=ax.imshow(img)
     x = subD.obsm[keys['coordinates']][:,0]*scaler
     y = subD.obsm[keys['coordinates']][:,1]*scaler
-    df = sc.get.obs_df(subD,[col])
+    g_column = 'name_0'
+    if 'feature_name' in subD.var.columns:
+        g_column = 'feature_name'
+    df = sc.get.obs_df(subD,[col],gene_symbols=g_column)
     if pd.api.types.is_numeric_dtype(df[col]):
         a=ax.scatter(x,y,
             c=df[col].to_numpy(),cmap=cmap,s=dotsize,
