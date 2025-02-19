@@ -1906,8 +1906,8 @@ def plotVisium(data):
     keys = adata.uns['visium']['keys']
     ncol = int(data['ncol'])
     nSel = len(sel)
-    slides = adata.obs[keys['slide_column']].unique()
-    nSlides = adata.obs[keys['slide_column']].nunique()
+    slides = data['sIDs'] #adata.obs[keys['slide_column']].unique()
+    nSlides = len(slides) #adata.obs[keys['slide_column']].nunique()
     if data['sortID']:
         nrowSection = math.ceil(nSel/ncol)
         nrow = nSlides*nrowSection
