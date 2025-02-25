@@ -1859,9 +1859,14 @@ def getVisium(data):
         keys = adata.uns[k]['keys']
         visiumID = list(set(adata.obs[keys['slide_column']].unique()) & set(adata.uns['spatial'].keys()))
     return json.dumps(visiumID)
-def adjustAlpha(alpha,adjA):
-    x = alpha/max(alpha)
-    return (1+adjA)*x/(x+adjA)
+def adjustAlpha(x,adjA):
+    if max(x)<=0:
+        return adjA
+    x = x/max(x) #(alpha-min(alpha))/(max(alpha)-min(alpha))
+    a = 1-adjA
+    b = 20**a
+    alpha =(1+a**b)/(1+(a/x)**b)
+    return alpha
 def plotVisiumOne(adata,sid,col,ax,fig,alpha=1,cmap='viridis',dotsize=4):
     keys = adata.uns['visium']['keys']
     img = adata.uns['spatial'][sid]
@@ -1881,7 +1886,7 @@ def plotVisiumOne(adata,sid,col,ax,fig,alpha=1,cmap='viridis',dotsize=4):
     if pd.api.types.is_numeric_dtype(df[col]):
         a=ax.scatter(x,y,
             c=df[col].to_numpy(),cmap=cmap,s=dotsize,
-            alpha=adjustAlpha(df[col].to_numpy(),1-alpha))
+            alpha=adjustAlpha(df[col].to_numpy(),alpha))
         a=fig.colorbar(a,ax=ax)
     else:
         try:
