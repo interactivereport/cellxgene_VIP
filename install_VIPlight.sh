@@ -28,7 +28,7 @@ source $condaPath/etc/profile.d/conda.sh
 
 ## create conda env
 conda env remove -p $appEnvPath
-conda create -y python=3.8.15 mamba=0.15.3 git=2.39.1 jq=1.6 nodejs=18.12.1 -c conda-forge -p $appEnvPath #nodejs=13.13.0
+conda create -y -p $appEnvPath -c conda-forge python=3.10.14 mamba git jq nodejs   #nodejs=13.13.0
 
 sed "s|CONDA_PATH|$appEnvPath|g" env_yml/VIPlight.yml > env_yml/VIPlight_local.yml
 if [[ -n "$CONDA_SSL" ]] &&  [[ -f "$CONDA_SSL" ]]; then
@@ -41,13 +41,14 @@ source $appEnvPath/etc/profile.d/conda.sh
 conda activate
 which python
 
-pip install --force-reinstall flask==2.2.3 flask-cors==3.0.10 flask-restful==0.3.9 flask-talisman==1.0.0 werkzeug==2.2.3 anndata==0.8.0 h5py==3.8.0 pandas==1.5.3 numpy==1.22.0
-
+pip install --force-reinstall flask flask-cors flask-restful flask-talisman werkzeug anndata==0.10.7 h5py pandas numpy==2.0.1 #numpy specified by cellxgene v1.3.0
+#flask==2.2.3 flask-cors==3.0.10 flask-restful==0.3.9 flask-talisman==1.0.0 werkzeug==2.2.3 anndata==0.8.0 h5py==3.8.0 pandas==1.5.3 numpy==1.22.0
 ## config the env with cellxgene
 rm -fr cellxgene
 git clone https://github.com/chanzuckerberg/cellxgene.git
 cd cellxgene
-git checkout f48d06fb9043771d7370ee9ac0dc9de8ae6ad888 # v1.1.1
+#git checkout f48d06fb9043771d7370ee9ac0dc9de8ae6ad888 # v1.1.1
+git checkout fd8b47b78ed9f9fa3ac9bb52897597a3e7fa549a #v1.3.0
 
 ## update the client-side source code of cellxgene for VIP
 echo -e "\nwindow.store = store;" >> client/src/reducers/index.js
