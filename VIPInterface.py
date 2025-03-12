@@ -1890,9 +1890,9 @@ def plotVisiumOne(adata,sid,col,ax,fig,alpha=1,cmap='viridis',dotsize=4):
         a=fig.colorbar(a,ax=ax)
     else:
         try:
-            grps = sorted(adata.obs[col].unique().to_list(),key=int)
+            grps = sorted(adata.obs[col].unique().tolist(),key=int)
         except:
-            grps = sorted(adata.obs[col].unique().to_list())
+            grps = sorted(adata.obs[col].unique().tolist())
         if len(grps)<10:
             colors = dict(zip(grps,sns.color_palette('Set1',n_colors=len(grps)).as_hex()))
         else:
