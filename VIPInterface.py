@@ -1283,7 +1283,7 @@ def SANK(data):
   for i in range(len(Dnames)-1):
     oneName = Dnames[i:i+2]
     #maxGrp = max(maxGrp,len(D[oneName[0]].unique()))
-    summaryOne = D.groupby(oneName).size().reset_index(name='Count')
+    summaryOne = D.groupby(oneName,observed=False).size().reset_index(name='Count')
     summaryOne=summaryOne[summaryOne['Count']>0]
     sIDs += list(summaryOne[oneName[0]].apply(lambda x: labels.index(x)))
     dIDs += list(summaryOne[oneName[1]].apply(lambda x: labels.index(x)))
@@ -1418,9 +1418,9 @@ def DENS2D(data):
   return img
 
 def toInt(x):
-  if len(x)==0:
+  if x.shape[0]==0:
     return 0
-  return int(x)
+  return int(x.iloc[0])
 
 def STACBAR(data):
   if len(data['genes'])==0:
@@ -1435,7 +1435,7 @@ def STACBAR(data):
   D = D.astype('str').astype('category')
   if data['obs_index'] in D.columns:
     del D[data['obs_index']]
-  cellN = D.groupby(list(D.columns)).size().reset_index(name="Count")
+  cellN = D.groupby(list(D.columns),observed=False).size().reset_index(name="Count")
 
   strCol = data['colorBy']
   tmp = list(D.columns)
