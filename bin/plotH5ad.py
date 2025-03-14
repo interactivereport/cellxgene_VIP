@@ -108,10 +108,9 @@ def getData(data,dataframe=True):
   data['options']["img_height"]=4 if not isOptionDefined(data,"img_height") else data['options']['img_height']
   data['options']['cutoff']=0 if not isOptionDefined(data,"cutoff") else data['options']['cutoff']
   data['options']['titlefontsize']=6 if not isOptionDefined(data,"titlefontsize") else data['options']['titlefontsize']
-  data['options']['gene_symbols']=None if not isOptionDefined(data,"gene_symbols") else data['options']['gene_symbols']
   # checking existing genes/annotations/reduction keys
   if len(data['var_col'])>0 and data['var_col'] in D.var.columns:
-    genes = {(D.var_names[D.var["feature_name"]==k][0]):k for k in data['genes']}
+    genes = {(D.var_names[D.var[data['var_col']]==k][0]):k for k in data['genes']}
   else:
     g = list(D.var_names[D.var_names.str.lower().isin([s.lower() for s in data['genes']])])
     genes = dict(zip(g,g))
@@ -149,7 +148,7 @@ def getData(data,dataframe=True):
     print("Filter: %s<br>"%str(timedelta(seconds=time.time()-st)))
     st = time.time()
   if dataframe:
-    df = sc.get.obs_df(D,list(genes.keys())+list(data["groups"].keys()),gene_symbols=data['options']['gene_symbols'])[selC].rename(columns=genes)
+    df = sc.get.obs_df(D,list(genes.keys())+list(data["groups"].keys()))[selC].rename(columns=genes)
     for k in data["groups"]:
       df[k] = df[k].astype(str).astype('category')
     if len(reduc)>0:
