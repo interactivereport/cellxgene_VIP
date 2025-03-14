@@ -177,6 +177,8 @@ def complexViolin(data):
     if data['options']['cutoff']>0:
       subDF = df[(df[genes[i]]>data['options']['cutoff']).values]
       strTitle="%d out of selected %d cells passed the expression filter %.2f"%(subDF.shape[0],df.shape[0],data['options']['cutoff'])
+    if subDF.shape[0]<5:
+        msgPlot("Less than 5 cells are satisfied with cutoff %.3f"%data['options']['cutoff'],data)
     sns.violinplot(x=grps[0],y=genes[i],ax=axes[i],
       data=subDF,cut=0,
       palette="bright" if not isOptionDefined(data,"palette") else data['options']['palette'],
@@ -351,6 +353,8 @@ def complexHeatmap(data):
   genes = data["genes"]
   selN = df.shape[0]
   df = df[df[genes].apply(lambda x: max(x)>data["options"]["cutoff"],axis=1)]
+  if df.shape[0]<5:
+    msgPlot("Less than 5 cells are satisfied with cutoff %.3f"%data['options']['cutoff'],data)
   heat_scale=None
   heat_title="Expression"
   if data["options"].get("heat_scale") is not None and data["options"]["heat_scale"]=="z-score":
