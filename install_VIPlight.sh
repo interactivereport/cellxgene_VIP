@@ -28,7 +28,7 @@ source $condaPath/etc/profile.d/conda.sh
 
 ## create conda env
 conda env remove -p $appEnvPath
-conda create -y -p $appEnvPath -c conda-forge python=3.10.14 mamba git jq nodejs   #nodejs=13.13.0
+conda create -y -p $appEnvPath -c conda-forge python=3.10.14 mamba git jq nodejs conda   #nodejs=13.13.0
 
 sed "s|CONDA_PATH|$appEnvPath|g" env_yml/VIPlight.yml > env_yml/VIPlight_local.yml
 if [[ -n "$CONDA_SSL" ]] &&  [[ -f "$CONDA_SSL" ]]; then
