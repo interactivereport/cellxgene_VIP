@@ -130,7 +130,6 @@ cellxgene launch --host <xxx> --port <xxx> --disable-annotations --verbose <h5ad
 
 You should be able to see this in Console of Chrome Developer Tools if everything is right.
 ![VIP_ready](https://user-images.githubusercontent.com/29576524/92059839-46482d00-ed60-11ea-8890-8e1b513a1656.png)
-
 *note: while spinning up the cellxgene from HPC, do **NOT** use qlogin. **ssh directly to the server**.*
 
 # Updating
@@ -138,4 +137,10 @@ You should be able to see this in Console of Chrome Developer Tools if everythin
 ./update.VIPInterface.sh all # if "interface.html" or "VIPInterface.py" is modified or new source code needs to go to right location, often.
 
 ./update.index_template.sh # if jsPanel is modified, very rare.
+```
+
+# Potential Issues During Installation
+- Error: error:0308010C:digital envelope routines::unsupported
+```
+Solution: export NODE_OPTIONS=--openssl-legacy-provid
 ```
