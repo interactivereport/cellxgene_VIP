@@ -6201,8 +6201,11 @@ meta <- as.data.frame(arrow::read_feather(paste(strPath,".obs.feather",sep="")))
 colnames(D) <- meta[,"name_0"]
 X <- CreateSeuratObject(counts=D)
 X@meta.data <- cbind(X@meta.data,meta)
-# For seurat < ver.5, use X@assays$RNA@data <- X@assays$RNA@counts
-X[['RNA']]['data'] <- X[['RNA']]['counts']
+if (compareVersion(as.character(packageVersion("Seurat")), "5.0")<1) {
+  X@assays$RNA@data <- X@assays$RNA@counts
+} else {
+  X[['RNA']]['data'] <- X[['RNA']]['counts']
+}
 
 %Rdevice png
 
@@ -6248,10 +6251,15 @@ X <- FindClusters(X, resolution = 0.5)
 X.markers <- FindAllMarkers(X, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
 top10 <- X.markers %>% group_by(cluster) %>% top_n(n = 10, wt = avg_log2FC)
 DoHeatmap(X, features = top10$gene, label=FALSE) + theme(text = element_text(size = 8))
+
+%%R
 sessionInfo()
 </div>
 
 <div id="CLIVignetteCode3" style="display:none;">
+```{r setup, include=FALSE}
+reticulate::use_python(system2("which","python", stdout = TRUE),required = TRUE)
+```
 ```{python}
 from pyarrow import feather
 import pandas as pd
@@ -6275,9 +6283,11 @@ meta <- as.data.frame(arrow::read_feather(paste(strPath,".obs.feather",sep="")))
 colnames(D) <- meta[,"name_0"]
 X <- CreateSeuratObject(counts=D)
 X@meta.data <- cbind(X@meta.data,meta)
-# For seurat < ver.5, use X@assays$RNA@data <- X@assays$RNA@counts
-X[['RNA']]['data'] <- X[['RNA']]['counts']
-
+if (compareVersion(as.character(packageVersion("Seurat")), "5.0")<1) {
+  X@assays$RNA@data <- X@assays$RNA@counts
+} else {
+  X[['RNA']]['data'] <- X[['RNA']]['counts']
+}
 
 X[["percent.mt"]] <- PercentageFeatureSet(X, pattern = "^MT-")
 VlnPlot(X, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
