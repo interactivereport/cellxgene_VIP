@@ -40,7 +40,7 @@ whole or sliced single cell dataset.
 bash ~/Downloads/Anaconda3-2020.02-Linux-x86_64.sh
 ```
 
-## 2. One step installation for VIPlight (without CLI, Command Line Interface for programming)
+## 2. One step installation for VIPlight without CLI (Command Line Interface) for programming
 Clone the repo to your local,
 ```
 git clone https://github.com/interactivereport/cellxgene_VIP.git
