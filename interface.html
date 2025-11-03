@@ -6202,7 +6202,7 @@ colnames(D) <- meta[,"name_0"]
 X <- CreateSeuratObject(counts=D)
 X@meta.data <- cbind(X@meta.data,meta)
 if (compareVersion(as.character(packageVersion("Seurat")), "5.0")<1) {
-  X@assays$RNA@data <- X@assays$RNA@counts
+  X@assays[['RNA']]@data <- X@assays[['RNA']]@counts
 } else {
   X[['RNA']]['data'] <- X[['RNA']]['counts']
 }
