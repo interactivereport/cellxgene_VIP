@@ -61,7 +61,7 @@ def route(data,appConfig):
   #ppr.pprint(data)
   try:
     getLock(jobLock)
-    setTimeStamp(data)
+    setTimeStamp(data, appConfig.dataset_config.app__identifier) # pass identifier to name timestamp file
     taskRes = distributeTask(data["method"])(data)
     freeLock(jobLock)
     gc.collect()
@@ -256,7 +256,7 @@ def createData(data):
     for i in embed.keys():
       embed[i] = embed[i][selC]
     obs = obs[selC].astype('category')
-    obs[newGrp].cat.set_categories(data['combineOrder'],inplace=True)
+    obs[newGrp].cat = obs[newGrp].cat.set_categories(data['combineOrder'])
     data['grp'] = [newGrp]
 
   obs = obs.astype('category')
@@ -433,7 +433,9 @@ def geneFiltering(adata,cutoff,opt):
     #ix = adata.to_df().apply(lambda x: max(x)>float(cutoff),axis=1)
     #ppr.pprint(time.time()-sT)
     #sT=time.time()
-    df = adata.to_df()
+    df = adata_to_df(adata)
+    if len(df) == 0:
+      return []
     ix = df[df>float(cutoff)].count(axis=1)>0
     #ppr.pprint(time.time()-sT)
     #sT = time.time()
@@ -445,7 +447,9 @@ def geneFiltering(adata,cutoff,opt):
   elif opt==2:
     def cutoff(x):
         return x if x>float(cutoff) else None
-    X = adata.to_df()
+    X = adata_to_df(adata)
+    if len(X) == 0:
+      return []
     X=X.applymap(cutoff)
     adata = sc.AnnData(X,adata.obs)
   return adata
@@ -482,7 +486,7 @@ def SGVcompare(data):
 
   # plot in R
   strF = ('%s/SGV%f.csv' % (data["CLItmp"],time.time()))
-  X=pd.concat([adata.to_df(),adata.obs[data['grp']]],axis=1,sort=False)
+  X=pd.concat([adata_to_df(adata),adata.obs[data['grp']]],axis=1,sort=False)
   X[X.iloc[:,0]>=float(data['cellCutoff'])].to_csv(strF,index=False)
   #strCMD = " ".join(["%s/Rscript"%data['Rpath'],strExePath+'/violin.R',strF,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
   #ppr.pprint(" ".join([strExePath+'/violin.R',strF,str(data['cutoff']),str(data['dotsize']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']]))
@@ -499,7 +503,7 @@ def VIOdata(data):
   adata = geneFiltering(adata,data['cutoff'],1)
   if len(adata)==0:
     raise ValueError('No cells in the condition!')
-  return pd.concat([adata.to_df(),adata.obs], axis=1, sort=False).to_csv()
+  return pd.concat([adata_to_df(adata),adata.obs], axis=1, sort=False).to_csv()
 
 def unique(seq):
     seen = set()
@@ -558,7 +562,7 @@ def PGVcompare(data):
   if len(adata)==0:
     raise ValueError('No cells in the condition!')
   strF = ('%s/PGVcompare%f.csv' % (data["CLItmp"],time.time()))
-  X=pd.concat([adata.to_df(),adata.obs[data['grp']]],axis=1,sort=False).to_csv(strF,index_label="cellID")
+  X=pd.concat([adata_to_df(adata),adata.obs[data['grp']]],axis=1,sort=False).to_csv(strF,index_label="cellID")
 
   # plot in R
   strCMD = " ".join(["Rscript",strExePath+'/complex_vlnplot_multiple.R',strF,','.join(data['genes']),data['grp'][0],data['grp'][1],str(data['width']),str(data['height']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
@@ -639,7 +643,7 @@ def pHeatmap(data):
     #sT = time.time()
 
     try:
-      g = sns.clustermap(adata.to_df(),
+      g = sns.clustermap(adata_to_df(adata),
                        method="ward",row_cluster=exprOrder,z_score=Zscore,cmap=heatCol,center=heatCenter,
                        row_colors=pd.concat(grpCol,axis=1).astype('str'),yticklabels=False,xticklabels=True,
                        figsize=(w,h),colors_ratio=0.05,
@@ -689,7 +693,7 @@ def pHeatmap(data):
     legendCol = math.ceil(sum(grpN)/40)
     w=w+characterW*sum(sorted(grpW,reverse=True)[0:legendCol])
     strF = ('%s/HEAT%f.csv' % (data["CLItmp"],time.time()))
-    D = adata.to_df()
+    D = adata_to_df(adata)
     if data['norm']=='zscore':
       for one in D.columns:
         D[one] = (D[one]-D[one].mean())/D[one].std()
@@ -731,7 +735,7 @@ def pHeatmap(data):
 
 def HeatData(data):
   adata = createData(data)
-  Xdata = pd.concat([adata.to_df(),adata.obs], axis=1, sort=False).to_csv()
+  Xdata = pd.concat([adata_to_df(adata),adata.obs], axis=1, sort=False).to_csv()
   return Xdata
 
 def GD(data):
@@ -1025,7 +1029,7 @@ def DOTdata(data):
   adata = createData(data)
   if len(adata)==0:
     raise ValueError('No cells in the condition!')
-  return pd.concat([adata.to_df(),adata.obs], axis=1, sort=False).to_csv()
+  return pd.concat([adata_to_df(adata),adata.obs], axis=1, sort=False).to_csv()
 
 def EMBED(data):
   adata = createData(data)
@@ -1071,8 +1075,8 @@ def EMBED(data):
     ax.set_ylabel('%s2'%data['layout'])
 
   if 'splitGrp' in data.keys():
-    vMax = adata.to_df().apply(lambda x: max(x))
-    vMin = adata.to_df().apply(lambda x: min(x))
+    vMax = adata_to_df(adata).apply(lambda x: max(x))
+    vMin = adata_to_df(adata).apply(lambda x: min(x))
     dotSize = 120000 / adata.n_obs
     for i in range(ngene):
       for j in range(len(splitName)):
@@ -1135,7 +1139,7 @@ def dualExp(df,cutoff,anno):
 
 def DUAL(data):
   adata = createData(data)
-  adata.obs['Expressed'] = dualExp(adata.to_df(),float(data['cutoff']),adata.var_names)
+  adata.obs['Expressed'] = dualExp(adata_to_df(adata),float(data['cutoff']),adata.var_names)
   sT = time.time()
   pCol = {"None":"#AAAAAA44","Both":"#EDDF01AA",data['genes'][0]:"#1CAF82AA",data['genes'][1]:"#FA2202AA"}
   adata.uns["Expressed_colors"]=[pCol[i] for i in adata.obs['Expressed'].cat.categories]
@@ -1219,7 +1223,7 @@ def DENS(data):
   for i in range(len(split)):
     #resT = time.time()
     Dobs = adata[adata.obs[sGrp]==split[i]].obs[cGrp]
-    D = adata[adata.obs[sGrp]==split[i]].to_df()
+    D = adata_to_df(adata[adata.obs[sGrp]==split[i]])
     #dataT += (time.time()-resT)
     for j in range(len(genes)):
       ax = fig.add_subplot(gs[i,j])
@@ -1255,7 +1259,7 @@ def SANK(data):
   else:
     adata = createData(data)
     D = pd.concat([adata.obs.apply(lambda x:x.apply(lambda y:x.name+":"+y)),
-                   adata.to_df().apply(lambda x:pd.cut(x,int(data['sankBin'])).apply(lambda y:x.name+":"+'%.1f_%.1f'%(y.left,y.right)))],
+                   adata_to_df(adata).apply(lambda x:pd.cut(x,int(data['sankBin'])).apply(lambda y:x.name+":"+'%.1f_%.1f'%(y.left,y.right)))],
                   axis=1,sort=False)
   D = D.astype('str').astype('category')
   if data['obs_index'] in D.columns:
@@ -1408,7 +1412,7 @@ def DENS2D(data):
 
   ## plot in R
   strF = ('%s/DENS2D%f.csv' % (data["CLItmp"],time.time()))
-  adata.to_df().to_csv(strF)#
+  adata_to_df(adata).to_csv(strF)#
   res = subprocess.run([strExePath+'/Density2D.R',strF,data['figOpt']['img'],str(data['cutoff']),str(data['bandwidth']),data['figOpt']['colorMap'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']],capture_output=True)#
   img = res.stdout.decode('utf-8')
   os.remove(strF)
@@ -1430,7 +1434,7 @@ def STACBAR(data):
     adata = createData(data)
 
     D = pd.concat([adata.obs.apply(lambda x:x.apply(lambda y:y)),
-                   adata.to_df().apply(lambda x:pd.cut(x,int(data['Nbin'])).apply(lambda y:'%s:%.1f_%.1f'%(x.name,y.left,y.right)))],
+                   adata_to_df(adata).apply(lambda x:pd.cut(x,int(data['Nbin'])).apply(lambda y:'%s:%.1f_%.1f'%(x.name,y.left,y.right)))],
                   axis=1,sort=False)
   D = D.astype('str').astype('category')
   if data['obs_index'] in D.columns:
@@ -1513,10 +1517,14 @@ def getDesp(data):
       txt = "%s<br>%s"%(txt,line)
   return txt
 
-def setTimeStamp(data):
+def setTimeStamp(data, identifier):
+  # add identifier to timestamp file
   if data["h5ad"].startswith("http"):
       return
   strF = re.sub("h5ad$","timestamp",data["h5ad"])
+  if not identifier == 'null':
+    head,tail = strF.rsplit('.', 1)
+    strF = f"{head}_{identifier}.{tail}"
   Path(strF).touch()
 
 def getPreDEGname(data):
@@ -1728,7 +1736,7 @@ def plotBW(data):
                 for oneG in grp:
                     selC = selC | adata.obs[oneG].isin(list(clusterInfo[oneG]))
                 adata = adata[selC,:]
-                pd.concat([adata.obs,adata.to_df()], axis=1, sort=False).to_csv(strCSV)
+                pd.concat([adata.obs,adata_to_df(adata)], axis=1, sort=False).to_csv(strCSV)
     ## plot in R
     #strCMD = ' '.join([strExePath+'/browserPlot.R',strD,data['region'],','.join(data['bw']),str(data['exUP']),str(data['exDN']),strCSV,str(data['cutoff']),data['figOpt']['img'],str(data['figOpt']['fontsize']),str(data['figOpt']['dpi']),data['Rlib']])
     #ppr.pprint(strCMD)
@@ -1814,6 +1822,7 @@ def plotCosMx(data):
     cosMxArray={}
     cood_pair={}
     cood_N=10
+    cellID_col = ['cell_id','cell','cell_ID','cellID']
     for sID in data['sIDs']:
         if data['histology']:
             imgC = scD.data.uns[cosMxKey][sID][keys['img']].copy()
@@ -1823,8 +1832,11 @@ def plotCosMx(data):
             cell_color=data['cell'].lstrip('#')
             rgb = np.array(tuple(int(cell_color[i:i+2], 16) for i in (0, 2, 4)),dtype='uint8')
             cellB = scD.data.uns[cosMxKey][sID][keys['cell']]
-            for i in cellB.cell_ID.unique():
-                oneC = cellB[cellB.cell_ID==i].reset_index(drop=True)
+            cell_ID = next((_ for _ in cellID_col if _ in cellB.columns),None)
+            if cell_ID is None:
+                raise ValueError('The cell is not difined in the cell boundry: %s'%'; '.join(cellB.columns))
+            for i in cellB[cell_ID].unique():
+                oneC = cellB[cellB[cell_ID]==i].reset_index(drop=True)
                 N = oneC.shape[0]
                 for j in range(N):
                     p = bresenham_line(loc_img((oneC[keys['local_px']['x']][j%N],oneC[keys['local_px']['y']][j%N]),imgC.shape[1]),
@@ -1968,3 +1980,11 @@ def saveTest(data):
         with open(strPath+re.sub("h5ad$","img.txt",strH5ad),'w') as f:
             f.write(data['img'])
     return 'success'
+
+def adata_to_df(adata):
+  if len(adata) == 0:
+    return []
+  X = adata.X
+  if scipy.sparse.issparse(X):
+    X = X.toarray()
+  return pd.DataFrame(X, index=adata.obs_names, columns=adata.var_names)
