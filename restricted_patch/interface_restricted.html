@@ -578,7 +578,7 @@
       <button id='cosMxBT' class="tablinks" onclick="selFun(event, 'COSMX');" style="display: none;">CosMx</button>
       <button id='visiumBT' class="tablinks" onclick="selFun(event, 'VISIUM');" style="display: none;">Visium</button>
       <button class="tablinks" onclick="selFun(event, 'SPATIAL');defaultTopSel('SPATIAL','SPATIALimage')">Spatial Transcriptomics</button>
-      <button class="tablinks" onclick="selFun(event, 'CLI')">Command Line Interface</button>
+      <button class="tablinks" style="display: none;">Command Line Interface</button>
       <button id="metaCellBT" class="tablinks colorButton" onclick="metaSel()" style="display: none;">Show MetaCell</button>
       <div id="metaCellBTspin" class="loading style-2" style="visibility: hidden;"><div class="loading-wheel"></div></div>
       <hr size="1" noshade>
@@ -730,7 +730,7 @@
           <select id="SGVgrp"></select></p>
         </div>
         <button class="SGVbt" onclick="SGVplot('plot')"><b>Plot</b></button>
-        <button class="SGVsaveBT" onclick="SGVplot('data')">Get Data</button>
+        <button class="SGVsaveBT" disabled>Get Data</button>
         <button onclick="ZoomIn('SGVresize')">Zoom In</button>
         <button onclick="ZoomOut('SGVresize')">Zoom Out</button>
         <button class="SGVpngBT" onclick="saveImg('SGVimg')" disabled>Save</button>
@@ -829,7 +829,7 @@
         </div>
 
         <button class="PGVbt"  onclick="PGVplot('plot')"><b>Plot</b></button>
-        <button class="PGVsaveBT" onclick="PGVplot('data')">Get Data</button>
+        <button class="PGVsaveBT" disabled>Get Data</button>
         <button onclick="ZoomIn('PGVresize')">Zoom In</button>
         <button onclick="ZoomOut('PGVresize')">Zoom Out</button>
         <button class="PGVpngBT" onclick="saveImg('PGVimg')" disabled>Save</button>
@@ -1586,7 +1586,7 @@
           </p>
           <p><label><input id="COSMXhistology" type="checkbox" checked/>Draw histology image</label></p>
           <p><label><input id="COSMXcell" type="checkbox" checked/>Highlight cell boundaries with color <input class="colorInput" id="COXMXcellColor" type='color' value='#ffffff'></label></p>
-          Choose transcripts to highlight (need to 'Add Genes' first)
+          Choose transcripts to hightlight (need to 'Add Genes' first)
           <p id="COSMXgene"></p>
           Choose color for selected transcripts
           <p id="COSMXgeneColor"></p>
@@ -3349,7 +3349,6 @@ function COSMXsetGeneColor(){
     }else{
         $(".COSMXgenes").prop("disabled",false);
     }
-    
     if(selG.length>0){
         html = "";
         for(const one of selG){
@@ -4061,7 +4060,7 @@ function SGVplot(acc){
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
       $(".SGVbt").prop("disabled",false);
-      $(".SGVsaveBT").prop('disabled',false);
+      $(".SGVsaveBT").prop('disabled',true);
       document.getElementById("SGVspin").style.visibility="hidden";
       if(res.startsWith('ERROR')){
         $('#SGVnote').text(res);
@@ -4245,7 +4244,7 @@ function PGVplot(acc){
     contentType: 'application/json;charset=UTF-8',//
     success: function(res){
       $(".PGVbt").prop("disabled",false);
-      $(".PGVsaveBT").prop("disabled",false);
+      $(".PGVsaveBT").prop("disabled",true);
       document.getElementById("PGVspin").style.visibility="hidden";
       if(res.startsWith('ERROR')){
         $('#PGVnote').text(res);
@@ -4495,7 +4494,7 @@ function HEATplot(){
       showImg('HEATfig',res);//resD[0]
       //document.getElementById("HEATfig").innerHTML = '<img id="HEATpng" src="data:image/png;base64,'+resD[0]+'" width=100% height="auto"/>';// height="450" width="450"
       $(".HEATpngBT").prop('disabled',false);
-      $(".HEATsaveBT").prop('disabled',false);
+      $(".HEATsaveBT").prop('disabled',true);
     },
     error: function(request,status,error){
       $('#HEATnote').text(request.status+request.responseText);
@@ -4530,7 +4529,7 @@ function HEATdata(){
       hiddenE.click();
 
       $(".HEATpngBT").prop('disabled',false);
-      $(".HEATsaveBT").prop('disabled',false);
+      $(".HEATsaveBT").prop('disabled',true);
     },
     error: function(request,status,error){
       $('#HEATnote').text(request.status+request.responseText);
@@ -5380,7 +5379,9 @@ function EMBEDplot(){
     $('#EMBEDnote').text(VIPCellSelectionMsg);
     return;
   }
+
   var genes = getGenes('EMBED');
+
   var grps = $(".EMBEDgrps:checked").map(function(){return this.value;}).get();
   var grpMeta = $(".EMBEDmetas:checked").map(function(){return this.value;}).get();
 
@@ -6302,6 +6303,7 @@ if (compareVersion(as.character(packageVersion("Seurat")), "5.0")<1) {
 } else {
   X[['RNA']]['data'] <- X[['RNA']]['counts']
 }
+
 
 X[["percent.mt"]] <- PercentageFeatureSet(X, pattern = "^MT-")
 VlnPlot(X, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)

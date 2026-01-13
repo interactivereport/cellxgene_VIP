@@ -17,8 +17,8 @@ fontsize <- as.numeric(args[3])
 dpi <- as.numeric(args[4])
 figScale <- as.numeric(args[5])#0.5
 
-#file.copy(strCSV,"/tmp/bubbleMap.csv")
 X <- read.csv(strCSV,check.names=F)
+
 tags <- unique(X$tag)
 genes <- unique(X$gene)
 container = data.frame(tag = sort(factor(rep(tags,length(genes)),levels=tags)),

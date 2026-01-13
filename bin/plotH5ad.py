@@ -176,9 +176,9 @@ def complexViolin(data):
     strTitle = "Total of %d cells" %df.shape[0]
     if data['options']['cutoff']>0:
       subDF = df[(df[genes[i]]>data['options']['cutoff']).values]
-      strTitle="%d out of selected %d cells passed the expression filter %.2f"%(subDF.shape[0],df.shape[0],data['options']['cutoff'])
-    if subDF.shape[0]<5:
+      if subDF.shape[0]<5:
         msgPlot("Less than 5 cells are satisfied with cutoff %.3f"%data['options']['cutoff'],data)
+      strTitle="%d out of selected %d cells passed the expression filter %.2f"%(subDF.shape[0],df.shape[0],data['options']['cutoff'])
     sns.violinplot(x=grps[0],y=genes[i],ax=axes[i],
       data=subDF,cut=0,
       palette="bright" if not isOptionDefined(data,"palette") else data['options']['palette'],

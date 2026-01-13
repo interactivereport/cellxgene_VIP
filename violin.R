@@ -160,6 +160,12 @@ mtable <- read.csv(strCSV,check.names=F)
 ## remove 0 on the violin plot
 #mtable <- mtable[mtable[,1]>=expCut,]
 
+## ensure grouping variables are factors
+mtable[,2] <- as.factor(mtable[,2])
+if (ncol(mtable) > 2){
+  mtable[,3] <- as.factor(mtable[,3])
+}
+
 g <- violinPlot(mtable,expCut,dotsize)
 ## plot
 grpN <- compN <- nlevels(mtable[,2])

@@ -1,0 +1,139 @@
+<!-- 
+ This is a patched file compared with cellxgene original
+ a conditioning is added to the script section to determin which interface to use
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CELL&times;GENE | Annotate</title>
+    <style>
+      html,
+      body,
+      p,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      span,
+      button,
+      input,
+      label,
+      text,
+      div {
+        font-family: "Roboto Condensed", "Helvetica Neue", "Helvetica", "Arial",
+          sans-serif;
+        font-size: 14px;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+    </style>
+  <script defer src="static/main-fefa067e31cd9c27f318.js"></script><script defer src="obsolete.js"></script><link href="static/main-6835a9ad4754cf2ffc45.css" rel="stylesheet"></head>
+  <body>
+    <script type="text/javascript">
+      window.CELLXGENE = {};
+      window.CELLXGENE.API = {
+        prefix: `${location.origin}${location.pathname}api/`,
+        version: "v0.2/",
+      };
+    </script>
+    <noscript
+      >If you're seeing this message, that means
+      <strong>JavaScript has been disabled on your browser</strong>, please
+      <strong>enable JS</strong> to make this app work.
+    </noscript>
+
+        <script src="//library.bxgenomics.com/js/jquery-core/jquery.3.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://interactivereport.github.io/cellxgene_VIP/static/stackedbar/d3.v3.min.js"></script>
+    <link href="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/jspanel.css" rel="stylesheet">
+    <script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/jspanel.js"></script>
+    <script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/extensions/modal/jspanel.modal.js"></script>
+    <script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/extensions/tooltip/jspanel.tooltip.js"></script>
+    <script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/extensions/hint/jspanel.hint.js"></script>
+    <script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/extensions/layout/jspanel.layout.js"></script>
+    <script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/extensions/contextmenu/jspanel.contextmenu.js"></script>
+    <script src="https://interactivereport.github.io/cellxgene_VIP/static/jspanel/dist/extensions/dock/jspanel.dock.js"></script>
+    <script>
+    // execute JavaScript code in panel content
+    var setInnerHTML = function(elm, html) {
+        elm.innerHTML = html;
+        Array.from(elm.querySelectorAll('script')).forEach( oldScript => {
+            const newScript = document.createElement('script');
+            Array.from(oldScript.attributes)
+            .forEach( attr => newScript.setAttribute(attr.name, attr.value) );
+            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
+    };
+    var restricted = {{ restricted | tojson }};
+    console.log("Flag:", restricted)
+    var interfaceFile = restricted == true
+        ? "interface_restricted.html"
+        : "interface.html"
+    var plotPanel = jsPanel.create({
+        panelSize: '190 0',
+        position: 'left-top 160 6',
+        dragit: { containment: [-10, -2000, -4000, -2000] }, // set dragging range of VIP window
+        boxShadow: 1,
+        border: "solid #D4DBDE thin",
+        contentOverflow: 'scroll scroll', // adding scrolling bars
+        headerControls:{
+          close: 'remove',
+          minimize: 'remove',
+          maximize: 'remove'
+        },
+        headerTitle: function () {
+          return restricted == true
+            ? '<strong>Visualization in Plugin (restricted)</strong>'
+            : '<strong>Visualization in Plugin</strong>';
+          },
+        contentAjax: {
+            url: window.location.href.replace(/\\\/+$/,'')+'/static/' + interfaceFile,
+            done: function (panel) {
+                   setInnerHTML(panel.content, this.responseText);
+            }
+        },
+        onwindowresize: function(event, panel) {
+            var jptop = parseInt(this.currentData.top);
+            var jpleft = parseInt(this.currentData.left);
+            if (jptop<-10 || window.innerHeight-jptop<10 || window.innerWidth-jpleft<10 || jpleft+parseInt(this.currentData.width)<10) {
+                this.reposition("left-top 160 6");
+            }
+        },
+        onunsmallified: function (panel, status) {
+            this.reposition('center-top -370 180');
+            this.resize({ width: 740, height: function() { return Math.min(480, window.innerHeight*0.6);} });
+        },
+        onsmallified: function (panel, status) {
+            this.reposition('left-top 160 6');
+            this.style.width = '190px';
+        }
+    }).smallify();
+    plotPanel.headerbar.style.background = "#D4DBDE";
+    </script>
+    
+<div id="root"></div>
+    {% for script in SCRIPTS -%}
+    <script type="text/javascript"
+      {{ ('integrity="%s"' % script.integrity) | safe if script.integrity }}
+      {{ ('crossorigin="%s"' % script.crossorigin) | safe if script.crossorigin }}
+      src="{{script.src | safe}}"
+    ></script>
+    {%- endfor %}
+
+    {% for ils in INLINE_SCRIPTS %}
+    <script type="text/javascript" >{% include ils %}</script>
+    {% endfor %}
+  </body>
+</html>

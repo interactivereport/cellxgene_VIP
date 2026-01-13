@@ -1,0 +1,55 @@
+# conda create -y -n VIP -c conda-forge python=3.8.15 mamba=0.15.3
+# conda activate VIP
+# mamba env update -f VIPlight.yml
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - scanpy=1.10.1
+  - anndata=0.11.4
+  - numpy=2.0.1
+  - scipy=1.15.3
+  - fastcluster=1.3.0
+  - pandas=2.2.3
+  - matplotlib=3.10.7
+  - seaborn=0.13.2
+  - plotly=6.3.1
+  - pyarrow=21.0.0
+  - distinctipy=1.3.4
+  - r-base=4.3.3
+  - r-ggplot2=3.5.2
+  - r-reshape2=1.4.4
+  - r-ggforce=0.5.0
+  - r-patchwork=1.3.2
+  - r-tidyverse=2.0.0
+  - r-ggpubr=0.6.1
+  - r-cairo=1.6_5
+  - r-dplyr=1.1.4
+  - r-png=0.1_8
+  - r-mass=7.3_60.0.1
+  - r-data.table=1.17.8
+  - r-rcolorbrewer=1.1_3
+  - r-glue=1.8.0
+  - r-gridextra=2.3
+  - r-ggrepel=0.9.6
+  - r-ggrastr=1.0.2
+  - r-viridis=0.6.5
+  - r-rcpproll=0.3.1
+  - r-biocmanager=1.30.26
+  - bioconductor-rtracklayer=1.62.0 #=1.58.0=r42h171f361_1 # if the older bioconductor version is not available, install manually using other mirror site chooseBioCmirror()
+  - bioconductor-genomicranges=1.54.1 #=1.50.0=r42hc0cfd56_0
+  - bioconductor-genomeinfodb=1.38.1 #=1.34.8=r42hdfd78af_0
+  - bioconductor-s4vectors=0.40.2 #=0.36.0=r42hc0cfd56_0
+  - bioconductor-iranges=2.36.0 #=2.32.0=r42hc0cfd56_0
+  - bioconductor-complexheatmap=2.18.0 #=2.14.0=r42hdfd78af_0
+  - bioconductor-fgsea=1.28.0 #=1.24.0=r42hc247a5b_0
+  - pip=25.2 #=23.0.1
+  - pip:
+    - diffxpy==0.7.4
+    - PyComplexHeatmap==1.8.3 #==1.7.4
+variables:
+  PYTHONNOUSERSITE: 1
+  OPENBLAS_NUM_THREADS: 1
+  MKL_NUM_THREADS: 1
+  PKG_CONFIG_PATH: CONDA_PATH/lib/pkgconfig
+  RETICULATE_PYTHON: CONDA_PATH/bin/python

@@ -31,9 +31,9 @@ if [[ -f "$appEnvPath/conda-meta/history" ]]; then
     conda env remove -y -p $appEnvPath
 fi
 rm -fr $appEnvPath
-conda create -y -p $appEnvPath -c conda-forge python=3.10.14 mamba git jq nodejs conda   #nodejs=13.13.0
+conda create -y -p $appEnvPath -c conda-forge python=3.10.14 mamba=1.5.12 git=2.49.0 jq=1.8.1 nodejs=22.6.0 conda   #nodejs=13.13.0
 
-sed "s|CONDA_PATH|$appEnvPath|g" env_yml/VIPlight.yml > env_yml/VIPlight_local.yml
+sed "s|CONDA_PATH|$appEnvPath|g" env_yml/VIPlight_versioned.yml > env_yml/VIPlight_local.yml
 if [[ -n "$CONDA_SSL" ]] &&  [[ -f "$CONDA_SSL" ]]; then
     cat $CONDA_SSL >> $appEnvPath/ssl/cacert.pem
     echo -e "  GIT_SSL_CAINFO: $CONDA_SSL" >> env_yml/VIPlight_local.yml
@@ -44,7 +44,7 @@ source $appEnvPath/etc/profile.d/conda.sh
 conda activate
 which python
 
-pip install --force-reinstall flask flask-cors flask-restful flask-talisman werkzeug anndata==0.10.7 h5py pandas numpy==2.0.1 #numpy specified by cellxgene v1.3.0
+conda install -y -c conda-forge -c bioconda flask==3.1.0 flask-cors==5.0.1 flask-restful==0.3.10 flask-talisman==1.1.0 werkzeug==3.1.3 anndata==0.11.4 h5py==3.13.0 pandas==2.2.3 numpy==2.0.1 #numpy specified by cellxgene v1.3.0
 #flask==2.2.3 flask-cors==3.0.10 flask-restful==0.3.9 flask-talisman==1.0.0 werkzeug==2.2.3 anndata==0.8.0 h5py==3.8.0 pandas==1.5.3 numpy==1.22.0
 ## config the env with cellxgene
 rm -fr cellxgene
