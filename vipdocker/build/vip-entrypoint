@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -e
+
+# Default base command
+BASE_CMD=(launch)
+BASE_FLG=(--host 0.0.0.0 --max-category-items 500 --disable-annotations --backed --disable-gene-sets-save)
+
+# Detect dataset
+DATASET=""
+for arg in "$@"; do
+    if [[ "$arg" == *.h5ad ]]; then
+        DATASET="$arg"
+        break
+    fi
+done
+
+if [[ -n "$DATASET" ]]; then
+    # Remove dataset from "$@" so it doesn't appear twice
+    CLEAN_ARGS=()
+    for arg in "$@"; do
+        [[ "$arg" == "$DATASET" ]] || CLEAN_ARGS+=("$arg")
+    done
+
+    exec cellxgene "${BASE_CMD[@]}" "$DATASET" "${BASE_FLG[@]}" "${CLEAN_ARGS[@]}"
+else
+    # No dataset → pass through unchanged (help, version, etc.)
+    exec cellxgene "$@"
+fi
