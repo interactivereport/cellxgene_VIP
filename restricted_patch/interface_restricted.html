@@ -3576,15 +3576,24 @@ function ADDGadd(){
     var one = addG[i].trim();
     if (addG[i].trim().length<1)
       continue;
-    var ix = totalGlower.indexOf(one.toLowerCase());
-    if(ix !== -1){
-      var oneG = totalG[ix];
-      if(!genes.includes(oneG)){
-        genes.push(oneG);
+    var ix = totalG.indexOf(one); // exact match only
+    if (ix !== -1){
+      if (!genes.includes(one)) {
+        genes.push(one);
       }
-    }else{
-      notG.push(one);
+    } else {
+      notG.push(one)
     }
+    
+    // var ix = totalGlower.indexOf(one.toLowerCase());
+    // if(ix !== -1){
+    //   var oneG = totalG[ix];
+    //   if(!genes.includes(oneG)){
+    //     genes.push(oneG);
+    //   }
+    // }else{
+    //   notG.push(one);
+    // }
   }
   $("#ADDGdel").text(notG.join(", "));
   $("#ADDGinput").val("");
@@ -3621,18 +3630,32 @@ function AddGsetAddOne(grpName,gNames){
   var totalGlower = totalG.map(function(s){return s.toLowerCase();});
   for(var i=0;i<gNames.length;i++){
     var one = gNames[i].trim();
-    var ix = totalGlower.indexOf(one.toLowerCase());
-    if(ix !== -1){
-      var oneG = totalG[ix];
+
+    var ix = totalG.indexOf(one);
+    if (ix !== -1){
       if (one.length<1) continue;
-      if(!definedG.includes(oneG)){
-        geneNames.push(oneG);
-      }else{
+      if (!defineG.includes(one)) {
+        geneNames.push(one);
+      } else {
         notG.push(one);
       }
-    }else{
-      notG.push(one);
+    } else {
+      notG.push(one)
     }
+
+
+    // var ix = totalGlower.indexOf(one.toLowerCase());
+    // if(ix !== -1){
+    //   var oneG = totalG[ix];
+    //   if (one.length<1) continue;
+    //   if(!definedG.includes(oneG)){
+    //     geneNames.push(oneG);
+    //   }else{
+    //     notG.push(one);
+    //   }
+    // }else{
+    //   notG.push(one);
+    // }
   }
   
   var eMsg= "";
