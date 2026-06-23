@@ -624,9 +624,17 @@
 
     <div id="ADDG" class="tabcontent">
       <h3>Add genes of interest for plotting <a href="https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/how-to-use-cellxgene-vip.html#vip-add-genes-gene-sets" target="_blank"><i class="fa fa-question-circle" style="font-size:20px"></i></a></h3>
+      <p>
+        <label>
+          <input type="checkbox" id="ADDGnormalize" checked>
+          Perform case-insensitive gene matching
+        </label>
+      </p>
       <p>Please input a list of genes separated by comma, semicolon, space or tab:</p>
       <p><textarea id="ADDGinput" rows="5" cols="70"></textarea></p>
-      <p><button onclick="ADDGadd()"><b>Add</b></button></p>
+      <p>
+        <button onclick="ADDGadd()"><b>Add</b></button>
+      </p>
       <p>The following genes were added (click on a gene name to remove): <span id="ADDGsel"></span></p>
       <p>The following genes are not in the data: <span id="ADDGdel" style="color:red"></span></p>
 
@@ -877,7 +885,14 @@
         </p>
         <p>Choose genes ('Add Genes' first): <input id='HEATgenesAll' type="checkbox" checked onclick="$('.HEATgenes').prop('checked', this.checked);">Uncheck / Check All <span id="HEATgeneAnno"><input id="HEATgeneAnnoCK" type="checkbox" checked>Using protein atlas annotation</span></p>
         <p id="HEATgene"></p>
-        <p>Or upload a gene annotation csv file (first column header is 'gene'): <input type='file' id='HEATgeneFile' onchange="HEATgeneFileUpdate()" /></p>
+        <p>Or upload a gene annotation CSV file:</p>
+        <ul style="margin-left: 2rem; margin-top: -0.5rem;">
+          <li>First column header must be <code>gene</code></li>
+          <li>Gene name case sensitivity follows the setting in the "Add Genes" tab</li>
+        </ul>
+        <p style="margin-left: 2rem;">
+          <input type="file" id="HEATgeneFile" onchange="HEATgeneFileUpdate()" />
+        </p>
         <p>Choose categorical annotation(s):</p>
         <p id="HEATgrp"></p>
         <p>Choose continuous annotation(s):</p>
@@ -3565,25 +3580,33 @@ function ABBRcombine(){
   $("#ABBRcombineList").show();
 }
 // process genes
+function matchGene(one, totalG, totalGlower) {
+  const normalize = $("#ADDGnormalize").is(":checked");
+  if (normalize) {
+    const ix = totalGlower.indexOf(one.toLowerCase());
+    return ix !== -1 ? totalG[ix]: null;
+  } else {
+    const ix = totalG.indexOf(one);
+    return ix !== -1 ? one : null;
+  }
+}
 function ADDGadd(){
   var addG = $("#ADDGinput").val().trim().split(/\s+|\s*,\s*|\s*;\s*/);
   var genes =  window.biogen;
   var notG = [];
   var totalG = window.store.getState().annoMatrix._cache.var.__columns[0];
   var totalGlower = totalG.map(function(s){return s.toLowerCase();});
-
-  for(var i=0;i<addG.length;i++){
-    var one = addG[i].trim();
-    if (addG[i].trim().length<1)
-      continue;
-    var ix = totalGlower.indexOf(one.toLowerCase());
-    if(ix !== -1){
-      var oneG = totalG[ix];
-      if(!genes.includes(oneG)){
-        genes.push(oneG);
+  
+  for (let one of addG) {
+    one = one.trim();
+    if (!one) continue;
+    const matched = matchGene(one, totalG, totalGlower);
+    if (matched) {
+      if (!genes.includes(matched)) {
+        genes.push(matched);
       }
-    }else{
-      notG.push(one);
+    } else {
+      notG.push(one)
     }
   }
   $("#ADDGdel").text(notG.join(", "));
@@ -3619,20 +3642,21 @@ function AddGsetAddOne(grpName,gNames){
   var notG = [],geneNames=[];
   var totalG = window.store.getState().annoMatrix._cache.var.__columns[0];
   var totalGlower = totalG.map(function(s){return s.toLowerCase();});
-  for(var i=0;i<gNames.length;i++){
+
+  for (var i=0;i<gNames.length;i++) {
     var one = gNames[i].trim();
-    var ix = totalGlower.indexOf(one.toLowerCase());
-    if(ix !== -1){
-      var oneG = totalG[ix];
-      if (one.length<1) continue;
-      if(!definedG.includes(oneG)){
-        geneNames.push(oneG);
-      }else{
+    if (!one) continue;
+    var matched = matchGene(one, totalG, totalGlower);
+    if (matched) {
+      if (!definedG.includes(matched)) {
+        geneNames.push(matched);
+      } else {
         notG.push(one);
       }
-    }else{
+    } else {
       notG.push(one);
     }
+
   }
   
   var eMsg= "";
@@ -4347,13 +4371,14 @@ function HEATgeneFileUpdate(){
       //ADDGadd();
       //sync();
       var iG = geneAnno.map(function(d){
-        var ix = totalGlower.indexOf(d.gene.trim().toLowerCase());
-        if(ix !== -1){
-          d.gene = totalG[ix];
-        }else{
-          d=null;
+        var one = d.gene.trim();
+        var matched = matchGene(one, totalG, totalGlower);
+        if (matched) {
+          d.gene = matched;
+          return d;
+        } else {
+          return null;
         }
-        return d;
       });
       window.HEATgene=iG.filter(n=>n);
     }

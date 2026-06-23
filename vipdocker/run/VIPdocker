@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [[ $# -lt 1 ]]; then
+    echo "Usage: ./VIPdocker [<directory> or <yaml>]"
+    exit 1
+fi
+ARG="$1"
+
+if [[ -d "$ARG" ]]; then
+    cp "$SCRIPT_DIR"/run_template.yml $ARG/run.yml
+    echo "Template run.yml created at $ARG"
+    echo "Please modify before executing"
+    exit 0
+elif [[ "$ARG" == *.yml ]]; then
+    CONFIG="$ARG"
+else
+    echo "ERROR: argument must be a directory or a .yml file"
+    exit 1
+fi
+
+# verify yq before loading environment variables
+YQ="$SCRIPT_DIR/yq-bin"
+if [[ ! -x "$YQ" ]]; then
+    echo "ERROR: yq not found or not executable at $SCRIPT_DIR"
+    exit 1
+fi
+vip_docker_name=$("$YQ" '.vip_docker_name' "$CONFIG")
+tmp_location=$("$YQ" '.tmp_location' "$CONFIG")
+app_uid=$("$YQ" '.app_uid' "$CONFIG")
+dataset=$("$YQ" '.h5ad' "$CONFIG")
+port=$("$YQ" '.port' "$CONFIG")
+mapfile -t docker_host_mounts < <("$YQ" '.docker_host_mount[]' "$CONFIG")
+mapfile -t launch_args < <("$YQ" '.launch_args[]' "$CONFIG")
+
+# check availability of the docker image
+
+if ! docker image inspect "$vip_docker_name" >/dev/null 2>&1; then
+    echo "ERROR: docker image '$vip_docker_name' not found in current host"
+    echo "Run: docker pull $vip_docker_name"
+    exit 1
+fi
+
+# --- Build mount flags -------------------------------------------------------
+
+mount_flags=()
+
+for m in "${docker_host_mounts[@]}"; do
+    mount_flags+=( --mount "type=bind,source=$m,target=$m,bind-propagation=shared" )
+done
+
+# --- Ensure cache directories exist in host ----------------------------------
+
+mkdir -p "$tmp_location/tmp/.numba_cache"
+mkdir -p "$tmp_location/tmp/.matplotlib"
+mkdir -p "$tmp_location/tmp/.fontconfig"
+
+
+# --- Minimally check h5ad and port -------------------------------------------
+
+docker_args=(
+    --user "$app_uid"
+    -v "$tmp_location":/home/BxGenomics/scRNAview
+    "${mount_flags[@]}"
+)
+
+if [[ -f "$dataset" ]]; then
+
+    # Port must be provided
+    if [[ -z "$port" ]]; then
+        echo "Error: No port provided. Use -p <port> or --port <port>"
+        exit 1
+    fi
+
+    # Port must be numeric
+    if ! [[ "$port" =~ ^[0-9]+$ ]]; then
+        echo "Error: Port must be a number. Got: $port"
+        exit 1
+    fi
+
+    docker_args+=(-p "$port":"$port")
+
+    docker run --rm \
+        "${docker_args[@]}" \
+        $vip_docker_name \
+        "$dataset" \
+        -p "$port" \
+        "${launch_args[@]}"
+
+else
+    echo "WARNING: dataset not found on host side: $dataset"
+
+    docker run --rm \
+        "${docker_args[@]}" \
+        $vip_docker_name \
+        --help
+
+fi

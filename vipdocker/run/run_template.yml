@@ -1,0 +1,21 @@
+vip_docker_name: bxgenomics_vip
+docker_host_mount:
+  - /share
+  - /aws_s3
+
+app_uid: "1014:1999" # userid:groupid; make sure that this user has write permission on the folder of sample.h5ad
+tmp_location: /share/BxGenomics_dev/du_env/BxGenomics_private/BxGenomics_share/scRNAview/vipdocker # location to create a /tmp folder for cellxgene
+
+h5ad: /absolute/path/to/sample.h5ad
+port: "8212"
+
+# default args already included in the docker and not needed here:
+#   --host=0.0.0.0
+#   --max-category-items=500
+#   --backed
+#   --disable-annotations
+#   --disable-gene-sets-save
+# additional args can be provided here. Note that "=" is required for parameters
+launch_args:
+  - --restricted
+  - --identifier=xyz
