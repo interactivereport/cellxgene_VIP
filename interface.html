@@ -538,19 +538,19 @@
           border: none;
           cursor: pointer;
       }
-      figure.zoom{
-          & img:hover{
-            opacity: 0;
-          }
-          img {
-              transition: opacity .5s;
-              display: block;
-              width: 100%;
-          }
-          background-position: 50% 50%;
-          position: relative;
-          overflow: hidden;
-          width: 100%;
+      figure.zoom {
+        background-position: 50% 50%;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+      }
+      figure.zoom img {
+        transition: opacity .5s;
+        display: block;
+        width: 100%;
+      }
+      figure.zoom img:hover {
+        opacity: 0;
       }
     </style>
   </head>
