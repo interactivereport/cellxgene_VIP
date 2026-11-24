@@ -802,8 +802,9 @@ def DEG(data):
       adata = createData(data)
       comGrp = data['grp'][0]
       adata = adata[adata.obs[comGrp].isin(data['comGrp'])]
-  else:
+  elif data['DEmethod']=='default':
     mask = [pd.Series(range(data['cellN'])).isin(data['cells'][one].values()) for one in data['comGrp']]
+  else:
     for one in data['comGrp']:
       oneD = data.copy()
       oneD['cells'] = data['cells'][one]
